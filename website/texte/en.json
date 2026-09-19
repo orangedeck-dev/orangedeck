@@ -3,8 +3,8 @@
   "name": "English",
   "richtung": "ltr",
   "repo": "https://github.com/orangedeck-dev/orangedeck",
-  "titel": "OrangeDeck — Bitcoin mempool, block height display, miner stats",
-  "beschreibung": "The Bitcoin mempool as a living tile mosaic, plus a block height clock, Bitaxe figures and a block explorer. Linux, Windows, macOS, Android. MIT.",
+  "titel": "OrangeDeck: Bitcoin mempool, block height display, miner stats",
+  "beschreibung": "The Bitcoin mempool as a living tile mosaic, plus a block height clock, Bitaxe figures and a block explorer. Linux, Windows and Android. MIT.",
   "nav": [
     [
       "What it is",
@@ -41,7 +41,7 @@
   ],
   "was_titel": "What it is",
   "was": [
-    "OrangeDeck draws the Bitcoin mempool the way it actually behaves. Every waiting transaction is a square. It piles up, it gets mined, it gets replaced — and you see it happen instead of reading a number.",
+    "OrangeDeck draws the Bitcoin mempool the way it actually behaves. Every waiting transaction is a square. It piles up, it gets mined, it gets replaced, and you see it happen instead of reading a number.",
     "Around that sit five more views: a block height clock for a tablet on the wall, figures from your own miner, a block explorer, watch-only addresses, and a market tab with candles, cumulative volume delta and liquidations."
   ],
   "ansichten_titel": "Six views",
@@ -52,7 +52,7 @@
     ],
     [
       "Clock",
-      "Block height, fees, price, hashrate and the halving countdown — large, without controls. For a tablet on the wall."
+      "Block height, fees, price, hashrate and the halving countdown, large and without controls. For a tablet on the wall."
     ],
     [
       "Miner",
@@ -86,8 +86,12 @@
       "As a dashboard tab, a panel pill or a desktop widget."
     ],
     [
-      "Windows and macOS",
-      "Same build, same views."
+      "Windows",
+      "A ZIP, unzip and run. The same views, the wallet exists on Linux only."
+    ],
+    [
+      "macOS",
+      "Builds, but has not been tested yet. There is no package so far."
     ],
     [
       "Android",
@@ -106,7 +110,7 @@
     ],
     [
       "Measured, not guessed",
-      "Where a number is a model rather than a measurement — the liquidation heatmap — it says so on screen, with the assumptions written out."
+      "Where a number is a model rather than a measurement, as with the liquidation heatmap, it says so on screen, with the assumptions written out."
     ],
     [
       "One codebase, five hosts",
@@ -120,13 +124,33 @@
   "holen_titel": "Get it",
   "holen": [
     [
-      "Flathub",
-      "Submission in progress.",
-      ""
+      "Windows",
+      "Version {v}. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-windows-x86_64.zip"
+    ],
+    [
+      "Linux",
+      "Version {v}. Flatpak bundle, install with flatpak install --user. The runtime comes from Flathub.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
     ],
     [
       "Android APK",
-      "Built from source, TLS included.",
+      "Version {v}. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-arm64-v8a.apk"
+    ],
+    [
+      "F-Droid",
+      "OrangeDeck's own repository. Add it once in F-Droid, Droid-ify or Neo Store, and updates arrive by themselves.",
+      "https://fdroid.orangedeck.dev/repo/"
+    ],
+    [
+      "Obtainium",
+      "Takes every new version straight from the GitHub releases. Add the repository address as the source.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ],
+    [
+      "All versions",
+      "Release notes, checksums and older versions on GitHub.",
       "https://github.com/orangedeck-dev/orangedeck/releases"
     ],
     [
@@ -143,7 +167,7 @@
     ],
     [
       "Where does the data come from?",
-      "From mempool.space by default, or from your own mempool instance — that is a single setting. Market data comes from the exchanges' public feeds."
+      "From mempool.space by default, or from your own mempool instance. That is a single setting. Market data comes from the exchanges' public feeds."
     ],
     [
       "Does it phone home?",
@@ -159,7 +183,7 @@
     ],
     [
       "Can I run it on a tablet on the wall?",
-      "That is what the clock view is for — large figures, no controls. The Android build carries a shortcut straight into it."
+      "That is what the clock view is for: large figures, no controls. The Android build carries a shortcut straight into it."
     ]
   ],
   "fuss_cta": "Try it",
@@ -177,7 +201,7 @@
     ],
     "live": "LIVE",
     "beispiel": "EXAMPLE",
-    "beispielHinweis": "No stranger's miner and no stranger's wallet can be queried from here. These two views therefore show invented figures — the application shows yours.",
+    "beispielHinweis": "No stranger's miner and no stranger's wallet can be queried from here. These two views therefore show invented figures. The application shows yours.",
     "quelle": "Live from the mempool",
     "block": "Block",
     "vorMin": "{0} min ago",
@@ -199,5 +223,5 @@
     "gerechnet": "derived from difficulty",
     "verbindet": "connecting …"
   },
-  "seo_kurz": "OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, Bitaxe figures, block explorer, watch-only addresses and market data. It runs on Linux, Windows, macOS and Android, is MIT licensed and requires no account."
+  "seo_kurz": "OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, Bitaxe figures, block explorer, watch-only addresses and market data. It runs on Linux, Windows and Android, is MIT licensed and requires no account."
 }

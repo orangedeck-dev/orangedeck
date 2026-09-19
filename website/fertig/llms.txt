@@ -1,13 +1,13 @@
 # OrangeDeck
 
-> The Bitcoin mempool as a living tile mosaic, plus a block height clock, Bitaxe figures and a block explorer. Linux, Windows, macOS, Android. MIT.
+> The Bitcoin mempool as a living tile mosaic, plus a block height clock, Bitaxe figures and a block explorer. Linux, Windows and Android. MIT.
 
-OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, Bitaxe figures, block explorer, watch-only addresses and market data. It runs on Linux, Windows, macOS and Android, is MIT licensed and requires no account.
+OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, Bitaxe figures, block explorer, watch-only addresses and market data. It runs on Linux, Windows and Android, is MIT licensed and requires no account.
 
 ## Six views
 
 - **Feed**: The mempool as a living mosaic, with the last block beside it. Colour by age, fee or transaction type.
-- **Clock**: Block height, fees, price, hashrate and the halving countdown — large, without controls. For a tablet on the wall.
+- **Clock**: Block height, fees, price, hashrate and the halving countdown, large and without controls. For a tablet on the wall.
 - **Miner**: Hashrate and best difficulty from your own Bitaxe, held against the network difficulty.
 - **Explorer**: Search by height, hash, txid or address. Browse blocks and their contents, see what replaced what.
 - **Watch**: Your own addresses, watch-only. Your transactions are highlighted while they sit in the heap.
@@ -18,7 +18,8 @@ OrangeDeck is a free desktop and Android application that draws the Bitcoin memp
 - **Any Linux desktop**: An ordinary window. Wayland with an X11 fallback.
 - **As a widget or bar**: Layer-shell on niri, sway, Hyprland, river, labwc.
 - **Inside DankMaterialShell**: As a dashboard tab, a panel pill or a desktop widget.
-- **Windows and macOS**: Same build, same views.
+- **Windows**: A ZIP, unzip and run. The same views, the wallet exists on Linux only.
+- **macOS**: Builds, but has not been tested yet. There is no package so far.
 - **Android**: Phone or tablet. Each view has its own home screen shortcut.
 
 ## Data sources
@@ -37,7 +38,7 @@ No. It cannot sign anything. Watched addresses are entered as addresses or an xp
 
 ### Where does the data come from?
 
-From mempool.space by default, or from your own mempool instance — that is a single setting. Market data comes from the exchanges' public feeds.
+From mempool.space by default, or from your own mempool instance. That is a single setting. Market data comes from the exchanges' public feeds.
 
 ### Does it phone home?
 
@@ -53,7 +54,7 @@ No, and it says so on screen. Nobody publishes other people's positions; it is a
 
 ### Can I run it on a tablet on the wall?
 
-That is what the clock view is for — large figures, no controls. The Android build carries a shortcut straight into it.
+That is what the clock view is for: large figures, no controls. The Android build carries a shortcut straight into it.
 
 ## Origin
 

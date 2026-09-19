@@ -19,7 +19,7 @@ Ausgegeben wird nach `website/fertig/`:
 
 Das Verzeichnis ist der Ausgabeordner fuer Cloudflare Pages.
 """
-import argparse, html, json, pathlib, shutil
+import argparse, html, json, pathlib, re, shutil
 
 WURZEL = pathlib.Path(__file__).resolve().parent.parent
 QUELLE = WURZEL / "website"
@@ -28,6 +28,15 @@ ZIEL = QUELLE / "fertig"
 # derselben Ordnung wie in der Anwendung.
 ORDNUNG = ["de", "en", "es", "fr", "it", "pt-pt", "nl", "ru", "ja", "zh",
            "pt-br", "pl", "cs"]
+
+
+# **Die Download-Links tragen die Fassung im Dateinamen** (orangedeck-0.2.12-...),
+# und `releases/latest/download/` nimmt nur den genauen Namen. Die Nummer
+# kommt deshalb aus project() in CMakeLists.txt, derselben Stelle, die der
+# Bau benutzt: nach einem Release reicht ein Neubau der Seite. In den Texten
+# steht sie als {v}.
+FASSUNG = re.search(r"project\(orangedeck-app VERSION ([0-9.]+)",
+                    (WURZEL / "CMakeLists.txt").read_text()).group(1)
 
 
 def sprachen():
@@ -70,7 +79,8 @@ def seite(d, alle):
         '<li><span class="nr">%02d</span><b>%s</b><span class="txt">%s</span></li>'
         % (i + 1, e(n), e(t)) for i, (n, t) in enumerate(d["warum"]))
     holen = "".join(
-        ('<a class="knopf" href="%s"><b>%s</b><span>%s</span></a>' % (e(u), e(n), e(t)))
+        ('<a class="knopf" href="%s"><b>%s</b><span>%s</span></a>'
+         % (e(u.replace("{v}", FASSUNG)), e(n), e(t.replace("{v}", FASSUNG))))
         if u else ('<div class="knopf wartet"><b>%s</b><span>%s</span></div>' % (e(n), e(t)))
         for n, t, u in d["holen"])
     faq = "".join("<details><summary>%s</summary><p>%s</p></details>"
@@ -354,7 +364,7 @@ def ldjson(d):
         "inLanguage": d["code"],
         "description": d.get("seo_kurz") or d["beschreibung"],
         "applicationCategory": "UtilityApplication",
-        "operatingSystem": "Linux, Windows, macOS, Android",
+        "operatingSystem": "Linux, Windows, Android",
         "license": "https://opensource.org/licenses/MIT",
         "isAccessibleForFree": True,
         "offers": frei,

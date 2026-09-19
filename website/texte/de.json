@@ -3,8 +3,8 @@
   "name": "Deutsch",
   "richtung": "ltr",
   "repo": "https://github.com/orangedeck-dev/orangedeck",
-  "titel": "OrangeDeck — Bitcoin-Mempool, Blockuhr und Miner-Anzeige",
-  "beschreibung": "Der Bitcoin-Mempool als lebendige Kachelgrafik, dazu Blockuhr, Bitaxe-Kennzahlen und Blockforscher. Für Linux, Windows, macOS und Android. MIT, ohne Konto.",
+  "titel": "OrangeDeck: Bitcoin-Mempool, Blockuhr und Miner-Anzeige",
+  "beschreibung": "Der Bitcoin-Mempool als lebendige Kachelgrafik, dazu Blockuhr, Bitaxe-Kennzahlen und Blockforscher. Für Linux, Windows und Android. MIT, ohne Konto.",
   "nav": [
     [
       "Was es ist",
@@ -28,7 +28,7 @@
     ]
   ],
   "hero_titel": "Der Bitcoin-Mempool, lebendig",
-  "hero_text": "Wartende Transaktionen fallen als Kacheln auf die Halde — so groß wie das, was sie bewegen, gefärbt nach Alter, Gebühr oder Art. Bestätigte fliegen in den Block. Man sieht dem Netz beim Atmen zu.",
+  "hero_text": "Wartende Transaktionen fallen als Kacheln auf die Halde, so groß wie das, was sie bewegen, und gefärbt nach Alter, Gebühr oder Art. Bestätigte fliegen in den Block. Man sieht dem Netz beim Atmen zu.",
   "hero_cta1": "Beziehen",
   "hero_cta1_ziel": "#holen",
   "hero_cta2": "Quelltext lesen",
@@ -41,7 +41,7 @@
   ],
   "was_titel": "Was es ist",
   "was": [
-    "OrangeDeck zeichnet den Bitcoin-Mempool so, wie er sich tatsächlich verhält. Jede wartende Transaktion ist ein Quadrat. Sie häuft sich, sie wird geschürft, sie wird verdrängt — und man sieht es geschehen, statt eine Zahl zu lesen.",
+    "OrangeDeck zeichnet den Bitcoin-Mempool so, wie er sich tatsächlich verhält. Jede wartende Transaktion ist ein Quadrat. Sie häuft sich, sie wird geschürft, sie wird verdrängt, und man sieht es geschehen, statt eine Zahl zu lesen.",
     "Darum herum liegen fünf weitere Ansichten: eine Blockuhr für das Tablet an der Wand, Kennzahlen des eigenen Schürfers, ein Blockforscher, beobachtete Adressen, und ein Markt-Reiter mit Kerzen, kumuliertem Volumendelta und Liquidationen."
   ],
   "ansichten_titel": "Sechs Ansichten",
@@ -52,7 +52,7 @@
     ],
     [
       "Uhr",
-      "Blockhöhe, Gebühren, Kurs, Hashrate und Halving-Countdown — groß, ohne Bedienung. Für das Tablet an der Wand."
+      "Blockhöhe, Gebühren, Kurs, Hashrate und Halving-Countdown, groß und ohne Bedienung. Für das Tablet an der Wand."
     ],
     [
       "Miner",
@@ -86,8 +86,12 @@
       "Als Dashboard-Reiter, Leistenpille oder Desktop-Widget."
     ],
     [
-      "Windows und macOS",
-      "Derselbe Bau, dieselben Ansichten."
+      "Windows",
+      "Ein ZIP, entpacken und starten. Dieselben Ansichten, die Wallet gibt es nur unter Linux."
+    ],
+    [
+      "macOS",
+      "Baut, ist aber noch nicht geprüft. Ein Paket gibt es noch nicht."
     ],
     [
       "Android",
@@ -106,7 +110,7 @@
     ],
     [
       "Gemessen statt geraten",
-      "Wo eine Zahl ein Modell ist und keine Messung — die Liquidations-Heatmap — steht das auf dem Schirm, samt ausgeschriebener Annahmen."
+      "Wo eine Zahl ein Modell ist und keine Messung, wie bei der Liquidations-Heatmap, steht das auf dem Schirm, samt ausgeschriebener Annahmen."
     ],
     [
       "Eine Codebasis, fünf Wirte",
@@ -120,13 +124,33 @@
   "holen_titel": "Beziehen",
   "holen": [
     [
-      "Flathub",
-      "Antrag läuft.",
-      ""
+      "Windows",
+      "Fassung {v}. ZIP für Windows 10 und 11, 64 Bit: entpacken und orangedeck-app.exe starten. Nicht signiert, SmartScreen fragt beim ersten Start.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-windows-x86_64.zip"
+    ],
+    [
+      "Linux",
+      "Fassung {v}. Flatpak-Bündel, installieren mit flatpak install --user. Die Laufzeit kommt von Flathub.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
     ],
     [
       "Android-APK",
-      "Aus dem Quelltext gebaut, mit TLS.",
+      "Fassung {v}. Für Android 9 oder neuer, 64-Bit-ARM. Signiert, den Fingerabdruck nennen die Release-Notizen.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-arm64-v8a.apk"
+    ],
+    [
+      "F-Droid",
+      "Das eigene Repo von OrangeDeck. Einmal in F-Droid, Droid-ify oder Neo Store eintragen, danach kommen Updates von selbst.",
+      "https://fdroid.orangedeck.dev/repo/"
+    ],
+    [
+      "Obtainium",
+      "Holt jede neue Fassung direkt aus den GitHub-Releases. Als Quelle die Adresse des Repos eintragen.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ],
+    [
+      "Alle Fassungen",
+      "Release-Notizen, Prüfsummen und ältere Fassungen auf GitHub.",
       "https://github.com/orangedeck-dev/orangedeck/releases"
     ],
     [
@@ -143,7 +167,7 @@
     ],
     [
       "Woher kommen die Daten?",
-      "Aus mempool.space, oder aus der eigenen Instanz — das ist eine Einstellung. Marktdaten kommen aus den öffentlichen Kanälen der Börsen."
+      "Aus mempool.space oder aus der eigenen Instanz, das ist eine Einstellung. Marktdaten kommen aus den öffentlichen Kanälen der Börsen."
     ],
     [
       "Telefoniert es nach Hause?",
@@ -159,7 +183,7 @@
     ],
     [
       "Läuft es auf einem Tablet an der Wand?",
-      "Dafür ist die Uhr da — große Zahlen, keine Bedienung. Der Android-Bau hat eine Verknüpfung direkt dorthin."
+      "Dafür ist die Uhr da: große Zahlen, keine Bedienung. Der Android-Bau hat eine Verknüpfung direkt dorthin."
     ]
   ],
   "fuss_cta": "Ausprobieren",
@@ -177,7 +201,7 @@
     ],
     "live": "LIVE",
     "beispiel": "BEISPIEL",
-    "beispielHinweis": "Kein fremder Schürfer und keine fremde Wallet lassen sich von hier aus abfragen. Diese beiden Ansichten zeigen deshalb erfundene Zahlen — die Anwendung zeigt Ihre eigenen.",
+    "beispielHinweis": "Kein fremder Schürfer und keine fremde Wallet lassen sich von hier aus abfragen. Diese beiden Ansichten zeigen deshalb erfundene Zahlen. Die Anwendung zeigt Ihre eigenen.",
     "quelle": "Live aus dem Mempool",
     "block": "Block",
     "vorMin": "vor {0} Min",
@@ -199,5 +223,5 @@
     "gerechnet": "aus der Schwierigkeit gerechnet",
     "verbindet": "verbindet …"
   },
-  "seo_kurz": "OrangeDeck ist eine freie Desktop- und Android-Anwendung, die den Bitcoin-Mempool als lebendige Kachelgrafik zeichnet. Sie vereint sechs Ansichten in einem Fenster: Mempool-Feed, Blockuhr, Bitaxe-Kennzahlen, Blockforscher, beobachtete Adressen und Marktdaten. Sie läuft auf Linux, Windows, macOS und Android, ist MIT-lizenziert und verlangt kein Konto."
+  "seo_kurz": "OrangeDeck ist eine freie Desktop- und Android-Anwendung, die den Bitcoin-Mempool als lebendige Kachelgrafik zeichnet. Sie vereint sechs Ansichten in einem Fenster: Mempool-Feed, Blockuhr, Bitaxe-Kennzahlen, Blockforscher, beobachtete Adressen und Marktdaten. Sie läuft auf Linux, Windows und Android, ist MIT-lizenziert und verlangt kein Konto."
 }

@@ -45,6 +45,11 @@ p { max-width: 44rem; }
 .knopf b { display: block; color: var(--schrift); }
 .knopf span { color: var(--gedaempft); font-size: 0.9rem; }
 .knopf.wartet { opacity: 0.6; }
+/* Die Knoepfe unter "Beziehen" tragen verschieden lange Texte; als Raster
+   stehen sie in gleich breiten Spalten wie die Karten darueber, statt je
+   nach Text unterschiedlich breit umzubrechen. */
+#holen .knopfreihe { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); }
+#holen .knopf { min-width: 0; }
 
 ul.klar { list-style: none; padding: 0; margin: 0; max-width: 44rem; }
 ul.klar li { padding-left: 1.4rem; position: relative; margin-bottom: 0.7rem; color: var(--gedaempft); }
