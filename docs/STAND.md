@@ -34,10 +34,21 @@ Systemsprache, und das OrangeDeck-Repo ist in F-Droid eingetragen.
 
 ### Was morgen als Erstes drankommt
 
-1. **Das DMS-Plugin ins Verzeichnis von DMS bringen -- erst eigenstaendig
-   machen.** Bewertung unten, Punkt 5 der offenen Liste. Kurz: es lohnt sich,
-   aber so, wie `shell/dms/` heute liegt, liefe es nach einer Installation
-   ueber DMS nicht.
+1. **Das OrangeDeck-Plugin fuer DMS ins Verzeichnis von DMS bringen** (vom
+   Anwender am 19.09. fuer morgen gesetzt). Bewertung unten, Punkt 5 der
+   offenen Liste. Die Schritte:
+   1. Plugin eigenstaendig machen: ein Erzeuger (`tools/`), der alle
+      QML-Dateien und `strings.js` in ein Verzeichnis ohne Symlinks legt.
+   2. Den Dienst ohne Repo-Auszug erreichbar machen (aus dem Flatpak) und
+      `orangedeck-window` ebenso -- oder das Plugin ohne beide lauffaehig.
+   3. Eigenes Repo `orangedeck-dev/dms-plugin` (legt der Anwender an), mit
+      Tag, englischer Beschreibung in `plugin.json` und README.
+   4. Installation so pruefen, wie DMS sie macht: frisches Verzeichnis unter
+      `~/.config/DankMaterialShell/plugins/`, ohne `install-links.sh`.
+   5. Bild 960x540 im Standard-Thema von DMS, mit echten Daten.
+   6. Eintrag `plugins/<name>.json` fuer `AvengeMedia/dms-plugin-registry`
+      vorbereiten; den PR samt Offenlegung der KI-Anteile schreibt der
+      Anwender.
 2. **Handy-Bilder fuer den F-Droid-Eintrag** (`phoneScreenshots` in den
    Metadaten), Oberflaeche dafuer auf Englisch, ohne die Statusleiste des
    Anwenders.
