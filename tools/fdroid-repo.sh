@@ -51,6 +51,16 @@ zert=$("$signer" verify --print-certs "$APK" 2>/dev/null \
        | sed -n 's/.*certificate SHA-256 digest: //p' | head -1) || true
 [ "$zert" = "$ZERT" ] || {
     echo "APK nicht mit dem OrangeDeck-Schluessel signiert (${zert:-unsigniert})"; exit 1; }
+# **Und genau die Datei, die ausgeliefert wird.** Am 19.09.2026 stand im
+# Repo zwanzig Minuten lang ein verworfener Bau derselben Fassung: gleicher
+# Name, gleicher Schluessel, andere Datei -- das Skript lief vor der letzten
+# Runde und danach nicht mehr. Massstab ist die gueltige (nicht
+# auskommentierte) Zeile in PRUEFSUMMEN.txt.
+soll=$(grep -v '^#' "$(dirname "$APK")/PRUEFSUMMEN.txt" 2>/dev/null \
+       | awk -v n="$(basename "$APK")" '$2 == n {s=$1} END {print s}')
+ist=$(sha256sum "$APK" | cut -d' ' -f1)
+[ -n "$soll" ] && [ "$soll" = "$ist" ] || {
+    echo "APK passt nicht zu PRUEFSUMMEN.txt (soll ${soll:-fehlt}, ist $ist)"; exit 1; }
 groesse=$(stat -c %s "$APK")
 [ "$groesse" -le $((25 * 1024 * 1024)) ] || {
     echo "APK ist $((groesse / 1048576)) MiB gross, erlaubt sind 25"; exit 1; }
