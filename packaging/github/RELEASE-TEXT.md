@@ -48,12 +48,12 @@ This release keeps the Android widgets useful when the network is gone and makes
 
 ## What's new since 0.2.11
 
-- Android widgets keep their numbers when a fetch fails. Until now they showed "not reachable right now" and nothing else, even when the price from a minute ago was known. Now they show the last values they had, and the title turns into the time those values were fetched, for example "as of 08:16". When the network is back they update and show their name again.
-- On Android, tapping a tile in the mempool mosaic keeps its details on screen. Until now they were only visible while the finger rested on the tile, and a tap did nothing. Now a tap shows the details and leaves them there, a tap on empty space hides them, and a second tap on the same tile opens the transaction in the explorer. Double tap resets the zoom again, which on phones had not worked either.
+- Android widgets keep their numbers when a fetch fails. Until now they showed "not reachable right now" and nothing else, even when the price from a minute ago was known. Now they show the last values they had, and the title turns into the time those values were fetched, for example "as of 08:16". When the network is back they update and show their name again. This starts after a widget's first successful fetch with this version, because the values stored by 0.2.11 carry no time.
+- On Android, a tap on a tile in the mempool mosaic shows its details and leaves them on screen. In 0.2.11 they disappeared as soon as the finger left the tile, and the tap itself did nothing. A tap on empty space hides them, and a second tap on the same tile opens the transaction in the explorer. Double tap resets the zoom, which had not worked on phones either.
 - On the desktop, clicking a tile in the mempool mosaic opens the transaction in the explorer. The details showed on hover, but the click did nothing. A double click resets the zoom, so a single click waits a moment before it opens the explorer.
-- The Android package is 23 MB instead of 57 MB. The native libraries are now compressed inside the APK. Android unpacks them during installation, so the app takes a little more space on the phone afterwards.
+- The Android package is 24 MB instead of 57 MB. The native libraries are now compressed inside the APK. Android unpacks them during installation, so the app takes a little more space on the phone afterwards.
 - Error messages on screen are short reasons in every language, such as "not found" or "too many requests", instead of technical text from the network library. The technical version goes to the log.
-- On Linux, the service notices when the live feed from mempool.space goes silent without closing the connection. It reconnects after a minute and fills the gap from the regular interface in the meantime. Before, the desktop widgets could stand still for hours while everything looked connected.
+- On Linux, the service notices when the live feed from mempool.space goes silent without closing the connection. It reconnects after a minute and fills the gap from the regular interface in the meantime. Before, the desktop widgets could stand still while everything looked connected.
 - The settings of the Dank Material Shell plugin speak the same thirteen languages as the app.
 - The project moved to [github.com/orangedeck-dev/orangedeck](https://github.com/orangedeck-dev/orangedeck). Old links redirect.
 
@@ -114,17 +114,17 @@ This pulls the KDE runtime 6.9 from Flathub. All six views are included on Linux
 
 0.2.12 hält die Android-Widgets brauchbar, wenn das Netz weg ist, und macht das Android-Paket deutlich kleiner.
 
-Android-Widgets behalten ihre Zahlen, wenn ein Abruf scheitert. Bisher stand dann nur "gerade nicht erreichbar" da, auch wenn der Kurs von vor einer Minute bekannt war. Jetzt zeigen sie den letzten Stand, und die Überschrift wird zur Uhrzeit, zu der er geholt wurde, etwa "Stand 08:16". Ist das Netz wieder da, holen sie nach und tragen wieder ihren Namen.
+Android-Widgets behalten ihre Zahlen, wenn ein Abruf scheitert. Bisher stand dann nur "gerade nicht erreichbar" da, auch wenn der Kurs von vor einer Minute bekannt war. Jetzt zeigen sie den letzten Stand, und die Überschrift wird zur Uhrzeit, zu der er geholt wurde, etwa "Stand 08:16". Ist das Netz wieder da, holen sie nach und tragen wieder ihren Namen. Das beginnt nach dem ersten erfolgreichen Abruf mit dieser Fassung, weil die von 0.2.11 gemerkten Werte keine Uhrzeit haben.
 
-Unter Android bleiben die Angaben zu einer Kachel im Mempool-Feld stehen, wenn man sie antippt. Bisher waren sie nur zu sehen, solange der Finger darauf lag, und ein Tipp bewirkte nichts. Jetzt zeigt ein Tipp die Angaben und lässt sie stehen, ein Tipp auf leere Fläche räumt sie weg, und ein zweiter Tipp auf dieselbe Kachel öffnet die Transaktion im Explorer. Doppeltippen setzt die Vergrößerung wieder zurück, auch das ging am Telefon bisher nicht.
+Unter Android zeigt ein Tipp auf eine Kachel im Mempool-Feld ihre Angaben und lässt sie stehen. In 0.2.11 verschwanden sie, sobald der Finger die Kachel verließ, und der Tipp selbst bewirkte nichts. Ein Tipp auf leere Fläche räumt sie weg, ein zweiter Tipp auf dieselbe Kachel öffnet die Transaktion im Explorer. Doppeltippen setzt die Vergrößerung zurück, auch das ging am Telefon bisher nicht.
 
 Am Rechner öffnet ein Klick auf eine Kachel die Transaktion im Explorer. Die Angaben erschienen beim Überfahren, der Klick bewirkte nichts. Ein Doppelklick setzt die Vergrößerung zurück, deshalb wartet ein einfacher Klick einen Augenblick, bevor er den Explorer öffnet.
 
-Das Android-Paket ist 23 statt 57 MB groß. Die Bibliotheken liegen jetzt gepackt im APK. Android entpackt sie bei der Installation, die App belegt danach etwas mehr Platz auf dem Telefon.
+Das Android-Paket ist 24 statt 57 MB groß. Die Bibliotheken liegen jetzt gepackt im APK. Android entpackt sie bei der Installation, die App belegt danach etwas mehr Platz auf dem Telefon.
 
 Fehlermeldungen auf dem Bildschirm sind kurze Gründe in jeder Sprache, etwa "nicht gefunden" oder "zu viele Abfragen", statt technischer Texte aus der Netzwerkbibliothek. Die technische Fassung steht im Protokoll.
 
-Unter Linux merkt der Dienst, wenn der Live-Datenstrom von mempool.space verstummt, ohne die Verbindung zu schließen. Er verbindet sich nach einer Minute neu und holt die Lücke solange über die normale Schnittstelle nach. Vorher konnten die Desktop-Widgets stundenlang stillstehen, während alles verbunden aussah. Die Einstellungen des Plugins für die Dank Material Shell sprechen dieselben dreizehn Sprachen wie die App.
+Unter Linux merkt der Dienst, wenn der Live-Datenstrom von mempool.space verstummt, ohne die Verbindung zu schließen. Er verbindet sich nach einer Minute neu und holt die Lücke solange über die normale Schnittstelle nach. Vorher konnten die Desktop-Widgets stillstehen, während alles verbunden aussah. Die Einstellungen des Plugins für die Dank Material Shell sprechen dieselben dreizehn Sprachen wie die App.
 
 Das Projekt ist nach [github.com/orangedeck-dev/orangedeck](https://github.com/orangedeck-dev/orangedeck) umgezogen, alte Links leiten weiter. Das APK gibt es auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android.
 
