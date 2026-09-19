@@ -29,7 +29,7 @@
   ],
   "hero_titel": "Der Bitcoin-Mempool, lebendig",
   "hero_text": "Wartende Transaktionen fallen als Kacheln auf die Halde, so groß wie das, was sie bewegen, und gefärbt nach Alter, Gebühr oder Art. Bestätigte fliegen in den Block. Man sieht dem Netz beim Atmen zu.",
-  "hero_cta1": "Beziehen",
+  "hero_cta1": "Download",
   "hero_cta1_ziel": "#holen",
   "hero_cta2": "Quelltext lesen",
   "hero_cta2_ziel": "https://github.com/orangedeck-dev/orangedeck",
@@ -121,7 +121,7 @@
       "MIT-lizenziert, nichts verschleiert, und die Begründungen stehen in den Commits statt verloren zu gehen."
     ]
   ],
-  "holen_titel": "Beziehen",
+  "holen_titel": "Download",
   "holen": [
     [
       "Windows",
