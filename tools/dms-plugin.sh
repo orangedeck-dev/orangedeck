@@ -45,7 +45,17 @@ mkdir -p "$ZIEL"
 for f in $PLUGINFILES; do cp -L "$R/shell/dms/$f" "$ZIEL/$f"; done
 for f in $QMLFILES;    do cp -L "$R/ui/qml/$f"   "$ZIEL/$f"; done
 for f in $BEIFILES;    do cp -L "$R/$f"          "$ZIEL/$f"; done
-[ -f "$R/shell/dms/README.md" ] && cp -L "$R/shell/dms/README.md" "$ZIEL/README.md"
+# **Kein `[ -f ... ] && cp`**: unter `set -e` beendet eine fehlschlagende
+# Pruefung das Skript, und dann faellt die ganze Kontrolle unten aus. Solange
+# es noch kein Bild gibt, ist das Verzeichnis `assets/` genau so ein Fall.
+if [ -f "$R/shell/dms/README.md" ]; then
+  cp -L "$R/shell/dms/README.md" "$ZIEL/README.md"
+fi
+# Das Bild fuer das Verzeichnis liegt unter `assets/` -- der Eintrag im
+# Registry zeigt mit einer Roh-URL genau dorthin.
+if [ -d "$R/shell/dms/assets" ]; then
+  cp -rL "$R/shell/dms/assets" "$ZIEL/assets"
+fi
 
 # --- Nachsehen, ob das Ergebnis allein steht --------------------------------
 fehlt=0
