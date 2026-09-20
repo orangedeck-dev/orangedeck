@@ -770,6 +770,27 @@ Item {
 
         readonly property var tx: canvasView.hoveredTx
 
+        // **Die Rate muss zu den beiden Zeilen darueber passen.** Gezeigt
+        // wurde `r` aus dem Zustand -- das ist die *wirksame* Rate von
+        // mempool.space, die Vorgaenger (CPFP) und Sigops mitrechnet. Daneben
+        // standen Groesse und Gebuehr, und aus denen ergab sich eine andere
+        // Zahl: 1000 sat / 219,25 vB = 4,56, angezeigt 4,54 (19.09.2026). Der
+        // Explorer rechnet ebenfalls Gebuehr durch vBytes (`fee / (weight/4)`)
+        // und stand damit im Widerspruch zum Tooltip derselben Transaktion.
+        //
+        // Hier steht jetzt die Rechnung, die man an den eigenen Zahlen
+        // nachvollziehen kann; die wirksame Rate kommt als eigene Zeile dazu,
+        // wenn sie abweicht. **Die Farbe der Kachel bleibt bei der wirksamen
+        // Rate** -- sie ist die, nach der ein Miner auswaehlt.
+        readonly property real eigenRate: tip.tx && tip.tx.v > 0
+            ? tip.tx.f / tip.tx.v : (tip.tx ? (tip.tx.r || 0) : 0)
+        // Eine Abweichung ist erst eine, wenn man sie sieht: ein Prozent,
+        // mindestens aber 0,01 sat/vB -- darunter faellt sie beim Runden auf
+        // zwei Stellen ohnehin weg.
+        readonly property bool rateWeichtAb: tip.tx && (tip.tx.r || 0) > 0
+            && Math.abs(tip.tx.r - tip.eigenRate)
+               > Math.max(0.01, tip.eigenRate * 0.01)
+
         visible: tx !== null && root.width > 300
         // Groesse aus dem Inhalt, aber ueber childrenRect statt ueber die
         // Spalte: waere die Spalte im Rechteck zentriert, haenge die Groesse
@@ -828,7 +849,14 @@ Item {
             }
 
             Text {
-                text: tip.tx ? Tr.t("tip.rate", root.lang, root.dec(tip.tx.r, 2)) : ""
+                text: tip.tx ? Tr.t("tip.rate", root.lang, root.dec(tip.eigenRate, 2)) : ""
+                color: root.dimColor
+                font.pixelSize: root.baseFont - 2
+            }
+
+            Text {
+                visible: tip.rateWeichtAb
+                text: tip.tx ? Tr.t("tip.rateEff", root.lang, root.dec(tip.tx.r, 2)) : ""
                 color: root.dimColor
                 font.pixelSize: root.baseFont - 2
             }
