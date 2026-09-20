@@ -15,9 +15,24 @@
 # Danach probeweise installieren, ohne install-links.sh:
 #   rm -rf ~/.config/DankMaterialShell/plugins/OrangeDeck
 #   cp -r build/dms-plugin ~/.config/DankMaterialShell/plugins/OrangeDeck
+#
+# Mit `--repo` wird daraus ein Git-Arbeitsbaum, den man nur noch pushen muss:
+#
+#   tools/dms-plugin.sh --repo [verzeichnis]   (Vorgabe: build/dms-plugin-repo)
+#
+# Er behaelt seine Geschichte ueber die Laeufe hinweg -- erzeugt wird in ein
+# eigenes Verzeichnis, und nur der Inhalt wandert hinueber.
 set -euo pipefail
 R="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ZIEL="${1:-$R/build/dms-plugin}"
+
+REPOMODUS=0
+if [ "${1:-}" = "--repo" ]; then
+  REPOMODUS=1
+  REPOZIEL="${2:-$R/build/dms-plugin-repo}"
+  ZIEL="$R/build/dms-plugin"
+else
+  ZIEL="${1:-$R/build/dms-plugin}"
+fi
 
 # **Dieselbe Regel wie in install-links.sh**, und aus demselben Grund aus dem
 # Verzeichnis gelesen statt aufgezaehlt: eine Liste von Hand vergisst man.
@@ -93,3 +108,42 @@ for p in list(d.get("components", {}).values()) + [d.get("settings")]:
 
 n=$(find "$ZIEL" -type f | wc -l)
 echo "$ZIEL: $n Dateien, $(du -sh "$ZIEL" | cut -f1), keine Symlinks"
+
+[ "$REPOMODUS" = "1" ] || exit 0
+
+# --- Dasselbe noch einmal als Git-Arbeitsbaum -------------------------------
+# Derselbe Vorbehalt wie oben: ein fremdes Verzeichnis wird nicht angefasst.
+if [ -e "$REPOZIEL" ] && [ ! -d "$REPOZIEL/.git" ] && [ -n "$(command ls -A "$REPOZIEL")" ]; then
+  echo "abgebrochen: $REPOZIEL ist nicht leer und kein Git-Arbeitsbaum" >&2
+  exit 1
+fi
+mkdir -p "$REPOZIEL"
+[ -d "$REPOZIEL/.git" ] || git -C "$REPOZIEL" init -q -b main
+
+# Alles ausser .git heraus, dann den frischen Stand hinein: so verschwinden
+# geloeschte Dateien wirklich, statt als Leiche liegen zu bleiben.
+find "$REPOZIEL" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+cp -r "$ZIEL"/. "$REPOZIEL"/
+
+# **Die Identitaet des Hauptrepos, nicht die globale.** Ein frischer Klon
+# nimmt sonst den Klarnamen aus ~/.gitconfig (19.09.2026, fdroid-repo.sh).
+git -C "$REPOZIEL" config user.name  "$(git -C "$R" config user.name)"
+git -C "$REPOZIEL" config user.email "$(git -C "$R" config user.email)"
+
+fassung=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$REPOZIEL/plugin.json")
+quelle=$(git -C "$R" rev-parse --short HEAD)
+git -C "$REPOZIEL" add -A
+if git -C "$REPOZIEL" diff --cached --quiet; then
+  echo "$REPOZIEL: unveraendert"
+else
+  git -C "$REPOZIEL" commit -q -m "OrangeDeck $fassung fuer DankMaterialShell
+
+Erzeugt aus orangedeck@$quelle mit tools/dms-plugin.sh."
+  echo "$REPOZIEL: committet ($(git -C "$REPOZIEL" rev-parse --short HEAD))"
+fi
+
+echo
+echo "Zum Veroeffentlichen (das Repo legt der Anwender auf GitHub an):"
+echo "  git -C $REPOZIEL remote add origin git@github.com:orangedeck-dev/dms-plugin.git"
+echo "  git -C $REPOZIEL push -u origin main"
+echo "  git -C $REPOZIEL tag v$fassung && git -C $REPOZIEL push origin v$fassung"
