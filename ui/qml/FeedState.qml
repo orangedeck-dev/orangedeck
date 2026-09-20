@@ -38,11 +38,42 @@ Item {
     //   "direct"  die Oberflaeche redet selbst mit mempool.space. Vorgabe auf
     //             dem Handy: dort gibt es keinen Dienst, und ein Widget, das
     //             nur laeuft, solange der Heimrechner an ist, ist keines.
+    //   "auto"    erst der Dienst, und wenn binnen `autoMs` keiner antwortet,
+    //             direkt weiter. Fuer das **DMS-Plugin**: wer es aus dem
+    //             Verzeichnis von DMS installiert, hat nur den Ordner -- kein
+    //             Repo, keine Unit, kein orangedeck im Pfad. Ein Widget, das
+    //             dann leer bleibt, waere keines. Wer den Dienst hat, bekommt
+    //             ihn weiterhin samt Wallet.
     //
     // Nach aussen ist der Unterschied keiner: beide Quellen laufen durch
     // dieselbe Auswertung, alle Ansichten lesen dieselben Eigenschaften.
     property string mode: "daemon"
-    readonly property bool direkt: root.mode === "direct"
+    property int autoMs: 4000
+
+    // **Einmal je Sitzung entschieden, und dann dabei geblieben.** Ein
+    // Umschalten hin und her bei jedem Aussetzer des Dienstes wuerde den
+    // Wallet-Reiter kommen und gehen lassen -- und `FeedTabs.reiterPruefen`
+    // wirft eine gemerkte Ansicht dabei auf den Feed zurueck. Startet der
+    // Dienst spaeter, greift die Entscheidung beim naechsten Start der Shell.
+    property string __autoMode: ""
+    readonly property bool __suchtDienst: root.mode === "auto" && root.__autoMode === ""
+    readonly property string effMode: root.mode !== "auto" ? root.mode
+        : (root.__autoMode || "daemon")
+    readonly property bool direkt: root.effMode === "direct"
+
+    // Solange gesucht wird, laeuft die Abfrage des Dienstes -- eine eigene
+    // Anfrage nur zum Anklopfen braucht es nicht, die erste Antwort auf
+    // `/state` ist die Antwort auf die Frage.
+    Timer {
+        interval: root.autoMs
+        repeat: false
+        running: root.active && root.__suchtDienst
+
+        onTriggered: {
+            if (root.__suchtDienst)
+                root.__autoMode = "direct";
+        }
+    }
     // Was der Direktbezug nicht kann -- die Ansichten blenden sich danach aus.
     //
     // **Der Miner steht nicht mehr pauschal hier drin.** Die Begruendung war
@@ -54,7 +85,11 @@ Item {
     //
     // `canMiner` ist seit dem 11.09.2026 weg: der Miner-Reiter zeigt ohne
     // Geraet das Netz und hat damit immer einen Inhalt.
-    readonly property bool canWallet: !root.direkt
+    // `__suchtDienst` gehoert dazu: waehrend der Suche ist `direkt` noch
+    // falsch, aber ob es einen Dienst gibt, weiss noch niemand. Ein
+    // Wallet-Reiter, der nach vier Sekunden wieder verschwindet, ist
+    // schlimmer als einer, der vier Sekunden spaeter kommt.
+    readonly property bool canWallet: !root.direkt && !root.__suchtDienst
     // Der Markt geht seit dem 13.09.2026 auch direkt (`DirectMarket.qml`).
     // Fehlt QtWebSockets, scheitert dessen Loader, und der Reiter bleibt weg.
     //
@@ -298,6 +333,10 @@ Item {
         root.source = d.source || "";
         root.lastError = d.error || "";
         root.online = (Date.now() / 1000 - root.stateTs) < 12 && root.source !== "offline";
+        // Es kam eine Antwort vom Dienst -- damit ist die Frage aus `mode:
+        // "auto"` beantwortet, und zwar bevor der Zeitgeber oben ablaeuft.
+        if (root.__suchtDienst)
+            root.__autoMode = "daemon";
 
         var fresh = [];
         var rec = d.recent || [];

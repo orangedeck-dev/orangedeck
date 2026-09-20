@@ -85,7 +85,7 @@ Item {
 
     function buildOpts() {
         return ({
-            "dataSource": root.get("dataSource", "daemon"),
+            "dataSource": root.get("dataSource", "auto"),
             "currency": root.get("currency", "usd"),
             // Leer heisst: FeedTabs nimmt die Sprache des Systems.
             "lang": root.get("lang", ""),
@@ -160,7 +160,7 @@ Item {
         id: feedState
 
         pollMs: 500
-        mode: root.get("dataSource", "daemon")
+        mode: root.get("dataSource", "auto")
     }
 
     Rectangle {

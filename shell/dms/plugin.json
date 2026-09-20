@@ -1,7 +1,7 @@
 {
     "id": "orangedeck",
     "name": "OrangeDeck",
-    "description": "Live-Ansicht des Bitcoin-Mempools: gefundener Block in der Mitte, Mempool als Halde unten, neue Transaktionen fallen von oben hinein. Daten von mempool.space, kein eigener Node noetig.",
+    "description": "Live view of the Bitcoin mempool: the latest block in the middle, the mempool as a pile below, new transactions raining in from above. Feed, clock, miner, market and explorer views. Data from mempool.space -- no node and no extra service required.",
     "version": "1.0.0",
     "author": "Satoshoe",
     "type": "composite",

@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# Baut das DMS-Plugin als eigenstaendiges Verzeichnis -- so, wie DMS es
+# installiert: ein Ordner unter ~/.config/DankMaterialShell/plugins/, kopiert,
+# ohne Symlinks und ohne Repo dahinter.
+#
+# **Warum ueberhaupt.** Im Arbeitsbetrieb verteilt `tools/install-links.sh` die
+# geteilten QML-Dateien per Symlink ins Plugin-Verzeichnis; das Repo ist die
+# Quelle der Wahrheit, und eine Aenderung ist sofort in der laufenden Shell.
+# Wer das Plugin aber aus dem Verzeichnis von DMS installiert, bekommt eine
+# **Kopie** -- und Symlinks ins Nichts. Das hier erzeugt genau die Kopie, aus
+# denselben Dateien, nach derselben Regel.
+#
+#   tools/dms-plugin.sh [zielverzeichnis]      (Vorgabe: build/dms-plugin)
+#
+# Danach probeweise installieren, ohne install-links.sh:
+#   rm -rf ~/.config/DankMaterialShell/plugins/OrangeDeck
+#   cp -r build/dms-plugin ~/.config/DankMaterialShell/plugins/OrangeDeck
+set -euo pipefail
+R="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ZIEL="${1:-$R/build/dms-plugin}"
+
+# **Dieselbe Regel wie in install-links.sh**, und aus demselben Grund aus dem
+# Verzeichnis gelesen statt aufgezaehlt: eine Liste von Hand vergisst man.
+# Die Pruefstaende (`Pruefstand*.qml`) sind Werkzeug und bleiben draussen.
+QMLFILES="$(cd "$R/ui/qml" && command ls -1 *.qml *.js 2>/dev/null | grep -v '^Pruefstand')"
+PLUGINFILES="OrangeDeckDaemon.qml OrangeDeckDesktop.qml OrangeDeckSettings.qml OrangeDeckWidget.qml plugin.json"
+# Der Bausatz traegt `mondrian.js` und `colors.js` mit -- Portierungen aus
+# bitfeed. Beide Lizenztexte gehen also mit, nicht nur der eigene.
+BEIFILES="LICENSE LICENSE-bitfeed"
+
+# Ein fremdes Verzeichnis wird nicht geloescht. Ausgeraeumt wird nur, was
+# erkennbar von hier stammt (es traegt eine plugin.json) oder noch leer ist.
+if [ -e "$ZIEL" ]; then
+  if [ -f "$ZIEL/plugin.json" ] || [ -z "$(command ls -A "$ZIEL")" ]; then
+    rm -rf "$ZIEL"
+  else
+    echo "abgebrochen: $ZIEL ist nicht leer und sieht nicht nach einem Plugin aus" >&2
+    exit 1
+  fi
+fi
+mkdir -p "$ZIEL"
+
+# -L: dereferenzieren. Im Repo stehen echte Dateien, aber ein Arbeitsbaum, in
+# dem doch einmal ein Symlink liegt, darf kein kaputtes Plugin erzeugen.
+for f in $PLUGINFILES; do cp -L "$R/shell/dms/$f" "$ZIEL/$f"; done
+for f in $QMLFILES;    do cp -L "$R/ui/qml/$f"   "$ZIEL/$f"; done
+for f in $BEIFILES;    do cp -L "$R/$f"          "$ZIEL/$f"; done
+[ -f "$R/shell/dms/README.md" ] && cp -L "$R/shell/dms/README.md" "$ZIEL/README.md"
+
+# --- Nachsehen, ob das Ergebnis allein steht --------------------------------
+fehlt=0
+
+# 1. Kein Symlink. Der haeufigste Weg, wie aus einer Kopie doch wieder ein
+#    Verweis ins Repo wird.
+if find "$ZIEL" -type l | grep -q .; then
+  echo "Symlink im Ergebnis:" >&2
+  find "$ZIEL" -type l >&2
+  fehlt=1
+fi
+
+# 2. Jedes `import "...js"` muss im Verzeichnis liegen. Eine QML-Datei, die
+#    eine fehlende .js importiert, laedt nicht -- und DMS zeigt dann eine
+#    leere Kachel statt eines Fehlers.
+for f in "$ZIEL"/*.qml; do
+  while read -r js; do
+    [ -n "$js" ] || continue
+    [ -e "$ZIEL/$js" ] || { echo "fehlt: $js (aus $(basename "$f"))" >&2; fehlt=1; }
+  done < <(grep -oE '^import "[^"]+\.js"' "$f" | sed 's/^import "//; s/"$//')
+done
+
+# 3. Die Bestandteile aus plugin.json muessen da sein.
+while read -r c; do
+  [ -e "$ZIEL/$c" ] || { echo "fehlt: $c (in plugin.json genannt)" >&2; fehlt=1; }
+done < <(python3 -c '
+import json, sys
+d = json.load(open(sys.argv[1]))
+for p in list(d.get("components", {}).values()) + [d.get("settings")]:
+    if p:
+        print(p.lstrip("./"))
+' "$ZIEL/plugin.json")
+
+[ "$fehlt" = "0" ] || exit 1
+
+n=$(find "$ZIEL" -type f | wc -l)
+echo "$ZIEL: $n Dateien, $(du -sh "$ZIEL" | cut -f1), keine Symlinks"

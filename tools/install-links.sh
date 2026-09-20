@@ -69,7 +69,7 @@ done
 
 # DMS-Plugin
 P="$HOME/.config/DankMaterialShell/plugins/OrangeDeck"
-for f in OrangeDeckDaemon.qml OrangeDeckDesktop.qml OrangeDeckSettings.qml OrangeDeckWidget.qml plugin.json; do
+for f in OrangeDeckDaemon.qml OrangeDeckDesktop.qml OrangeDeckSettings.qml OrangeDeckWidget.qml plugin.json README.md; do
   link "$R/shell/dms/$f" "$P/$f"
 done
 for f in DOKUMENTATION.md STAND.md ZIELBILD.md; do

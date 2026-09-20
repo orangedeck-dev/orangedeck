@@ -806,6 +806,9 @@ var S = {
         "Vlastní služba drží jedno připojení pro všechna okna a zvládne peněženku. Přímo služba není potřeba — peněženka vypadne, ale miner je dosažitelný i tak, jakmile zadáte jeho adresu."
     ],
     "src.daemon": ["Eigener Dienst", "Own service", "Servicio propio", "Service local", "Servizio locale", "Serviço próprio", "Eigen dienst", "Собственная служба", "自前のサービス", "本地服务", "Serviço próprio", "Własna usługa", "Vlastní služba"],
+    // "auto" ist die Vorgabe des DMS-Plugins: wer es aus dem Verzeichnis von
+    // DMS installiert, hat keinen Dienst -- und soll trotzdem Daten sehen.
+    "src.auto": ["Automatisch: Dienst, sonst direkt", "Automatic: service, otherwise direct", "Automático: servicio, si no directo", "Automatique : service, sinon direct", "Automatico: servizio, altrimenti diretto", "Automático: serviço, senão direto", "Automatisch: dienst, anders rechtstreeks", "Автоматически: служба, иначе напрямую", "自動: サービス、なければ直接", "自动：有服务用服务，否则直连", "Automático: serviço, senão direto", "Automatycznie: usługa, inaczej bezpośrednio", "Automaticky: služba, jinak přímo"],
     "src.direct": ["Direkt zu mempool.space", "Directly to mempool.space", "Directo a mempool.space", "Directement à mempool.space", "Diretto a mempool.space", "Diretamente ao mempool.space", "Rechtstreeks naar mempool.space", "Напрямую к mempool.space", "mempool.space に直接", "直连 mempool.space", "Diretamente ao mempool.space", "Bezpośrednio do mempool.space", "Přímo na mempool.space"],
 
     // ------------------------------------------- Gruende (siehe grund())

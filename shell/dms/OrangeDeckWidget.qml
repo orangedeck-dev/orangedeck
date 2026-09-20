@@ -53,7 +53,7 @@ PluginComponent {
         // was sie kostet, kostet sie den ganzen Tag. Zwei Abfragen pro Sekunde
         // waren dafuer vierfach zu viel.
         pollMs: 2000
-        mode: root.get("dataSource", "daemon")
+        mode: root.get("dataSource", "auto")
     }
 
     // ------------------------------------------------------ Einstellungen
@@ -76,7 +76,7 @@ PluginComponent {
 
     function buildOpts() {
         return ({
-            "dataSource": root.get("dataSource", "daemon"),
+            "dataSource": root.get("dataSource", "auto"),
             "currency": root.get("currency", "usd"),
             // Leer heisst: FeedTabs nimmt die Sprache des Systems.
             "lang": root.get("lang", ""),
@@ -176,6 +176,25 @@ PluginComponent {
         running: false
     }
 
+    // **Das eigene Fenster gibt es nur, wenn OrangeDeck auf dem Rechner
+    // liegt.** Aus dem Verzeichnis von DMS installiert, ist das Plugin der
+    // ganze Bestand -- dann fuehrt ein Knopf "in eigenem Fenster oeffnen" ins
+    // Leere. Einmal beim Start nachgesehen, nicht bei jedem Klick: die Antwort
+    // aendert sich waehrend einer Sitzung praktisch nie, und `test -x` je
+    // Rechtsklick waere ein Prozess fuer nichts.
+    property bool fensterMoeglich: false
+
+    Process {
+        id: fensterProbe
+
+        command: ["test", "-x", root.windowCommand]
+        running: true
+
+        onExited: function (exitCode) {
+            root.fensterMoeglich = exitCode === 0;
+        }
+    }
+
     // ------------------------------------------------ Control-Center-Kachel
     ccWidgetIcon: "currency_bitcoin"
     ccWidgetPrimaryText: "Bitcoin"
@@ -215,7 +234,10 @@ PluginComponent {
     }
 
     // ------------------------------------------------------------- Pille
-    pillRightClickAction: () => root.openInWindow()
+    pillRightClickAction: () => {
+        if (root.fensterMoeglich)
+            root.openInWindow();
+    }
 
     horizontalBarPill: Component {
         Row {
@@ -275,6 +297,7 @@ PluginComponent {
 
             headerActions: Component {
                 DankActionButton {
+                    visible: root.fensterMoeglich
                     iconName: "open_in_new"
                     buttonSize: 30
                     tooltipText: root.t("dms.ownWindow")

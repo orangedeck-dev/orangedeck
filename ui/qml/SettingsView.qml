@@ -609,7 +609,12 @@ Item {
 
                     Wahl {
                         gewaehlt: root.val("dataSource", "daemon")
+                        // "auto" steht ueberall dort, wo es ueberhaupt einen
+                        // Dienst geben kann -- `FeedState` kennt die Betriebsart
+                        // in jedem Wirt. Vorgabe ist es nur im DMS-Plugin: dort
+                        // ist der Dienst die Ausnahme, in der Anwendung die Regel.
                         eintraege: [
+                            { "k": "auto", "l": Tr.t("src.auto", root.lang) },
                             { "k": "daemon", "l": Tr.t("src.daemon", root.lang) },
                             { "k": "direct", "l": Tr.t("src.direct", root.lang) }
                         ]
@@ -629,8 +634,11 @@ Item {
                 Zeile {
                     label: Tr.t("set.daemonHost", root.lang)
                     help: Tr.t("set.daemonHostHelp", root.lang)
+                    // Auch bei "auto" sichtbar: die Suche klopft an genau
+                    // dieser Adresse an. Nur im Direktbezug fragt niemand
+                    // nach, und ein Feld ohne Wirkung ist eine Falle.
                     visible: root.val("dienstMoeglich", true)
-                             && root.val("dataSource", "daemon") === "daemon"
+                             && root.val("dataSource", "daemon") !== "direct"
 
                     Textzeile {
                         wert: root.val("daemonHost", "")

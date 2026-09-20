@@ -4406,3 +4406,92 @@ unter Android und Windows wegfaellt -- 0.2.9 hat sie dort ausdruecklich
 angekuendigt. Ebenso die Metainfo. Eine Wallet direkt auf dem Telefon (Ableitung
 in der App, xpub bleibt dort) waere der saubere Weg zurueck, falls sie
 jemand vermisst.
+
+## Das DMS-Plugin als eigenstaendiges Verzeichnis (20.09.2026)
+
+Fuer das Verzeichnis von DMS (`AvengeMedia/dms-plugin-registry`) muss das
+Plugin ohne dieses Repo laufen. DMS installiert ein Plugin, indem es sein
+Verzeichnis **kopiert**; im Arbeitsbetrieb kommen die geteilten QML-Dateien
+aber ueber Symlinks aus `tools/install-links.sh`, und `OrangeDeckWidget.qml`
+ruft `~/.local/bin/orangedeck-window` auf, dessen Dienst aus einem Repo-Auszug
+stammt. Drei Dinge waren zu tun.
+
+**`tools/dms-plugin.sh`** erzeugt die Kopie: 51 Dateien, 1,2 MB, ohne einen
+einzigen Symlink. Die Dateiliste liest es nach derselben Regel wie
+`install-links.sh` aus `ui/qml` (ohne `Pruefstand*`) -- eine zweite Liste von
+Hand waere am zweiten Tag falsch. `LICENSE` und `LICENSE-bitfeed` gehen mit,
+weil `mondrian.js` und `colors.js` Portierungen sind. Danach prueft es drei
+Dinge: kein Symlink im Ergebnis, jedes `import "...js"` vorhanden, jeder in
+`plugin.json` genannte Bestandteil vorhanden. Ein nicht leeres Zielverzeichnis
+ohne `plugin.json` raeumt es nicht aus.
+
+**`FeedState` kennt jetzt `mode: "auto"`.** Erst der Dienst, und wenn binnen
+`autoMs` (4 s) keine Antwort auf `/state` kommt, direkt weiter. Es gibt keine
+eigene Anfrage zum Anklopfen -- die laufende Abfrage ist die Probe. Entschieden
+wird **einmal je Sitzung**: ein Umschalten bei jedem Aussetzer liesse den
+Wallet-Reiter kommen und gehen, und `FeedTabs.reiterPruefen` wirft eine
+gemerkte Ansicht dabei auf den Feed zurueck (dieselbe Falle wie bei `canMarket`
+am 13.09.). Solange gesucht wird, ist `canWallet` falsch: ein Reiter, der nach
+vier Sekunden verschwindet, ist schlimmer als einer, der vier Sekunden spaeter
+kommt. Vorgabe ist `auto` nur im Plugin; die Anwendung bleibt bei `daemon`.
+
+**Die Daemon-Komponente gibt auf.** Der Startbefehl endet nur dann von sich aus
+mit einem Fehler, wenn **beide** Wege fehlen: `systemctl --user start` hat
+nicht gewirkt und `exec` fand das Programm nicht. Genau das ist die Lage ohne
+OrangeDeck auf dem Rechner, und danach hoert der Zehn-Sekunden-Takt auf. Ebenso
+sieht `OrangeDeckWidget` einmal beim Start mit `test -x` nach, ob es
+`orangedeck-window` gibt; sonst faellt der Knopf "eigenes Fenster" weg.
+
+### Der Probestand: eine geschachtelte Sitzung
+
+Geprueft wurde nicht am laufenden System, sondern in einer zweiten, vollstaendig
+eigenen Sitzung -- **frisches HOME**, damit es weder Unit noch `~/.local/bin`
+noch eine Zustandsdatei gibt:
+
+    export HOME=<probe>/home XDG_RUNTIME_DIR=/run/user/1000/odprobe
+    export WAYLAND_DISPLAY=/run/user/1000/wayland-1   # absoluter Pfad!
+    dbus-run-session -- niri -- dms run
+
+Drei Dinge daran sind noetig, sonst laeuft es nicht:
+
+- **`WAYLAND_DISPLAY` als absoluter Pfad.** Nur so findet das geschachtelte
+  niri den Compositor des Wirts, obwohl sein eigenes `XDG_RUNTIME_DIR` ein
+  anderes ist. Und ein anderes muss es sein, damit Dienst-Sockel und
+  Zustandsdatei nicht die des Wirts sind.
+- **Ein kurzes `XDG_RUNTIME_DIR`.** Unter dem Pfad des Arbeitsverzeichnisses
+  scheiterte niri an `path must be shorter than SUN_LEN` -- Unix-Sockel sind
+  auf gut hundert Zeichen begrenzt.
+- **`dbus-run-session`.** Eigener Sitzungsbus, sonst streiten sich zwei DMS um
+  `org.freedesktop.Notifications`.
+
+Eingeschaltet wird das Plugin ueber `plugin_settings.json`
+(`{"orangedeck":{"enabled":true}}`), sichtbar ueber `settings.json`
+(`barConfigs[].rightWidgets`, `controlCenterWidgets`,
+`desktopWidgetInstances`); `.firstlaunch` anlegen, sonst steht der
+Willkommensassistent im Bild. Bedient wird ohne Maus, ueber die IPC:
+
+    dms ipc call widget toggle orangedeck      # Popout auf
+    dms ipc call orangedeck status             # die IpcHandler des Plugins
+    grim <bild.png>                            # mit dem Wayland-Display der Probe
+
+**Was der Probestand nicht selbst herstellen kann, ist die Abwesenheit des
+Dienstes.** Er hoert auf 127.0.0.1:21021, und Loopback ist geteilt; ohne
+`pasta` oder `slirp4netns` hat ein eigener Netz-Namensraum kein Internet und
+damit auch keinen Direktbezug. Gestoppt werden muss also der Dienst des Wirts
+-- und **dabei reicht `systemctl --user stop` nicht**: der Waechter im
+installierten Plugin des Wirts startet die Unit binnen zehn Sekunden nach.
+Erst `dms ipc call plugins disable orangedeck` legt ihn still (und
+`... enable` danach wieder), ohne dass eine Datei verschoben werden muss.
+
+### Gemessen am 20.09.2026
+
+- **Mit Dienst**: die Kopie laedt ("Plugin loaded: orangedeck", "Daemon plugin
+  loaded"), Pille mit 78k, Popout mit Block 967.851, Halde, Legende, Preis.
+  `ss` zeigt die Verbindung des geschachtelten `qs` nach 21021 -- `auto` hat
+  also den Dienst gefunden.
+- **Ohne Dienst** (`health=000` waehrend der ganzen Messung): dieselbe Ansicht
+  mit frischeren Zahlen direkt von mempool.space, dazu die Reihe der geplanten
+  Bloecke. Kein Wallet-Reiter, kein Knopf "eigenes Fenster".
+- **Das Aufgeben gezaehlt**: ein Zaehlstueck anstelle von `orangedeck` schrieb
+  jeden Startversuch mit. In 50 Sekunden **ein** Eintrag. Ohne die Aenderung
+  waeren es fuenf gewesen.
