@@ -15,251 +15,182 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
-## TAGESABSCHLUSS 19.09.2026 -- wo das Projekt steht
+## TAGESABSCHLUSS 20.09.2026 -- wo das Projekt steht
 
 > Einstieg fuer den naechsten Tag. Alles Aeltere liegt im Journal unter
 > `docs/journal/`, ein Tag je Datei.
 
 ### Der Stand in einem Satz
 
-**0.2.12 ist veroeffentlicht** ("Latest", Tag `v0.2.12` auf `fd48092`, Pin
-`0878161`, seit 20:43 UTC), gemessen auf Galaxy, Windows 11, Ubuntu 24.04 und
-Fedora 44. **Das Projekt hat ein neues Zuhause**: GitHub-Organisation
-`orangedeck-dev`, ein **eigenes F-Droid-Repo** unter `fdroid.orangedeck.dev`,
-und orangedeck.dev verteilt selbst (Download je System, F-Droid, Obtainium).
+**0.2.12 steht unveraendert draussen** -- heute wurde nichts veroeffentlicht.
+Der Tag ging an zwei Dinge: **das DMS-Plugin laeuft jetzt allein** (kopiertes
+Verzeichnis, kein Repo, kein Dienst noetig, Erzeuger samt Pruefungen, Eintrag
+fuer das Verzeichnis vorbereitet), und **die vier Kleinbefunde der offenen
+Liste sind erledigt** -- Gebuehrenrate, Preisachse, Zahlenformate,
+Fenstersymbol. Sechs Commits, Arbeitsbaum sauber.
 
-Arbeitsbaum sauber, alles gepusht. Keine VM an, kein Emulator, kein Xvfb.
-Die Windows-VM steht wieder auf 10 GB. Am Galaxy: Drehung frei, Netz an, Euro,
-Systemsprache, und das OrangeDeck-Repo ist in F-Droid eingetragen.
+Nicht gepusht, nicht getaggt, keine neue Fassung. Der Probestand
+(`tools/dms-probe.sh`) ist aus, die Pruef-VMs waren nicht an.
 
 ### Was morgen als Erstes drankommt
 
-1. **Das OrangeDeck-Plugin fuer DMS ins Verzeichnis von DMS bringen** (vom
-   Anwender am 19.09. fuer morgen gesetzt). Bewertung unten, Punkt 5 der
-   offenen Liste. Die Schritte:
-   1. Plugin eigenstaendig machen: ein Erzeuger (`tools/`), der alle
-      QML-Dateien und `strings.js` in ein Verzeichnis ohne Symlinks legt.
-   2. Den Dienst ohne Repo-Auszug erreichbar machen (aus dem Flatpak) und
-      `orangedeck-window` ebenso -- oder das Plugin ohne beide lauffaehig.
-   3. Eigenes Repo `orangedeck-dev/dms-plugin` (legt der Anwender an), mit
-      Tag, englischer Beschreibung in `plugin.json` und README.
-   4. Installation so pruefen, wie DMS sie macht: frisches Verzeichnis unter
-      `~/.config/DankMaterialShell/plugins/`, ohne `install-links.sh`.
-   5. Bild 960x540 im Standard-Thema von DMS, mit echten Daten.
-   6. Eintrag `plugins/<name>.json` fuer `AvengeMedia/dms-plugin-registry`
-      vorbereiten; den PR samt Offenlegung der KI-Anteile schreibt der
-      Anwender.
-2. **Handy-Bilder fuer den F-Droid-Eintrag** (`phoneScreenshots` in den
-   Metadaten), Oberflaeche dafuer auf Englisch, ohne die Statusleiste des
-   Anwenders.
-3. Danach die kleinen Befunde von heute (Punkte 6 bis 9).
+1. **Die Bilder aufnehmen** -- der Anwender, morgen oder uebermorgen. Was
+   wohin gehoert, steht in `docs/BILDER.md`; die drei Befehle fuer den
+   Probestand stehen dort ebenfalls. **Ohne das Bild geht der Eintrag ins
+   DMS-Verzeichnis nicht**: `validate_links.py` prueft die Bild-URL.
+2. **Repo `orangedeck-dev/dms-plugin` anlegen** (Anwender) und den fertigen
+   Arbeitsbaum pushen: `tools/dms-plugin.sh --repo` hat ihn in
+   `build/dms-plugin-repo` gelegt, mitsamt Commit und den Befehlen zum Push.
+3. **Den PR ins Verzeichnis** schreibt der Anwender, mit der Offenlegung der
+   KI-Anteile. Die Regel dort: *"Say in the PR when a meaningful part of it
+   was AI generated."* Der Eintrag liegt fertig in
+   `packaging/dms-registry/orangedeck-dev-orangedeck.json`.
+4. Danach: **Fedora-Lauf fuer Punkt 9** (das Fenstersymbol, unten Punkt 4)
+   und die Bilder fuer F-Droid.
 
 ### Was heute dazugekommen ist
 
-Neunzehn Commits, dazu der Umzug auf GitHub und Cloudflare.
-
 | Was | Commit | Anstoss |
 |---|---|---|
-| Widget ohne Netz zeigt den letzten Stand mit Uhrzeit | `e5d4ca2` | offene Liste, Punkt 9 |
-| APK 24 statt 57 MB: Bibliotheken gepackt | `4d6992f` | F-Droid-Weg |
-| Eigenes F-Droid-Repo (`tools/fdroid-repo.sh`, `packaging/fdroid/`) | `df4976f` | Anwender |
-| Umzug nach `orangedeck-dev`, Urheber Satoshoe | `856ed66` | Anwender |
-| Fassung 0.2.12 | `2f85a90` | Ablauf |
-| Tipp am Telefon, erster Versuch (wirkte nicht) | `e9e752f` | **Anwender am Galaxy** |
-| Tipp am Telefon, im Emulator gemessen und behoben | `36d5f2e` | Geraetelauf |
-| `fdroid-repo.sh` mit der Git-Identitaet des Hauptrepos | `3f9177e` | eigener Fund |
-| Klick mit der Maus oeffnet den Explorer | `fd48092` | zweiter Linux-Lauf |
-| Bauplan auf `2f85a90`, `e9e752f`, `36d5f2e`, `fd48092` | `5eafe24` `bdce03d` `57009ab` `0878161` | Ablauf |
-| Freigabetext, dann gegen Code und Messung gehalten | `1f557b7` `d7489a0` | Anwender |
-| `fdroid-repo.sh` prueft das APK gegen PRUEFSUMMEN.txt | `266259b` | eigener Fehler |
-| Seite: Download, F-Droid, Obtainium; macOS und Flathub richtiggestellt | `ffa82eb` | Anwender |
-| "Download" statt "Beziehen" | `e35d6f4` | Anwender |
+| Das DMS-Plugin laeuft allein (Erzeuger, `mode: "auto"`, Aufgeben der Daemon-Komponente) | `90ab44a` | Anwender (Plan vom 19.09.) |
+| Eintrag fuer das Verzeichnis, `assets/` im Erzeuger, `set -e`-Falle darin | `97549a3` | Ablauf |
+| Zahlen und Datum in der Sprache der Oberflaeche, Preisachse misst sich richtig | `333202d` | offene Liste, Punkte 7 und 8 |
+| Der Tooltip rechnet die Gebuehrenrate aus seinen eigenen Zahlen | `3533731` | offene Liste, Punkt 6 |
+| Das Fenster traegt sein Symbol selbst, `StartupWMClass` | `3a5c10b` | offene Liste, Punkt 9 |
+| `--repo` fuer den Erzeuger, `docs/BILDER.md` | `354f38b` | Ablauf |
+| `tools/dms-probe.sh`: der Probestand als Werkzeug | (dieser) | Ablauf |
 
-**Die Dateien von 0.2.12** (veroeffentlicht):
+**Was das Plugin jetzt kann.** `tools/dms-plugin.sh` erzeugt ein Verzeichnis
+mit 51 Dateien und 1,2 MB, ohne einen Symlink, und prueft das Ergebnis selbst:
+kein Symlink, jedes `import "...js"` vorhanden, jeder in `plugin.json`
+genannte Bestandteil vorhanden. `FeedState` kennt `mode: "auto"` -- erst den
+Dienst, nach vier Sekunden ohne Antwort den Direktbezug, einmal je Sitzung
+entschieden. Die Daemon-Komponente gibt auf, wenn Unit **und** Programm
+fehlen; der Knopf "eigenes Fenster" verschwindet ohne `orangedeck-window`.
 
-    640d5ac554ed9b6881f15a6a1ecd83f44e573b3be6f2d085ca9ccefd92932372  orangedeck-0.2.12-arm64-v8a.apk (signiert)
-    85c0b8a2e8a8979b9a68a9e06a6f3813f46ac54cd001a4adca41d7f3bc35598a  orangedeck-0.2.12-arm64-v8a-unsigniert.apk
-    4177c15e5f27340f0295c984aa57fac0cd3ccbfe97fc3b250a8d004b9d454d12  orangedeck-0.2.12-windows-x86_64.zip
-    527d11e4f17a8430845850f76ecfbbd4da12e4cc4c29f9a86f662b296bb9635b  orangedeck-0.2.12.flatpak
+**Gemessen** (im Probestand, geschachtelte Sitzung mit frischem HOME):
 
-Drei Runden sind verworfen; ihre Dateien liegen als `...-verworfen-<commit>`
-im Auslieferungsordner, ihre Zeilen auskommentiert in `PRUEFSUMMEN.txt`.
-
-**Was ausserhalb des Repos neu ist** (Einzelheiten in der Erinnerung
-`github-cloudflare-einrichtung`):
-
-- GitHub: persoenliches Konto **`satoshoe-dev`** (vorher 21Rebel),
-  Organisationen **`orangedeck-dev`** (Repos `orangedeck` und `fdroid`) und
-  **`21Rebel`** (leer, haelt den Shop-Namen). Git im Repo lokal:
-  `Satoshoe <info@orangedeck.dev>`, die Adresse ist im Konto bestaetigt.
-- Cloudflare Pages: neues Projekt **`orangedeck-site`** traegt orangedeck.dev.
-  Das alte Projekt `orangedeck` haengt an der Installation von 21Rebel, baut
-  nicht mehr und laesst sich im Dashboard nicht loeschen (zu viele Deployments).
-- DNS: `fdroid` als CNAME auf `orangedeck-dev.github.io` (graue Wolke), dazu
-  die Mail-Eintraege fuer Proton: **`info@orangedeck.dev`** empfaengt.
-- F-Droid: Arbeitsverzeichnis `~/.local/share/orangedeck/fdroid/` mit eigenem
-  Schluessel (Fingerabdruck `06E62F14...91DC4C59`); der Anwender hat ihn im
-  Passwortmanager. `fdroidserver` 2.4.5 ueber pipx, mit `setuptools<81`.
-- Das Signierpasswort ist getauscht (neuer Behaelter, derselbe Schluessel,
-  Zertifikat weiter `b3cc8379...`).
-
-**Gemessen heute:**
-
-- **Galaxy**: Widgets ohne Netz mit "Stand 08:16", nach dem Nachholen wieder
-  grau und mit Namen; zwei Runden, weil die Farbe erst beim zweiten Mal jedes
-  Mal gesetzt wurde. Tipp, zweiter Tipp, Tipp daneben und Doppeltipp im Feed
-  vom Anwender bestaetigt, mit dem ausgelieferten APK.
-- **Windows 11, VM, das ausgelieferte ZIP**: alle Reiter mit Daten, Klick auf
-  eine Kachel oeffnet sie im Explorer, Ziffern, Komma, Widget mit Win+D, Q.
-  Kein neuer Defender-Fund (juengster weiter vom 13.09.).
-- **Ubuntu und Fedora, das ausgelieferte Buendel**: Pruefsummen, Fassung,
-  Quelle `0878161`; Tooltip, Klick in den Explorer, Doppelklick nach dem
-  Vergroessern setzt zurueck; Uhr, Markt, Komma. Mining, Liquidationen und
-  Heatmap am selben Tag an `2f85a90`.
-- **Das F-Droid-Repo** mit dem F-Droid-Client am Galaxy: erkennt Name,
-  Fingerabdruck, "von Satoshoe", den Hinweis auf NonFreeNet, und die
-  installierte 0.2.12 als dieselbe Fassung.
-- **Downloads**: `releases/latest/download/...` liefert alle drei Dateien mit
-  den Pruefsummen oben; alte Links auf `21Rebel/orangedeck` leiten weiter.
+- **Mit Dienst**: Plugin laedt aus der Kopie, Pille mit 78k, Popout mit Block
+  und Halde; `ss` zeigt die Verbindung nach 21021 -- "auto" hat den Dienst
+  gefunden.
+- **Ohne Dienst** (`health=000` waehrend der ganzen Messung): dieselben
+  Ansichten direkt von mempool.space, kein Wallet-Reiter, kein Knopf fuer das
+  eigene Fenster.
+- **Das Aufgeben gezaehlt**: ein Zaehlstueck anstelle von `orangedeck` schrieb
+  in 50 Sekunden **einen** Startversuch mit. Ohne die Aenderung waeren es
+  fuenf gewesen.
+- **Die Preisachse**: gezeichnet 34,0 px, gemessen mit "sans-serif" 35,3 px,
+  gemessen ohne Familie 38,4 px ("DejaVu LGC Sans").
+- **Das Fenstersymbol**: vorher `_NET_WM_ICON: fehlt`, nachher `da, 256 x 256`.
+- **Die Gebuehrenrate**: 222 sats / 111,00 vB = 2,00 und 359 sats / 298,25 vB
+  = 1,20, beide Male die angezeigte Zahl.
 
 ### Die Erkenntnisse des Tages
 
-**Ein Handler, der im Code steht, ist kein Handler, der feuert.** Der
-TapHandler im Kachelfeld bekam weder Finger noch Maus ab -- seit dem 08.09.,
-durch drei Releases, ohne dass es jemand merkte. Der Tooltip beim Ueberfahren
-ging ja, und der Klick sah so selbstverstaendlich aus, dass keine Pruefliste
-nach ihm fragte. Gefunden hat es der Anwender am Telefon ("bleibt nicht
-stehen") und dann der zweite Linux-Lauf fuer die Maus.
+**Zwei Schriften, ein Text -- und eine Messung, die nichts misst.** Die
+Preisachse wird auf der Leinwand mit `Fonts.sansCss()` geschrieben, ihre
+Breite wurde mit einem `Text` **ohne Familie** gemessen, also mit der
+Standardschrift von Qt. Auf diesem Rechner war die Messung breiter als der
+Text und es passte; unter Ubuntu und Fedora fehlte die letzte Ziffer. Wer
+Platz fuer etwas reserviert, muss **dasselbe** messen, das dort stehen wird.
 
-**Zwanzig Minuten messen statt zwei Runden raten.** Die erste Korrektur fuer
-den Tipp habe ich aus dem Lesen des Codes gebaut, der Anwender hat signiert,
-es wirkte nicht. Danach im Emulator mit vier Protokollzeilen: in einer
-Viertelstunde lagen beide Ursachen offen (der TapHandler bekommt nichts,
-`onExited` raeumt hinterher weg). Der Emulator kostet den Anwender keine
-Signatur -- **fuer alles, was sich im Emulator zeigen laesst, zuerst dort.**
+**Eine Zahl, die man nicht nachrechnen kann, ist eine Behauptung.** Im
+Tooltip standen Groesse, Rate und Gebuehr untereinander, und die Rate passte
+zu den anderen beiden nicht: sie kam von mempool.space und rechnet Vorgaenger
+und Sigops mit. Beides ist richtig, nebeneinander ist es falsch. Jetzt steht
+die eigene Rechnung da, und die wirksame Rate kommt als eigene Zeile dazu,
+wenn sie abweicht.
 
-**Eine Notiz ist die Messung eines Tages, kein Gesetz.** Am 08.09. stand im
-Code: `onExited` kommt am Finger nicht. Heute kam es, nur spaeter als alles
-andere. Der Code verlaesst sich jetzt in keiner Richtung darauf.
+**Unter Wayland reicht die app_id, unter X11 nicht.** Das Fenster trug seinen
+Titel, aber kein `_NET_WM_ICON` -- unter Wayland schlaegt der Verwalter die
+app_id in der .desktop-Datei nach, unter X11 und XWayland liest er die
+Eigenschaft am Fenster. Eine VM laeuft leicht in einer X11-Sitzung, und dann
+faellt genau das auf, was hier nie auffallen konnte.
 
-**Ein Test, der den Weg nicht geht, beweist ihn nicht.** Der Lauf vom Mittag
-hat den Explorer ueber den Reiter geoeffnet, nicht ueber eine Kachel -- und
-galt als "Explorer mit Daten". Seitdem nennt der Pruefauftrag die Handlung,
-nicht die Ansicht: Maus auf die Kachel, klicken, TxID vergleichen.
+**Den fremden Fall kann man nicht im eigenen Haus pruefen.** Ein Plugin, das
+"auch ohne alles laeuft", beweist sich nur dort, wo nichts ist: frisches HOME,
+eigenes Laufzeitverzeichnis, eigener Sitzungsbus. Drei Kleinigkeiten
+entscheiden darueber, ob das geht -- `WAYLAND_DISPLAY` als absoluter Pfad, ein
+**kurzes** `XDG_RUNTIME_DIR` (Sockel duerfen keine hundert Zeichen
+ueberschreiten) und `dbus-run-session`. Was sich so nicht herstellen laesst,
+ist die Abwesenheit des Dienstes: Loopback ist geteilt.
 
-**Gleicher Name, gleiche Fassung, gleicher Schluessel -- andere Datei.** Das
-F-Droid-Repo trug zwanzig Minuten lang einen verworfenen Bau. Die Pruefung des
-Zertifikats konnte das nicht sehen; die der Pruefsumme kann es. Massstab ist
-jetzt die gueltige Zeile in `PRUEFSUMMEN.txt`.
+**Ein Waechter laeuft auch dann, wenn man ihn nicht meint.** `systemctl --user
+stop orangedeck` hielt zehn Sekunden: das installierte Plugin des Wirts
+startet die Unit nach. Stilllegen liess es sich ohne eine einzige Datei zu
+verschieben -- `dms ipc call plugins disable orangedeck`, und hinterher
+`enable`.
 
-**Vor dem Antrag die Regeln des Gegenuebers.** Flathub verbietet, dass ein
-Agent den Antrag stellt oder seinen Text schreibt, verlangt die Offenlegung
-der KI-Anteile und Belege fuer echten Gebrauch; #10105 traegt "AI Slop".
-IzzyOnDroid lehnt KI-geschriebene Apps ab. Das DMS-Verzeichnis erlaubt sie
-mit Offenlegung. Der Weg, der ohne fremde Zustimmung geht -- eigenes
-F-Droid-Repo, eigene Seite, Obtainium -- war an einem Nachmittag gebaut.
+**`console.warn` aus QML kommt auf dem Schreibtisch nicht an.** Auf Android
+landet es im logcat, hier in keinem Strom -- der Hinweis im Abschluss vom
+18.09. gilt nur fuer das Telefon. Gemessen wurde stattdessen **ins Bild**:
+`ctx.fillText` mit den Zahlen, ein Bildschirmfoto, danach wieder raus.
 
-**Was Nutzer eintragen, gehoert auf die eigene Domain.** GitHub leitet Repos
-nach einer Umbenennung weiter, GitHub Pages nicht. Deshalb `fdroid.orangedeck.dev`
-statt einer github.io-Adresse, und deshalb eine Organisation statt des
-persoenlichen Kontos. Und: Cloudflare Pages haengt an der Installation der
-GitHub-App; nach dem Umzug des Repos half nur ein neues Projekt, "Disconnect"
-waere eine Einbahnstrasse gewesen.
-
-**Ein frischer Klon nimmt die globale Git-Identitaet.** Darin stand ein
-Klarname. Bemerkt vor dem ersten Push, weil ich den Autor im Index gelesen
-habe; das Skript setzt die Identitaet jetzt ausdruecklich.
-
-**Ein Freigabetext wird gegen Code und Messung gelesen, nicht nur gegen den
-Stil.** Die maschinelle Pruefung fand keine Gedankenstriche -- und liess "for
-hours" (nicht belegt), "23 MB" (MiB neben dezimalen 57 MB) und zwei gleich
-gebaute Absaetze durch. Auf der Seite stand seit Wochen "Windows und macOS,
-derselbe Bau", fuer macOS gibt es kein Paket.
-
-**Vergroessert ist fast alles Kachel.** Der erste Mausklick oeffnete sofort
-den Explorer, und damit kam man aus einer Vergroesserung per Doppelklick nicht
-mehr heraus. Der einfache Klick wartet jetzt die Doppelklick-Zeit ab.
+**Das Verzeichnis von DMS will kein 960x540.** In der Planung stand diese
+Groesse als Vorgabe; `CONTRIBUTING.md` sagt das Gegenteil -- jedes
+Seitenverhaeltnis ist recht, die Karte wird daraus gebaut. Auch hier galt:
+**vor dem Antrag die Regeln des Gegenuebers lesen**, nicht die eigene Notiz
+darueber.
 
 ### Und was ich selbst falsch gemacht habe
 
-- **`rm *.flatpak` im Datenordner der Pruef-VM** loeschte auch die beiden
-  Laufzeiten, nicht nur das alte Buendel. Kopien lagen eine Ebene hoeher.
-- **Das F-Droid-Repo vor der letzten Runde gebaut und danach nicht neu** --
-  zwanzig Minuten lag der verworfene Bau aus `36d5f2e` oeffentlich.
-- **Die erste Tipp-Korrektur ohne Messung gebaut**; der Anwender hat dafuer
-  einmal umsonst signiert.
-- **`pgrep -f`/`pkill -f` mit einem Muster aus der eigenen Befehlszeile** --
-  zweimal die eigene Shell beendet. Der Hinweis `ps -C <name> (nicht pgrep
-  -f)` stand im Abschluss vom 18.09.; ich habe ihn nicht gelesen.
-- **Der Signierbefehl mit relativem Pfad und `VAR=~/...` unter fish**: beides
-  scheitert im Home-Verzeichnis des Anwenders; er musste zweimal ansetzen.
-- **`du -sh "$D"` mit leerem `$D` auf dem Telefon** -- lief ueber das ganze
-  Geraet; dabei landete die Paketliste des Telefons in dieser Sitzung.
-- **In `PRUEFSUMMEN.txt` eine gueltige Zeile mit auskommentiert**, sofort
-  bemerkt und zurueckgenommen.
-- **Zu frueh fotografiert**: ohne Netz, aber mit VPN, scheitert jedes Widget
-  erst nach rund 6 s, und Android arbeitet die zehn nacheinander ab.
-- **In dieser Werkzeug-Shell Befehle in Variablen gelegt** (`$E`, `set -- $t`):
-  sie trennt nicht an Leerzeichen. Zweimal leere Ergebnisse, bevor ich es sah.
+- **`pkill -f` mit einem Muster, das in der Huelle stand, aus der es lief** --
+  und damit genau den Fehler wiederholt, der im Abschluss vom 18.09. steht.
+  Der Probestand beendet sich jetzt ueber seine Prozessgruppe; der Rueckfall
+  fragt `/proc/<pid>/environ`, nicht die Befehlszeile.
+- **`niri msg` in der Probe befragte den Compositor des Wirts**, weil
+  `NIRI_SOCKET` in der Umgebung stand. Die Fensterliste war seine, nicht die
+  der Probe -- und ich habe sie erst fuer die Probe gehalten.
+- **`rm -rf` ueber ein Laufzeitverzeichnis mit Einhaengungen** (gvfs,
+  Dokumenten-Portal): eine Wand aus "Ressource belegt", geraeumt hat es
+  nichts.
+- **`[ -f ... ] && cp` als eigene Zeile unter `set -e`**: fehlt die Datei,
+  endet das Skript dort -- im Erzeuger waeren damit alle Pruefungen am Ende
+  stillschweigend ausgefallen.
+- **Den Dienst des Anwenders gestoppt, ohne den Waechter zu bedenken**; die
+  erste Messung ohne Dienst war deshalb keine.
 
 ### Was sonst noch offen ist
 
-1. **Der Tooltip-Untergrund** kostet Rechenzeit in der Weichzeichnung selbst,
+1. **Die Bilder** (siehe oben und `docs/BILDER.md`): eines fuer das
+   DMS-Verzeichnis, zwei bis drei fuer das README des Plugin-Repos, drei bis
+   fuenf Handybilder fuer den F-Droid-Eintrag.
+2. **Das Plugin-Repo und der PR** ins DMS-Verzeichnis (Anwender).
+3. **Der Tooltip-Untergrund** kostet Rechenzeit in der Weichzeichnung selbst,
    nicht im Nachziehen (18.09. gemessen, Riegel verworfen). Wer sparen will,
    muss an das abgenommene Aussehen.
-2. **Laeden.** Flathub vorerst nicht (siehe Erkenntnisse), IzzyOnDroid gar
-   nicht. **Das eigene F-Droid-Repo laeuft**; jedes Release geht mit
-   `tools/fdroid-repo.sh <v>` und einem Push hinein (Ablauf unten). Offen:
-   **Google Play** entscheidet der Anwender (25 $, Ausweis, 12 Tester ueber 14
-   Tage; Aurora Store kommt dann von selbst). **Google verlangt ab 30.09.2026**
+4. **Punkt 9 unter Fedora bestaetigen.** Das Fenstersymbol ist gesetzt und im
+   Xvfb nachgewiesen; ob es die Leiste dort zeigt -- und ob die Sitzung auf
+   X11 lief --, sagt erst der VM-Lauf.
+5. **Laeden.** Flathub vorerst nicht (KI-Regeln), IzzyOnDroid gar nicht. Das
+   eigene F-Droid-Repo laeuft; jedes Release geht mit `tools/fdroid-repo.sh
+   <v>` und einem Push hinein. Offen: **Google Play** entscheidet der Anwender
+   (25 $, Ausweis, 12 Tester ueber 14 Tage). **Google verlangt ab 30.09.2026**
    in Brasilien, Indonesien, Singapur und Thailand, ab 2027 weltweit, einen
    registrierten Entwickler fuer jede App auf zertifizierten Telefonen, auch
-   ausserhalb von Play. F-Droids Hauptrepo nur, wenn Qt dort aus dem Quelltext
-   gebaut werden soll.
-3. **Windows**: ungeprueft sind 600 MB im Markt, die README-Startzeile in
-   Win+R, Skalierung ueber 100 %, SmartScreen. **macOS**: baut in der CI,
-   nie geprueft, kein Paket; die Seite sagt es jetzt so.
-4. **`bitfeed`**: eine Messung in der Sitzung des Anwenders, `kitten panel
+   ausserhalb von Play.
+6. **Windows**: ungeprueft sind 600 MB im Markt, die README-Startzeile in
+   Win+R, Skalierung ueber 100 %, SmartScreen. **macOS**: baut in der CI, nie
+   geprueft, kein Paket; die Seite sagt es jetzt so.
+7. **`bitfeed`**: eine Messung in der Sitzung des Anwenders, `kitten panel
    --edge=background` unter niri (braucht sein OK), dann Stufe 3 und 4.
-5. **Das DMS-Plugin ins Verzeichnis von DMS** (`AvengeMedia/dms-plugin-registry`).
-   Bewertung vom 19.09.2026: **lohnt sich** -- die Zielgruppe (niri, DMS,
-   Wayland) ist genau die, fuer die OrangeDeck als Widget gedacht ist, und das
-   Verzeichnis erlaubt KI-Anteile, wenn sie offengelegt sind und der
-   Einreicher jede Zeile vertreten kann. **Aber so, wie es liegt, liefe es
-   nicht**: DMS installiert ein Plugin, indem es sein Verzeichnis kopiert.
-   `shell/dms/` bezieht `strings.js` und die geteilten QML-Dateien heute ueber
-   Symlinks aus `tools/install-links.sh`, und `OrangeDeckWidget.qml` ruft
-   `~/.local/bin/orangedeck-window` auf, der Dienst kommt aus einem
-   Repo-Auszug. Noetig vorher:
-   - ein eigenstaendiges Plugin-Verzeichnis mit allen QML-Dateien und
-     `strings.js` (aus dem Repo erzeugt, nicht von Hand kopiert), am besten
-     als eigenes Repo `orangedeck-dev/dms-plugin` mit Tags;
-   - der Dienst als erklaerte Abhaengigkeit (`dependencies`) und ein Weg, ihn
-     ohne Repo-Auszug zu bekommen -- naheliegend aus dem Flatpak;
-   - `id` in camelCase passt (`orangedeck`), aber die Beschreibung in
-     `plugin.json` ist deutsch -- englisch fuer das Verzeichnis;
-   - ein Bild 960x540 im Standard-Thema von DMS, mit echten Daten;
-   - der Eintrag `plugins/<name>.json` mit `category`, `compositors`,
-     `distro`, `repo`, `path`, `screenshot`. Den PR und seine Offenlegung
-     schreibt der Anwender.
-6. **Tooltip und Explorer rechnen die Gebuehrenrate verschieden**: 4,54 gegen
-   4,56 sat/vB fuer dieselbe Transaktion (1000 sat / 219,25 vB = 4,56). Der
-   Tooltip weicht von seinen eigenen Zahlen ab.
-7. **Die Preisachse im Markt** ist am rechten Rand abgeschnitten ("81,95"
-   statt "81,951"), unter Ubuntu und Fedora, schon am 18.09.
-8. **Zahlenformate in der englischen Oberflaeche**: Legende "0,01", Datum
-   "19.09.2026", daneben englische Formate.
-9. **Fedora-Fensterleiste**: das Fenster traegt dort weder Symbol noch Titel.
-10. **F-Droid-Eintrag**: Handy-Bilder fehlen (siehe oben).
-11. **Am Telefon ein zweiter Tipp innerhalb der Doppeltipp-Zeit** auf dieselbe
-    Kachel setzt die Sicht zurueck, statt den Explorer zu oeffnen. So gewollt,
-    aber wer schnell tippt, merkt es. Beobachten.
-12. **Das alte Cloudflare-Projekt `orangedeck`** loescht sich nur ueber die API
-    (alle Deployments zuerst). Schadet nicht, kostet nichts.
-13. **Shopatch** hat ein eigenes GitHub-Konto (Einzelunternehmen, also
-    streng genommen ein zweites). Umwandeln in eine Organisation in Ruhe
-    pruefen, wegen der Shopify-Anbindungen am Login -- Sache des Anwenders.
-14. **Idee fuer spaeter**: Wallet direkt auf dem Telefon.
+8. **Am Telefon ein zweiter Tipp innerhalb der Doppeltipp-Zeit** auf dieselbe
+   Kachel setzt die Sicht zurueck, statt den Explorer zu oeffnen. So gewollt,
+   aber wer schnell tippt, merkt es. Beobachten.
+9. **Das alte Cloudflare-Projekt `orangedeck`** loescht sich nur ueber die API
+   (alle Deployments zuerst). Schadet nicht, kostet nichts.
+10. **Shopatch** hat ein eigenes GitHub-Konto (Einzelunternehmen, also streng
+    genommen ein zweites). Umwandeln in eine Organisation in Ruhe pruefen,
+    wegen der Shopify-Anbindungen am Login -- Sache des Anwenders.
+11. **`setOrganizationDomain("21rebel.dev")`** steht noch in `main.cpp`. Unter
+    Linux steht die Domain nicht im Pfad der Einstellungen
+    (`~/.config/orangedeck/orangedeck.conf`, nachgesehen), unter macOS schon --
+    Aendern wuerde sie dort verschieben. Entscheidung des Anwenders.
+12. **Die naechste Fassung** braucht einen Freigabetext, der die vier
+    Korrekturen nennt (Gebuehrenrate, Preisachse, Zahlenformate,
+    Fenstersymbol). Die ISO-Datumsschreibweise in der englischen Oberflaeche
+    gehoert ebenfalls hinein: sie faellt auf.
+13. **Idee fuer spaeter**: Wallet direkt auf dem Telefon.
 
 ### Fuer den naechsten Lauf
 
@@ -271,10 +202,21 @@ mehr heraus. Der einfache Klick wartet jetzt die Doppelklick-Zeit ab.
       curl -s http://127.0.0.1:21021/state | python3 -c "import sys,json;d=json.load(sys.stdin);print(d['seq'], d['source'], d['mempool']['count'])"
       zweimal im Abstand messen -- steht `seq`, traegt der Draht nichts
       die Wache meldet sich:  journalctl --user -u orangedeck | grep schweigt
+      **Der Waechter im DMS-Plugin startet die Unit binnen 10 s nach.** Wer den
+      Dienst wirklich weg haben will:  dms ipc call plugins disable orangedeck
+      (und hinterher enable), dann erst systemctl --user stop orangedeck
     laeuft ein Prozess:  ps -C <name>  -- NIE pgrep -f / pkill -f mit einem Muster,
       das in der eigenen Befehlszeile steht: das beendet die eigene Shell
     Diese Werkzeug-Shell trennt Variablen nicht: keine Befehle in $VAR legen,
       ANDROID_SERIAL=... exportieren statt "adb -s ..." in einer Variable
+    console.warn aus QML: nur auf Android (logcat "W qml"). Auf dem Schreibtisch
+      kommt es nirgends an -- dort ins Bild messen (ctx.fillText) und wieder raus
+    DMS-Plugin:
+      tools/dms-plugin.sh              erzeugt build/dms-plugin (kopiert, ohne Symlinks)
+      tools/dms-plugin.sh --repo       dasselbe als Git-Arbeitsbaum zum Pushen
+      tools/dms-probe.sh neu|start|popout|bild <datei>|befehl ...|ende
+        geschachteltes niri + dms mit frischem HOME; dort ist das Standard-Thema,
+        Englisch und kein Dienst -- der Ort fuer die Bilder und fuer "laeuft allein"
     Release, in dieser Reihenfolge:
       Fassung an drei Stellen (project(), Manifest samt versionCode, Metainfo)
       tools/apk.sh  ->  ~/Schreibtisch/orangedeck/tools/apk-signieren.sh <v>   (Anwender, absoluter Pfad)
@@ -301,11 +243,12 @@ mehr heraus. Der einfache Klick wartet jetzt die Doppelklick-Zeit ab.
       apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android --key-pass pass:android --out <apk> <unsigniert>
       emulator -avd orangedeck-api30 -no-window -no-audio -no-snapshot -gpu swangle_indirect
       warten: until [ "$(adb -s emulator-5554 shell getprop sys.boot_completed)" = 1 ]
-      console.warn("ODBG ...") in QML landet im logcat unter "W qml"; vor dem Commit wieder raus
       beenden: adb -s emulator-5554 emu kill
-    Maus im Xvfb (Klick, Rad, Doppelklick):
+    Maus im Xvfb (Klick, Rad, Doppelklick, Zeiger fuer den Tooltip):
       Xvfb :97 -screen 0 1400x900x24 & ; DISPLAY=:97 HOME=<eigenes> ./build/orangedeck-app --source direct --id probe
-      DISPLAY=:97 python3 -c 'import sys;sys.path.insert(0,"tools");import xtest; xtest.klick(x,y); xtest.rad(True,6)'
+      DISPLAY=:97 python3 -c 'import sys;sys.path.insert(0,"tools");import xtest; xtest.maus_nach(x,y); xtest.klick(x,y); xtest.rad(True,6)'
+      Bild: DISPLAY=:97 magick import -window root <datei>.png
+      Fenstereigenschaften: w=xtest.fenster_suchen(); w.get_wm_class(); _NET_WM_ICON ueber get_full_property
     Galaxy: tabRotate ist an, die Ansicht wandert alle 30 s; KEYCODE_COMMA (55) oeffnet das Zahnrad
     Netz am Telefon aus/an: adb shell svc wifi disable ; adb shell svc data disable (hinterher enable)
     Widget-Protokoll: adb logcat -d -v time | grep -E ' (I|W)/OrangeDeck'
@@ -334,6 +277,7 @@ Ein Tag je Datei, das Neueste oben. Herausgeloest aus dieser Datei, unveraendert
 
 | Tag | Worum es ging |
 |---|---|
+| [19.09.2026](journal/2026-09-19.md) | 0.2.12 veroeffentlicht, Umzug nach `orangedeck-dev`, eigenes F-Droid-Repo unter fdroid.orangedeck.dev, die Seite verteilt selbst. |
 | [18.09.2026](journal/2026-09-18.md) | 0.2.11 veroeffentlicht, fuenf Punkte der offenen Liste erledigt, die Wache gegen den stummen WebSocket, Android 11 im Emulator. |
 | [17.09.2026](journal/2026-09-17.md) | 0.2.11 gebaut und signiert, die Widgets haben die Nacht bestanden, dieselbe Transaktion stand doppelt im Mempool-Protokoll, Windows lief mit Daten. |
 | [16.09.2026](journal/2026-09-16.md) | 0.2.10 veroeffentlicht, acht Aenderungen fuer 0.2.11 auf main, Widgets im Doze nachgestellt, OKX reicht nur 24 Stunden zurueck. |

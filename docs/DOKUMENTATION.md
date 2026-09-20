@@ -4444,6 +4444,9 @@ sieht `OrangeDeckWidget` einmal beim Start mit `test -x` nach, ob es
 
 ### Der Probestand: eine geschachtelte Sitzung
 
+**Fertig als `tools/dms-probe.sh`** (`neu`, `start`, `popout`, `bild`,
+`befehl`, `ende`). Was darin steckt und warum, steht hier.
+
 Geprueft wurde nicht am laufenden System, sondern in einer zweiten, vollstaendig
 eigenen Sitzung -- **frisches HOME**, damit es weder Unit noch `~/.local/bin`
 noch eine Zustandsdatei gibt:
@@ -4463,6 +4466,16 @@ Drei Dinge daran sind noetig, sonst laeuft es nicht:
   auf gut hundert Zeichen begrenzt.
 - **`dbus-run-session`.** Eigener Sitzungsbus, sonst streiten sich zwei DMS um
   `org.freedesktop.Notifications`.
+
+Beendet wird sie ueber die **Prozessgruppe** (`setsid` beim Start, die
+Kennung in einer Datei), nicht ueber ein Muster: `pkill -f "dbus-run-session
+-- niri -- dms run"` traf am 20.09.2026 nichts, weil der Elternprozess da
+schon weg war und das geschachtelte niri unter eigener Befehlszeile lief --
+und der naechste Versuch mit einem weiteren Muster beendete die Huelle, aus
+der er aufgerufen wurde. Der Rueckfall fragt darum die Umgebung der Prozesse
+(`XDG_RUNTIME_DIR` im `/proc/<pid>/environ`), nicht ihre Befehlszeile. Und das
+Laufzeitverzeichnis bleibt stehen: darin haengen Einhaengungen (gvfs,
+Dokumenten-Portal), ueber die ein `rm -rf` nur klagt.
 
 Eingeschaltet wird das Plugin ueber `plugin_settings.json`
 (`{"orangedeck":{"enabled":true}}`), sichtbar ueber `settings.json`

@@ -54,15 +54,20 @@ watch-only-Adressen, Miner aus dem eigenen Netz.
 ## Wie aufnehmen
 
 **Fuer A und B: der Probestand**, nicht die eigene Shell -- dort ist das
-Standard-Thema, eine leere Leiste und keine eigenen Daten. Aufgebaut wird er
-nach dem Abschnitt "Der Probestand" in `DOKUMENTATION.md`:
+Standard-Thema, eine leere Leiste, Englisch und keine eigenen Daten:
 
-    bash <probe>/probe-start.sh &                      # niri + dms, eigenes HOME
-    bash <probe>/pe.sh dms ipc call widget toggle orangedeck
-    bash <probe>/pe.sh grim <bild>.png
+    tools/dms-probe.sh neu        # Plugin erzeugen, frisches HOME anlegen
+    tools/dms-probe.sh start      # geschachtelte Sitzung, Fenster auf dem Schirm
+    tools/dms-probe.sh popout     # Popout auf
+    tools/dms-probe.sh bild ~/bild.png
+    tools/dms-probe.sh ende
 
-Sprache dort im Popout unter *Settings*; die eigene Einstellung bleibt
-unberuehrt, weil das HOME ein anderes ist.
+Die eigene Sitzung bleibt dabei unberuehrt. Das Fenster laesst sich wie jedes
+andere bedienen -- Reiter wechseln, Einstellungen oeffnen, Ansicht waehlen.
+
+**Fuer B muss das Desktop-Widget von Hand hingelegt werden**: der Eintrag in
+`settings.json` legt die Instanz an, ihre Lage und Groesse bestimmt man im
+Probestand selbst (Kontrollzentrum, Desktop-Widgets).
 
 **Fuer C: das Galaxy.**
 
