@@ -325,6 +325,14 @@ def main():
     print("Linux und Flatpak:")
     meister = "app/icons/dev.orangedeck.OrangeDeck.svg"
     schreiben(meister, svg_voll(), tun)
+    # **Dasselbe Zeichen noch einmal als PNG, und zwar in der Anwendung.**
+    # Unter Wayland findet der Fensterverwalter das Symbol ueber die app_id
+    # und die .desktop-Datei; unter X11 und XWayland nicht -- dort traegt das
+    # Fenster sein Symbol selbst, in `_NET_WM_ICON`. Ohne diese Datei setzt
+    # `main.cpp` nichts, und die Fensterleiste zeigt einen leeren Platzhalter
+    # (Fedora, 18.09.2026). 256 px reicht: mehr zeigt keine Leiste, und die
+    # Datei liegt in den Ressourcen der Anwendung.
+    rendern(meister, "app/icons/dev.orangedeck.OrangeDeck-256.png", 256, tun)
 
     print("Android:")
     schreiben("android/res/drawable/ic_launcher_vordergrund.xml",

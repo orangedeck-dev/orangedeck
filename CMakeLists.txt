@@ -123,6 +123,16 @@ qt_add_qml_module(orangedeck-app
     QML_FILES app/qml/Main.qml ${SHARED_QML}
 )
 
+# **Das Fenstersymbol gehoert in die Anwendung.** Unter Wayland reicht die
+# app_id samt .desktop-Datei; unter X11 und XWayland traegt das Fenster sein
+# Symbol selbst (`_NET_WM_ICON`), und ohne dieses Bild bleibt es leer --
+# gemessen am 20.09.2026 im Xvfb. Erzeugt wird es von tools/symbole.py aus
+# demselben SVG wie alle anderen Symbole.
+qt_add_resources(orangedeck-app "symbol"
+    PREFIX "/"
+    FILES app/icons/dev.orangedeck.OrangeDeck-256.png
+)
+
 # **Ohne das gibt es auf Windows ein Konsolenfenster neben der Anwendung und
 # auf macOS gar kein .app-Buendel** -- dann laesst sie sich dort weder
 # doppelklicken noch mit `macdeployqt` packen. Unter Linux und Android sind

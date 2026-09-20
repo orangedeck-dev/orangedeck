@@ -6,3 +6,7 @@ Exec=orangedeck-app
 Icon=dev.orangedeck.OrangeDeck
 Terminal=false
 Categories=Network;Monitor;
+# Unter X11 und XWayland findet der Fensterverwalter den Eintrag nur
+# ueber WM_CLASS. Qt setzt dort ('orangedeck-app', 'orangedeck') --
+# Instanz und Klasse; verglichen wird die Klasse.
+StartupWMClass=orangedeck

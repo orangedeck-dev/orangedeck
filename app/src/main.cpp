@@ -9,6 +9,7 @@
 // niri, sway, Hyprland, river, labwc. Ohne die Bibliothek
 // (`layer-shell-qt`, Qt6) baut alles wie zuvor, nur `--layer` fehlt dann.
 #include <QGuiApplication>
+#include <QIcon>
 #include <QCommandLineParser>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
@@ -243,6 +244,13 @@ int main(int argc, char *argv[])
     // .desktop-Datei anders heisst. Der Unterstrich gehoert dazu -- ein
     // Segment einer solchen Kennung darf nicht mit einer Ziffer beginnen.
     app.setDesktopFileName(QStringLiteral("dev.orangedeck.OrangeDeck"));
+    // **Und das Symbol dazu.** Die Zeile darueber genuegt unter Wayland: der
+    // Verwalter schlaegt die app_id in der .desktop-Datei nach. Unter X11 und
+    // XWayland tut er das nicht -- dort liest er `_NET_WM_ICON` am Fenster,
+    // und das ist leer, solange niemand es setzt. Genau so stand das Fenster
+    // unter Fedora ohne Symbol in der Leiste (18.09.2026); im Xvfb
+    // nachgemessen: die Eigenschaft fehlte ganz.
+    app.setWindowIcon(QIcon(QStringLiteral(":/app/icons/dev.orangedeck.OrangeDeck-256.png")));
 
     QCommandLineParser p;
     p.setApplicationDescription(QStringLiteral(
