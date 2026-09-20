@@ -27,16 +27,13 @@ PluginComponent {
     property string windowCommand: Quickshell.env("HOME") + "/.local/bin/orangedeck-window"
     readonly property string pid: "orangedeck"
 
+    // **Durch dieselbe Schreibweise wie jede andere Zahl.** Hier stand die
+    // Trennung mit dem Punkt fest verdrahtet, waehrend `ui/qml` sie laengst
+    // ueber `Tr.group` nach der Sprache setzt: in der englischen Oberflaeche
+    // las die Kopfzeile des Popouts "78.324 transactions in the mempool".
+    // Am 20.09.2026 auf den Bildern fuer das DMS-Verzeichnis gesehen.
     function grp(n) {
-        if (!n)
-            return "–";
-        var s = String(Math.round(n)), out = "", c = 0;
-        for (var i = s.length - 1; i >= 0; i--) {
-            out = s[i] + out;
-            if (++c % 3 === 0 && i > 0)
-                out = "." + out;
-        }
-        return out;
+        return Tr.group(n, root.lang);
     }
 
     function shortCount(n) {

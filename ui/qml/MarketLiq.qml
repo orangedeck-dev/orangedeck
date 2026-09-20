@@ -49,7 +49,7 @@ Item {
     }
 
     function seitText() {
-        var f = "dd.MM.yyyy HH:mm";
+        var f = Tr.datum(root.lang) + " HH:mm";
         var s = Qt.formatDateTime(new Date(root.seit * 1000), f);
         if (root.bybitSeit > root.seit + 600)
             s += " (OKX), " + Qt.formatDateTime(new Date(root.bybitSeit * 1000), f) + " (Bybit)";

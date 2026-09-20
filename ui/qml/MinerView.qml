@@ -808,7 +808,7 @@ Item {
 
                         Text {
                             text: sbRow.modelData.time
-                                ? Qt.formatDate(new Date(sbRow.modelData.time * 1000), "dd.MM.yyyy")
+                                ? Qt.formatDate(new Date(sbRow.modelData.time * 1000), Tr.datum(root.lang))
                                 : ""
                             color: root.dimColor
                             font.pixelSize: root.scaleUnit * 0.58

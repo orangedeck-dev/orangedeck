@@ -931,6 +931,52 @@ function decimal(lang) {
     return (lang === "en" || lang === "ja" || lang === "zh") ? "." : ",";
 }
 
+// Datumsformate, nach derselben Ueberlegung wie `sep()`: "03.04.2026" ist in
+// den USA der 4. Maerz und in Grossbritannien der 3. April. Englisch bekommt
+// deshalb ISO (`yyyy-MM-dd`) -- die einzige Schreibweise, die in beiden
+// dasselbe heisst, und mit zehn Zeichen genauso breit wie `dd.MM.yyyy`, was
+// fuer die Achsenbeschriftungen zaehlt. Japanisch und Chinesisch fangen mit
+// dem Jahr an, die romanischen Sprachen trennen mit Schraegstrich,
+// Niederlaendisch mit Bindestrich.
+//
+// Vier Formen, weil die Ansichten sie alle brauchen: voll, ohne Jahr (die
+// Achse einer Woche), mit kurzem Jahr (die Achse eines Jahres) und nur Monat
+// mit Jahr (die Achse von Jahren).
+var DATUM = {
+    "en":    ["yyyy-MM-dd", "MM-dd", "yy-MM-dd", "yyyy-MM"],
+    "ja":    ["yyyy/MM/dd", "MM/dd", "yy/MM/dd", "yyyy/MM"],
+    "zh":    ["yyyy/MM/dd", "MM/dd", "yy/MM/dd", "yyyy/MM"],
+    "es":    ["dd/MM/yyyy", "dd/MM", "dd/MM/yy", "MM/yyyy"],
+    "fr":    ["dd/MM/yyyy", "dd/MM", "dd/MM/yy", "MM/yyyy"],
+    "it":    ["dd/MM/yyyy", "dd/MM", "dd/MM/yy", "MM/yyyy"],
+    "pt-pt": ["dd/MM/yyyy", "dd/MM", "dd/MM/yy", "MM/yyyy"],
+    "pt-br": ["dd/MM/yyyy", "dd/MM", "dd/MM/yy", "MM/yyyy"],
+    "nl":    ["dd-MM-yyyy", "dd-MM", "dd-MM-yy", "MM-yyyy"]
+};
+
+// Vorgabe ist die deutsche Reihe -- sie gilt auch fuer Russisch, Polnisch und
+// Tschechisch, die ebenfalls mit Punkten schreiben.
+function __datum(lang, i) {
+    var r = DATUM[lang];
+    return r ? r[i] : ["dd.MM.yyyy", "dd.MM.", "dd.MM.yy", "MM.yyyy"][i];
+}
+
+function datum(lang) {
+    return __datum(lang, 0);
+}
+
+function datumOhneJahr(lang) {
+    return __datum(lang, 1);
+}
+
+function datumKurzesJahr(lang) {
+    return __datum(lang, 2);
+}
+
+function monatJahr(lang) {
+    return __datum(lang, 3);
+}
+
 function group(n, lang) {
     if (n === undefined || n === null || isNaN(n))
         return "–";

@@ -130,7 +130,7 @@ Item {
         if (!ts)
             return "";
         var d = new Date(ts * 1000);
-        return Qt.formatDateTime(d, "dd.MM.yyyy  HH:mm");
+        return Qt.formatDateTime(d, Tr.datum(root.lang) + "  HH:mm");
     }
 
     function fiat(sats) {
@@ -400,7 +400,19 @@ Item {
         }
 
         Repeater {
-            model: root.sizeMode === "vbytes" ? ["< 256", "< 1.024", "< 2.304", "< 4.096", "< 6.400"] : ["< " + root.btcZeichen + " 0,01", "< " + root.btcZeichen + " 0,1", "< " + root.btcZeichen + " 1", "< " + root.btcZeichen + " 10", "< " + root.btcZeichen + " 100"]
+            // **Die Zahlen der Legende gehen durch dieselbe Schreibweise wie
+            // jede andere Zahl.** Vorher standen sie hier als Text: in der
+            // englischen Oberflaeche las man "< 1.024" (tausendvierundzwanzig
+            // oder eins Komma null?) und "< 0,01" neben lauter englischen
+            // Formaten. Am 19.09.2026 auf den Bildern fuer F-Droid gesehen.
+            model: root.sizeMode === "vbytes"
+                ? [256, 1024, 2304, 4096, 6400].map(function (n) {
+                    return "< " + Tr.group(n, root.lang);
+                })
+                : [0.01, 0.1, 1, 10, 100].map(function (n) {
+                    return "< " + root.btcZeichen + " "
+                         + Tr.fixed(n, n < 1 ? (n < 0.1 ? 2 : 1) : 0, root.lang);
+                })
 
             Row {
                 spacing: 6

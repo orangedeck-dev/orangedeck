@@ -327,6 +327,10 @@ Item {
 
         visible: false
         text: Tr.price1(root.maxWert || 88888, root.zeichen, root.lang)
+        // Dieselbe Schrift wie auf der Leinwand -- siehe MarketView.qml:
+        // gemessen mit der Standardschrift, gezeichnet mit `Fonts.sansCss()`,
+        // und unter Ubuntu und Fedora ist das nicht dieselbe.
+        font.family: Fonts.sans()
         font.pixelSize: root.baseFont - 2
     }
 
@@ -351,7 +355,7 @@ Item {
     function datum(ts) {
         var d = new Date(ts * 1000);
         // Im Tagesverlauf sagt ein Datum nichts -- dort zaehlt die Uhrzeit
-        return Qt.formatDateTime(d, root.span === "24h" ? "HH:mm" : "dd.MM.yyyy");
+        return Qt.formatDateTime(d, root.span === "24h" ? "HH:mm" : Tr.datum(root.lang));
     }
 
     // ------------------------------------------------- Ablesen am Zeiger
@@ -412,7 +416,8 @@ Item {
         Text {
             text: root.punkte[root.zeigerIndex]
                   ? Qt.formatDateTime(new Date(root.punkte[root.zeigerIndex][0] * 1000),
-                                      root.span === "24h" ? "dd.MM. HH:mm" : "dd.MM.yyyy")
+                                      root.span === "24h" ? Tr.datumOhneJahr(root.lang) + " HH:mm"
+                                                          : Tr.datum(root.lang))
                   : ""
             color: root.dimColor
             font.pixelSize: root.baseFont - 2

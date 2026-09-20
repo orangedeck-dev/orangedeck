@@ -409,6 +409,8 @@ Item {
 
         visible: false
         text: Tr.big(root.maxWert || 888e18, root.lang, "H/s")
+        // Dieselbe Schrift wie auf der Leinwand, siehe MarketView.qml.
+        font.family: Fonts.sans()
         font.pixelSize: root.baseFont - 2
     }
 
@@ -417,6 +419,7 @@ Item {
 
         visible: false
         text: Tr.big((root.maxWert || 888e18) / root.faktor, root.lang)
+        font.family: Fonts.sans()
         font.pixelSize: root.baseFont - 2
     }
 
@@ -467,7 +470,7 @@ Item {
     }
 
     function datum(ts) {
-        return ts ? Qt.formatDateTime(new Date(ts * 1000), "dd.MM.yyyy") : "";
+        return ts ? Qt.formatDateTime(new Date(ts * 1000), Tr.datum(root.lang)) : "";
     }
 
     // Die Schwierigkeit, die zu einem Zeitpunkt galt

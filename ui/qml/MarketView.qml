@@ -461,7 +461,7 @@ Item {
     // **Einmal gerechnet, dreifach benutzt**: von der Leinwand, vom Fadenkreuz
     // und vom Ablesen am Zeiger. Lag die Rechnung im Zeichenblock, rechnete
     // das Fadenkreuz zwangslaeufig ein zweites Mal -- und irgendwann anders.
-    readonly property real padR: mass.implicitWidth + 8
+    readonly property real padR: mass.implicitWidth + 10
     readonly property real padB: root.baseFont * 1.4
     // **Kein Band, solange das Bild in der Vergangenheit steht.** Das Band ist
     // live; neben Kerzen von vor einem halben Jahr stuenden dort Preise von
@@ -886,8 +886,8 @@ Item {
             // braucht keine neue Uebersetzung.
             anzeige: (root.range === "custom" && !root.platzUmschalter)
                      ? ((root.vonZeit && root.bisZeit)
-                        ? Qt.formatDateTime(new Date(root.vonZeit * 1000), "dd.MM.")
-                          + "–" + Qt.formatDateTime(new Date(root.bisZeit * 1000), "dd.MM.")
+                        ? Qt.formatDateTime(new Date(root.vonZeit * 1000), Tr.datumOhneJahr(root.lang))
+                          + "–" + Qt.formatDateTime(new Date(root.bisZeit * 1000), Tr.datumOhneJahr(root.lang))
                         : root.eigenText(root.customSecs))
                      : ""
             uiFont: root.baseFont
@@ -934,8 +934,8 @@ Item {
             font.pixelSize: root.baseFont
             selectByMouse: true
             text: (root.vonZeit && root.bisZeit)
-                  ? Qt.formatDateTime(new Date(root.vonZeit * 1000), "dd.MM.yyyy")
-                    + ".." + Qt.formatDateTime(new Date(root.bisZeit * 1000), "dd.MM.yyyy")
+                  ? Qt.formatDateTime(new Date(root.vonZeit * 1000), Tr.datum(root.lang))
+                    + ".." + Qt.formatDateTime(new Date(root.bisZeit * 1000), Tr.datum(root.lang))
                   : root.eigenText(root.customSecs)
             onAccepted: {
                 // Zwei Punkte trennen ein ausdrueckliches Fenster:
@@ -1365,15 +1365,15 @@ Item {
         if (sek <= 86400 * 2)
             return Qt.formatDateTime(new Date(ts * 1000), "HH:mm");
         if (sek <= 86400 * 400)
-            return Qt.formatDateTime(new Date(ts * 1000), "dd.MM.yy");
-        return Qt.formatDateTime(new Date(ts * 1000), "MM.yyyy");
+            return Qt.formatDateTime(new Date(ts * 1000), Tr.datumKurzesJahr(root.lang));
+        return Qt.formatDateTime(new Date(ts * 1000), Tr.monatJahr(root.lang));
     }
 
     // In der Ablesezeile ist Platz -- dort steht das volle Datum mit Uhrzeit.
     function zeitpunkt(ts) {
         return Qt.formatDateTime(new Date(ts * 1000),
-                                 root.gezeigteSekunden <= 86400 * 2 ? "dd.MM.yyyy  HH:mm"
-                                                                   : "dd.MM.yyyy");
+                                 root.gezeigteSekunden <= 86400 * 2
+                                 ? Tr.datum(root.lang) + "  HH:mm" : Tr.datum(root.lang));
     }
 
     // **Das Ablesen steht in einer eigenen Zeile.** In der Kopfzeile wuchs es
@@ -1664,12 +1664,23 @@ Item {
         baseFont: root.baseFont
     }
 
-    // Nur zum Messen der Preisachse
+    // Nur zum Messen der Preisachse.
+    //
+    // **Es muss dieselbe Schrift sein wie die, die zeichnet.** Die Achse wird
+    // auf der Leinwand mit `Fonts.sansCss()` geschrieben, gemessen wurde hier
+    // mit der Standardschrift von Qt -- unter Linux loest fontconfig
+    // "sans-serif" auf die eingestellte Schrift auf, und das muss nicht
+    // dieselbe sein. Auf diesem Rechner passte es, unter Ubuntu und Fedora
+    // fehlte die letzte Ziffer ("81.95" statt "81.951", 18.09.2026): der Text
+    // stand an `breiteGesamt + 6`, und `padR` war fuer die breitere Schrift
+    // zu knapp. Gezeichnet wird ab `+6`, der Abstand hier ist `+10` -- vier
+    // Bildpunkte Luft, damit eine Rundung im Kantenglaetten nichts abschneidet.
     Text {
         id: mass
 
         visible: false
         text: Tr.group(root.hoch || 88888, root.lang)
+        font.family: Fonts.sans()
         font.pixelSize: root.baseFont - 2
     }
 
