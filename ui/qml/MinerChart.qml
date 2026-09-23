@@ -1,17 +1,13 @@
-// Verlauf eines Miners: Hashrate und Temperatur uebereinander, wie in der
-// Weboberflaeche von AxeOS. Zwei Achsen, weil die Groessen nichts miteinander
-// zu tun haben.
+// History of one miner: hashrate and temperature stacked, as in the AxeOS
+// web UI. Two axes, because the two values are unrelated.
 //
-// Die Daten schreibt der Daemon oder `DirectMiner` mit. Zeichnet das Geraet
-// selbst auf (AxeOS mit `statsFrequency`), kommt der Verlauf von dort, und
-// die Punkte liegen dann eine Minute auseinander statt fuenf Sekunden.
+// The data is recorded by the daemon or `DirectMiner`. If the device
+// records history itself (AxeOS with `statsFrequency`), it comes from
+// there, and the points are one minute apart instead of five seconds.
 //
-// **Die Zeitachse folgt den Zeitstempeln, nicht der Zahl der Punkte.** Bis
-// zum 10.09.2026 lag jeder Punkt gleich weit vom naechsten, und die
-// Beschriftung rechnete "Punkte mal fuenf Sekunden". Mit dem Verlauf aus dem
-// Geraet stimmt beides nicht mehr: zwoelf Stunden in Minutenschritten und
-// die letzten Minuten in Fuenfsekundenschritten, gleichmaessig verteilt,
-// haetten die letzten Minuten auf die halbe Breite gezogen.
+// The time axis follows the timestamps, not the number of points. Device
+// history in minute steps followed by recent data in five-second steps,
+// spread evenly, would stretch the last few minutes over half the width.
 import QtQuick
 import "strings.js" as Tr
 import "fonts.js" as Fonts
@@ -27,11 +23,11 @@ Item {
     property color gridColor: Qt.rgba(1, 1, 1, 0.07)
     property color dimColor: "#9a94a6"
     property real labelSize: 9
-    // Ab hier in TH/s statt GH/s. Bewusst etwas ueber 1000, damit die Einheit
-    // nicht bei jedem Ausschlag um die Marke herum hin und her springt.
+    // Switch to TH/s above this. Deliberately a bit above 1000 so the unit
+    // does not flip back and forth when the value hovers around the mark.
     property real teraFrom: 1025
 
-    // Der Verlauf liegt in GH/s vor.
+    // History is stored in GH/s.
     function fmtRate(gh, withUnit) {
         if (gh >= root.teraFrom)
             return Tr.fixed(gh / 1000, 2, root.lang) + (withUnit ? " TH/s" : "");
@@ -62,8 +58,8 @@ Item {
             if (w <= 0 || h <= 0)
                 return;
 
-            // Waagerecht nach der Zeit, wenn es fuer jeden Punkt eine gibt;
-            // sonst (Verlauf ohne Zeitstempel) wie bisher nach der Reihenfolge.
+            // Horizontal position by time when every point has one; otherwise
+            // (history without timestamps) by index.
             var zt = root.zeit;
             var nachZeit = zt.length === s.length && zt[zt.length - 1] > zt[0];
             function xAt(i, n) {
@@ -72,7 +68,7 @@ Item {
                 return padL + w * i / Math.max(1, n - 1);
             }
 
-            // Waagerechte Hilfslinien
+            // Horizontal grid lines
             ctx.strokeStyle = root.gridColor;
             ctx.lineWidth = 1;
             for (var g = 0; g <= 3; g++) {
@@ -83,8 +79,7 @@ Item {
                 ctx.stroke();
             }
 
-            // Beide Hashraten teilen sich eine Achse, sonst waere der
-            // Vergleich sinnlos.
+            // Both hashrates share one axis, otherwise comparing them is meaningless.
             function rangeOf(lists) {
                 var lo = null, hi = null;
                 for (var a = 0; a < lists.length; a++) {
@@ -136,7 +131,7 @@ Item {
                     lo = Math.min(lo, pts[j][1]);
                     hi = Math.max(hi, pts[j][1]);
                 }
-                // Etwas Luft, damit die Kurve nicht am Rand klebt
+                // Some headroom so the curve does not stick to the edge
                 var span = Math.max(hi - lo, Math.abs(hi) * 0.02, 0.1);
                 lo -= span * 0.15;
                 hi += span * 0.15;
@@ -154,20 +149,17 @@ Item {
 
             var tRange = draw(root.temp, root.tempColor, 1.2);
 
-            // **Nur der Momentanwert.** Bis zum 09.09.2026 lag der
-            // Zehnminutenwert (`hr`, aus `hashRate_10m`) kraeftig darueber --
-            // so zeigt es die Weboberflaeche des Geraets auch. Im Betrieb ist
-            // er aber fast immer eine Waagerechte: er ist geglaettet, und ein
-            // Miner, der laeuft, laeuft gleichmaessig. Eine Linie, die sich
-            // nicht bewegt, sagt nichts und nimmt der zweiten die Achse weg --
-            // dazu stand derselbe Wert ohnehin als Zahl daneben.
+            // Instantaneous value only. The ten-minute value (`hr`, from
+            // `hashRate_10m`) is what the device web UI shows, but in operation it is
+            // almost always flat: it is smoothed, and a running miner runs steadily.
+            // A line that does not move says nothing and takes the axis away from the
+            // other one, and the same value is shown as a number next to it anyway.
             //
-            // **Aber nicht ersatzlos:** `hrNow` kommt aus `hashRate` und wird
-            // nur im AxeOS-Pfad gesetzt. Ein Miner an der cgminer-Schnittstelle
-            // meldet ihn nicht (`daemon/orangedeck`, "cgminer meldet MH/s"),
-            // dort ist `hrNow` durchgehend null. Waere hier nur noch `hrNow`
-            // gezeichnet, bliebe deren Graph leer. Also: den Momentanwert,
-            // wenn es ihn gibt, sonst den geglaetteten.
+            // With a fallback though: `hrNow` comes from `hashRate` and is only set
+            // on the AxeOS path. A miner on the cgminer interface does not report it
+            // (see the cgminer MH/s handling in `daemon/orangedeck`), so `hrNow` is
+            // null throughout and its chart would stay empty. So: the instantaneous
+            // value if there is one, otherwise the smoothed one.
             var hatNow = false;
             for (var q = 0; q < root.hrNow.length; q++) {
                 if (root.hrNow[q] !== null && root.hrNow[q] !== undefined) {
@@ -176,20 +168,18 @@ Item {
                 }
             }
             //
-            // **Und nur ueber kurze Zeit.** Seit der Verlauf aus dem Geraet
-            // kommt (10.09.2026), reicht er zwoelf Stunden zurueck, und dort
-            // ist es umgekehrt: 720 Momentanwerte sind ein Band aus Rauschen,
-            // das den Gang des Tages verdeckt, waehrend der Zehnminutenwert
-            // genau diesen Gang zeigt. Die Grenze ist eine Stunde -- darunter
-            // ist der geglaettete Wert eine Waagerechte, darueber der
-            // Momentanwert ein Band.
+            // And only over short spans. Device history reaches back twelve hours,
+            // and there it is the other way round: 720 instantaneous values are a
+            // band of noise that hides the daily trend, while the ten-minute value
+            // shows exactly that trend. The threshold is one hour: below it the
+            // smoothed value is flat, above it the instantaneous value is a band.
             var sekSpanne = nachZeit ? zt[zt.length - 1] - zt[0] : s.length * 5;
             var kurve = hatNow && sekSpanne < 3600 ? root.hrNow : s;
             var hRange = rangeOf([kurve]);
             drawIn(kurve, hRange, root.lineColor, 2.0, 1.0);
 
-            // Beschriftung **in der Farbe der jeweiligen Kurve** -- sonst ist
-            // nicht zu erkennen, welche Achse zu welcher Linie gehoert.
+            // Labels in the color of their curve, otherwise you cannot tell which
+            // axis belongs to which line.
             ctx.font = root.labelSize + "px " + Fonts.sansCss();
             if (hRange) {
                 ctx.fillStyle = root.lineColor;

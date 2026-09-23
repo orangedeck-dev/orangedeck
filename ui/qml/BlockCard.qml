@@ -1,13 +1,11 @@
-// Eine Blockkachel -- fuer geplante wie fuer bestaetigte Bloecke dieselbe.
+// A block tile, the same for projected and confirmed blocks.
 //
-// Frueher lag hinter der Kachel eine dunkle Rueckflaeche, die rechts und unten
-// hervorschaute und Tiefe vortaeuschte. Sie ist am 02.09.2026 herausgeflogen:
-// der Block ist ein Datensatz und kein Gegenstand, und in einer Reihe
-// nebeneinander wirkte der Schlagschatten wie Schmutz zwischen den Kacheln.
-// Geblieben ist der Glanz -- helle Kante oben, dunkle unten, ein schraeger
-// Lichtstreifen darueber. Das genuegt fuer den Glaseindruck.
+// No drop shadow or back plate: a block is a record, not an object, and
+// in a row a shadow looks like dirt between the tiles. The gloss is
+// enough for the glass look: light edge at the top, dark at the bottom,
+// a diagonal light streak across.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 
 pragma ComponentBehavior: Bound
@@ -19,13 +17,13 @@ Item {
     property bool highlighted: false
     property bool hovered: false
     property real cornerRadius: 4
-    // Die Vorderflaeche -- Inhalte werden hier hineingehaengt
+    // The front face; content is parented here
     default property alias content: face.data
 
     readonly property color base: hovered ? Qt.lighter(tone, 1.2)
                                           : (highlighted ? Qt.lighter(tone, 1.08) : tone)
 
-    // --- Flaeche ---------------------------------------------------------
+    // --- Face -------------------------------------------------------------
     Rectangle {
         id: face
 
@@ -56,9 +54,9 @@ Item {
         }
     }
 
-    // --- Glanz: die obere Haelfte aufhellen, schraeg auslaufend ----------
-    // Das ist der eigentliche Glaseindruck. `clip` haelt ihn in der
-    // abgerundeten Form; ohne das steht er ueber die Ecken hinaus.
+    // --- Gloss: brighten the upper half, fading out diagonally ------------
+    // This is what makes it look like glass. `clip` keeps it inside the
+    // rounded shape; without it the gloss sticks out over the corners.
     Item {
         anchors.fill: face
         clip: true
@@ -86,7 +84,7 @@ Item {
         }
     }
 
-    // --- Kanten: oben hell, unten dunkel ---------------------------------
+    // --- Edges: light at the top, dark at the bottom ----------------------
     Rectangle {
         anchors.fill: face
         radius: root.cornerRadius

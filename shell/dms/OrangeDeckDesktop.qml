@@ -1,16 +1,13 @@
-// Desktop-Widget: **jede Ansicht**, frei platzier- und skalierbar.
+// Desktop widget: any view, freely placed and scaled.
 //
-// DMS legt jede Instanz eines Desktop-Widgets getrennt ab und reicht dem
-// Bauteil einen instanzbezogenen `pluginService` durch (siehe
-// DesktopPluginWrapper: `instanceScopedPluginService`). `loadPluginData` ist
-// hier also **je Instanz** -- man kann denselben Feed dreimal aufs Desktop
-// legen, einmal als Halde, einmal als Uhr, einmal als Miner.
+// DMS stores each instance of a desktop widget separately and passes the
+// component an instance-scoped `pluginService` (see DesktopPluginWrapper:
+// `instanceScopedPluginService`). So `loadPluginData` is per instance here:
+// the same feed can sit on the desktop three times, as pile, clock and miner.
 //
-// Gezeigt wird eine einzige Ansicht ohne Reiterzeile, gebaut wird sie aber aus
-// demselben `FeedTabs` wie Dashboard und Popout (`tabsVisible: false`). Vorher
-// standen die vier Ansichten hier ein zweites Mal verdrahtet -- und bekamen
-// ihre Feineinstellungen nicht: die Uhr ohne Auswahl der Werte, der
-// Miner ohne Kurve und Tafel, der Explorer ohne Startseite.
+// It shows a single view without the tab bar, but builds it from the same
+// `FeedTabs` as dashboard and popout (`tabsVisible: false`), so every view
+// gets its full set of options.
 import QtQuick
 import qs.Common
 import "strings.js" as Tr
@@ -20,7 +17,7 @@ Item {
 
     property var pluginService: null
     property string pluginId: "orangedeck"
-    // Von DMS gesetzt, wenn es eine Instanz ist
+    // Set by DMS when this is an instance
     property string instanceId: ""
     property var instanceData: null
     property bool editMode: false
@@ -46,9 +43,9 @@ Item {
             root.pluginService.savePluginData(root.pluginId, key, value);
     }
 
-    // Gegenstueck zu `getList`: Listen kommen als Feld herein und gehen als
-    // Zeichenkette hinaus -- eine leere Liste ueberlebt die Ablage sonst nicht.
-    // Gleiche Schluesselliste wie im Leisten-Widget (OrangeDeckWidget.setOpt).
+    // Counterpart to `getList`: lists come in as arrays and are stored as
+    // strings, otherwise an empty list does not survive storage.
+    // Same key list as in the bar widget (OrangeDeckWidget.setOpt).
     function setOpt(key, value) {
         if (["clockFields", "minerFields", "bigFields", "explorerParts",
              "explorerPanels", "minerPanes", "netParts", "tabRotateViews",
@@ -59,12 +56,11 @@ Item {
         root.put(key, value);
     }
 
-    // Nur dem Desktop-Widget eigen: Untergrund und Kachelgroesse haengen daran,
-    // wie gross das Fenster auf dem Schirm ist -- das ist je Instanz etwas
-    // anderes als im Dashboard.
+    // Desktop widget only: background and tile size depend on how large the
+    // window is on screen, which differs per instance and from the dashboard.
     property int bgOpacity: root.get("desktopOpacity", 70)
     property int tileDensity: root.get("tileDensity", 100)
-    // Welche Ansicht dieses Widget zeigt: feed | clock | miner | explorer | wallet
+    // Which view this widget shows: feed | clock | miner | explorer | wallet
     property string widgetView: root.get("widgetView", "feed")
 
     readonly property int viewIndex: {
@@ -88,9 +84,9 @@ Item {
         return ({
             "dataSource": root.get("dataSource", "auto"),
             "currency": root.get("currency", "usd"),
-            // Leer heisst: FeedTabs nimmt die Sprache des Systems.
+            // Empty means FeedTabs uses the system language.
             "lang": root.get("lang", ""),
-            // Die Kachelgroesse kommt hier aus der eigenen Einstellung
+            // Tile size comes from this widget's own setting
             "density": Math.max(0.5, root.tileDensity / 100),
             "colorMode": root.get("colorMode", "age"),
             "sizeMode": root.get("sizeMode", "value"),
@@ -175,19 +171,19 @@ Item {
 
     FeedTabs {
         anchors.fill: parent
-        // Ohne eigene Wahl im Plugin: die Sprache von DMS
+        // Without a choice in the plugin: the DMS language
         defaultLang: Tr.systemLang(SessionData.locale)
         anchors.margins: Theme.spacingM
-        // Eine Ansicht, keine Reiterzeile
+        // One view, no tab bar
         tabsVisible: false
-        // Eine Ansicht je Widget, kein Wechsel
+        // One view per widget, no switching
         rotationAllowed: false
         view: root.viewIndex
         feed: feedState
         opts: root.opts
-        // Auf dem Desktop stellt niemand Knoepfe -- das Widget ist zum Ansehen
-        // da, nicht zum Bedienen. Aus demselben Grund holt sich das Suchfeld
-        // des Explorers hier keinen Tastaturfokus.
+        // Nobody adjusts buttons on the desktop; the widget is for looking, not
+        // for operating. For the same reason the explorer's search field does not
+        // take keyboard focus here.
         minerActions: false
         searchFocus: false
         baseFont: Theme.fontSizeSmall
@@ -198,14 +194,11 @@ Item {
         panelColor: Theme.surfaceContainerHighest
         frostedTint: Theme.surfaceContainer
 
-        // Ohne diesen Handler liefen alle Umschaltungen innerhalb der Ansicht
-        // ins Leere: die Ansicht meldet sie ueber `optRequested`, der Wirt muss
-        // sie ablegen. Das Leisten-Widget tat das, das Desktop-Widget nicht --
-        // aufgefallen am 15.09.2026 am Miner-Umschalter "Network", betraf aber
-        // jede Einstellung, die man in der Ansicht selbst anfasst.
-        // `savePluginData` schreibt hier je Instanz (DMS reicht dem Bauteil
-        // einen instanzbezogenen pluginService durch), zwei Widgets auf dem
-        // Desktop bleiben also unabhaengig.
+        // Without this handler every toggle inside the view would go nowhere: the
+        // view reports it via `optRequested` and the host has to store it.
+        // `savePluginData` writes per instance here (DMS passes an
+        // instance-scoped pluginService), so two widgets on the desktop stay
+        // independent.
         onOptRequested: function (key, value) {
             root.setOpt(key, value);
         }

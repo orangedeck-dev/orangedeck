@@ -1,13 +1,12 @@
-// Das Netz: der zweite Teil des Miner-Reiters. Wie viel gerechnet wird, wie
-// schwer es ist, wer die Bloecke findet -- damit der Reiter auch ohne eigenen
-// Miner etwas zeigt, und damit man mit einem den Massstab vor Augen hat.
+// The network: second part of the miner tab. How much hashing there is,
+// how hard it is, who finds the blocks. The tab shows something even
+// without an own miner, and with one you have the scale in view.
 //
-// Die Kennzahlen stehen schon im Zustand (`difficulty`, `hashrate`, `tip`)
-// und kosten nichts. Verlauf und Pools holt diese Ansicht selbst ueber
-// `feed.network()`, und zwar nur, solange sie zu sehen ist -- aus demselben
-// Grund wie der Kursverlauf.
+// The stats are already in the state (`difficulty`, `hashrate`, `tip`) and
+// cost nothing. History and pools are fetched here via `feed.network()`,
+// only while the view is visible, for the same reason as the price chart.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "fonts.js" as Fonts
@@ -18,19 +17,19 @@ pragma ComponentBehavior: Bound
 Item {
     id: root
 
-    // Tastatur: Bild auf/ab, Pos1, Ende (roll.js; aus Main.qml ueber FeedTabs)
+    // Keyboard: Page Up/Down, Home, End (roll.js, forwarded from Main.qml via FeedTabs)
     function rollen(wie) {
         return Roll.rollen(flick, wie);
     }
 
     property var feed: null
     property string lang: "de"
-    // Sieht niemand hin, wird auch nichts geholt
+    // Nothing is fetched while nobody is looking
     property bool live: true
-    // 30d | 90d | 1y | 3y | max -- der Wirt haelt ihn
+    // 30d | 90d | 1y | 3y | max, kept by the host
     property string span: "1y"
     property bool finger: false
-    // Was gezeigt wird: "stats", "chart", "pools". Leer heisst alles.
+    // What to show: "stats", "chart", "pools". Empty means all.
     property var parts: []
     function zeigt(p) {
         var v = root.parts;
@@ -38,11 +37,11 @@ Item {
             return true;
         return v.indexOf(p) >= 0;
     }
-    // Platz oben fuer den Umschalter "Geraet | Netz", den `MinerView` darueber
-    // legt. Er rollt nicht mit.
+    // Space at the top for the "Device | Network" toggle that `MinerView`
+    // places above. It does not scroll.
     property real topInset: 0
-    // Unter allem ein Hinweis, wie der eigene Miner dazukommt -- nur, wenn
-    // noch keiner eingetragen ist.
+    // A hint at the bottom on how to add an own miner, only while none is
+    // configured.
     property string footer: ""
     property string footerCommand: ""
 
@@ -58,18 +57,18 @@ Item {
     readonly property var hr: feed ? feed.hashrate : ({})
     readonly property var tip: feed ? feed.tip : ({})
 
-    // -------------------------------------------------------- Daten holen
+    // -------------------------------------------------------- Fetching
     property var reihe: []
     property var stufen: []
     property var pools: null
     property bool laden: false
     property string fehler: ""
-    // Nur die letzte Anfrage zaehlt (siehe PriceChart: beim Start fragt die
-    // Vorgabe, gleich danach der gespeicherte Zeitraum).
+    // Only the latest request counts (see PriceChart: on startup the default
+    // span is requested, right after it the stored one).
     property int __anfrage: 0
 
-    // Die Kennzahlen stehen im Zustand; geholt wird nur, wenn Graph oder
-    // Pools zu sehen sind.
+    // The stats come from the state; fetching happens only when chart or
+    // pools are visible.
     readonly property bool braucht: root.zeigt("chart") || root.zeigt("pools")
 
     function holen() {
@@ -99,8 +98,8 @@ Item {
     onFeedChanged: root.holen()
     Component.onCompleted: root.holen()
 
-    // Die Reihe hat einen Punkt am Tag, die Pools aendern sich mit jedem
-    // Block ein wenig. Eine halbe Stunde reicht; der Dienst puffert ohnehin.
+    // The series has one point per day, the pools change a little with every
+    // block. Half an hour is enough; the daemon caches anyway.
     Timer {
         interval: 1800000
         repeat: true
@@ -108,7 +107,7 @@ Item {
         onTriggered: root.holen()
     }
 
-    // Fuer "vor 4 Min" -- sonst bliebe die Angabe stehen
+    // For "4 min ago", otherwise the text would freeze
     property real jetzt: Date.now() / 1000
 
     Timer {
@@ -119,7 +118,7 @@ Item {
         onTriggered: root.jetzt = Date.now() / 1000
     }
 
-    // ------------------------------------------------------------- Texte
+    // ------------------------------------------------------------- Texts
     function dauer(sek) {
         if (!(sek > 0))
             return "–";
@@ -132,7 +131,7 @@ Item {
         return Tr.t("duration.min", root.lang, m);
     }
 
-    // Blockzeit als Minuten und Sekunden: 585365 ms wird "9:45 Min"
+    // Block time as minutes and seconds: 585365 ms becomes "9:45 min"
     function minSek(ms) {
         if (!(ms > 0))
             return "–";
@@ -172,8 +171,8 @@ Item {
         ];
     }
 
-    // Die Pools: die sechs groessten einzeln, der Rest zusammen. Mehr Farben
-    // unterscheidet in einem schmalen Balken niemand.
+    // Pools: the six largest individually, the rest combined. Nobody can
+    // tell more colors apart in a narrow bar.
     readonly property var poolFarben: [root.accentColor, "#f5c16c", "#57b894", "#5dade2",
                                        "#a78bfa", "#e07a8a"]
     readonly property var poolZeilen: {
@@ -199,7 +198,7 @@ Item {
         return ges ? Tr.fixed(100 * n / ges, 1, root.lang) + " %" : "";
     }
 
-    // ------------------------------------------------------------- Aufbau
+    // ------------------------------------------------------------- Layout
     Flickable {
         id: flick
 
@@ -211,7 +210,7 @@ Item {
         boundsBehavior: Flickable.StopAtBounds
         flickDeceleration: 2500
 
-        // Schmaler Balken rechts, nur solange es etwas zu rollen gibt
+        // Narrow scrollbar on the right, only while there is something to scroll
         Rectangle {
             parent: flick
             anchors.right: parent.right
@@ -229,16 +228,16 @@ Item {
 
             width: flick.width * 0.9
             x: (flick.width - width) / 2
-            // Mittig, solange Platz ist, wie die Geraeteseite -- sonst oben
-            // anfangen. Am Telefon ist die Seite hoeher als der Schirm und
-            // beginnt damit ohnehin oben.
+            // Centered while there is room, like the device page, otherwise start at
+            // the top. On the phone the page is taller than the screen and starts at
+            // the top anyway.
             y: Math.max(root.scaleUnit * 0.3, (flick.height - implicitHeight) / 2)
             spacing: root.scaleUnit * 0.7
 
-            // ------------------------------------------------ Kennzahlen
-            // Zwei Spalten am schmalen Telefon, drei, sobald es passt. Bei 24
-            // Einheiten, wie zuerst, standen im Fenster von 1100 Punkten zwei
-            // Spalten und drei Zeilen, und der Graph lag unter dem Rand.
+            // ------------------------------------------------ Stats
+            // Two columns on a narrow phone, three once they fit. The threshold is
+            // low enough that a 1100 px window gets three columns and the chart
+            // stays above the fold.
             Grid {
                 id: raster
 
@@ -281,8 +280,8 @@ Item {
                             font.weight: Font.DemiBold
                         }
 
-                        // Zwei Zeilen statt abgeschnitten: "noch 1.172 Bloecke ·
-                        // 7 Tage 22 Std" passt in einer Drittelspalte nicht.
+                        // Wrap to two lines instead of clipping: "1,172 blocks left ·
+                        // 7 days 22 h" does not fit into a third of the width.
                         Text {
                             width: parent.width
                             visible: zelle.modelData.s !== ""
@@ -298,12 +297,11 @@ Item {
                 }
             }
 
-            // ----------------------------------------------------- Verlauf
-            // Hoehe aus der Breite, nicht aus der Hoehe -- quer wird er nicht
-            // gestaucht, hochkant nicht zum Strich (wie der Kurs in der Uhr).
-            // Hochkant am Telefon sind das rund 260 Punkte; mit dem Faktor
-            // 0,55 waren es 200, und die Kurve eines Jahres lag in einem
-            // Streifen.
+            // ----------------------------------------------------- History
+            // Height from the width, not the height, so it is not squashed in
+            // landscape and not reduced to a line in portrait (like the price chart
+            // in the clock). In portrait on the phone that is about 260 px, enough
+            // for a one-year curve to be readable.
             NetworkChart {
                 visible: root.zeigt("chart")
                 width: body.width
@@ -339,7 +337,7 @@ Item {
                     font.pixelSize: root.scaleUnit * 0.55
                 }
 
-                // Der Balken: jedes Stueck so breit wie sein Anteil
+                // The bar: each segment as wide as its share
                 Row {
                     width: parent.width
                     height: Math.max(6, root.scaleUnit * 0.4)
@@ -357,14 +355,14 @@ Item {
                                    / Math.max(1, root.pools ? root.pools.blockCount : 1)
                             height: parent.height
                             color: stueck.modelData.farbe
-                            // Eine feine Fuge zwischen den Stuecken
+                            // A thin gap between segments
                             border.width: 0.5
                             border.color: Qt.rgba(0, 0, 0, 0.35)
                         }
                     }
                 }
 
-                // Die Liste darunter, in zwei Spalten, wenn es passt
+                // The list below, in two columns if it fits
                 Grid {
                     id: liste
 
@@ -415,7 +413,7 @@ Item {
                 }
             }
 
-            // Ohne eigenen Miner: wie er dazukommt
+            // Without an own miner: how to add one
             Column {
                 width: body.width
                 spacing: root.scaleUnit * 0.2

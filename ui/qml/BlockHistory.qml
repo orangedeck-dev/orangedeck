@@ -1,12 +1,12 @@
-// Die Blockkette rueckwaerts durchblaettern.
+// Page backwards through the block chain.
 //
-// Die Leiste auf der Startseite zeigt die letzten Bloecke nebeneinander; hier
-// stehen sie untereinander mit allem, was `/v1/blocks` mitliefert, und lassen
-// sich Seite fuer Seite zurueckverfolgen. Der Daemon kennt dafuer beide
-// Formen: `blocks/recent` fuer die neuesten, `blocks/<hoehe>` fuer die
-// fuenfzehn davor.
+// The strip on the home page shows the latest blocks side by side; here
+// they are listed one below the other with everything `/v1/blocks`
+// returns, and you can page back through them. The daemon supports both
+// forms: `blocks/recent` for the newest, `blocks/<height>` for the
+// fifteen before a height.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 
@@ -28,7 +28,7 @@ Column {
     property var blocks: []
     property string error: ""
     property bool busy: false
-    // Von welcher Hoehe an geblaettert wird. 0 heisst: die neuesten.
+    // Height to page from. 0 means the newest.
     property int von: 0
 
     spacing: uiFont * 0.3
@@ -38,9 +38,9 @@ Column {
     readonly property int unterste: blocks.length
         ? (blocks[blocks.length - 1].height || 0) : 0
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // This matters: "1.234" means either one thousand two hundred thirty-four
+    // or one point two three four depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -76,7 +76,7 @@ Column {
     onVonChanged: laden()
     Component.onCompleted: laden()
 
-    // ------------------------------------------------------- Kopfzeile
+    // ------------------------------------------------------- Header
     Row {
         width: parent.width
         spacing: root.uiFont * 0.8
@@ -107,7 +107,7 @@ Column {
         font.pixelSize: root.uiFont * 0.9
     }
 
-    // ----------------------------------------------------------- Liste
+    // ----------------------------------------------------------- List
     Repeater {
         model: root.blocks
 
@@ -204,7 +204,7 @@ Column {
         }
     }
 
-    // -------------------------------------------------------- Blaettern
+    // -------------------------------------------------------- Paging
     Row {
         spacing: root.uiFont * 0.6
         visible: root.blocks.length > 0
@@ -224,7 +224,7 @@ Column {
                 readonly property bool moeglich: {
                     if (knopf.modelData.k === "aelter")
                         return root.unterste > 1;
-                    // Ganz oben angekommen? Dann fuehrt "neuer" nirgendwohin.
+                    // Already at the top? Then "newer" leads nowhere.
                     return root.von > 0;
                 }
 
@@ -253,9 +253,8 @@ Column {
                     onClicked: {
                         if (!knopf.moeglich)
                             return;
-                        // Eine Seite sind die fuenfzehn Bloecke, die gerade
-                        // dastehen -- gerechnet wird mit den echten Hoehen und
-                        // nicht mit einer angenommenen Seitenlaenge.
+                        // A page is the fifteen blocks currently shown; the math uses the real
+                        // heights, not an assumed page length.
                         if (knopf.modelData.k === "neueste")
                             root.von = 0;
                         else if (knopf.modelData.k === "aelter")

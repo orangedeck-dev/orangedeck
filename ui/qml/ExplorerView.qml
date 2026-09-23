@@ -1,10 +1,10 @@
-// Explorer: suchen, Einzelheiten ansehen, dem Weg des Geldes folgen.
+// Explorer: search, view details, follow the money.
 //
-// Die Eingabeerkennung steckt in `search.js` (portiert aus dem Fork). Alle
-// Abfragen laufen ueber den Daemon -- er weiss, ob die Daten von
-// mempool.space oder von einem eigenen Node kommen.
+// Input detection lives in `search.js` (ported from the fork). All requests
+// go through the daemon, which knows whether the data comes from
+// mempool.space or from an own node.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so it also runs on Android.
 import QtQuick
 import "search.js" as Search
 import "txtype.js" as TxType
@@ -17,7 +17,7 @@ pragma ComponentBehavior: Bound
 Item {
     id: root
 
-    // Tastatur: Bild auf/ab, Pos1, Ende (roll.js; aus Main.qml ueber FeedTabs)
+    // Keyboard: Page Up/Down, Home, End (roll.js; from Main.qml via FeedTabs)
     function rollen(wie) {
         return Roll.rollen(flick, wie);
     }
@@ -29,39 +29,38 @@ Item {
     property color goodColor: "#57b894"
     property color badColor: "#d9534f"
     property real scaleUnit: Math.max(10, Math.min(width / 34, height / 20))
-    // Die Suchleiste soll nicht mitwachsen -- in einem grossen Fenster wird
-    // sie sonst albern gross. Der Inhalt darunter darf skalieren, die
-    // Bedienelemente nicht.
+    // The search bar should not grow with the window; in a large window it looks
+    // silly. The content below may scale, the controls may not.
     readonly property real uiFont: Math.min(scaleUnit * 0.78, 15)
 
-    // --- Zustand ---------------------------------------------------------
+    // --- State ---
     property string kind: ""          // tx | block | address
-    // **Nicht** `data` nennen: das ist in QML die Standard-Eigenschaft, in der
-    // die Kindelemente liegen. Sie zu ueberschreiben bringt den Baum durcheinander.
-    property var result: null         // Antwort der Hauptabfrage
-    property var extra: null          // outspends bzw. Adresstransaktionen
-    property var tiles: null          // Kacheldaten des Blocks
+    // Do not name this `data`: in QML that is the default property holding the
+    // child items. Overriding it breaks the item tree.
+    property var result: null         // response of the main request
+    property var extra: null          // outspends or address transactions
+    property var tiles: null          // tile data of the block
     property bool tilesBusy: false
-    property string status: ""        // Meldung statt Ergebnis
+    property string status: ""        // message shown instead of a result
     property bool busy: false
-    property var trail: []            // Weg dorthin, fuer den Zurueck-Knopf
+    property var trail: []            // path so far, for the back button
 
-    // Wer den Explorer aufschlaegt, will tippen -- also gehoert der Fokus ins
-    // Suchfeld. Die Wirte legen alle Ansichten uebereinander und schalten nur
-    // die Sichtbarkeit um; `visible` ist damit das Signal fuer "aufgeschlagen".
-    // Das Desktop-Widget nimmt keine Tastatur an und stellt das ab.
+    // Opening the explorer means you want to type, so focus goes to the search
+    // field. The hosts stack all views and only toggle visibility, so `visible`
+    // is the signal for "opened". The desktop widget takes no keyboard input and
+    // turns this off.
     property bool focusSearch: true
-    // "Ich gebe den Fokus wieder her." Die Wirte mit Tastenkuerzeln
-    // (Fenster und Quickshell) holen ihn sich darauf zurueck -- sonst sind
-    // ihre Kuerzel nach einem Besuch im Explorer tot.
+    // "I am giving focus back." Hosts with shortcuts (window and Quickshell) take
+    // it back on this signal, otherwise their shortcuts are dead after a visit to
+    // the explorer.
     signal searchFocusReleased()
-    // ... und hat ihn genommen: die Ziffern tippen jetzt ins Feld
+    // ... and took it: digits now go into the field.
     signal searchFocusTaken()
 
     onVisibleChanged: {
         if (root.visible) {
-            // **Nicht sofort**: beim Umschalten steht der Baum noch nicht,
-            // ein `forceActiveFocus` in dieser Runde verpufft.
+            // Not immediately: while switching, the item tree is not ready yet and a
+            // `forceActiveFocus` in this pass has no effect.
             if (root.focusSearch)
                 Qt.callLater(root.focusSearchField);
         } else if (field.activeFocus) {
@@ -70,8 +69,8 @@ Item {
         }
     }
 
-    // Ist der Explorer die Startansicht, ist er von Anfang an sichtbar und
-    // `onVisibleChanged` kommt nie.
+    // If the explorer is the start view it is visible from the start and
+    // `onVisibleChanged` never fires.
     Component.onCompleted: {
         if (root.visible && root.focusSearch)
             Qt.callLater(root.focusSearchField);
@@ -84,9 +83,8 @@ Item {
         }
     }
 
-    // In die Zwischenablage. QtQuick hat dafuer keine eigene Schnittstelle --
-    // der uebliche Weg ist ein unsichtbares Textfeld, das man auswaehlt und
-    // kopieren laesst.
+    // Copy to clipboard. QtQuick has no API for this; the usual workaround is an
+    // invisible text field that gets selected and copied.
     TextEdit {
         id: clipboard
 
@@ -112,9 +110,9 @@ Item {
         onTriggered: root.copied = ""
     }
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // Not cosmetic: "1.234" means one thousand two hundred or one point two
+    // depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -132,9 +130,8 @@ Item {
         return id.length > 2 * k ? id.slice(0, k) + "…" + id.slice(-k) : id;
     }
 
-    // Wie lange es voraussichtlich bis zu einem geplanten Block dauert --
-    // auf Grundlage der **gemessenen** Blockzeit, nicht der nominellen zehn
-    // Minuten.
+    // Estimated time until a projected block, based on the measured block time,
+    // not the nominal ten minutes.
     function etaFor(rank) {
         var avg = (root.feed && root.feed.difficulty.timeAvg) || 600000;
         var min = Math.round((rank + 1) * avg / 60000);
@@ -158,7 +155,7 @@ Item {
         return Tr.t("ago.day", root.lang, Math.floor(h / 24));
     }
 
-    // --- Abfragen --------------------------------------------------------
+    // --- Requests ---
     function go(kind, arg, remember) {
         if (!root.feed)
             return;
@@ -170,8 +167,7 @@ Item {
         root.tiles = null;
 
         if (kind === "blockheight") {
-            // Zuerst die Hoehe in einen Hash aufloesen -- die Antwort ist
-            // reiner Text, kein JSON.
+            // Resolve the height to a hash first. The response is plain text, not JSON.
             root.feed.lookup("blockheight", arg, function (d, err) {
                 root.busy = false;
                 if (err) {
@@ -183,8 +179,8 @@ Item {
             return;
         }
 
-        // Fuer Bloecke die ausfuehrliche Form: sie bringt Pool, Belohnung,
-        // Gebuehrenspanne, UTXO-Aenderung und SegWit-Anteil mit.
+        // For blocks use the extended form: it includes pool, reward, fee range,
+        // UTXO change and SegWit share.
         var route = kind === "tx" ? "tx" : (kind === "blockhash" ? "blockinfo" : "address");
         root.currentArg = arg;
         root.feed.lookup(route, arg, function (d, err) {
@@ -196,7 +192,7 @@ Item {
             root.kind = kind === "blockhash" ? "block" : (kind === "tx" ? "tx" : "address");
             root.result = d;
             root.status = "";
-            // Nachladen, was den Weg weitererzaehlt
+            // Load what continues the path.
             if (root.kind === "tx")
                 root.feed.lookup("outspends", arg, function (o) {
                     root.extra = o;
@@ -206,8 +202,8 @@ Item {
                     root.extra = o;
                 });
             else if (root.kind === "block") {
-                // Die Kacheldaten kommen getrennt -- sie sind gross und der
-                // Daemon bereitet sie erst auf.
+                // Tile data comes separately: it is large and the daemon has to prepare it
+                // first.
                 root.tiles = null;
                 root.tilesBusy = true;
                 root.feed.lookup("blocktiles", arg, function (t) {
@@ -220,24 +216,23 @@ Item {
 
     property string currentArg: ""
 
-    // Kachelfarbe fuer alle Kachelgrafiken dieser Ansicht: "fee" oder "type".
-    // Sie liegt hier, damit die Wahl beim Blaettern erhalten bleibt.
+    // Tile coloring for all tile graphics in this view: "fee" or "type". Kept
+    // here so the choice survives navigation.
     property string tileColorMode: "fee"
     property string currency: "eur"
     property string lang: "de"
     property string btcZeichen: "\u20BF"
     property string pfeilKurz: "\u2192"
-    // Abschnitte und Tafeln der Startseite, beides leer = alles
+    // Sections and panels of the start page; both empty means everything.
     property var homeParts: []
     property var homePanels: []
     property bool trackProjected: true
-    // Der Wirt haelt die Lesart und merkt sie sich -- hier wird sie nur
-    // erbeten, nicht selbst gesetzt. Sonst zerschlaegt die Zuweisung die
-    // Bindung, die von den Einstellungen herkommt.
+    // The host owns the reading mode and remembers it; this only requests a
+    // change. Assigning it here would break the binding from the settings.
     signal tileColorModeRequested(string mode)
 
-    // Ein geplanter Block hat keinen Hash und keine abrufbaren Inhalte -- er
-    // wird deshalb nicht ueber `go()` geladen, sondern direkt gesetzt.
+    // A projected block has no hash and no fetchable contents, so it is set
+    // directly instead of being loaded through `go()`.
     property int projRank: 0
 
     function showProjected(rank, data) {
@@ -250,9 +245,9 @@ Item {
         root.tiles = null;
         root.status = "";
         root.currentArg = "";
-        // Die Kacheln holt `ProjectedBlock` selbst und fuehrt sie nach, solange
-        // die Ansicht offen ist -- ein einmaliges Holen waere hier falsch: der
-        // geplante Block aendert sich im Sekundentakt.
+        // `ProjectedBlock` fetches the tiles itself and keeps them updated while the
+        // view is open. Fetching once would be wrong here: the projected block
+        // changes every second.
     }
 
     function fail(msg) {
@@ -275,8 +270,8 @@ Item {
         root.go(k, m.arg);
     }
 
-    // Zurueck zur Startseite. Ohne ihn kam man aus einer Transaktion nur
-    // ueber wiederholtes Zurueckgehen wieder heraus.
+    // Back to the start page. Without this, getting out of a transaction meant
+    // pressing back repeatedly.
     function home() {
         root.trail = [];
         root.kind = "";
@@ -292,8 +287,7 @@ Item {
             return;
         var last = trail[trail.length - 1];
         root.trail = trail.slice(0, -1);
-        // Die Historie hat keine Abfrage hinter sich -- sie wird gesetzt,
-        // nicht geladen.
+        // The history has no request behind it; it is set, not loaded.
         if (last.kind === "history") {
             root.kind = "history";
             root.result = null;
@@ -304,8 +298,8 @@ Item {
         root.go(last.kind === "block" ? "blockhash" : last.kind, last.arg, false);
     }
 
-    // Die Blockkette zum Durchblaettern. Wie `showProjected` kein Ladeweg --
-    // die Liste holt sich das Bauteil selbst.
+    // The block chain for browsing. Like `showProjected` this is not a load
+    // path: the component fetches the list itself.
     function showHistory() {
         if (root.kind && (root.result || root.kind === "history"))
             root.trail = root.trail.concat([{ "kind": root.kind, "arg": root.currentArg }]);
@@ -317,7 +311,7 @@ Item {
         root.currentArg = "";
     }
 
-    // ------------------------------------------------------------ Suchfeld
+    // --- Search field ---
     Item {
         id: bar
 
@@ -339,8 +333,8 @@ Item {
             border.width: 1
             border.color: Qt.rgba(1, 1, 1, 0.12)
 
-            // Haus, gezeichnet -- wie beim Zurueck-Pfeil aus demselben Grund:
-            // Schriftzeichen sitzen nicht zuverlaessig mittig.
+            // House icon, drawn for the same reason as the back arrow: glyphs do not
+            // reliably sit centered.
             Canvas {
                 anchors.centerIn: parent
                 width: parent.width * 0.5
@@ -391,9 +385,9 @@ Item {
             border.width: 1
             border.color: Qt.rgba(1, 1, 1, 0.12)
 
-            // Gezeichnet statt gesetzt: das Zeichen "‹" bringt je nach Schrift
-            // eine eigene Seiten- und Grundlinienlage mit und sitzt dann nicht
-            // mittig. Zwei Striche sind immer da, wo sie sein sollen.
+            // Drawn instead of typeset: the "‹" glyph brings its own side bearing and
+            // baseline depending on the font and ends up off center. Two lines always
+            // sit where they should.
             Canvas {
                 anchors.centerIn: parent
                 width: parent.width * 0.42
@@ -451,13 +445,10 @@ Item {
                 clip: true
                 onAccepted: root.submit(text)
 
-                // **Escape gibt den Fokus wieder her.** Ohne das sitzt man
-                // fest: der Wirt gibt den Fokus erst frei, wenn der Explorer
-                // unsichtbar wird -- unsichtbar wird er per Tastenkuerzel --
-                // und die Kuerzel schluckt dieses Feld. Am 04.09.2026 in der
-                // Pruef-VM aufgefallen, wo nur die Tastatur zur Verfuegung
-                // stand; mit Maus faellt es nie auf, weil man den Reiter
-                // einfach anklickt.
+                // Escape gives focus back. Otherwise you are stuck when using only the
+                // keyboard: the host only releases focus once the explorer becomes
+                // invisible, it becomes invisible via a shortcut, and this field swallows
+                // the shortcuts. With a mouse you never notice because you just click the tab.
                 Keys.onEscapePressed: {
                     field.focus = false;
                     root.searchFocusReleased();
@@ -478,8 +469,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: root.uiFont
                 anchors.verticalCenter: parent.verticalCenter
-                // Bei leerem Feld stuende hier dasselbe wie im Platzhalter --
-                // also nichts.
+                // With an empty field this would repeat the placeholder, so show nothing.
                 text: root.busy ? Tr.t("search.searching", root.lang)
                                 : (field.text.length ? Search.hintFor(field.text, function (k, a) {
                                       return Tr.t(k, root.lang, a);
@@ -490,7 +480,7 @@ Item {
         }
     }
 
-    // ----------------------------------------------------------- Ergebnis
+    // --- Result ---
     Flickable {
         id: flick
 
@@ -504,9 +494,9 @@ Item {
         contentHeight: body.implicitHeight + root.scaleUnit
         boundsBehavior: Flickable.StopAtBounds
 
-        // Schmaler Balken rechts, nur solange es etwas zu rollen gibt.
-        // Grosse Flussgrafiken machen den Inhalt schnell laenger als das
-        // Fenster -- dann muss man auch sehen, dass es weitergeht.
+        // Thin bar on the right, only while there is something to scroll. Large flow
+        // graphics quickly make the content taller than the window, and then it
+        // should be visible that there is more.
         Rectangle {
             parent: flick
             anchors.right: parent.right
@@ -525,7 +515,7 @@ Item {
             width: flick.width
             spacing: root.scaleUnit * 0.5
 
-            // ------------------------------------------------ Meldung
+            // --- Message ---
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
@@ -538,9 +528,8 @@ Item {
             ExplorerHome {
                 width: parent.width
                 visible: root.kind === "" && root.status.length === 0
-                // Nur mitverfolgen, wenn die Startseite auch wirklich zu sehen
-                // ist -- `visible` allein reicht nicht, das Fenster kann zu
-                // sein (siehe DOKUMENTATION).
+                // Only track while the start page is really visible. `visible` alone is not
+                // enough, the window may be closed (see DOKUMENTATION).
                 live: visible && root.visible && root.trackProjected
                 lang: root.lang
                 btcZeichen: root.btcZeichen
@@ -570,14 +559,13 @@ Item {
                 }
             }
 
-            // ------------------------------------------- Transaktion
+            // --- Transaction ---
             Loader {
                 width: parent.width
-                // `visible` statt nur `active`: ein abgeschalteter Loader
-                // behaelt die Hoehe seines letzten Inhalts, und die Spalte
-                // laesst nur unsichtbare Kinder aus, keine leeren. Ohne das
-                // stand nach einer Blockansicht ein 2571 px hohes Nichts vor
-                // der naechsten Seite.
+                // `visible` as well as `active`: a deactivated Loader keeps the height of
+                // its last content, and the column only skips invisible children, not empty
+                // ones. Without this, a block view left a 2571 px tall gap before the next
+                // page.
                 visible: active
                 active: root.kind === "tx" && root.result !== null
                 sourceComponent: txDetail
@@ -621,7 +609,7 @@ Item {
         }
     }
 
-    // ===================================================== Transaktion
+    // === Transaction ===
     Component {
         id: txDetail
 
@@ -643,9 +631,9 @@ Item {
                     font.pixelSize: root.scaleUnit * 0.62
                 }
 
-                // Die Art ergibt sich aus der Struktur -- eine Deutung, keine
-                // Eigenschaft der Transaktion. Deshalb nur als Kennzeichnung
-                // mit Erklaerung, nicht als Tatsache.
+                // The type is derived from the structure: an interpretation, not a property
+                // of the transaction. So it is shown as a label with an explanation, not as
+                // a fact.
                 Rectangle {
                     id: kindBadge
 
@@ -702,9 +690,8 @@ Item {
 
                     width: Math.min(flick.width - root.uiFont * 6, implicitWidth)
                     elide: Text.ElideMiddle
-                    // Beim Wechsel der Seite steht hier kurz ein Ergebnis ohne
-                    // txid -- ohne das `|| ""` meldet Qt "Unable to assign
-                    // [undefined] to QString".
+                    // While switching pages there is briefly a result without txid. Without the
+                    // `|| ""` Qt reports "Unable to assign [undefined] to QString".
                     text: root.result.txid || ""
                     color: root.accentColor
                     font.pixelSize: root.scaleUnit * 0.8
@@ -766,7 +753,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------ Einzelheiten
+            // --- Details ---
             Grid {
                 columns: 2
                 columnSpacing: root.scaleUnit * 2
@@ -813,7 +800,7 @@ Item {
                 height: root.scaleUnit * 0.3
             }
 
-            // Der Fluss: Betraege als Baender, links hinein, rechts hinaus
+            // The flow: amounts as bands, in on the left, out on the right.
             Text {
                 text: Tr.t("tx.flow", root.lang)
                 color: root.dimColor
@@ -824,18 +811,16 @@ Item {
                 width: flick.width
                 lang: root.lang
                 btcZeichen: root.btcZeichen
-                // Im Strang gehoeren beide Seiten zu derselben Transaktion --
-                // dort steht sie ueber den Angaben.
+                // In the chain view both sides belong to the same transaction, which is
+                // shown above the details.
                 txid: String(root.result.txid || "")
-                // Die Rundung lebt vom Verhaeltnis senkrecht zu waagerecht.
-                // Das Original zeichnet 1200 x 600; hier ist die Flaeche viel
-                // flacher, deshalb bekommt sie mit jedem Band mehr Hoehe --
-                // der Strang bleibt gleich dick, so ziehen sich die Luecken auf.
+                // The curve depends on the ratio of height to width. The original draws at
+                // 1200 x 600; this area is much flatter, so it gets more height with each
+                // band. The strand stays the same thickness, so the gaps open up.
                 //
-                // Gezaehlt werden die tatsaechlichen **Baender**: auf der
-                // Ausgangsseite zaehlt die Gebuehr mit, sonst wird es dort zu
-                // eng. Der Deckel liegt hoch; wird die Flaeche laenger als das
-                // Fenster, rollt der Explorer ohnehin.
+                // The count is the actual bands: on the output side the fee counts too,
+                // otherwise it gets too tight there. The cap is high; if the area gets taller
+                // than the window, the explorer scrolls anyway.
                 readonly property int bandCount: Math.max((root.result.vin || []).length,
                                                           (root.result.vout || []).length
                                                           + ((root.result.fee || 0) > 0 ? 1 : 0))
@@ -870,7 +855,7 @@ Item {
                 height: root.scaleUnit * 0.3
             }
 
-            // Ein- und Ausgaenge nebeneinander -- der Weg des Geldes
+            // Inputs and outputs side by side: the path of the money.
             Row {
                 width: flick.width
                 spacing: root.scaleUnit
@@ -944,8 +929,7 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    // Auch dieser stand auf dem Telefon als leeres Kaestchen
-                    // da -- siehe `pfeilKurz` in `FeedTabs`.
+                    // Showed up as an empty box on the phone as well. See `pfeilKurz` in `FeedTabs`.
                     text: root.pfeilKurz
                     color: root.dimColor
                     font.pixelSize: root.scaleUnit * 1.2
@@ -1024,8 +1008,8 @@ Item {
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    // Weiter dem Weg folgen: wurde der Ausgang
-                                    // ausgegeben, dorthin; sonst zur Adresse.
+                                    // Keep following the path: to the spending transaction if the output was
+                                    // spent, otherwise to the address.
                                     if (voutRow.spend && voutRow.spend.spent && voutRow.spend.txid)
                                         root.go("tx", voutRow.spend.txid);
                                     else if (voutRow.modelData.scriptpubkey_address)
@@ -1039,7 +1023,7 @@ Item {
         }
     }
 
-    // ================================================== geplanter Block
+    // === Projected block ===
     Component {
         id: projectedDetail
 
@@ -1048,9 +1032,9 @@ Item {
 
             spacing: root.scaleUnit * 0.45
 
-            // Nicht `root.result`: das ist der Stand vom Klick. Der Zustand
-            // fuehrt die geplanten Bloecke laufend mit, also von dort -- und
-            // nur wenn es den Rang dort noch gibt.
+            // Not `root.result`: that is the state at the time of the click. The state
+            // keeps the projected blocks current, so read from there, and only while the
+            // rank still exists.
             readonly property var d: (root.feed && root.feed.projected
                                       && root.feed.projected.length > root.projRank)
                 ? root.feed.projected[root.projRank] : root.result
@@ -1064,8 +1048,7 @@ Item {
             }
 
             Text {
-                // Unter 10 sat/vB mit Nachkommastelle -- sonst steht dort in
-                // ruhigen Zeiten eine grosse "~0".
+                // Below 10 sat/vB with one decimal, otherwise quiet times show a big "~0".
                 text: "~" + (projBox.d.medianFee >= 10
                     ? Math.round(projBox.d.medianFee)
                     : Tr.fixed(projBox.d.medianFee, 1, root.lang)) + " sat/vB"
@@ -1112,7 +1095,7 @@ Item {
                 height: root.scaleUnit * 0.4
             }
 
-            // Der praktische Teil: was muss man zahlen, um hineinzukommen
+            // The practical part: what you have to pay to get in.
             Rectangle {
                 width: flick.width
                 height: hintCol.implicitHeight + root.uiFont * 1.6
@@ -1184,7 +1167,7 @@ Item {
             Text {
                 width: flick.width
                 wrapMode: Text.WordWrap
-                // Der Unterschied zu einem bestaetigten Block gehoert dazu
+                // Explains how this differs from a confirmed block.
                 text: Tr.t("proj.forecast", root.lang)
                 color: root.dimColor
                 font.pixelSize: root.uiFont * 0.85
@@ -1192,7 +1175,7 @@ Item {
         }
     }
 
-    // ============================================================ Block
+    // === Block ===
     Component {
         id: blockDetail
 
@@ -1286,7 +1269,7 @@ Item {
                 }
             }
 
-            // Weitere Angaben aus dem Block
+            // More block details.
             Grid {
                 columns: 2
                 columnSpacing: root.scaleUnit * 2
@@ -1340,7 +1323,7 @@ Item {
                 }
             }
 
-            // Die Kachelgrafik des Blocks -- dieselbe Optik wie im Feed
+            // The block's tile graphic, same look as in the feed.
             Text {
                 text: Tr.t(root.tilesBusy ? "block.tilesLoading" : "block.txsIn", root.lang)
                 color: root.dimColor
@@ -1380,7 +1363,7 @@ Item {
                 }
             }
 
-            // Dieselben Transaktionen der Reihe nach, zum Durchblaettern
+            // The same transactions in order, for browsing.
             TxList {
                 width: flick.width
                 visible: root.tiles !== null
@@ -1454,7 +1437,7 @@ Item {
         }
     }
 
-    // ========================================================== Adresse
+    // === Address ===
     Component {
         id: addressDetail
 

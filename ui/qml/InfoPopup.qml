@@ -1,11 +1,11 @@
-// Ein kleiner "i"-Knopf mit Erklaerungen dahinter. Die Angaben stehen damit
-// an einem Ort, statt die Flaeche zuzustellen.
+// A small "i" button with explanations behind it, so the details live in
+// one place instead of cluttering the view.
 //
-// Wird ueber die ganze Ansicht gelegt (`anchors.fill: parent`), faengt aber
-// nur dort Eingaben ab, wo der Knopf sitzt -- und, solange offen, ueberall,
-// damit ein Klick daneben wieder schliesst.
+// Laid over the whole view (`anchors.fill: parent`) but only takes input
+// where the button sits, and while open everywhere, so a click outside
+// closes it.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "fonts.js" as Fonts
@@ -17,8 +17,8 @@ Item {
 
     property string lang: "de"
 
-    // Je Eintrag: { k: Ueberschrift, v: Text, color: optionale Farbe fuer den
-    // Strich davor, thin: duenner Strich statt kraeftigem }
+    // Per entry: { k: heading, v: text, color: optional color for the bar in
+    // front, thin: thin bar instead of a bold one }
     property var entries: []
     property string title: Tr.t("legend", root.lang)
     property color textColor: "#f2eef8"
@@ -26,20 +26,19 @@ Item {
     property color panelColor: "#12121b"
     property real fontSize: 12
     property bool open: false
-    // Wo der Knopf sitzt
+    // Where the button sits
     property real buttonMargin: 0
     property real buttonRightInset: 0
-    // Der eigene Knopf laesst sich abschalten, wenn der Wirt schon eine
-    // Knopfleiste hat (im Dashboard die von DMS). `open` wird dann von aussen
-    // gesetzt.
+    // The own button can be turned off when the host already has a button
+    // bar (in the dashboard, the DMS one). `open` is then set from outside.
     property bool showButton: true
-    // Damit sich weitere Knoepfe daneben anordnen lassen. **Nicht** per Anker
-    // an `button` haengen -- der ist ein Kind dieses Items und damit fuer
-    // Geschwister nicht ankerbar ("Cannot anchor to an item that isn't a
-    // parent or sibling"). Ueber die Breite geht es.
+    // Lets further buttons line up next to it. Do not anchor to `button`: it
+    // is a child of this item and so cannot be anchored to by siblings
+    // ("Cannot anchor to an item that isn't a parent or sibling"). Use the
+    // width instead.
     readonly property real buttonWidth: button.width
 
-    // Klick daneben schliesst wieder
+    // A click outside closes it
     MouseArea {
         anchors.fill: parent
         enabled: root.open
@@ -106,7 +105,7 @@ Item {
             }
         }
 
-        // Klicks im Feld sollen es nicht schliessen
+        // Clicks inside the box must not close it
         MouseArea {
             anchors.fill: parent
         }
@@ -138,7 +137,7 @@ Item {
                     width: col.width
                     spacing: root.fontSize * 0.6
 
-                    // Farbstrich als Zuordnung zur Kurve
+                    // Color bar that ties the entry to its curve
                     Item {
                         width: root.fontSize * 1.6
                         height: root.fontSize * 1.2

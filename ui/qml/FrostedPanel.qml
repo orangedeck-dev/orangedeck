@@ -1,18 +1,18 @@
-// Lesbarer Untergrund fuer Textangaben, die sonst im Kachelfeld untergehen --
-// besonders im Zoom, wo grosse helle Flaechen direkt hinter der Schrift liegen.
+// Readable background for text that would otherwise get lost in the tile
+// field, especially when zoomed, where large bright areas sit right behind
+// the text.
 //
-// Legt sich hinter ein beliebiges Item (`content`) und uebernimmt dessen Lage
-// und Groesse samt Rand. Ist `backdropSource` gesetzt, wird der Bereich
-// dahinter abgegriffen und weichgezeichnet; sonst bleibt es bei der
-// eingefaerbten Flaeche, die allein schon lesbar macht.
+// Sits behind any item (`content`) and takes over its position and size
+// including a margin. With `backdropSource` set, the area behind it is
+// captured and blurred; otherwise the tinted fill alone keeps it readable.
 import QtQuick
 import QtQuick.Effects
 
 Item {
     id: root
 
-    property Item content: null          // was lesbar bleiben soll
-    property Item backdropSource: null   // was dahinter weichgezeichnet wird
+    property Item content: null          // what should stay readable
+    property Item backdropSource: null   // what gets blurred behind it
     property real pad: 8
     property real cornerRadius: 6
     property color tint: "#0b0b12"
@@ -30,19 +30,17 @@ Item {
     readonly property bool blurActive: blurred && backdropSource !== null
                                        && width > 0 && height > 0
 
-    // Nur der Ausschnitt hinter diesem Feld wird abgegriffen, nicht die ganze
-    // Flaeche -- sonst kostet jedes Feld einen vollen zusaetzlichen
-    // Zeichendurchgang.
+    // Only the area behind this panel is captured, not the whole surface;
+    // otherwise every panel costs a full extra render pass.
     ShaderEffectSource {
         id: shot
 
         anchors.fill: parent
         visible: false
-        // **Nicht** `live: true`. Der Untergrund muss nicht sechzigmal pro
-        // Sekunde neu abgegriffen werden -- die Halde selbst zeichnet nur
-        // fuenfmal (Timer mit 200 ms in FeedCanvas), und weichgezeichnet faellt
-        // ein Unterschied ohnehin kaum auf. Mit `live: true` gemessen: 14,4 %
-        // CPU gegen 9,6 % ohne Weichzeichnung.
+        // Not `live: true`. The background does not need to be captured sixty
+        // times a second: the pile itself only redraws five times (200 ms timer
+        // in FeedCanvas), and once blurred a difference is hardly visible.
+        // Measured with `live: true`: 14.4 % CPU versus 9.6 % without blur.
         live: false
         hideSource: false
         recursive: false
@@ -54,10 +52,9 @@ Item {
             : Qt.rect(0, 0, 0, 0)
     }
 
-    // Die Form des Feldes als Maske. Ohne sie beschneidet QML nur rechteckig
-    // (`clip`), waehrend die eingefaerbte Flaeche darueber abgerundet ist --
-    // in den vier Ecken stand dadurch weichgezeichneter Inhalt **ohne**
-    // Einfaerbung, was wie ein Fehler aussah und es auch war.
+    // The panel shape as a mask. Without it QML only clips rectangles
+    // (`clip`) while the tinted fill on top is rounded, so the four corners
+    // showed blurred content without tint.
     Item {
         id: maskShape
 
@@ -83,12 +80,12 @@ Item {
         blurMax: 24
         maskEnabled: true
         maskSource: maskShape
-        // Harte, aber geglaettete Kante genau auf der Rundung
+        // Hard but antialiased edge exactly on the rounding
         maskThresholdMin: 0.5
         maskSpreadAtMin: 0.2
     }
 
-    // Nachfuehren im selben Takt wie die Halde.
+    // Update at the same rate as the pile.
     Timer {
         interval: 200
         repeat: true
@@ -97,8 +94,8 @@ Item {
         onTriggered: shot.scheduleUpdate()
     }
 
-    // Lage oder Groesse geaendert -> sofort einmal nachziehen, sonst steht
-    // bis zu 200 ms lang der alte Ausschnitt darunter.
+    // Position or size changed: update once right away, otherwise the old
+    // area stays underneath for up to 200 ms.
     onXChanged: if (blurActive) shot.scheduleUpdate()
     onYChanged: if (blurActive) shot.scheduleUpdate()
     onWidthChanged: if (blurActive) shot.scheduleUpdate()

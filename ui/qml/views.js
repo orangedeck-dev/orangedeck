@@ -1,45 +1,38 @@
-// Die Ansichten des Programms -- **eine** Quelle.
+// The app's views, defined in one place.
 //
-// Vorher stand dieselbe Reihenfolge dreimal da: als Liste in
-// `FeedTabs.tabViews`, als Tabelle in `FeedTabs.tabNamen` und ein drittes Mal
-// von Hand in der Startansicht der Einstellungen. Zwei davon hielt ein
-// Kommentar zusammen ("damit die beiden nicht auseinanderlaufen"), die dritte
-// nichts -- und sie lief auseinander: die Startansicht kannte bis zuletzt nur
-// Feed, Uhr, Miner, Explorer, weil Markt und Wallet spaeter dazukamen. Wer im
-// Markt starten wollte, konnte es nicht einstellen.
+// The order is needed in several places: `FeedTabs.tabViews`,
+// `FeedTabs.tabNamen` and the start view setting. Keeping separate copies
+// lets them drift apart, e.g. a start view list that does not know about
+// views added later. A new view goes into the table below and every place
+// picks it up.
 //
-// Das ist dasselbe Muster wie die Klemme auf 5 in `shell.qml`: **eine Grenze
-// wandert nicht von selbst mit.** Eine achte Ansicht kommt hier in die
-// Tabelle, und alle drei Stellen wissen davon.
-//
-// Reine Funktionen, kein Zustand -- wie `strings.js` und aus demselben Grund:
-// dieselben Dateien laufen in der Anwendung, im Quickshell-Fenster und im
-// DMS-Plugin, und ein QML-Singleton braucht ein `qmldir`, das nur das
-// CMake-Modul erzeugt.
+// Pure functions, no state, like `strings.js` and for the same reason:
+// the same files run in the app, in the Quickshell window and in the DMS
+// plugin, and a QML singleton needs a `qmldir` that only the CMake module
+// generates.
 .pragma library
 
-// Die Grundreihenfolge -- was ein Anwender vorfindet, der nichts umstellt.
+// Default order: what a user sees without rearranging anything.
 //
-//   id         die Zahl, an der die Ansicht ueberall haengt (auch `--view N`
-//              und die Android-Verknuepfungen). **Nicht die Position.** Der
-//              Markt kam als 6 dazu und steht trotzdem an fuenfter Stelle;
-//              haetten wir umnumeriert, zeigten alle gemerkten Werte und alle
-//              Verknuepfungen daneben.
-//   name       Schluessel in `strings.js`
-//   schalter   Einstellung, mit der sich der Reiter abschalten laesst.
-//              Leer heisst: laesst sich nicht abschalten.
+//   id         the number the view is known by everywhere (also `--view N`
+//              and the Android shortcuts). Not its position: the market
+//              view has id 6 but sits in fifth place. Renumbering would
+//              break every stored value and every shortcut.
+//   name       key in `strings.js`
+//   schalter   setting that can turn the tab off.
+//              Empty means it cannot be turned off.
 var ANSICHTEN = [
     { "id": 0, "name": "tab.feed",     "schalter": "showFeed"     },
     { "id": 1, "name": "tab.clock",    "schalter": "showClock"    },
     { "id": 2, "name": "tab.miner",    "schalter": "showMiner"    },
     { "id": 3, "name": "tab.explorer", "schalter": "showExplorer" },
     { "id": 6, "name": "tab.market",   "schalter": "showMarket"   },
-    // Die Wallet haengt nicht an einem Reiter-Schalter, sondern an
-    // `walletEnabled` -- dem Schalter mit der Warnung davor. Ein zweiter
-    // daneben waere nur die Frage, welcher von beiden gilt.
+    // The wallet does not use a tab switch but `walletEnabled`, the switch
+    // with the warning in front of it. A second switch next to it would only
+    // raise the question which one applies.
     { "id": 4, "name": "tab.wallet",   "schalter": ""             },
-    // **Die Einstellungen bleiben immer.** Sonst schaltet man den letzten
-    // Reiter ab und kommt an keinen Schalter mehr heran.
+    // Settings always stay. Otherwise turning off the last tab would leave
+    // no way to reach any switch.
     { "id": 5, "name": "tab.settings", "schalter": ""             }
 ];
 
@@ -54,8 +47,8 @@ function eintrag(id) {
     return null;
 }
 
-// Uebersetzungsschluessel einer Ansicht. Unbekanntes gibt "" -- der Aufrufer
-// zeigt dann nichts, statt eine Zahl anzuschreiben.
+// Translation key of a view. Unknown ids return "", so the caller shows
+// nothing instead of a bare number.
 function name(id) {
     var e = eintrag(id);
     return e ? e.name : "";
@@ -73,16 +66,14 @@ function alle() {
     return out;
 }
 
-// Die gespeicherte Reihenfolge auf die bekannte Menge abbilden.
+// Map the stored order onto the known set of views.
 //
-// **Nachsichtig in beide Richtungen**, und zwar mit Absicht: Unbekanntes
-// faellt weg (eine Ansicht, die es einmal gab, sperrt nichts), Fehlendes wird
-// hinten angehaengt (eine Ansicht, die neu dazukommt, ist da -- ohne dass
-// jemand seine gespeicherte Reihenfolge zuruecksetzen muss). Genau daran ist
-// die Startansicht gescheitert.
+// Lenient in both directions on purpose: unknown entries are dropped (a
+// view that no longer exists blocks nothing), missing ones are appended
+// (a new view shows up without anyone having to reset their stored order).
 //
-// Kommt aus QSettings, sind die Eintraege Zeichenketten ("0", "1"); aus
-// view.json Zahlen. `parseInt` in `eintrag` nimmt beides.
+// From QSettings the entries are strings ("0", "1"), from view.json
+// numbers. `parseInt` in `eintrag` accepts both.
 function ordnung(gespeichert) {
     var out = [];
     if (gespeichert && gespeichert.length) {
@@ -99,20 +90,18 @@ function ordnung(gespeichert) {
     return out;
 }
 
-// Die Reiter, die wirklich dastehen.
+// The tabs that are actually shown.
 //
-//   gespeichert  die Reihenfolge des Anwenders (darf leer sein)
-//   moeglich(id) kann diese Ansicht ueberhaupt etwas zeigen? Technik --
-//                der Miner steht im Heimnetz, die Wallet-Ableitung und die
-//                Kerzen des Marktes sind Rechenarbeit des Dienstes. Ein
-//                Reiter, hinter dem nichts sein kann, ist schlimmer als
-//                keiner.
-//   an(schluessel) hat der Anwender ihn angelassen? Der Schalter kommt oben
-//                drauf und kann nichts erzwingen.
-//   mitEinstellungen  ob die Einstellungen ein Reiter sind (Vorgabe ja).
-//                Die eigenstaendige Anwendung hat seit dem 13.09.2026 dafuer
-//                ein Zahnrad -- am Telefon lag der Vollbildknopf auf dem
-//                letzten Reiter.
+//   gespeichert  the user's order (may be empty)
+//   moeglich(id) can this view show anything at all? A technical check:
+//                the miner sits in the home network, wallet derivation and
+//                market candles are computed by the daemon. A tab that
+//                can never have content is worse than no tab.
+//   an(schluessel) did the user leave it on? The switch is applied on top
+//                and cannot force anything.
+//   mitEinstellungen  whether settings is a tab (default yes). The
+//                standalone app uses a gear button instead, because on the
+//                phone the full-screen button covered the last tab.
 function reiter(gespeichert, moeglich, an, mitEinstellungen) {
     var einst = mitEinstellungen !== false;
     var ord = ordnung(gespeichert);
@@ -127,9 +116,8 @@ function reiter(gespeichert, moeglich, an, mitEinstellungen) {
             continue;
         out.push(e.id);
     }
-    // Der Deckel ueber allem: die Einstellungen bleiben erreichbar, was auch
-    // immer `moeglich` und `an` melden -- als Reiter oder, wenn der Wirt es
-    // so will, ueber sein Zahnrad.
+    // Final guard: settings stay reachable whatever `moeglich` and `an`
+    // report, either as a tab or, if the host prefers, through its gear button.
     if (einst && out.indexOf(EINSTELLUNGEN) < 0)
         out.push(EINSTELLUNGEN);
     return out;

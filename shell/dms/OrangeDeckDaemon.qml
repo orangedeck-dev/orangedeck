@@ -1,4 +1,4 @@
-// Haelt den Feed-Prozess am Leben, solange das Plugin aktiv ist.
+// Keeps the feed process alive while the plugin is active.
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -8,23 +8,21 @@ import qs.Modules.Plugins
 PluginComponent {
     id: root
 
-    // Den **Dienst** anstossen, nicht einen eigenen Prozess starten: sonst gibt
-    // es zwei Verwalter fuer einen Daemon. Der Rueckfall auf das Programm
-    // greift, wenn die Unit nicht eingerichtet ist (tools/install-links.sh).
+    // Start the service, not a separate process; otherwise there would be
+    // two managers for one daemon. Falls back to the binary when the unit is
+    // not set up (tools/install-links.sh).
     property var feedCommand: ["sh", "-c",
         "systemctl --user start orangedeck.service 2>/dev/null || exec \"$HOME/.local/bin/orangedeck\""]
 
-    // **Ohne OrangeDeck auf dem Rechner gibt es hier nichts anzustossen.**
-    // Wer das Plugin aus dem Verzeichnis von DMS installiert, hat den Ordner
-    // und sonst nichts: keine Unit, kein orangedeck im Pfad. Der Zeitgeber
-    // unten faende den Zustand dann fuer immer veraltet und startete alle
-    // zehn Sekunden eine Shell, die an derselben Stelle scheitert.
+    // Without OrangeDeck on the machine there is nothing to start. Installed
+    // from the DMS plugin registry, only the plugin folder exists: no unit, no
+    // orangedeck in PATH. The timer below would then see stale state forever
+    // and spawn a failing shell every ten seconds.
     //
-    // Der Befehl oben sagt es selbst: er endet nur dann von sich aus mit
-    // einem Fehler, wenn **beide** Wege fehlen -- `systemctl start` hat
-    // nicht funktioniert und `exec` fand das Programm nicht. Danach wird
-    // nicht weiter gesucht; das Widget bezieht seine Daten in dem Fall
-    // direkt (`FeedState`, Betriebsart "auto").
+    // The command above covers this: it only exits with an error on its own when
+    // both paths are missing, i.e. `systemctl start` failed and `exec` did not
+    // find the binary. After that nothing more is tried; the widget then gets
+    // its data directly (`FeedState`, mode "auto").
     property bool dienstVorhanden: true
     property string statePath: (Quickshell.env("XDG_RUNTIME_DIR") || (Quickshell.env("HOME") + "/.local/state")) + "/orangedeck/state.json"
 
@@ -55,8 +53,8 @@ PluginComponent {
         printErrors: false
     }
 
-    // Alle 10 s pruefen, ob der Zustand frisch ist. Die Dateisperre in orangedeck
-    // verhindert, dass mehrere Instanzen nebeneinander laufen.
+    // Check every 10 s whether the state is fresh. The file lock in orangedeck
+    // prevents several instances from running side by side.
     Timer {
         interval: 10000
         repeat: true

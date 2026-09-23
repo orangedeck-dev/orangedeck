@@ -1,28 +1,25 @@
-// Die Kachelgrafik eines Blocks -- dieselbe Optik wie im Feed, nur fuer einen
-// beliebigen Block aus dem Explorer.
+// Tile graphic of a block: the same look as in the feed, but for any block
+// from the explorer.
 //
-// Packung und Farben kommen aus denselben Bausteinen wie dort (`mondrian.js`,
-// `colors.js`), damit beide Ansichten wirklich gleich aussehen und nicht nur
-// aehnlich.
+// Packing and colors come from the same building blocks (`mondrian.js`,
+// `colors.js`), so both views really look the same, not just similar.
 //
-// Zwei Betriebsarten:
+// Two modes:
 //
-//   `live: false`  -- ein bestaetigter Block. Er aendert sich nicht mehr, die
-//                     Packung wird einmal gerechnet.
-//   `live: true`   -- ein **geplanter** Block. Er aendert sich staendig, und
-//                     dann darf nicht neu gepackt werden: nachgemessen wechseln
-//                     zwischen zwei Abfragen 99,7 % der Kacheln ihren Platz,
-//                     das Bild waere nur noch Flimmern. Stattdessen bleiben
-//                     bekannte Kacheln liegen, Abgaenge geben ihre Flaeche
-//                     zurueck und Zugaenge fuellen die Luecken. Nachgemessen
-//                     bleibt die Packung dabei dicht (0,7 % -> 3,0 % freie
-//                     Zellen, fast alle an der Oberkante) -- genau dafuer
-//                     fuehrt `mondrian.js` eine exakte Belegungskarte.
-//                     Was die Zugaenge nicht fuellen, schliesst danach die
-//                     Schwerkraft (`MondrianLayout.gravity`, wie bei
-//                     mempool.space) -- ohne sie blieben Loecher stehen.
+//   `live: false`  a confirmed block. It no longer changes, the packing is
+//                  computed once.
+//   `live: true`   a projected block. It changes constantly, and it must not
+//                  be repacked: between two requests 99.7 % of the tiles
+//                  would move and the picture would just flicker. Instead
+//                  known tiles stay in place, removed ones free their area and
+//                  new ones fill the gaps. The packing stays dense this way
+//                  (0.7 % -> 3.0 % free cells, almost all at the top edge);
+//                  that is what the exact occupancy map in `mondrian.js` is
+//                  for. Whatever the new tiles do not fill is closed by
+//                  gravity afterwards (`MondrianLayout.gravity`, as on
+//                  mempool.space); without it holes would remain.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so it also runs on Android.
 import QtQuick
 import "mondrian.js" as Mondrian
 import "colors.js" as Palette
@@ -35,20 +32,20 @@ pragma ComponentBehavior: Bound
 Item {
     id: root
 
-    // Die aufbereiteten Kacheldaten aus /lookup/blocktiles/<hash> oder
-    // /lookup/projectedtiles/<rang>
+    // Prepared tile data from /lookup/blocktiles/<hash> or
+    // /lookup/projectedtiles/<rank>
     property var block: null
     property bool live: false
-    // fee  -- Gebuehrenrate, teal bis violett (die Farben des Originals)
-    // type -- Transaktionsart aus dem Bitfeld `flags` (Mempool-Goggles)
+    // fee:  fee rate, teal to violet (the original's colors)
+    // type: transaction type from the `flags` bit field (Mempool Goggles)
     property string colorMode: "fee"
     property color dimColor: "#9a94a6"
     property real labelSize: 11
     property string lang: "de"
-    // `₿` nur, wo die Schrift es fuehrt (siehe FeedTabs.btcZeichen)
+    // `₿` only where the font has it (see FeedTabs.btcZeichen)
     property string btcZeichen: "\u20BF"
 
-    // Je Kachel: { sq: {x,y,r}, b: Gebuehrenklasse, k: Art, d: Tooltip-Angaben }
+    // Per tile: { sq: {x,y,r}, b: fee class, k: type, d: tooltip data }
     property var squares: []
     property int gridUnits: 0
     property int rowsUsed: 0
@@ -56,19 +53,19 @@ Item {
     property bool __idxDirty: true
     property var hovered: null
 
-    // Was sich bei der letzten Aktualisierung getan hat -- die Ansicht darueber
-    // schreibt es hin, und die frischen Kacheln blitzen kurz weiss auf.
+    // What changed in the last update. The view above prints it, and the new
+    // tiles flash white briefly.
     property int addedCount: 0
     property int removedCount: 0
-    // Anzahl je Transaktionsart, Index wie TxType.KINDS -- traegt die Legende
+    // Count per transaction type, indexed like TxType.KINDS; feeds the legend.
     property var typeCounts: []
     property var freshIdx: []
     property real flashPhase: 0
-    // Umriss der frischen Kacheln. Ohne ihn raeumt jedes Bild des Ausblendens
-    // die ganze Leinwand ab und schiebt sie neu hinueber -- gemessen 4 % CPU.
+    // Bounding box of the new tiles. Without it every fade frame clears and
+    // redraws the whole canvas, which costs about 4 % CPU.
     property var flashBox: null
 
-    // Der laufend gepflegte Zustand des lebendigen Betriebs
+    // Continuously maintained state of live mode.
     property var __lay: null
     property var __byId: ({})
 
@@ -76,21 +73,20 @@ Item {
 
     readonly property real side: Math.min(width, height)
 
-    // **Ganze Geraetepixel, nicht ganze logische Punkte.** Die Rasterweite war
-    // ganzzahlig, und das beseitigte das Karomuster (siehe DOKUMENTATION) --
-    // auf einem Schirm mit Verhaeltnis 1 oder 2. Bei 2,8125 (450 dpi) ist eine
-    // ganze logische Zahl wieder gebrochen.
+    // Whole device pixels, not whole logical points. An integer grid step
+    // removes the checkerboard pattern (see DOKUMENTATION), but only on screens
+    // with a device pixel ratio of 1 or 2. At 2.8125 (450 dpi) a whole logical
+    // number is fractional again.
     //
-    // Am 08.09.2026 im Explorer auf einem Galaxy A55 nachgemessen, Helligkeit
-    // je Geraetepixel quer durch eine Fuge:
+    // Brightness per device pixel across a gap, measured on a phone:
     //
-    //     158 11 11 11 11 11 40      fuenf dunkle Pixel
-    //     154 11 11 11 11 11 44      fuenf
-    //     148 11 11 11 11 49         vier
+    //     158 11 11 11 11 11 40      five dark pixels
+    //     154 11 11 11 11 11 44      five
+    //     148 11 11 11 11 49         four
     //
-    // Also gleich breit gemeint, ungleich gezeichnet. Weniger auffaellig als
-    // im Feed, weil die Fugen hier breiter sind -- aber dieselbe Ursache.
-    // `FeedCanvas` rechnet aus demselben Grund in Geraetepixeln.
+    // Meant to be equal, drawn unequal. Less visible than in the feed because the
+    // gaps are wider here, but the same cause. `FeedCanvas` computes in device
+    // pixels for the same reason.
     readonly property real dpr: Screen.devicePixelRatio > 0
                                 ? Screen.devicePixelRatio : 1
 
@@ -106,10 +102,9 @@ Item {
     function pad(g) {
         if (g * root.dpr < 2)
             return g / 4;
-        // **Der Mindestrand ist ein Geraetepixel, nicht ein logischer
-        // Punkt** -- Begruendung und Messung stehen in `FeedCanvas` bei
-        // `blockPad`. Kurz: ein logischer Punkt sind hier 2,8 Geraetepixel,
-        // und bei kleinen Zellen bleibt davon keine Kachel uebrig.
+        // The minimum margin is one device pixel, not one logical point. Reasoning
+        // and measurement are in `FeedCanvas` at `blockPad`. In short: one logical
+        // point is 2.8 device pixels here, and small cells would leave no tile.
         return Math.max(1 / root.dpr, root.schnapp(g / 8));
     }
 
@@ -118,7 +113,7 @@ Item {
     onWidthChanged: repaintAll()
     onHeightChanged: repaintAll()
     onLiveChanged: {
-        // Beim Wechsel der Betriebsart faengt die Buchfuehrung von vorn an
+        // When the mode changes, bookkeeping starts over.
         root.__lay = null;
         root.__byId = ({});
         rebuild();
@@ -129,16 +124,15 @@ Item {
         flashCanvas.requestPaint();
     }
 
-    // Aus den Kacheldaten die Einzelangaben herausziehen: je Kachel eine
-    // Kennung, die Kantenlaenge, die Gebuehrenklasse und die Zeile fuer den
-    // Tooltip. Die Kennung ist die TXID -- ohne sie gibt es keinen lebendigen
-    // Betrieb, denn nur an ihr laesst sich "kenne ich schon" ablesen.
+    // Extract the per-tile data: an id, the edge length, the fee class and the
+    // tooltip line. The id is the txid; live mode depends on it, since only the
+    // id tells whether a tile is already known.
     function records(b) {
         var tiles = b.tiles;
         var n = Math.floor(tiles.length / 2);
         var txs = b.txs || [];
-        // Eine Ziffer je Kachel, dieselbe Reihenfolge. Aeltere Antworten ohne
-        // dieses Feld gelten als "Zahlung".
+        // One digit per tile, same order. Older responses without this field count
+        // as "payment".
         var types = b.types || "";
         var out = [];
         for (var i = 0; i < n; i++) {
@@ -154,8 +148,8 @@ Item {
         return out;
     }
 
-    // Wie oft kommt welche Art vor. Ein Durchgang ueber die Kacheln, einmal je
-    // Aktualisierung -- daraus lebt die Legende.
+    // How often each type occurs. One pass over the tiles per update; the legend
+    // is built from it.
     function countTypes() {
         var c = [0, 0, 0, 0, 0, 0, 0, 0];
         for (var i = 0; i < root.squares.length; i++)
@@ -163,8 +157,8 @@ Item {
         root.typeCounts = c;
     }
 
-    // Die Farbe einer Kachel -- die eine Stelle, an der die Betriebsart
-    // entschieden wird. Beide Leinwaende fragen hier.
+    // Color of a tile: the one place where the coloring mode is decided. Both
+    // canvases ask here.
     function tileColor(s) {
         if (root.colorMode === "type")
             return TxType.info(TxType.kindAt(s.k)).color;
@@ -178,10 +172,9 @@ Item {
         return Math.max(4, Math.ceil(Math.sqrt(w)));
     }
 
-    // Die Zuordnung Zelle -> Kachel neu aufbauen. Sie traegt den Tooltip und
-    // den Klick -- und wird deshalb erst gebaut, wenn die Maus wirklich ueber
-    // der Grafik steht. Bei jeder Aktualisierung sind es siebentausend
-    // Eintraege, die sonst niemand liest.
+    // Rebuild the cell -> tile map. It serves tooltip and click, so it is only
+    // built once the mouse is actually over the graphic. On every update that
+    // would be seven thousand entries nobody reads.
     function reindex() {
         root.__idxDirty = false;
         var idx = {};
@@ -219,8 +212,8 @@ Item {
             return;
         }
 
-        // Lohnt das Nachfuehren ueberhaupt? Nach einem Blockfund ist der
-        // geplante Block ein voellig anderer -- dann ist Neupacken richtig.
+        // Is tracking worth it at all? After a block is found the projected block is
+        // completely different, and repacking is the right thing.
         var known = 0;
         for (var i = 0; i < recs.length; i++) {
             if (root.__byId[recs[i].id])
@@ -261,11 +254,11 @@ Item {
         repaintAll();
     }
 
-    // **Luecken schliessen, in zwei Stufen.** Nach jeder Aktualisierung die
-    // Schwerkraft (wie bei mempool.space): wenig Bewegung, drittelt die
-    // Loecher. Werden es trotzdem mehr als ein Prozent der Flaeche, stabil neu
-    // packen -- dann springt rund jede zehnte Kachel, danach ist der Block
-    // dicht. Messungen und Begruendung stehen in `mondrian.js`.
+    // Close gaps in two stages. After each update apply gravity (as on
+    // mempool.space): little movement, cuts the holes to a third. If they still
+    // exceed one percent of the area, repack stably: about one tile in ten
+    // moves, and the block is dense afterwards. Measurements and reasoning are
+    // in `mondrian.js`.
     function lueckenSchliessen(lay, eintraege) {
         lay.gravity(eintraege);
         if (lay.enclosedHoles() <= lay.width * lay.width * 0.01)
@@ -275,9 +268,9 @@ Item {
         return neu;
     }
 
-    // Nachfuehren statt neu packen: erst alle Abgaenge, damit ihre Flaeche
-    // wieder zur Verfuegung steht, dann die Zugaenge in der Reihenfolge, in der
-    // sie geliefert wurden (nach Gebuehrenrate absteigend).
+    // Update instead of repacking: first all removals so their area becomes
+    // free, then the additions in the order they were delivered (by fee rate,
+    // descending).
     function update(recs) {
         var lay = root.__lay;
         var alt = root.__byId, neu = {}, i, e;
@@ -298,8 +291,8 @@ Item {
             var r = recs[i];
             e = alt[r.id];
             if (e) {
-                // Bekannt: Platz behalten, aber Gebuehrenklasse und Angaben
-                // nachziehen -- die Rate einer Transaktion kann sich aendern.
+                // Known: keep the position but update fee class and data, since a
+                // transaction's rate can change.
                 e.b = r.b;
                 e.k = r.k;
                 e.d = r.d;
@@ -324,7 +317,7 @@ Item {
         canvas.requestPaint();
 
         root.computeFlashBox();
-        // Nur aufblitzen lassen, wenn jemand hinsieht
+        // Only flash when someone is looking.
         if (fresh.length > 0 && root.visible) {
             root.flashPhase = 1;
             flashTimer.restart();
@@ -334,10 +327,9 @@ Item {
         root.markFlash();
     }
 
-    // Nur die Aenderung einarbeiten. Der Daemon fuehrt ein Aenderungsbuch und
-    // schickt auf Wunsch nur, was seit dem letzten Stand zu- und abgegangen
-    // ist -- gemessen 5 bis 90 kB statt 634 kB je Abfrage. Ohne das kostete
-    // allein das Zerlegen des JSON 6 % CPU.
+    // Apply only the delta. The daemon keeps a change log and on request sends
+    // only what was added and removed since the last version: 5 to 90 kB instead
+    // of 634 kB per request. Without it, parsing the JSON alone cost 6 % CPU.
     function applyDelta(d) {
         if (!root.live || root.__lay === null || !root.squares.length) {
             return false;
@@ -360,8 +352,8 @@ Item {
             var r = recs[i];
             var e = byId[r.id];
             if (e) {
-                // Schon da: nur Gebuehrenklasse und Art ziehen nach, der Platz
-                // bleibt. Genau das ist der Sinn der Uebung.
+                // Already present: only fee class and type are updated, the position stays.
+                // That is the whole point.
                 e.b = r.b;
                 e.k = r.k;
                 e.d = r.d;
@@ -372,16 +364,16 @@ Item {
             }
         }
 
-        // Die Kachelliste neu aufreihen. Die Reihenfolge spielt fuers Bild
-        // keine Rolle -- jede Kachel traegt ihren Platz bei sich.
+        // Rebuild the tile list. Order does not matter for the picture, every tile
+        // carries its own position.
         var out = [], fresh = [];
         for (var id in byId) {
             if (frisch[id])
                 fresh.push(out.length);
             out.push(byId[id]);
         }
-        // Erst jetzt, wo Ab- und Zugaenge eingearbeitet sind: die Luecken,
-        // die kein Zugang gefuellt hat, schliessen sich von hinten.
+        // Only now, with removals and additions applied: gaps that no new tile
+        // filled are closed from behind.
         lay = root.lueckenSchliessen(lay, out);
 
         root.squares = out;
@@ -405,11 +397,10 @@ Item {
         return true;
     }
 
-    // Das Ausblenden laeuft ueber einen Zeitgeber, nicht ueber eine
-    // NumberAnimation. Eine Animation taktet mit der Bildwiederholrate, und
-    // jedes Bild kostet hier -- nachgemessen 5 % CPU allein fuer einen
-    // pulsierenden Punkt von sechs Pixeln. Fuenf Stufen ueber 750 ms sehen
-    // aus wie ein Verlauf und kosten ein Zwoelftel davon.
+    // The fade runs on a timer, not a NumberAnimation. An animation ticks at the
+    // display refresh rate and every frame costs here (5 % CPU just for a
+    // pulsing six-pixel dot). Five steps over 750 ms look like a smooth fade and
+    // cost a twelfth of that.
     Timer {
         id: flashTimer
 
@@ -426,7 +417,7 @@ Item {
         }
     }
 
-    // Nur den Umriss der frischen Kacheln neu zeichnen lassen
+    // Only repaint the bounding box of the new tiles.
     function markFlash() {
         if (root.flashBox)
             flashCanvas.markDirty(Qt.rect(root.flashBox.x, root.flashBox.y,
@@ -435,7 +426,7 @@ Item {
             flashCanvas.requestPaint();
     }
 
-    // Umriss aller frischen Kacheln in Leinwandkoordinaten
+    // Bounding box of all new tiles in canvas coordinates.
     function computeFlashBox() {
         if (!root.freshIdx.length) {
             root.flashBox = null;
@@ -493,7 +484,7 @@ Item {
             var bx = root.originX;
             var by = root.originY;
 
-            // Nach Farbe buendeln -- das spart tausende Zustandswechsel
+            // Group by color, which saves thousands of state changes.
             var groups = {}, i, s, c;
             for (i = 0; i < root.squares.length; i++) {
                 s = root.squares[i];
@@ -511,7 +502,7 @@ Item {
                 }
             }
 
-            // Kachel unter dem Zeiger hervorheben
+            // Highlight the tile under the pointer.
             if (root.hovered !== null && root.squares[root.hovered]) {
                 var h = root.rectFor(root.squares[root.hovered].sq, g, bx, by, p);
                 ctx.fillStyle = Palette.hoverColor();
@@ -520,9 +511,9 @@ Item {
         }
     }
 
-    // Die frisch hinzugekommenen Kacheln liegen auf einer eigenen Leinwand --
-    // dieselbe Aufteilung wie im Feed (Halde unten, fallende Kacheln darueber).
-    // Nur so kostet das Aufblitzen wenige Rechtecke statt des ganzen Blocks.
+    // New tiles live on their own canvas, the same split as in the feed (pile
+    // below, falling tiles above). That way the flash costs a few rectangles
+    // instead of the whole block.
     Canvas {
         id: flashCanvas
 
@@ -589,7 +580,7 @@ Item {
         }
     }
 
-    // Angaben zur Kachel unter dem Zeiger
+    // Details of the tile under the pointer.
     Rectangle {
         visible: root.hovered !== null && tipCol.height > 0
         width: tipCol.width + root.labelSize * 1.6

@@ -1,11 +1,11 @@
-// Bitfeed-Ansicht: gefundener Block in der Mitte, Mempool als Halde unten,
-// neue Transaktionen fallen von oben hinein.
+// Bitfeed view: the found block in the middle, the mempool as a pile at the
+// bottom, new transactions fall in from the top.
 //
-// Packung, Groessen und Farben folgen dem Original (bitfeed, MIT, mononaut):
-//   Kantenlaenge = ceil(log10(Ausgabewert in sat)) - 5, begrenzt auf 1..5
-//   Anordnung    = Mondrian-Slot-Layout, siehe mondrian.js
-//   Farbe        = nach Alter (orange -> blau in 60 s) oder Gebuehrenrate
-//   Abstand      = fester Pixelwert, deshalb ueberall gleich gross
+// Packing, sizes and colors follow the original (bitfeed, MIT, mononaut):
+//   side length = ceil(log10(output value in sat)) - 5, clamped to 1..5
+//   layout      = Mondrian slot layout, see mondrian.js
+//   color       = by age (orange -> blue in 60 s) or by fee rate
+//   gap         = fixed pixel value, so it is the same size everywhere
 import QtQuick
 import "mondrian.js" as Mondrian
 import "colors.js" as Palette
@@ -15,86 +15,71 @@ import "strings.js" as Tr
 Item {
     id: root
 
-    // Fallende Kacheln starten oberhalb des Bereichs (`fromY` ist negativ).
-    // Ohne Beschneidung zeichnet QML sie ausserhalb weiter -- im eigenen
-    // Fenster faellt das nicht auf, weil das Fenster selbst beschneidet, im
-    // Dashboard-Popup dagegen regnete es ueber den ganzen Bildschirm.
+    // Falling tiles start above the area (`fromY` is negative). Without
+    // clipping QML keeps drawing them outside. In a window of its own the window
+    // clips, but in the dashboard popup they would rain over the whole screen.
     clip: true
 
     property var feed: null
     property bool paused: false
-    // Rahmenfarbe fuer Transaktionen einer beobachteten Wallet
+    // Outline color for transactions of a watched wallet
     property color ownColor: "#ffffff"
     property bool showBlock: true
     property real density: 1.0
     property string colorMode: "age"        // "age" | "fee"
     property string sizeMode: "value"       // "value" | "vbytes"
-    property int fullMempool: 120000        // volle Halde entspricht so vielen TX
+    property int fullMempool: 120000        // a full pile corresponds to this many TX
     property color gridColor: "#2a2a38"
     property color rulerColor: "#7d8a8a"
     property int labelFont: 11
     property bool showRuler: true
     property string lang: "de"
 
-    // --- Raster und Aufteilung, Formeln aus bitfeed ----------------------
-    // TxPoolScene.resize: heightLimit = Hoehe/4 (bei schmalen Fenstern /4,5).
-    // Das ist bei bitfeed ein **Deckel** fuer die Halde, und als Deckel steht
-    // er hier weiter. Er war hier aber zugleich die einzige Regel, und damit
-    // bekam die Halde **immer** genau ein Viertel -- gleichgueltig, ob dem
-    // Block darueber ein Viertel oder das Dreifache seiner eigenen Groesse
-    // zur Verfuegung stand.
+    // --- Grid and layout, formulas from bitfeed --------------------------
+    // TxPoolScene.resize: heightLimit = height/4 (height/4.5 in narrow windows).
+    // In bitfeed that is a cap for the pile. Used as the only rule, the pile
+    // would always get exactly a quarter, no matter whether the block above has
+    // a quarter or three times its own size available.
     //
-    // **Im Hochformat faellt das auseinander.** Bei 440x950 sind das 189 Pixel
-    // fuer die Halde und 661 fuer den Block, der davon 317 braucht: der Block
-    // schwimmt in Leerraum, und der lebendige Teil des Bildes wird gequetscht.
-    // Am 05.09.2026 auf dem Telefon aufgefallen und im Xvfb nachgestellt.
+    // In portrait that falls apart: at 440x950 the pile would get 189 pixels and
+    // the block 661, of which it needs 317. The block floats in empty space and
+    // the live part of the picture is squeezed.
     //
-    // Also andersherum gerechnet: das Band oben ist so hoch, wie der Block es
-    // braucht, und der Rest gehoert der Halde -- **aber nur bis zu einem
-    // Drittel der Hoehe.**
+    // So it is computed the other way round: the band at the top is as tall as
+    // the block needs, and the rest belongs to the pile, but only up to a third
+    // of the height. Without that upper limit the pile takes over a large window
+    // (1900x1500 would give it 802 instead of 500 pixels).
     //
-    // Die Obergrenze fehlte zuerst, und sie fehlte sichtbar: auf einem grossen
-    // Fenster (1900x1500) bekam die Halde 802 statt 375 Pixel und uebernahm
-    // das Bild. Von aussen sah es aus, als scrolle sie nicht mehr -- sie war
-    // nur nicht mehr gedeckelt. Genau davor schuetzt bitfeeds Viertel-Regel,
-    // und ich hatte sie als Deckel entfernt statt sie als Boden zu behalten.
+    // bitfeed's fraction is the lower limit (the pile keeps its rows in a flat
+    // bar), a third of the height the upper limit. In between, what the block
+    // leaves over decides.
     //
-    // Beides gilt jetzt: der alte Bruchteil ist die **Untergrenze** (die
-    // Halde behaelt in einer flachen Leiste ihre Zeilen), ein Drittel der
-    // Hoehe die **Obergrenze**. Dazwischen entscheidet, was der Block
-    // uebriglaesst.
-    //
-    //     1900x1500   375 vorher   802 ohne Deckel   500 jetzt
-    //      440x900    200 vorher   532 ohne Deckel   300 jetzt
+    //     1900x1500   500 px pile
+    //      440x900    300 px pile
     readonly property real blockWish: Math.min(width * 0.72, height / 2.5)
-    // 0,86 ist derselbe Faktor, mit dem `blockSide` unten aus `poolTop`
-    // zurueckrechnet -- hier einmal vorwaerts, damit beide dasselbe meinen.
+    // 0.86 is the same factor `blockSide` below uses to compute back from
+    // `poolTop`. Applied forward here so both mean the same thing.
     readonly property real blockBand: showBlock ? blockWish / 0.86 : 0
     readonly property real poolLimit: height / (width <= 620 ? 4.5 : 4)
     readonly property real poolH: showBlock
         ? Math.max(poolLimit, Math.min(height - blockBand, height / 3))
         : height
     readonly property real poolTop: Math.max(0, height - poolH)
-    // Im Original haengt die Kachelgroesse an der Fensterbreite
-    // (max(4, Breite/250)) -- beim Aufziehen des Fensters wachsen die Kacheln
-    // dort also mit. Hier ist sie **fest**: 4 px Kachel, 1 px Abstand, also
-    // genau das Bild, das bitfeed bei rund tausend Pixeln Breite zeigt. Breiter
-    // wird das Fenster, mehr Spalten passen hinein -- die Kacheln bleiben
-    // gleich. Groesser oder kleiner geht ueber die Einstellung "Kachelgroesse".
-    // **Ganze Geraetepixel, nicht ganze logische Punkte.** Diese Weiten waren
-    // ganzzahlig, und das beseitigte das Karomuster -- auf einem Schirm mit
-    // Verhaeltnis 1 oder 2. Bei 2,8125 (450 dpi, Galaxy A55) ist eine ganze
-    // logische Zahl wieder gebrochen: aus 1 Punkt Fuge werden 2,8125
-    // Geraetepixel.
+    // In the original the tile size follows the window width (max(4,
+    // width/250)), so tiles grow when the window is enlarged. Here it is fixed:
+    // 4 px tile, 1 px gap, which is what bitfeed shows at about a thousand
+    // pixels width. A wider window fits more columns, the tiles stay the same.
+    // The "tile size" setting makes them larger or smaller.
     //
-    // Am 08.09.2026 an einer Bildzeile nachgemessen: von einer Fuge ist genau
-    // **ein** Geraetepixel dunkel, der Rest verteilt sich als Teildeckung auf
-    // die Nachbarn, und die Aufteilung ist bei jeder Fuge anders (74/12/33,
-    // dann 159/72/11/37, dann 156/71/11/40). Also wirken die Fugen
-    // abwechselnd duenner und dicker und die Kanten weich -- dasselbe
-    // Karomuster, eine Koordinatenebene tiefer.
+    // Whole device pixels, not whole logical points. Integer logical sizes only
+    // avoid the checkerboard pattern at a device pixel ratio of 1 or 2. At
+    // 2.8125 (450 dpi phones) a whole logical number is fractional again: a
+    // 1 point gap becomes 2.8125 device pixels. Exactly one device pixel of the
+    // gap is then dark and the rest is spread as partial coverage over the
+    // neighbors, differently for every gap. Gaps look alternately thin and thick
+    // and the edges soft: the same checkerboard, one coordinate level lower.
     //
-    // Deshalb wird in Geraetepixeln gerechnet und erst am Ende zurueckgeteilt.
+    // So everything is computed in device pixels and divided back at the end.
     readonly property real dpr: Screen.devicePixelRatio > 0
                                 ? Screen.devicePixelRatio : 1
 
@@ -117,76 +102,73 @@ Item {
     readonly property int gridW: Math.max(8, Math.floor(width / gridSize) - 1)
     readonly property int gridRows: Math.max(3, Math.floor(poolH / gridSize))
     readonly property real gridLeft: root.schnapp((width - gridW * gridSize) / 2)
-    // TxController.resize: blockAreaSize = min(Breite*0,75, Hoehe/2,5)
+    // TxController.resize: blockAreaSize = min(width*0.75, height/2.5)
     readonly property real blockSide: Math.min(width * 0.72, height / 2.5, poolTop * 0.86)
     readonly property real blockCenterY: poolTop * 0.5
-    // Oberkante der Halde -- dort sitzt die gestrichelte Linie, wie im Original
-    // (mempoolScreenHeight). Sie wandert also mit dem Fuellstand.
+    // Top edge of the pile, where the dashed line sits as in the original
+    // (mempoolScreenHeight). It moves with the fill level.
     readonly property real pileTopY: height - pileRows * gridSize + scrollPx
 
-    // --- Zustand ---------------------------------------------------------
+    // --- State -----------------------------------------------------------
     property var layout: null
     property var poolTx: []                 // {sq, t0, rate, fly, fromY}
-    // Eigene Liste der noch fallenden Kacheln. Sonst muesste dreissigmal pro
-    // Sekunde die ganze Halde durchlaufen werden, um die paar zu finden.
+    // Separate list of the tiles still falling. Otherwise the whole pile would
+    // have to be scanned thirty times a second to find those few.
     property var flying: []
-    property real scrollPx: 0           // sanftes Nachrutschen nach dem Abraeumen
-    property var cellIndex: ({})            // Rasterzelle -> Kachel, fuer den Tooltip
+    property real scrollPx: 0           // smooth settling after clearing a row
+    property var cellIndex: ({})            // grid cell -> tile, for the tooltip
     property var hoveredTx: null
-    property var hoverRect: null            // Umriss der Kachel unter dem Zeiger
+    property var hoverRect: null            // outline of the tile under the pointer
     property real hoverX: 0
     property real hoverY: 0
     property real blockPulse: 0
-    // **Am Finger bleibt die Angabe stehen, bis man woanders hintippt.** Die
-    // Kennung der Transaktion, deren Angabe gerade festgehalten wird; ein
-    // zweiter Tipp auf dieselbe Kachel oeffnet sie im Explorer. Siehe den
-    // PointHandler unten.
+    // On touch the info stays until the user taps somewhere else. This is the
+    // id of the transaction whose info is currently pinned; a second tap on the
+    // same tile opens it in the explorer. See the PointHandler below.
     property string pinnedTxid: ""
     readonly property bool touchUi: Qt.platform.os === "android" || Qt.platform.os === "ios"
 
-    // Eine Kachel wurde angetippt -- der Wirt entscheidet, was damit geschieht
-    // (im Fenster: ab in den Explorer).
+    // A tile was tapped. The host decides what to do with it (in the window:
+    // open it in the explorer).
     signal txActivated(string txid)
 
-    // --- Sicht: Zoom und Verschiebung ------------------------------------
-    // Die Kacheln sind 4 px gross; ohne Vergroesserung laesst sich eine
-    // einzelne Transaktion kaum treffen. Der Zoom ist bewusst eine reine
-    // *Sicht*-Angelegenheit: das Raster und die Packung bleiben unveraendert,
-    // nur gezeichnet wird verschoben und skaliert. Deshalb sitzt er als
-    // ctx.setTransform in den Leinwaenden und als transform auf den
-    // Rechteck-Ebenen -- beides zeichnet dadurch scharf neu, statt ein
-    // fertiges Bild zu vergroessern.
+    // --- View: zoom and pan ----------------------------------------------
+    // Tiles are 4 px, so without magnification a single transaction is hard to
+    // hit. Zoom is purely a view matter: grid and packing stay unchanged, only
+    // the drawing is translated and scaled. That is why it lives in
+    // ctx.setTransform in the canvases and as a transform on the rectangle
+    // layers. Both then redraw sharply instead of scaling a finished image.
     property real zoom: 1
     property real viewX: 0
     property real viewY: 0
     readonly property real minZoom: 1
     readonly property real maxZoom: 24
     readonly property bool zoomed: zoom > 1.0001
-    // War das letzte Bild vergroessert? Beim Zuruecknehmen muss einmal die
-    // ganze Leinwand geraeumt werden.
+    // Was the last frame zoomed? When zooming out, the whole canvas has to be
+    // cleared once.
     property bool __warZoom: false
-    // Die Geometrie des letzten Bildes. Wozu: siehe `clearTop` in `onPaint`.
+    // Geometry of the last frame. Used by `clearTop` in `onPaint`.
     property real __letzteBreite: -1
     property real __letzteHoehe: -1
     property real __letzteLinie: -1
-    // Anzahl je Transaktionsart im dargestellten Block, Index wie TxType.KINDS
+    // Count per transaction type in the displayed block, indexed like TxType.KINDS
     property var blockTypeCounts: []
 
-    // Die Lesart bestimmt jede Farbe im Bild -- beide Leinwaende muessen neu.
-    // Ohne das blieb der Block nach dem Umschalten in der alten Farbe stehen,
-    // bis der naechste gefunden wurde.
+    // The color mode determines every color in the picture, so both canvases
+    // must repaint. Otherwise the block keeps its old color until the next one
+    // is found.
     onColorModeChanged: {
         poolCanvas.requestPaint();
         blockCanvas.requestPaint();
         flyLayer.refresh();
     }
 
-    // Farbe einer Blockkachel. Drei Lesarten:
+    // Color of a block tile. Three modes:
     //
-    //   age   der Block ist fertig, alle Kacheln haben dasselbe Alter --
-    //         eine Farbe fuer den ganzen Block, wie im Original
-    //   fee   nach Gebuehrenrate
-    //   type  nach gedeuteter Transaktionsart (Mempool-Goggles)
+    //   age   the block is complete and all tiles have the same age, so one
+    //         color for the whole block, as in the original
+    //   fee   by fee rate
+    //   type  by inferred transaction type (mempool goggles)
     function blockTileColor(s) {
         if (root.colorMode === "type")
             return TxType.info(TxType.kindAt(s.k || 0)).color;
@@ -199,29 +181,25 @@ Item {
         ctx.setTransform(zoom, 0, 0, zoom, viewX, viewY);
     }
 
-    // Einen Szenenwert so verschieben, dass er nach der Vergroesserung auf
-    // einem ganzen **Bildschirm**punkt landet.
+    // Shift a scene value so that after scaling it lands on a whole screen
+    // pixel.
     //
-    // Vorher wurde in Szenenkoordinaten gerundet. Bei Massstab 1 ist das
-    // dasselbe, ab Massstab 2 nicht mehr: die Halde zeichnete auf
-    // `round(y)`, die Animationsebene aber auf den ungerundeten Wert -- und
-    // `y` ist wegen des nachrutschenden `scrollPx` gebrochen. Eine gerade
-    // gelandete Kachel sprang deshalb beim Uebergang von der einen zur
-    // anderen Ebene um bis zu einen halben Rasterschritt, und die Luecke
-    // daneben wurde sichtbar ungleich. Beide rechnen jetzt gleich.
-    // **Auf ganze Geraetepixel, nicht auf ganze logische Punkte.** Hier stand
-    // `Math.round(v * zoom) / zoom` -- gerundet wurde also auf einen logischen
-    // Punkt, und der liegt bei einem Verhaeltnis von 2,8125 mitten im
-    // Geraetepixel. Damit machte diese Zeile beim Zeichnen zunichte, was das
-    // Raster (`zelleDev`, `fugeDev`) vorher genau gelegt hatte.
+    // Rounding has to happen in screen space. Rounding in scene coordinates
+    // only matches at scale 1: the pile would draw at `round(y)` while the
+    // animation layer uses the unrounded value, and `y` is fractional because
+    // of the settling `scrollPx`. A tile that just landed would jump by up to
+    // half a grid step when moving from one layer to the other, and the gap
+    // next to it would be visibly uneven. Both layers use this function.
     //
-    // Am 08.09.2026 in der Halde nachgemessen, Fugenbreiten in Geraetepixeln:
-    // 4 px (177x), 5 px (689x), 6 px (183x), 7 px (134x) -- gemeint sind
-    // ueberall sechs. Die Rasterweite selbst war mit 17 px richtig, die
-    // Kacheln aber je ein Pixel breiter als gerechnet und frassen die Fuge an.
+    // It rounds to whole device pixels, not whole logical points. At a ratio of
+    // 2.8125 a logical point sits in the middle of a device pixel, and rounding
+    // to it would undo the grid that `zelleDev` and `fugeDev` laid out: gaps
+    // meant to be six device pixels wide came out as 4 to 7, and tiles one
+    // pixel wider than computed ate into the gap.
     //
-    // `zoom` bleibt drin: gerundet wird im Bildschirmraum und zurueckgerechnet
-    // in Szenenkoordinaten, damit es auch im Zoom auf ganzen Punkten sitzt.
+    // `zoom` is part of it: rounding happens in screen space and is converted
+    // back to scene coordinates, so the result also sits on whole pixels when
+    // zoomed.
     function snap(v) {
         var s = zoom * root.dpr;
         return Math.round(v * s) / s;
@@ -235,8 +213,7 @@ Item {
         return (py - viewY) / zoom;
     }
 
-    // Nie ueber den Rand hinaus: bei Zoom 1 sitzt die Sicht wieder genau auf
-    // dem Bild.
+    // Never past the edge: at zoom 1 the view sits exactly on the picture again.
     function clampView() {
         if (zoom <= minZoom + 0.0001) {
             zoom = minZoom;
@@ -248,15 +225,13 @@ Item {
         viewY = Math.round(Math.min(0, Math.max(height - height * zoom, viewY)));
     }
 
-    // Vergroessern um einen festen Punkt herum: was unter dem Zeiger liegt,
-    // bleibt unter dem Zeiger.
-    // Der Massstab ist **ganzzahlig**, und die Verschiebung liegt auf ganzen
-    // Bildpunkten. Grund: die Halde ist ein Pixelraster aus 4-px-Kacheln. Ein
-    // gebrochener Massstab macht jede Kante gebrochen, und weil ohne
-    // Kantenglaettung gezeichnet wird, schnappt jede Kante einzeln -- aus
-    // Quadraten werden Rechtecke und es entsteht ein Karomuster. Mit ganzen
-    // Zahlen bleibt jede Kachel exakt quadratisch und jede Luecke gleich breit,
-    // bei jeder Vergroesserung.
+    // Zoom around a fixed point: whatever is under the pointer stays under the
+    // pointer. The scale is an integer and the offset sits on whole pixels.
+    // The pile is a pixel grid of 4 px tiles. A fractional scale makes every
+    // edge fractional, and since drawing is done without antialiasing each edge
+    // snaps on its own: squares turn into rectangles and a checkerboard pattern
+    // appears. With integers every tile stays exactly square and every gap the
+    // same width, at any magnification.
     function setZoomAt(px, py, z) {
         var z1 = Math.max(minZoom, Math.min(maxZoom, Math.round(z)));
         if (z1 === zoom)
@@ -270,8 +245,8 @@ Item {
         repaintView();
     }
 
-    // Ein Radschritt = eine Stufe. Ein Faktor waere hier sinnlos, weil ohnehin
-    // auf ganze Zahlen gerundet wird.
+    // One wheel step = one level. A factor would be pointless here, since the
+    // result is rounded to integers anyway.
     function zoomStep(px, py, dir) {
         setZoomAt(px, py, zoom + dir);
     }
@@ -302,13 +277,11 @@ Item {
 
     onWidthChanged: clampView()
     onHeightChanged: clampView()
-    property var mining: []             // Kacheln auf dem Weg in den Block
+    property var mining: []             // tiles on their way into the block
     property string blockPhase: "idle"  // idle | ice | fly
-    // Zeitgeber der Blockanimation. Hiess bis zum 06.09.2026 `blockClock` --
-    // umbenannt, weil BLOCKCLOCK ein angemeldetes Zeichen von Coinkite ist
-    // und der Name im Projekt nirgends mehr vorkommen soll, auch nicht dort,
-    // wo ihn niemand sieht. Ein Name, den man aus einem Grund vermeidet,
-    // vermeidet man ganz.
+    // Timer for the block animation. Named to avoid BLOCKCLOCK, a registered
+    // trademark of Coinkite; the name should not appear anywhere in the project,
+    // not even where nobody sees it.
     property real blockTakt: 0
     property bool blockRevealed: true
     property real blockFade: 0
@@ -316,56 +289,52 @@ Item {
     property int placed: 0
     property bool poolDirty: false
     property int pileRows: 0
-    property int occupied: 0            // belegte Rastereinheiten, Summe r*r
-    property var queue: []              // wartende Ankuenfte
+    property int occupied: 0            // occupied grid units, sum of r*r
+    property var queue: []              // pending arrivals
     property real queueAcc: 0
-    // Obergrenze der Schlange. Begruendung an `onTransactionsArrived`.
+    // Upper limit of the queue. Reasoning at `onTransactionsArrived`.
     property int queueMax: 240
 
     signal blockLayoutChanged
 
-    // Abstand zwischen den Blockkacheln -- ein Viertel der Rasterweite wie im
-    // Original, aber auf ganze Pixel gerundet. Zusammen mit den gerundeten
-    // Kanten (siehe blockRect) sind die Luecken dadurch ueberall exakt gleich
-    // breit. Vorher lagen sie auf gebrochenen Pixelwerten: mal fiel ein Pixel
-    // mehr auf die Luecke, mal weniger, und daraus entstand ein Karomuster.
-    // Rand um jede Blockkachel; die Luecke zwischen zwei Nachbarn ist doppelt
-    // so breit. Das Original rechnet `unitPadding = gridSize / 4`, die Kachel
-    // ist dort also genau halb so breit wie die Rasterzelle -- bei kleinen
-    // Rasterweiten wirkt der Block dadurch sehr luftig: bei g = 7 sind das
-    // 3 px Kachel auf 4 px Luecke, waehrend die Halde daneben 4 px Kachel auf
-    // 2 px Luecke zeigt.
+    // Gap between the block tiles, a quarter of the grid step as in the
+    // original, but rounded to whole pixels. Together with the rounded edges
+    // (see blockRect) the gaps are exactly the same width everywhere. On
+    // fractional pixel values a gap sometimes gets one pixel more and sometimes
+    // one less, which creates a checkerboard pattern.
+    // Padding around each block tile; the gap between two neighbors is twice as
+    // wide. The original computes `unitPadding = gridSize / 4`, so there the tile
+    // is exactly half as wide as the grid cell. With small grid steps the block
+    // then looks very sparse: at g = 7 that is a 3 px tile on a 4 px gap, while
+    // the pile next to it shows a 4 px tile on a 2 px gap.
     //
-    // Hier ist der Teiler deshalb groesser. 8 ergibt bei g = 7 einen Rand von
-    // 1 px, also 5 px Kachel auf 2 px Luecke -- dieselbe Dichte wie in der
-    // Halde, und der Block wirkt als geschlossene Flaeche statt als Punktraster.
-    // Bewusste Abweichung vom Original; ueber blockPadDivisor einstellbar.
+    // So the divisor here is larger. 8 gives a 1 px padding at g = 7, so a 5 px
+    // tile on a 2 px gap: the same density as the pile, and the block reads as
+    // a solid area instead of a dot grid. A deliberate departure from the
+    // original, adjustable via blockPadDivisor.
     property int blockPadDivisor: 8
 
-    // **Ab wann Kachel und Fuge in ganze Zahlen passen.**
+    // From which cell size tile and gap fit into whole numbers.
     //
-    // Die Fuge ist mindestens ein Geraetepixel (warum: siehe `blockPad`). Bei
-    // einer Zelle von acht Pixeln ist das ein Achtel, bei drei Pixeln sind es
-    // zwei Drittel -- dann ist die Kachel schmaler als der Abstand, und aus
-    // dem Block wird ein Punktraster. Am 09.09.2026 auf dem Schreibtisch
-    // gemeldet und nachgerechnet, 105 Rasterzellen breit, dpr 1:
+    // The gap is at least one device pixel (see `blockPad` for why). With an
+    // eight pixel cell that is an eighth, with three pixels it is two thirds:
+    // the tile is then narrower than the gap and the block turns into a dot
+    // grid. Computed for a width of 105 grid cells at dpr 1:
     //
-    //     Blockseite  Zelle  Fuge  Kachel
-    //       250 px     2 px   1 px   1 px    Punktraster
-    //       300 px     2 px   1 px   1 px    Punktraster
-    //       350 px     3 px   1 px   1 px    Fuge breiter als die Kachel
-    //       420 px     4 px   1 px   2 px    in Ordnung
-    //       840 px     8 px   1 px   6 px    so sieht es im grossen Fenster aus
+    //     block side  cell   gap   tile
+    //       250 px    2 px   1 px  1 px    dot grid
+    //       300 px    2 px   1 px  1 px    dot grid
+    //       350 px    3 px   1 px  1 px    gap wider than the tile
+    //       420 px    4 px   1 px  2 px    fine
+    //       840 px    8 px   1 px  6 px    what a large window shows
     //
-    // Unter vier Geraetepixeln gibt es **keine** ganzzahlige Aufteilung, die
-    // beides traegt. Dort wird deshalb gebrochen gerechnet und
-    // kantengeglaettet: weich statt hart. Eine weiche, gleichmaessige Textur
-    // ist ehrlicher als ein hartes Raster, das eine Struktur vortaeuscht, die
-    // keine ist.
+    // Below four device pixels there is no integer split that works for both.
+    // There the values stay fractional and are antialiased: soft instead of
+    // hard. A soft, even texture is more honest than a hard grid that suggests
+    // a structure that is not there.
     //
-    // **Die Schwelle steht nur hier.** Vorher stand sie dreimal als
-    // `g * dpr < 2` und einmal als `blockUnit(...) < 2` -- letzteres in
-    // logischen Punkten, was ab dpr 2 etwas anderes bedeutet.
+    // The threshold lives only here, in device pixels. `grobRaster()` is the
+    // one place that checks it.
     readonly property int zelleGanzAb: 4
 
     function grobRaster(g) {
@@ -373,52 +342,42 @@ Item {
     }
 
     function blockPad(g) {
-        // Unter zwei Bildpunkten je Zelle gibt es keine ganzen Zahlen mehr, die
-        // Kachel und Luecke zugleich hergeben -- dann das Verhaeltnis des
-        // Originals (g/4) gebrochen, zusammen mit Kantenglaettung.
+        // Below `zelleGanzAb` device pixels per cell there are no whole numbers
+        // that give both tile and gap, so use the original's ratio (g/4) as a
+        // fraction, together with antialiasing.
         if (root.grobRaster(g))
             return g / 4;
-        // **Der Mindestrand ist ein Geraetepixel, nicht ein logischer
-        // Punkt.** Ein logischer Punkt sind auf einem 450-dpi-Schirm 2,8
-        // Geraetepixel -- und bei einer Zelle von sechs Geraetepixeln bleibt
-        // davon keine Kachel uebrig. Am 08.09.2026 auf einem Galaxy A55
-        // nachgemessen: **240 Kacheln 1 px breit, 40 zwei px, zusammen 19 %
-        // aller Kacheln** -- schmaler als die Fugen dazwischen (5-6 px).
-        //
-        // Das steht dem entgegen, was unten bei `blockPadDivisor` als Absicht
-        // notiert ist: Kachel 5 auf Luecke 2, "geschlossene Flaeche statt
-        // Punktraster". Tatsaechlich war es 1 auf 5, also umgekehrt.
-        //
-        // Ein Zwischenschritt hatte diesen Rand schon einmal auf ein
-        // Geraetepixel gesetzt und dann zurueckgedreht, weil der Block
-        // "dichter als gemeint" wirkte. Dichter **war** das Gemeinte.
+        // The minimum padding is one device pixel, not one logical point. On a
+        // 450 dpi screen a logical point is 2.8 device pixels, and with a six
+        // device pixel cell that leaves no tile at all: tiles one or two pixels
+        // wide, narrower than the gaps between them (5 to 6 px). That is the
+        // opposite of what `blockPadDivisor` intends (tile 5 on gap 2, a solid
+        // area instead of a dot grid).
         return Math.max(1 / root.dpr, root.schnapp(
             g / Math.max(1, blockPadDivisor)));
     }
 
-    // Rasterweite des Blocks -- **ganzzahlig**. Vorher war das
-    // `blockSide / rowsUsed` und damit gebrochen; blockRect rundet beide Kanten
-    // einzeln, wodurch `x1 - x0` je nach Nachkommastelle mal floor(g*r) und mal
-    // ceil(g*r) ergab. Aus einem Quadrat wurde dann ein Rechteck von z. B. 3x4,
-    // und genau das erzeugte das Karomuster (offener Punkt 2 aus STAND.md).
-    // Der Block wird dadurch bis zu `rowsUsed` Pixel kleiner als der verfuegbare
-    // Platz -- unsichtbar, und dafuer ist jede Kachel exakt quadratisch und
-    // jede Luecke gleich breit.
+    // Grid step of the block, in whole device pixels. blockRect rounds both
+    // edges separately; with a fractional step `x1 - x0` would come out as
+    // floor(g*r) or ceil(g*r) depending on the fraction, turning a square into
+    // e.g. a 3x4 rectangle, which is what causes the checkerboard pattern.
+    // The block ends up to `rowsUsed` pixels smaller than the available space.
+    // That is invisible, and in exchange every tile is exactly square and every
+    // gap the same width.
     function blockUnit(rows) {
         var g = blockSide / Math.max(1, rows);
-        // **Ganzzahlig erst ab zwei Bildpunkten je Zelle.** Darunter waere
-        // floor(g) gleich 1: die Kachel fuellt die Zelle vollstaendig aus, die
-        // Luecke ist null und der Block wird eine geschlossene Flaeche. Genau
-        // das passierte am 01.09.2026 im Dashboard-Tab, wo der Block klein ist
-        // (bei 105 Rasterzellen Breite reicht floor(g) = 1 bis rund 210 px
-        // Blockseite). Mit gebrochener Weite springen die gerundeten Kanten
-        // zwischen 1 und 2 px und ergeben wieder eine Textur.
+        // Integer only from `zelleGanzAb` device pixels per cell up. Below that
+        // floor(g) would be very small or 1: the tile fills the whole cell, the gap
+        // is zero and the block becomes a solid area. That happens in the dashboard
+        // tab, where the block is small (at 105 grid cells width floor(g) = 1 lasts
+        // up to about 210 px block side). With a fractional step the rounded edges
+        // alternate between 1 and 2 px and give a texture again.
         //
-        // Ein Karomuster droht dort nicht: bei dieser Groesse sind ohnehin
-        // alle Kacheln 1 px gross.
+        // There is no checkerboard risk there: at that size all tiles are 1 px
+        // anyway.
         //
-        // **Ganzzahlig in Geraetepixeln**, nicht in logischen Punkten -- die
-        // Begruendung steht oben bei `dpr`.
+        // Integer in device pixels, not logical points. The reason is at `dpr`
+        // above.
         return root.grobRaster(g) ? g : root.schnappAb(g);
     }
 
@@ -493,18 +452,16 @@ Item {
         return gridLeft + sq.x * gridSize + unitPad;
     }
 
-    // Zwischen zwei Kacheln liegt eine Luecke von wenigen Bildpunkten. Faellt
-    // der Zeiger darauf, soll die letzte Angabe stehen bleiben statt zu
-    // flackern -- faehrt er dagegen weg, muss sie verschwinden.
+    // Between two tiles there is a gap of a few pixels. When the pointer is on
+    // it, the last info should stay instead of flickering; when it moves away,
+    // the info has to disappear.
     //
-    // Frueher wurde nur beim Verlassen der ganzen Flaeche geraeumt
-    // (`onExited`). Im Dashboard liegen aber grosse leere Bereiche **innerhalb**
-    // der Flaeche: dort verlaesst man nie etwas, und der Tooltip blieb ewig
-    // stehen. Massstab ist deshalb der Abstand zur zuletzt getroffenen Kachel,
-    // mit einer Rasterzelle Nachsicht.
-    // Was unter einem Punkt der Flaeche liegt: {tx, rect} oder null, in der
-    // Halde oder im Blockfeld darueber. Maus und Finger fragen dieselbe
-    // Stelle; vorher stand das nur im Zeiger-Handler.
+    // Clearing only on leaving the whole area (`onExited`) is not enough: the
+    // dashboard has large empty regions inside the area where nothing is ever
+    // left, and the tooltip would stay forever. So the measure is the distance
+    // to the last tile hit, with one grid cell of tolerance.
+    // What lies under a point of the area: {tx, rect} or null, in the pile or in
+    // the block field above it. Mouse and touch ask the same function.
     function hitAt(px, py) {
         var sx = toSceneX(px);
         var sy = toSceneY(py);
@@ -529,8 +486,8 @@ Item {
         return null;
     }
 
-    // Ein Tipp am Finger: festhalten, oeffnen oder wegraeumen. Aufgerufen vom
-    // PointHandler, der den Tipp selbst erkennt (siehe dort).
+    // A touch tap: pin, open or dismiss. Called by the PointHandler, which
+    // detects the tap itself (see there).
     function fingerTap(px, py) {
         var h = hitAt(px, py);
         var t = h && h.tx && h.tx.t ? String(h.tx.t) : "";
@@ -566,79 +523,65 @@ Item {
         }
     }
 
-    // Der Bildpunkt wandert mit dem Foerderband: rowOffset zaehlt die Zeilen,
-    // die unten schon herausgefallen sind, scrollPx laesst die Halde danach
-    // sanft nachrutschen statt zu springen.
+    // The pixel position moves with the conveyor belt: rowOffset counts the rows
+    // that have already dropped out at the bottom, scrollPx lets the pile settle
+    // smoothly afterwards instead of jumping.
     function targetY(sq) {
         return height - (sq.y - layout.rowOffset + sq.r) * gridSize + unitPad + scrollPx;
     }
 
-    // Die Halde arbeitet wie im Original als Foerderband: oben landen neue
-    // Transaktionen, unten faellt die aelteste Zeile aus dem Bild. Dadurch
-    // entstehen im Inneren gar keine Loecher -- nachgemessen ueber 40 000
-    // Kacheln bleibt die Dichte bei 100 %. Vorher wurde mitten aus der Halde
-    // entfernt; das loechert sie unaufhaltsam aus (bis 17 %).
-    // Liefert false, wenn gerade nicht abgeraeumt werden kann.
+    // The pile works like a conveyor belt, as in the original: new transactions
+    // land at the top, the oldest row drops out of the picture at the bottom.
+    // That leaves no holes in the interior; over 40 000 tiles the density stays
+    // at 100 %. Removing from the middle of the pile would riddle it with holes
+    // (down to 17 %).
+    // Returns false if it cannot clear right now.
     function shedBottomRow() {
         var base = layout.rowOffset;
         var i;
 
-        // **Nicht abraeumen, solange in der untersten Zeile noch etwas
-        // fliegt.** Am 09.09.2026 auf dem Galaxy A55 aufgefallen: unter der
-        // Halde fielen Kacheln beschleunigt aus dem Bild, als verliessen sie
-        // den Mempool. Sie taten das Gegenteil -- sie waren nur zu alt fuer
-        // die Anzeige. Gemessen im freien Band darunter:
+        // Do not clear while something in the bottom row is still flying.
+        // `mondrian.js` puts new tiles into the lowest free row. If this loop took
+        // the row away while a tile was still in the air, `sq.y < rowOffset`,
+        // `targetY` would be below the bottom edge, and the tile would fly there,
+        // accelerating out of the picture as if it were leaving the mempool.
         //
-        //     t=4,27 s   x432  y1258   28x5    (kommt herein)
-        //     t=4,33 s   x432  y1414   28x28   156 px in einem Bild
-        //
-        // Die Ursache stand zwei Zeilen weiter unten: `mondrian.js` legt neue
-        // Kacheln in die **unterste** freie Zeile, und diese Schleife nahm
-        // ihnen die Zeile weg, waehrend sie noch in der Luft waren. Danach
-        // war `sq.y < rowOffset`, `targetY` lag unter der Bildkante, und die
-        // Kachel flog dorthin -- getreu ihrer Anweisung.
-        //
-        // Ein Takt Wartezeit kostet nichts: der Flug dauert unter einer
-        // Sekunde, und die Halde darf so lange eine Zeile zu hoch stehen.
+        // Waiting one tick costs nothing: the flight takes under a second, and the
+        // pile may stand one row too high for that long.
         for (i = 0; i < poolTx.length; i++) {
             if (poolTx[i].sq.y === base && poolTx[i].fly < 1)
                 return false;
         }
 
-        // **Hier wird nichts mehr weggenommen.** Bis zum 09.09.2026 flog eine
-        // Kachel hinaus, sobald ihre unterste Zeile abgeraeumt wurde -- erst
-        // bei `sq.y === base`, dann bei `sq.y + sq.r <= base + 1`. Beide
-        // Bedingungen haengen an der **Zeile**, und das ist die falsche
-        // Groesse: eine Kachel mit `r = 1` erfuellt die zweite sofort und
-        // verschwindet damit in dem Bild, in dem sie noch voll zu sehen ist.
+        // Nothing is removed here. Removing a tile as soon as its bottom row is
+        // cleared depends on the row, which is the wrong measure: a tile with
+        // `r = 1` would vanish in the same frame in which it is still fully visible.
         //
-        // Ob etwas weg darf, entscheidet nicht die Zeile, sondern ob noch
-        // etwas davon zu sehen ist. Das prueft `raeumeUnsichtbare()` unten,
-        // Bild fuer Bild, und es gilt fuer jede Groesse gleich.
+        // Whether something may go depends on whether any of it is still visible.
+        // `raeumeUnsichtbare()` below checks that frame by frame, the same way for
+        // every size.
         layout.dropBottomRow();
-        scrollPx = -gridSize;       // die Halde rutscht sichtbar nach
+        scrollPx = -gridSize;       // the pile visibly settles
         return true;
     }
 
-    // Die Halde wird **nicht** kuenstlich aufgefuellt. Jede Kachel darin ist
-    // eine echte Transaktion, die von oben hereingefallen ist. Der Preis dafuer:
-    // nach dem Start dauert es rund eine Viertelstunde, bis die Halde voll ist
-    // -- die oeffentliche Schnittstelle liefert nur die neu eintreffenden
-    // Transaktionen (etwa fuenf pro Sekunde), nicht den Bestand des Mempools.
-    // Vorher standen dort Platzhalter: die erschienen ohne zu fallen und hatten
-    // keine Angaben fuer den Tooltip.
-    // **Weg ist erst, was nicht mehr zu sehen ist.**
+    // The pile is not filled artificially. Every tile in it is a real
+    // transaction that fell in from the top. The cost: after startup it takes
+    // about a quarter of an hour until the pile is full, because the public API
+    // only delivers newly arriving transactions (about five per second), not the
+    // mempool's current contents. Placeholders would appear without falling and
+    // have no data for the tooltip.
+    // Gone only once it is no longer visible.
     //
-    // `targetY` liefert die Oberkante der Kachel. Liegt die auf oder unter
-    // der Bildkante, steht kein Bildpunkt von ihr mehr im Bild -- vorher
-    // wird sie von der Haldenleinwand angeschnitten und laeuft sichtbar
-    // hinaus. Das gilt fuer eine 1x1 genauso wie fuer eine 5x5; an der
-    // Zeilennummer haengt nichts mehr.
+    // `targetY` gives the tile's top edge. If that is at or below the bottom
+    // edge, no pixel of it is in the picture anymore; before that the pile
+    // canvas cuts it off and it visibly runs out. This works the same for a 1x1
+    // as for a 5x5; nothing depends on the row number.
     function raeumeUnsichtbare() {
         var weg = null;
         for (var i = 0; i < poolTx.length; i++) {
-            // Was noch fliegt, wird nicht geraeumt: es steht in der Luft,
-            // nicht an seinem Platz, und verschwaende sonst mitten im Bild.
+            // Anything still flying is not cleared: it is in the air, not at its place,
+            // and would otherwise vanish in the middle of the picture.
             if (poolTx[i].fly >= 1 && targetY(poolTx[i].sq) >= height) {
                 if (!weg)
                     weg = [];
@@ -647,8 +590,8 @@ Item {
         }
         if (!weg)
             return;
-        // Ueber `removeTx`, damit `flying`, `cellIndex`, `hoveredTx`,
-        // `occupied` und das Layout in einem Zug mitgehen.
+        // Through `removeTx`, so `flying`, `cellIndex`, `hoveredTx`, `occupied` and
+        // the layout are all updated together.
         for (var j = 0; j < weg.length; j++)
             removeTx(weg[j]);
     }
@@ -661,21 +604,21 @@ Item {
 
         raeumeUnsichtbare();
 
-        // Was oben ueber den Rand waechst, faellt unten heraus
+        // What grows past the top edge drops out at the bottom
         var changed = false;
         var rounds = 0;
         while (layout.height() > gridRows && rounds++ < 3) {
             if (!shedBottomRow())
-                break;              // eine Kachel ist noch in der Luft
+                break;              // a tile is still in the air
             changed = true;
         }
         return changed;
     }
 
 
-    // Welche Kachel liegt unter dem Mauszeiger? Ueber die Rasterzelle, damit es
-    // nicht ueber tausende Kacheln laufen muss.
-    // px/py sind bereits Szenenkoordinaten (siehe toSceneX/toSceneY).
+    // Which tile is under the mouse pointer? Looked up through the grid cell so
+    // it does not have to scan thousands of tiles.
+    // px/py are already scene coordinates (see toSceneX/toSceneY).
     function txAt(px, py) {
         if (!layout || gridSize < 1)
             return null;
@@ -687,18 +630,16 @@ Item {
         return (e && e.fly >= 1) ? e : null;
     }
 
-    // Blockfund, wie in bitfeed (TxController.addBlock + TxBlockScene.prepareTx):
+    // Block found, as in bitfeed (TxController.addBlock + TxBlockScene.prepareTx):
     //
-    // 1. Die geminten Transaktionen verschwinden aus der Halde und leuchten
-    //    weiss auf (ice(): dieselbe Farbe mit Helligkeit 1 -> #ffffff).
-    // 2. Sie pulsieren kurz, zeitlich versetzt. Das Blockfeld bleibt leer.
-    // 3. Nach drei Sekunden fliegen **alle** Transaktionen des Blocks an ihren
-    //    Platz. Die, die nicht mehr im Bild sind (der Mempool ist groesser als
-    //    die sichtbare Halde), ziehen dafuer von unter der Bildkante herauf --
-    //    im Original ist das `prepareTxOnScreen` fuer noch nicht gezeichnete
-    //    Transaktionen.
-    // 4. Zusammengesetzt wird in Weiss; erst danach faerbt sich der Block in
-    //    einem Uebergang orange.
+    // 1. The mined transactions disappear from the pile and light up white
+    //    (ice(): the same color with lightness 1 -> #ffffff).
+    // 2. They pulse briefly, staggered in time. The block field stays empty.
+    // 3. After three seconds all transactions of the block fly to their place.
+    //    Those no longer in the picture (the mempool is larger than the visible
+    //    pile) rise from below the bottom edge; in the original that is
+    //    `prepareTxOnScreen` for transactions not drawn yet.
+    // 4. The block is assembled in white and only then fades to orange.
     function startBlockAnimation() {
         blockRevealed = false;
         blockPhase = "ice";
@@ -706,9 +647,9 @@ Item {
         blockPulse = 1;
         mining = [];
 
-        // Ein Block fasst rund fuenf Prozent des Mempools -- ungefaehr so viele
-        // Kacheln leuchten auch auf. Der Rest des Blocks zieht spaeter von
-        // unter der Bildkante herauf.
+        // A block holds roughly five percent of the mempool, and about that many
+        // tiles light up. The rest of the block rises from below the bottom edge
+        // later.
         var take = Math.min(Math.round(poolTx.length * 0.12), 700);
         for (var i = 0; i < take && poolTx.length > 0; i++) {
             var e = poolTx[Math.floor(Math.random() * poolTx.length)];
@@ -739,15 +680,15 @@ Item {
         if (!list || list.length === 0)
             return false;
 
-        // Wie viele Kacheln der Block hat -- bei sehr grossen Bloecken wird
-        // ausgeduennt, damit die Animation fluessig bleibt
+        // How many tiles the block has. Very large blocks are thinned out so the
+        // animation stays smooth.
         var maxTiles = 6000;
         var step = Math.max(1, Math.ceil(list.length / maxTiles));
         var targets = [];
         for (var i = 0; i < list.length; i += step)
             targets.push(blockCanvas.rectFor(list[i].sq));
 
-        // vorhandene Kacheln aus der Halde zuerst
+        // existing tiles from the pile first
         var n = Math.min(mining.length, targets.length);
         for (var k = 0; k < n; k++) {
             var m = mining[k];
@@ -762,7 +703,7 @@ Item {
         if (mining.length > targets.length)
             mining = mining.slice(0, targets.length);
 
-        // der Rest zieht von unter der Bildkante herauf
+        // the rest rises from below the bottom edge
         for (var j = n; j < targets.length; j++) {
             var q = targets[j];
             mining.push({
@@ -830,7 +771,7 @@ Item {
                 m.x = m.x0 + (m.tx - m.x0) * ease;
                 m.y = m.y0 + (m.ty - m.y0) * ease;
                 m.s = m.s0 + (m.ts - m.s0) * ease;
-                m.white = 1;                 // zusammengesetzt wird in Weiss
+                m.white = 1;                 // assembled in white
             }
             if (!pending) {
                 blockPhase = "settle";
@@ -839,27 +780,26 @@ Item {
             return true;
         }
 
-        // settle: der fertige Block faerbt sich von Weiss nach Orange
+        // settle: the finished block fades from white to orange
         blockFade = Math.min(1, blockTakt / 0.9);
         if (blockTakt > 1.15)
             finishBlockAnimation();
         return true;
     }
 
-    // Farbe einer Haldenkachel. **Die Art gibt es hier nicht**: die
-    // `transactions`-Nachrichten des WebSocket fuehren kein `flags` mit
-    // (02.09.2026 nachgesehen), und einzeln nachfragen scheidet bei fuenf
-    // neuen Transaktionen je Sekunde aus. In der Lesart "Art" faellt die Halde
-    // deshalb auf die Gebuehrenfarbe zurueck -- die Legende sagt das dazu.
+    // Color of a pile tile. There is no type here: the WebSocket `transactions`
+    // messages carry no `flags`, and querying each one is out of the question
+    // at five new transactions per second. In "type" mode the pile therefore
+    // falls back to the fee color, and the legend says so.
     function colorFor(entry) {
         if (colorMode === "age")
             return Palette.ageColor(Date.now() - entry.t0);
         return Palette.feeColorForRate(entry.rate);
     }
 
-    // mempool.space liefert die neuen Transaktionen im Sekundentakt als Paket.
-    // Wuerden sie alle gleichzeitig losfallen, gaebe es Stoesse statt Regen --
-    // also werden sie ueber das Intervall verteilt losgeschickt.
+    // mempool.space delivers new transactions as a batch every second. If they
+    // all started falling at once there would be bursts instead of rain, so they
+    // are released spread over the interval.
     function drainQueue(dt) {
         if (queue.length === 0) {
             queueAcc = 0;
@@ -873,7 +813,7 @@ Item {
         }
     }
 
-    // Liefert true, wenn sich die Halde geaendert hat und neu gezeichnet werden muss
+    // Returns true if the pile changed and needs to be repainted
     function step(dt) {
         drainQueue(dt);
         var g = height * 1.1;
@@ -884,21 +824,20 @@ Item {
             e.vy += g * dt;
             var ty = targetY(e.sq);
             var span = ty - e.fromY;
-            // Der Uebergang zaehlt, nicht der Zustand: 'pending' darf nur in
-            // dem einen Bild gesetzt werden, in dem die Kachel landet. Wird es
-            // stattdessen bei jedem 'fly >= 1' gesetzt, ueberschreibt step()
-            // (30/s) sofort wieder, was poolCanvas.onPaint (5/s) zurueckgesetzt
-            // hat -- die Kachel verlaesst 'flying' nie, die Liste waechst auf
-            // die ganze Halde und ab 'capacity' fallen neue unsichtbar.
+            // The transition counts, not the state: 'pending' may only be set in the
+            // one frame in which the tile lands. If it were set on every 'fly >= 1',
+            // step() (30/s) would immediately overwrite what poolCanvas.onPaint (5/s)
+            // reset. The tile would never leave 'flying', the list would grow to the
+            // whole pile, and from 'capacity' on new tiles would fall invisibly.
             var wasFlying = e.fly < 1;
             e.fly = span > 0 ? Math.min(1, e.fly + (e.vy * dt) / span) : 1;
             if (e.fly >= 1 && wasFlying) {
                 e.pending = true;
                 settled = true;
             }
-            // Erst wenn die Halde neu gezeichnet ist (poolCanvas setzt pending
-            // zurueck), faellt die Kachel aus dieser Liste. Sonst ist sie fuer
-            // ein bis zwei Bilder nirgends zu sehen und blinkt weg.
+            // The tile leaves this list only once the pile has been repainted
+            // (poolCanvas resets pending). Otherwise it would be visible nowhere for one
+            // or two frames and blink out.
             if (e.fly < 1 || e.pending)
                 stillFlying.push(e);
         }
@@ -920,12 +859,10 @@ Item {
             scrolled = true;
         }
 
-        // **Die unterste Zeile wird nicht mehr eingesammelt.** Sie bleibt bis
-        // zuletzt in `poolTx` und wird von `poolCanvas` ueber die Kante hinaus
-        // gezeichnet und dort abgeschnitten. Eine eigene Liste dafuer -- und
-        // die abgeschnittene Schicht, die sie trug -- braucht es nicht mehr:
-        // was ganz unter der Kante liegt, ist ohnehin unsichtbar, und was
-        // darueber liegt, gehoert noch zur Halde.
+        // The bottom row is not collected separately. It stays in `poolTx` until
+        // the end and `poolCanvas` draws it past the edge, where it is clipped.
+        // Anything fully below the edge is invisible anyway, and anything above it
+        // still belongs to the pile.
 
         var animating = stepBlockAnimation(dt);
         return maintainPool(dt) || settled || scrolled || animating;
@@ -942,30 +879,24 @@ Item {
         function onTransactionsArrived(txs) {
             if (root.paused || !root.layout)
                 return;
-            // **Nichts sammeln, was niemand sieht.** Der Takt laeuft nur bei
-            // sichtbarer Flaeche (`Timer.running` unten), die Ankuenfte kamen
-            // aber ungebremst weiter. Nach einer halben Stunde im Miner-Reiter
-            // standen Tausende in der Schlange, und `drainQueue` laesst sie
-            // mit `queue.length / 0.85` je Sekunde los -- also praktisch alle
-            // auf einmal. Am 08.09.2026 auf einem Telefon gemeldet: beim
-            // Zurueckschalten fiel die halbe Stunde in einem Guss herunter und
-            // flutete die Ansicht.
+            // Do not collect what nobody sees. The tick only runs while the area is
+            // visible (`Timer.running` below), but arrivals keep coming. After half an
+            // hour on another tab thousands would be queued, and `drainQueue` releases
+            // them at `queue.length / 0.85` per second, so practically all at once:
+            // switching back would drop the whole half hour in one flood.
             //
-            // Der Regen zeigt, **was gerade hereinkommt**. Was waehrend eines
-            // Blicks in einen anderen Reiter hereinkam, ist kein Regen mehr,
-            // sondern Nachrichten von gestern -- und die Halde selbst steht
-            // ohnehin weiter da.
+            // The rain shows what is arriving right now. What arrived while another tab
+            // was open is old news, and the pile itself is still there anyway.
             if (!root.visible)
                 return;
             for (var i = 0; i < txs.length; i++) {
                 var t = txs[i];
                 root.queue.push(t);
             }
-            // **Und eine Obergrenze auch bei sichtbarer Flaeche.** Ein Rechner,
-            // der ins Stocken kommt, oder ein Schwall von mempool.space
-            // erzeugt denselben Guss. Zwei Sekunden Vorrat bei fuenf Ankuenften
-            // je Sekunde sind reichlich; was darueber liegt, waere ohnehin
-            // nicht als einzelne Kachel zu erkennen.
+            // And a limit while visible too. A machine that stalls, or a burst from
+            // mempool.space, causes the same flood. Two seconds of backlog at five
+            // arrivals per second is plenty; anything beyond that could not be seen as
+            // individual tiles anyway.
             if (root.queue.length > root.queueMax)
                 root.queue.splice(0, root.queue.length - root.queueMax);
         }
@@ -988,8 +919,8 @@ Item {
         }
     }
 
-    // Die Halde ist die teure Ebene. Sie wird hoechstens fuenfmal pro Sekunde
-    // neu gezeichnet -- bis dahin zeichnet die Animationsebene weiter.
+    // The pile is the expensive layer. It is repainted at most five times a
+    // second; in between the animation layer keeps drawing.
     Timer {
         interval: 200
         repeat: true
@@ -1002,8 +933,8 @@ Item {
         }
     }
 
-    // Die Farbe nach Alter wandert langsam -- dafuer reicht ein Neuzeichnen
-    // im Sekundentakt statt dreissigmal pro Sekunde.
+    // The age color changes slowly, so repainting once a second is enough
+    // instead of thirty times a second.
     Timer {
         interval: 1200
         repeat: true
@@ -1012,26 +943,23 @@ Item {
     }
 
 
-    // ------------------------------------------------------------ Blockfeld
-    // Eigene Leinwand: der Block aendert sich nur alle zehn Minuten und muss
-    // nicht dreissigmal pro Sekunde neu gezeichnet werden.
+    // ------------------------------------------------------------ Block field
+    // Separate canvas: the block only changes every ten minutes and does not
+    // need to be repainted thirty times a second.
     Canvas {
         id: blockCanvas
 
         anchors.fill: parent
-        // **Ueber dem Regen, nicht darunter.** Bis zum 09.09.2026 stand
-        // `flyKachel` in der Datei nach dieser Leinwand und zeichnete damit
-        // darueber: fallende Mempool-Kacheln lagen mitten im Block. Am Galaxy
-        // A55 gemessen -- Block bei y 538..1240, Regen ueber die volle
-        // Leinwandhoehe y 298..2095, also quer hindurch.
+        // Above the rain, not below it. Otherwise falling mempool tiles
+        // (`flyKachel`) would be drawn across the middle of the block.
         z: 20
-        // Nur dort glaetten, wo die Zellen kleiner als zwei Bildpunkte sind --
-        // sonst bleibt die Kachelgrafik bewusst hart.
+        // Antialias only where cells are smaller than `zelleGanzAb` device pixels;
+        // otherwise the tile graphic stays deliberately hard.
         antialiasing: rowsUsed > 0 && root.grobRaster(root.blockUnit(rowsUsed))
         visible: root.showBlock
 
         property var squares: []
-        property var cellIdx: ({})      // Rasterzelle -> Kachelnummer, fuer den Tooltip
+        property var cellIdx: ({})      // grid cell -> tile index, for the tooltip
         property int gridUnits: 1
         property int rowsUsed: 1
         property int forHeight: 0
@@ -1046,8 +974,8 @@ Item {
 
             var tiles = b.tiles;
             var n = Math.floor(tiles.length / 2);
-            // Eine Ziffer je Kachel: die gedeutete Transaktionsart. Aeltere
-            // Blockdaten haben das Feld nicht -- dann gilt alles als Zahlung.
+            // One digit per tile: the inferred transaction type. Older block data does
+            // not have the field, then everything counts as a payment.
             var types = b.types || "";
             var sizes = [], buckets = [], kinds = [], weight = 0;
             for (var i = 0; i < n; i++) {
@@ -1078,7 +1006,7 @@ Item {
             gridUnits = gw;
             rowsUsed = Math.max(gw, lay.height());
             forHeight = b.height;
-            // Wie oft welche Art vorkommt -- die Legende lebt davon
+            // How often each type occurs, used by the legend
             var z = [0, 0, 0, 0, 0, 0, 0, 0];
             for (var t = 0; t < kinds.length; t++)
                 z[kinds[t]]++;
@@ -1086,7 +1014,7 @@ Item {
             requestPaint();
         }
 
-        // Umriss der Blockkachel unter dem Zeiger
+        // Outline of the block tile under the pointer
         function hoverRectAt(px, py) {
             if (squares.length === 0)
                 return null;
@@ -1102,14 +1030,12 @@ Item {
             return blockRect(squares[i].sq, g, bx, by, pad);
         }
 
-        // Kanten auf ganze Pixel runden, damit alle Luecken gleich breit sind
+        // Round edges to whole pixels so all gaps are the same width
         function blockRect(q, g, bx, by, pad) {
-            // Unter zwei Bildpunkten je Zelle **nicht** runden. Gerundet gibt
-            // es dort nur noch 1-px-Zellen und 1-px-Kacheln: die Kacheln stossen
-            // aneinander und verkleben zu Kleckse. Ungerundet und mit
-            // Kantenglaettung entsteht stattdessen eine Textur -- so macht es
-            // auch das Original, das ohnehin in WebGL mit gebrochenen Groessen
-            // zeichnet.
+            // Below `zelleGanzAb` device pixels per cell, do not round. Rounded there,
+            // only 1 px cells and 1 px tiles remain: tiles touch and merge into blobs.
+            // Unrounded and antialiased they form a texture instead, which is also what
+            // the original does, since it draws with fractional sizes in WebGL anyway.
             if (root.grobRaster(g)) {
                 var side = Math.max(0.35, q.r * g - pad * 2);
                 return {
@@ -1131,7 +1057,7 @@ Item {
             };
         }
 
-        // Welche Transaktion des Blocks liegt unter dem Zeiger?
+        // Which transaction of the block is under the pointer?
         function blockTxAt(px, py) {
             if (squares.length === 0 || !root.blockRevealed)
                 return null;
@@ -1159,7 +1085,7 @@ Item {
             };
         }
 
-        // Bildschirmrechteck einer Blockkachel -- die Flugziele beim Blockfund
+        // Screen rectangle of a block tile, used as flight target when a block is found
         function rectFor(q) {
             var g = root.blockUnit(rowsUsed);
             var side = g * rowsUsed;
@@ -1178,8 +1104,8 @@ Item {
             var ctx = getContext("2d");
             ctx.reset();
             root.viewApply(ctx);
-            // Waehrend die geminten Transaktionen unterwegs sind, ist das
-            // Blockfeld leer -- der Block entsteht erst, wenn sie ankommen.
+            // While the mined transactions are on their way the block field is empty;
+            // the block only appears when they arrive.
             if (!root.blockRevealed || squares.length === 0 || root.poolTop < 24)
                 return;
 
@@ -1187,8 +1113,8 @@ Item {
             var side = g * rowsUsed;
             var pad = root.blockPad(g);
             var bx = root.schnapp((root.width - gridUnits * g) / 2);
-            // Im Block laeuft die Rasterachse nach unten (Zeile 0 oben) -- die
-            // zuerst gesetzten, grossen Transaktionen liegen dadurch oben.
+            // In the block the grid axis runs downwards (row 0 at the top), so the large
+            // transactions placed first end up at the top.
             var by = root.schnapp(root.blockCenterY - (rowsUsed * g) / 2);
 
             var byColor = {};
@@ -1222,20 +1148,17 @@ Item {
         onHeightChanged: requestPaint()
         Component.onCompleted: rebuild()
 
-        // **Der Block haengt an der Haldenoberkante.** `blockSide` rechnet
-        // `min(Breite*0,72, Hoehe/2,5, poolTop*0,86)`, und `poolTop` wandert
-        // mit dem Fuellstand. Neu gezeichnet wurde bisher nur bei Blockwechsel
-        // und bei Breite oder Hoehe -- nicht, wenn `poolTop` sich aendert.
+        // The block depends on the top edge of the pile. `blockSide` computes
+        // `min(width*0.72, height/2.5, poolTop*0.86)`, and `poolTop` moves with the
+        // fill level, so a change of `poolTop` must trigger a repaint too.
         //
-        // Beim Start ist die Halde leer, `poolTop` also klein und `blockSide`
-        // fast null: **der Block wird gar nicht gezeichnet.** Er kam erst
-        // zurueck, wenn man den Reiter wechselte, weil die Leinwand dann neu
-        // entsteht. Am 08.09.2026 auf einem Telefon gemeldet ("nach
-        // Tabwechsel wird das richtig angezeigt") und hier nachgestellt.
+        // At startup the pile is empty, `poolTop` is small and `blockSide` almost
+        // zero, so the block is not drawn at all. Without this repaint it would
+        // only appear after switching tabs, when the canvas is recreated.
         //
-        // Teuer ist das nicht: sobald die Halde etwas Hoehe hat, klemmen
-        // Breite und Hoehe den Wert, und `blockSide` hoert von selbst auf sich
-        // zu aendern. Die Neuzeichnungen fallen also in die ersten Sekunden.
+        // This is cheap: once the pile has some height, width and height clamp the
+        // value and `blockSide` stops changing by itself. The repaints only happen
+        // in the first seconds.
         Connections {
             target: root
             function onBlockSideChanged() {
@@ -1258,7 +1181,7 @@ Item {
         propagateComposedEvents: true
 
         onPositionChanged: mouse => {
-            // Der Tooltip sitzt am Fenster, die Trefferpruefung in der Szene.
+            // The tooltip is positioned in window coordinates, hit testing in the scene.
             root.hoverX = mouse.x;
             root.hoverY = mouse.y;
             var h = root.hitAt(mouse.x, mouse.y);
@@ -1270,10 +1193,9 @@ Item {
             }
         }
 
-        // Nur fuer die Maus. Am Finger kommt `onExited` nach dem Loslassen
-        // doch, und zwar nach dem PointHandler unten: am 19.09.2026 im
-        // Emulator mitgeschnitten, er raeumte die gerade festgehaltene Angabe
-        // sofort wieder weg. Am Finger entscheidet allein der PointHandler.
+        // Mouse only. On touch `onExited` does arrive after release, but after the
+        // PointHandler below, and it would clear the info that was just pinned. On
+        // touch the PointHandler alone decides.
         onExited: {
             if (root.touchUi)
                 return;
@@ -1281,27 +1203,19 @@ Item {
             root.hoverRect = null;
         }
 
-        // **Auf dem Finger gibt es kein "verlassen".** Der Tooltip haengt an
-        // `onPositionChanged` und wird von `onExited` weggeraeumt -- und das
-        // kam am 08.09.2026 auf Android beim Loslassen nicht: der Zeiger geht
-        // nicht hinaus, er hoert auf zu existieren. (Am 19.09.2026 kam es im
-        // Emulator doch, nur spaeter; darauf verlassen wir uns in keiner
-        // Richtung, siehe `onExited`.) Der Tooltip blieb also stehen,
-        // am 08.09.2026 quer ueber dem Umschalter. `acceptedButtons` ist hier
-        // `NoButton`, ein `onReleased` gibt es also auch nicht.
+        // On touch there is no "exit". The tooltip follows `onPositionChanged` and
+        // is cleared by `onExited`, which on Android may not arrive on release: the
+        // pointer does not leave, it stops existing. (Sometimes it does arrive,
+        // later; nothing relies on it either way, see `onExited`.) The tooltip
+        // would stay up. `acceptedButtons` is `NoButton` here, so there is no
+        // `onReleased` either. What only has an exit with a pointer has none on
+        // touch, so this handler provides it.
         //
-        // Dasselbe Muster wie der Explorer-Fokus am 04.09. und der Umschalter
-        // heute: **was nur mit Zeiger einen Ausgang hat, hat auf dem Finger
-        // keinen.** Der Handler liefert ihn nachtraeglich.
-        //
-        // **Und er erkennt den Tipp selbst.** Der TapHandler, der bis zum 19.09. unten stand,
-        // bekam am Finger nichts ab: am 19.09.2026 im Emulator mit
-        // Protokollzeilen gemessen, Druecken und Loslassen kamen hier an,
-        // dort weder `tapped` noch `singleTapped`. Ein Tipp tat am Telefon
-        // deshalb seit 0.2.10 nichts, und das Doppeltippen zum Zuruecksetzen
-        // ging nie. Hier also: kurz und ohne nennenswerte Bewegung ist ein
-        // Tipp, zwei davon kurz nacheinander an derselben Stelle ein
-        // Doppeltipp. Alles in einem Handler, in fester Reihenfolge.
+        // It also detects the tap itself. A TapHandler receives nothing on touch
+        // here (neither `tapped` nor `singleTapped`), so a tap and the double tap
+        // to reset would do nothing. Instead: short and without significant
+        // movement is a tap, two of them in quick succession at the same spot a
+        // double tap. All in one handler, in a fixed order.
         PointHandler {
             id: finger
 
@@ -1324,7 +1238,7 @@ Item {
                 var dx = lastPos.x - startPos.x, dy = lastPos.y - startPos.y;
                 var tipp = Date.now() - startAt < 500 && dx * dx + dy * dy <= weit * weit;
                 if (!tipp) {
-                    // Gezogen oder lange gehalten: die Angabe loslassen.
+                    // Dragged or held long: release the info.
                     root.hoveredTx = null;
                     root.hoverRect = null;
                     root.pinnedTxid = "";
@@ -1347,14 +1261,11 @@ Item {
             }
         }
 
-        // **Dasselbe fuer die Maus.** Auch mit der Maus kam im TapHandler
-        // nichts an: am 19.09.2026 in beiden Pruef-VMs und im Xvfb an drei
-        // Staenden bis zurueck zum 18.09. nachgestellt, der Tooltip beim
-        // Ueberfahren ging, der Klick oeffnete nie den Explorer. Hier: Druecken
-        // und Loslassen ohne nennenswerte Bewegung ist ein Klick und oeffnet
-        // die Kachel unter dem Zeiger; zwei Klicks kurz nacheinander an
-        // derselben Stelle stellen die Sicht wieder her. Ziehen (Verschieben
-        // bei Vergroesserung) loest nichts aus.
+        // The same for the mouse. A TapHandler receives no mouse clicks here either:
+        // hovering shows the tooltip, but a click would never open the explorer.
+        // Here, press and release without significant movement is a click and opens
+        // the tile under the pointer; two clicks in quick succession at the same
+        // spot reset the view. Dragging (panning while zoomed) triggers nothing.
         PointHandler {
             id: maus
 
@@ -1395,12 +1306,11 @@ Item {
             }
         }
 
-        // **Der einfache Klick wartet, ob ein zweiter kommt.** Vergroessert
-        // ist fast die ganze Flaeche Kachel; oeffnete schon der erste Klick
-        // eines Doppelklicks den Explorer, kaeme man aus der Vergroesserung
-        // nicht mehr heraus (am 19.09.2026 im Xvfb genau so passiert). Also
-        // erst nach der Doppelklick-Zeit oeffnen, und nur, wenn kein zweiter
-        // Klick dazwischenkam.
+        // A single click waits to see whether a second one follows. When zoomed in,
+        // almost the whole area is tiles; if the first click of a double click
+        // already opened the explorer, there would be no way out of the zoom. So
+        // open only after the double click interval, and only if no second click
+        // came in between.
         Timer {
             id: klickOeffnen
 
@@ -1410,11 +1320,10 @@ Item {
         }
     }
 
-    // ----------------------------------------------- Zoom und Verschieben
-    // Drei Wege auf dieselbe Sicht: Rad, Zusammenziehen (Touchpad und
-    // Bildschirm) und Ziehen. Die MouseArea darueber nimmt keine Tasten an
-    // (`acceptedButtons: Qt.NoButton`), deshalb kommen sich beide nicht in die
-    // Quere.
+    // ----------------------------------------------- Zoom and pan
+    // Three ways to the same view: wheel, pinch (touchpad and screen) and drag.
+    // The MouseArea above accepts no buttons (`acceptedButtons: Qt.NoButton`),
+    // so the two do not get in each other's way.
     WheelHandler {
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
 
@@ -1447,8 +1356,8 @@ Item {
         id: panView
 
         target: null
-        // Ohne Vergroesserung gibt es nichts zu verschieben -- dann bleibt das
-        // Ziehen aus, damit es sich nicht wie ein haengendes Fenster anfuehlt.
+        // Without magnification there is nothing to pan, so dragging stays off and
+        // does not feel like a stuck window.
         enabled: root.zoomed
         property real lastX: 0
         property real lastY: 0
@@ -1466,19 +1375,19 @@ Item {
         }
     }
 
-    // Klick, Tipp und Doppeltipp werten die beiden PointHandler in der
-    // MouseArea oben aus. Hier stand bis zum 19.09.2026 ein TapHandler; er
-    // bekam weder Maus noch Finger ab und ist deshalb entfernt -- wuerde er
-    // irgendwo doch feuern, wuerde ein Klick doppelt ausgewertet.
+    // Click, tap and double tap are handled by the two PointHandlers in the
+    // MouseArea above. There is deliberately no TapHandler here: it receives
+    // neither mouse nor touch, and if it ever did fire somewhere, a click would
+    // be handled twice.
 
-    // Beim Blockfund fliegen bis zu dreitausend Kacheln gleichzeitig. Das
-    // sprengt die Rechteck-Ebene, deshalb eine eigene Leinwand, die nur
-    // waehrend der Animation zeichnet.
+    // When a block is found up to three thousand tiles fly at once. That is too
+    // much for the rectangle layer, so a separate canvas draws only during the
+    // animation.
     Canvas {
         id: blockAnim
 
         anchors.fill: parent
-        z: 20                       // mit blockCanvas, siehe dort
+        z: 20                       // same as blockCanvas, see there
         antialiasing: false
         visible: root.blockPhase !== "idle"
 
@@ -1513,7 +1422,7 @@ Item {
                 return;
             }
 
-            // ice: die Kacheln leuchten nacheinander auf
+            // ice: the tiles light up one after another
             for (i = 0; i < root.mining.length; i++) {
                 m = root.mining[i];
                 ctx.fillStyle = m.white > 0.66 ? ice : (m.white > 0.25 ? mid : Palette.blockAgeColor());
@@ -1522,17 +1431,17 @@ Item {
         }
     }
 
-    // Die Transaktion unter dem Zeiger wird eingefaerbt, damit klar ist, wozu
-    // die Angaben gehoeren -- im Original `hoverOn()` mit der Farbe bluegreen.
-    // `transform` wirkt im **eigenen** Koordinatensystem eines Items: die
-    // Skalierung erfasst Breite und Hoehe, nicht aber x und y, die ja die Lage
-    // im Elternitem beschreiben. Direkt auf hoverMark gesetzt landete der
-    // Umriss deshalb an der unskalierten Stelle -- im Zoom also neben der
-    // Kachel. Bei flyLayer fiel das nicht auf, weil es den Elternbereich
-    // ausfuellt und damit ohnehin bei (0,0) sitzt.
+    // The transaction under the pointer is highlighted so it is clear what the
+    // info belongs to; in the original that is `hoverOn()` with the color
+    // bluegreen.
+    // `transform` acts in an item's own coordinate system: the scale covers
+    // width and height, but not x and y, which describe the position in the
+    // parent. Set directly on hoverMark, the outline would land at the unscaled
+    // position, next to the tile when zoomed. flyLayer does not have this
+    // problem because it fills its parent and sits at (0,0) anyway.
     //
-    // Richtig ist ein Behaelter, der wie flyLayer bei (0,0) liegt und die
-    // Sicht traegt; alles darin rechnet dann in Szenenkoordinaten.
+    // The fix is a container that sits at (0,0) like flyLayer and carries the
+    // view transform; everything inside it then works in scene coordinates.
     Item {
         id: sceneLayer
 
@@ -1562,7 +1471,7 @@ Item {
 
     }
 
-    // ----------------------------------------------------- Halde und Fallen
+    // ----------------------------------------------------- Pile and falling
     Canvas {
         id: poolCanvas
 
@@ -1572,37 +1481,27 @@ Item {
         onPaint: {
             var ctx = getContext("2d");
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            // Nur den Haldenbereich loeschen statt der ganzen Leinwand -- im
-            // Vollbild sind das vier Millionen Bildpunkte weniger pro Bild.
-            // Bei Zoom greift die Sparmassnahme nicht mehr: die Halde kann dann
-            // ueberall stehen, also die ganze Flaeche raeumen.
-            // Im Zoom kann die Halde ueberall stehen, also die ganze Flaeche
-            // raeumen. Und **einmal auch beim Verlassen des Zooms**: sonst
-            // bleibt oben stehen, was zuletzt dort gezeichnet wurde -- so kam
-            // die gestrichelte Linie doppelt ins Bild, einmal an ihrem Platz
-            // und einmal als Rest von vorhin.
-            // **Und die gestrichelte Linie sitzt nicht an `poolTop`.** Sie
-            // wird an `pileTopY` gezeichnet, und das ist etwas anderes:
+            // Clear only the pile area instead of the whole canvas; in fullscreen that
+            // is four million pixels less per frame.
+            // When zoomed the pile can be anywhere, so clear the whole area. Also do
+            // that once when leaving zoom, otherwise whatever was last drawn at the top
+            // stays, and the dashed line shows up twice (once in place, once as a
+            // leftover).
+            // The dashed line does not sit at `poolTop`. It is drawn at `pileTopY`,
+            // which is something else:
             //
-            //   poolTop  = height - poolH                 das zugeteilte Band
+            //   poolTop  = height - poolH                 the allotted band
             //   pileTopY = height - pileRows*gridSize
-            //              + scrollPx                     der echte Fuellstand
+            //              + scrollPx                     the actual fill level
             //
-            // `scrollPx` ist waehrend der Haldenbewegung **negativ**
-            // (`-gridSize`, dann animiert auf 0). Die Linie wandert damit bis
-            // zu `gridSize + 4` Punkte ueber `poolTop` -- also aus einem
-            // Bereich heraus, der nur ab `poolTop - 8` geraeumt wird. Dort
-            // bleibt sie liegen, und beim naechsten Fuellstand steht die
-            // naechste darunter. Am 08.09.2026 auf einem Telefon als zwei
-            // Striche gesehen, einer quer durch die Aufschrift.
+            // `scrollPx` is negative while the pile moves (`-gridSize`, then animated
+            // to 0). The line then moves up to `gridSize + 4` points above `poolTop`,
+            // out of the region that would be cleared from `poolTop - 8`. It would stay
+            // there, and the next fill level would put another line below it.
             //
-            // Ein erster Versuch klemmte an der Richtung von `poolTop`
-            // ("Halde geschrumpft") -- das war die falsche Groesse.
-            //
-            // Jetzt wird von der **hoechsten Stelle** geraeumt, an der in
-            // diesem oder im vorigen Bild etwas gezeichnet wurde. Das kostet
-            // ein paar Zeilen mehr als vorher und laesst die Sparmassnahme
-            // ansonsten stehen: der Block darueber bleibt unberuehrt.
+            // So clearing starts at the highest point where something was drawn in this
+            // or the previous frame. That costs a few rows more and otherwise keeps the
+            // saving: the block above stays untouched.
             var linie = root.pileTopY - root.gridSize - 4;
             var vorher = root.__letzteLinie < 0 ? linie : root.__letzteLinie;
             root.__letzteLinie = linie;
@@ -1616,8 +1515,8 @@ Item {
             root.__warZoom = root.zoomed;
             ctx.clearRect(0, clearTop, root.width, root.height - clearTop);
             root.viewApply(ctx);
-            // Beim Laden und Entladen (z. B. Dashboard-Tab) kann gezeichnet
-            // werden, bevor der Zustand steht
+            // While loading and unloading (e.g. the dashboard tab) painting can happen
+            // before the state is ready
             if (!root.layout || !root.poolTx)
                 return;
 
@@ -1626,10 +1525,10 @@ Item {
             var pal = Palette.ageColors();
             var steps = pal.length;
 
-            // Nach Farbe buendeln -- das spart tausende Zustandswechsel
+            // Batch by color, which saves thousands of state changes
             var groups = {};
-            // Transaktionen einer beobachteten Wallet. Der Daemon setzt das
-            // Feld `m`; hier wird nur nachgesehen, ob es da ist.
+            // Transactions of a watched wallet. The daemon sets the field `m`; here it
+            // only checks whether it is present.
             var eigene = [];
             var i, e, key;
             for (i = 0; i < root.poolTx.length; i++) {
@@ -1658,33 +1557,29 @@ Item {
                     var side = t.sq.r * root.gridSize - root.unitPad * 2;
                     if (side < 1)
                         side = 1;
-                    // Auf ganze Bildpunkte: targetY enthaelt das animierte
-                    // scrollPx und ist damit gebrochen. Ohne Rundung schnappt
-                    // die Unterkante anders als die Oberkante, und die Kachel
-                    // wird ein Pixel hoeher oder niedriger als breit.
+                    // On whole pixels: targetY contains the animated scrollPx and is
+                    // fractional. Without rounding the bottom edge snaps differently from the
+                    // top edge, and the tile ends up one pixel taller or shorter than wide.
                     ctx.fillRect(root.snap(root.targetX(t.sq)),
                                  root.snap(root.targetY(t.sq)), side, side);
                 }
             }
 
-            // Eigene Transaktionen bekommen einen hellen Rahmen. Bewusst nur
-            // ein Rahmen und keine eigene Farbe: die Fuellung soll weiter
-            // Gebuehr oder Alter zeigen. Bei vier Pixeln Kantenlaenge bleibt
-            // ein Kern von zwei Pixeln stehen -- das reicht, um sie zu finden.
+            // Own transactions get a light outline. Deliberately only an outline and no
+            // color of their own: the fill should keep showing fee or age. At four
+            // pixels side length a two pixel core remains, which is enough to find them.
             if (eigene.length) {
                 ctx.strokeStyle = String(root.ownColor);
-                // Ein Geraetepixel breit, nicht ein logischer Punkt -- sonst
-                // ist der Rahmen auf einem dichten Schirm fast drei Pixel
-                // stark und deckt den Kern der Kachel zu.
+                // One device pixel wide, not one logical point; otherwise on a dense
+                // screen the outline is almost three pixels thick and covers the tile core.
                 ctx.lineWidth = 1 / root.dpr;
                 for (i = 0; i < eigene.length; i++) {
                     var m = eigene[i];
                     var ms = m.sq.r * root.gridSize - root.unitPad * 2;
                     if (ms < 1)
                         ms = 1;
-                    // Auf halbe Bildpunkte: ein 1 px breiter Strich sitzt sonst
-                    // je zur Haelfte auf beiden Nachbarpunkten und wird grau.
-                    // **Halbe Geraetepixel**, aus demselben Grund wie `snap`.
+                    // On half pixels: a 1 px line would otherwise sit half on each neighboring
+                    // pixel and turn gray. Half device pixels, for the same reason as `snap`.
                     var hp = 0.5 / (root.zoom * root.dpr);
                     ctx.strokeRect(root.snap(root.targetX(m.sq)) + hp,
                                    root.snap(root.targetY(m.sq)) + hp,
@@ -1692,14 +1587,13 @@ Item {
                 }
             }
 
-            // Trennlinie am oberen Rand des Mempool-Bereichs. Von Hand
-            // gestrichelt -- verlaesslicher als setLineDash.
+            // Separator line at the top of the mempool area. Dashed by hand, which is
+            // more reliable than setLineDash.
             //
-            // Sie wird **nicht** mitvergroessert: sie ist eine Beschriftung
-            // der Ansicht, keine Kachel. Ihre Aufschrift ("Mempool: … unbe-
-            // staetigt") sitzt in `FeedPanel` und wird auch nicht groesser --
-            // eine mitwachsende Linie daneben sah nur falsch aus. Also zurueck
-            // in Bildschirmkoordinaten und die Hoehe umgerechnet.
+            // It is not zoomed: it is a label of the view, not a tile. Its caption
+            // ("Mempool: … unconfirmed") lives in `FeedPanel` and does not grow either;
+            // a line growing next to it looked wrong. So back to screen coordinates and
+            // the height converted.
             if (root.showRuler && root.pileRows > 0) {
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.fillStyle = String(root.rulerColor);
@@ -1730,14 +1624,14 @@ Item {
         }
     }
 
-    // Fallende und eingesaugte Transaktionen als echte Rechtecke statt auf einer
-    // Leinwand: es sind nur ein paar Dutzend, und so entfaellt das Vollbild-
-    // Loeschen dreissigmal pro Sekunde.
+    // Falling and absorbed transactions as real rectangles instead of on a
+    // canvas: there are only a few dozen, and it saves clearing the full canvas
+    // thirty times a second.
     Item {
         id: flyLayer
 
         anchors.fill: parent
-        // Rechtecke sind vektoriell -- sie bleiben beim Skalieren scharf.
+        // Rectangles are vector shapes, they stay sharp when scaled.
         transform: [
             Scale { xScale: root.zoom; yScale: root.zoom },
             Translate { x: root.viewX; y: root.viewY }
@@ -1791,7 +1685,7 @@ Item {
         }
     }
 
-    // Puls beim Blockfund
+    // Pulse when a block is found
     Rectangle {
         visible: root.blockPulse > 0 && root.showBlock
         color: "transparent"

@@ -1,23 +1,23 @@
-// Direktbezug: die Oberflaeche redet selbst mit mempool.space.
+// Direct mode: the UI talks to mempool.space itself.
 //
-// Der Daemon bleibt die bessere Wahl, wo mehrere Fenster nebeneinander laufen
-// -- er haelt **eine** Verbindung fuer alle. Auf einem Handy gibt es ihn aber
-// nicht, und ein Widget, das nur laeuft, solange der Heimrechner an ist, ist
-// kein Widget. Deshalb dieselbe Aufbereitung noch einmal hier, in QML.
+// The daemon is the better choice where several windows run side by side,
+// since it keeps one connection for all of them. A phone has no daemon,
+// though, and a widget that only works while the home machine is on is no
+// widget. So the same processing is repeated here in QML.
 //
-// Der Aufbau ist bewusst deckungsgleich mit `/state` und `/block` des
-// Daemons: `FeedState` schiebt beides durch dieselbe Auswertung, und keine
-// einzige Ansicht merkt, woher die Zahlen kommen.
+// The structure mirrors the daemon's `/state` and `/block`: `FeedState` runs
+// both through the same evaluation, and no view can tell where the numbers
+// come from.
 //
-// **Eigene Datei, absichtlich.** `import QtWebSockets` gibt es nicht auf jedem
-// Rechner (Paket `qt6-websockets`). Stuende die Zeile in `FeedState.qml`,
-// fiele bei einem fehlenden Paket die ganze Anwendung aus; so faellt nur der
-// Direktbezug aus, und der Daemon traegt weiter.
+// Separate file on purpose: `import QtWebSockets` is not available on every
+// machine (package `qt6-websockets`). If the import were in `FeedState.qml`, a
+// missing package would take down the whole app; this way only direct mode
+// fails and the daemon keeps working.
 //
-// Was hier **nicht** geht und beim Daemon bleibt:
-//   Wallets  -- die Ableitung aus dem xpub ist Punktarithmetik auf secp256k1,
-//               das gehoert nicht in QML nachgebaut.
-//   Miner    -- das Geraet steht im Heimnetz, da hilft kein Direktbezug.
+// Not handled here:
+//   Wallets:  deriving from the xpub is point arithmetic on secp256k1 and
+//             should not be rebuilt in QML. Stays in the daemon.
+//   Miner:    polled by `DirectMiner` in its own file.
 import QtQuick
 import QtWebSockets
 import "mondrian.js" as Mondrian
@@ -34,24 +34,24 @@ Item {
     readonly property string api: "https://" + root.host + "/api"
     readonly property string wsUrl: "wss://" + root.host + "/api/v1/ws"
 
-    // Wie oft der gesammelte Zustand nach aussen gereicht wird. Der Daemon
-    // schreibt in demselben Takt; alles darunter kostet nur Rechenzeit, weil
-    // die Anzeige ohnehin nicht schneller ist.
+    // How often the collected state is passed on. The daemon writes at the same
+    // rate; anything faster only costs CPU because the display is not faster
+    // anyway.
     property int pushMs: 400
 
-    // Ergebnis -- gleicher Aufbau wie beim Daemon
+    // Result, same shape as from the daemon.
     property var snap: ({})
     property var block: ({})
 
-    // Obergrenzen wie im Daemon, damit dieselben Bilder herauskommen
+    // Limits as in the daemon, so the same pictures come out.
     readonly property int recentKeep: 120
     readonly property int maxTiles: 8000
     readonly property int projectedKeep: 8
-    // Solange jemand hinsieht, bleibt der geplante Block abonniert. Danach
-    // wird abbestellt -- das ist der teuerste Strom, den der Server schickt.
+    // The projected block stays subscribed while someone is looking, then it is
+    // unsubscribed: it is the most expensive stream the server sends.
     readonly property int projectedLinger: 20
 
-    // -- innerer Zustand ---------------------------------------------------
+    // --- Internal state ---
     property int __seq: 0
     property var __recent: []
     property var __mempool: ({ "count": 0, "vsize": 0, "totalFee": 0 })
@@ -70,15 +70,15 @@ Item {
     property string __summaryFor: ""
     property bool __summaryBusy: false
 
-    // Geplante Bloecke: Rang -> { txid: Zeile }. Die Zeilen kommen so vom
-    // Server: [txid, fee, vsize, value, rate, flags]
+    // Projected blocks: rank -> { txid: row }. Rows come from the server as
+    // [txid, fee, vsize, value, rate, flags]
     property var __projRows: ({})
     property var __projAt: ({})
-    property int __want: -1        // gewuenschter Rang, -1 = keiner
-    property int __tracked: -1     // was tatsaechlich abonniert ist
+    property int __want: -1        // requested rank, -1 = none
+    property int __tracked: -1     // rank actually subscribed
     property real __trackUntil: 0
 
-    // -- Hilfen ------------------------------------------------------------
+    // --- Helpers ---
     function __num(v) {
         var n = Number(v);
         return isFinite(n) ? n : 0;
@@ -89,8 +89,8 @@ Item {
         return Math.round(root.__num(v) * f) / f;
     }
 
-    // Die zwei Ziffern je Kachel: Kantenlaenge und Gebuehrenklasse. Dieselbe
-    // Rechnung wie im Daemon -- die Bilder muessen sich decken.
+    // The two digits per tile: edge length and fee class. Same calculation as in
+    // the daemon, the pictures must match.
     function __tile(valueSats, rate) {
         return String(Mondrian.txSize(valueSats, 5)) + String(Colors.feeBucket(rate));
     }
@@ -106,7 +106,7 @@ Item {
             sock.sendTextMessage(JSON.stringify(obj));
     }
 
-    // -- Nachrichten des Servers -------------------------------------------
+    // --- Server messages ---
     function __handle(text) {
         var msg;
         try {
@@ -152,8 +152,8 @@ Item {
             root.__dirty = true;
         }
         if (msg.conversions) {
-            // Der Server schickt alle Waehrungen mit -- sie kosten nichts
-            // extra und ersparen der Oberflaeche jedes eigene Umrechnen.
+            // The server sends all currencies; they cost nothing extra and spare the UI
+            // any conversion.
             var c = msg.conversions;
             var np = {};
             var waehrungen = ["USD", "EUR", "GBP", "CAD", "CHF", "AUD", "JPY"];
@@ -171,12 +171,10 @@ Item {
             root.__setTip(msg.block, true);
     }
 
-    // **Dieselbe Transaktion zweimal.** Am 17.09.2026 standen kurz nach dem
-    // Start fuenf von zwoelf Zeilen doppelt in "Zuletzt im Mempool gesehen",
-    // mit derselben Gebuehr und demselben Betrag: mempool.space schickte
-    // denselben Satz in zwei Nachrichten, und angehaengt wurde bisher alles,
-    // was hereinkam. Wer schon in der Liste steht, kommt nicht noch einmal
-    // dazu -- die Kachel behaelt dabei ihren Platz und ihre Nummer.
+    // The same transaction twice. mempool.space can send the same entry in two
+    // messages, which shows up as duplicate rows in "Recently seen in mempool".
+    // An entry already in the list is not added again; its tile keeps its place
+    // and number.
     function __addTxs(txs) {
         var rec = root.__recent.slice();
         var drin = {};
@@ -187,7 +185,7 @@ Item {
             var t = txs[i];
             if (!t)
                 continue;
-            // Ohne TxID laesst sich nichts vergleichen, die kommt mit.
+            // Without a txid nothing can be compared, so it is added.
             var id = t.txid || "";
             if (id) {
                 if (drin["x" + id])
@@ -269,12 +267,11 @@ Item {
         root.__fetchSummary();
     }
 
-    // -- Der geplante Block, lebendig --------------------------------------
+    // --- The projected block, live ---
     //
-    // Zuerst kommt die Vollform, danach nur noch Aenderungen. Anders als beim
-    // Daemon braucht es hier **kein** Aenderungsbuch: es gibt keinen zweiten
-    // Prozess, der einen Rueckstand aufholen muesste. Die Zeilen werden
-    // gepflegt, die Ansicht holt sich den jeweils gueltigen Stand.
+    // First the full form arrives, then only changes. Unlike the daemon, no
+    // change log is needed here: there is no second process that would have to
+    // catch up. The rows are maintained, and the view fetches the current state.
     function __handleProjected(p) {
         var idx = parseInt(p.index, 10);
         if (isNaN(idx))
@@ -298,7 +295,7 @@ Item {
             return;
         karte = root.__projRows[idx];
         if (!karte)
-            return;                       // ohne Vollform ist eine Aenderung nichts wert
+            return;                       // without the full form a change is worthless
 
         var j, r, t;
         var weg = d.removed || [];
@@ -312,8 +309,8 @@ Item {
             if (zu[j])
                 karte[zu[j][0]] = zu[j];
         }
-        // Bekannte Form: [txid, rate] -- die Kachel bleibt liegen, nur ihre
-        // Gebuehrenfarbe aendert sich.
+        // Known form: [txid, rate]. The tile stays in place, only its fee color
+        // changes.
         var ge = d.changed || [];
         for (j = 0; j < ge.length; j++) {
             r = ge[j];
@@ -329,8 +326,8 @@ Item {
         root.__projAt[idx] = Date.now() / 1000;
     }
 
-    // Die Kacheldaten eines geplanten Blocks in der Form, die `BlockTiles`
-    // erwartet -- dieselbe wie beim Daemon unter `/lookup/projectedtiles/<n>`.
+    // Tile data of a projected block in the shape `BlockTiles` expects, same as
+    // the daemon's `/lookup/projectedtiles/<n>`.
     function __projectedTiles(idx) {
         var karte = root.__projRows[idx];
         if (!karte)
@@ -338,7 +335,7 @@ Item {
         var zeilen = [];
         for (var k in karte)
             zeilen.push(karte[k]);
-        // Absteigend nach Gebuehrenrate, wie im Daemon
+        // Descending by fee rate, as in the daemon.
         zeilen.sort(function (a, b) {
             return (b[4] || 0) - (a[4] || 0);
         });
@@ -365,7 +362,7 @@ Item {
         };
     }
 
-    // -- REST --------------------------------------------------------------
+    // --- REST ---
     function __get(path, done, fail) {
         var x = new XMLHttpRequest();
         x.onreadystatechange = function () {
@@ -385,9 +382,8 @@ Item {
         }
     }
 
-    // Kacheldaten des zuletzt gefundenen Blocks. Aus jeder Transaktion werden
-    // nur zwei Ziffern behalten -- ein voller Block sind damit rund 8 kB
-    // statt 700 kB im Speicher.
+    // Tile data of the most recently found block. Only two digits are kept per
+    // transaction, so a full block takes about 8 kB in memory instead of 700 kB.
     function __fetchSummary() {
         var bid = root.__tip.id;
         if (!bid || bid === root.__summaryFor || root.__summaryBusy)
@@ -411,8 +407,8 @@ Item {
         });
     }
 
-    // Aus der Transaktionsliste eines Blocks die Kacheldaten. Dieselbe
-    // Aufbereitung wie `summarize_block()` im Daemon.
+    // Tile data from a block's transaction list. Same processing as
+    // `summarize_block()` in the daemon.
     function __buildBlock(txs, base) {
         var schritt = Math.max(1, Math.ceil(txs.length / root.maxTiles));
         var summe = 0, gebuehr = 0, vsize = 0;
@@ -425,8 +421,8 @@ Item {
         for (i = 0; i < txs.length; i += schritt) {
             var t = txs[i];
             tiles.push(root.__tile(t.value, t.rate));
-            // Die erste Transaktion eines Blocks ist die Blockbelohnung. Am
-            // Bitfeld ist sie nicht zu erkennen -- an ihrer Lage schon.
+            // The first transaction of a block is the coinbase. The bit field does not
+            // show it, its position does.
             kinds.push(root.__kind(t.flags, i === 0));
             details.push([t.txid || "", root.__round(t.vsize, 2),
                           Math.round(root.__num(t.fee)),
@@ -447,8 +443,8 @@ Item {
         return d;
     }
 
-    // Langsame Kennzahlen -- alle fuenf Minuten reicht, sie aendern sich
-    // hoechstens alle zehn Minuten.
+    // Slow metrics: every five minutes is enough, they change at most every ten
+    // minutes.
     function __slow() {
         root.__get("/v1/difficulty-adjustment", function (txt) {
             try {
@@ -467,7 +463,7 @@ Item {
                 root.__dirty = true;
             } catch (e) {}
         });
-        // /1m sind 31 Punkte bei 2,2 kB -- genug fuer eine Kurve, /3d hat nur drei.
+        // /1m gives 31 points in 2.2 kB, enough for a curve; /3d has only three.
         root.__get("/v1/mining/hashrate/1m", function (txt) {
             try {
                 var h = JSON.parse(txt);
@@ -484,12 +480,11 @@ Item {
         });
     }
 
-    // -- Einzelabfragen fuer den Explorer ----------------------------------
+    // --- Single lookups for the explorer ---
     //
-    // Dieselben Namen wie beim Daemon (`LOOKUP_ROUTES`), damit `ExplorerView`
-    // nichts von der Quelle wissen muss. Zwei Faelle werden nicht
-    // weitergereicht, sondern hier aufbereitet: die Kacheln eines Blocks und
-    // die eines geplanten Blocks.
+    // Same names as in the daemon (`LOOKUP_ROUTES`), so `ExplorerView` does not
+    // need to know the source. Two cases are processed here instead of passed
+    // through: the tiles of a block and those of a projected block.
     readonly property var __routes: ({
         "tx": "/tx/%1",
         "outspends": "/tx/%1/outspends",
@@ -504,13 +499,13 @@ Item {
         "replacements": "/v1/replacements"
     })
 
-    // ------------------------------------------------------- Kursverlauf
-    // Ohne Dienst gibt es niemanden, der ausduennt -- das muss hier passieren.
-    // Die Vollform sind 1,5 MB und 33.299 Punkte; sie wird **einmal** geholt
-    // und im Speicher gehalten, danach kostet jeder Zeitraum nur noch Rechnen.
+    // --- Price history ---
+    // Without the service nobody thins out the data, so it happens here. The full
+    // set is 1.5 MB and 33,299 points; it is fetched once and kept in memory,
+    // after that each span only costs computation.
     property var __preise: null
     property real __preiseTs: 0
-    // Dieselben Zeitraeume und dieselbe Obergrenze wie im Dienst
+    // Same spans and the same limit as in the service.
     readonly property var __spans: ({ "24h": 86400, "7d": 604800, "30d": 2592000,
                                       "90d": 7776000, "1y": 31536000, "max": 0 })
     readonly property int __maxPunkte: 360
@@ -532,9 +527,8 @@ Item {
             var roh = d.prices || [], punkte = [];
             for (var i = 0; i < roh.length; i++) {
                 var x = roh[i];
-                // **-1 heisst "kein Wert"**, nicht "minus ein Euro". 295 der
-                // 33.299 Punkte tragen ihn. Ungefiltert zieht ein einziger die
-                // ganze Kurve nach unten.
+                // -1 means "no value", not "minus one euro". Some points carry it, and a
+                // single unfiltered one pulls the whole curve down.
                 var e = (x.EUR > 0) ? x.EUR : 0;
                 var u = (x.USD > 0) ? x.USD : 0;
                 if (x.time && (e || u))
@@ -547,7 +541,7 @@ Item {
             root.__preiseTs = Date.now() / 1000;
             done(root.__preisReihe(span, cur), null);
         }, function () {
-            // Ein alter Verlauf ist besser als gar keiner
+            // An old history is better than none.
             if (root.__preise)
                 done(root.__preisReihe(span, cur), null);
             else
@@ -570,13 +564,13 @@ Item {
         if (!punkte.length)
             return { "span": span, "cur": w, "points": [], "converted": false };
 
-        // **Erst die Waehrung, dann ausduennen.** Andersherum faellt ein ganzes
-        // Fach aus, wenn ausgerechnet der gewaehlte Punkt in dieser Waehrung
-        // keinen Wert hat -- und das sind bei EUR fast dreihundert.
+        // Pick the currency first, then thin out. The other way round a whole bucket
+        // drops out whenever the chosen point has no value in that currency, and for
+        // EUR there are almost three hundred of those.
         //
-        // Nur EUR und USD stehen wirklich im Datensatz. Die uebrigen fuenf
-        // entstehen aus dem USD-Wert mit dem **heutigen** Wechselkurs -- ueber
-        // Jahre ist das eine Umrechnung, keine Wahrheit. Die Antwort sagt es.
+        // Only EUR and USD are really in the data set. The other five are derived
+        // from the USD value with today's exchange rate, which over years is a
+        // conversion, not the truth. The response says so.
         var umgerechnet = (w !== "eur" && w !== "usd");
         var reihe = [], j, kurs = 1;
         if (umgerechnet) {
@@ -595,9 +589,9 @@ Item {
         if (!reihe.length)
             return { "span": span, "cur": w, "points": [], "converted": umgerechnet };
 
-        // Faecher gleicher Breite, aus jedem ein Punkt -- **nicht** jeder n-te.
-        // Die Abstaende sind ungleich (stuendlich, taeglich, woechentlich), da
-        // verzerrt jede feste Schrittweite die Zeitachse.
+        // Buckets of equal width, one point from each, not every nth point. The
+        // spacing is uneven (hourly, daily, weekly), so any fixed step distorts the
+        // time axis.
         if (reihe.length > root.__maxPunkte) {
             var t0 = reihe[0][0], t1 = reihe[reihe.length - 1][0];
             var breite = Math.max(1, (t1 - t0) / root.__maxPunkte);
@@ -616,10 +610,10 @@ Item {
         return { "span": span, "cur": w, "points": reihe, "converted": umgerechnet };
     }
 
-    // ----------------------------------------------------------------- Netz
-    // Hashrate, Schwierigkeit und Pools fuer den Reiter "Netz". Dieselbe Form
-    // wie `/network` beim Dienst (`network_series`), dieselben Zeitraeume,
-    // dieselben Fristen. Gehalten wird je Zeitraum die fertige Antwort.
+    // --- Network ---
+    // Hashrate, difficulty and pools for the Network tab. Same shape as the
+    // service's `/network` (`network_series`), same spans, same cache times. The
+    // finished response is kept per span.
     readonly property var __netSpans: ({ "30d": "1m", "90d": "3m", "1y": "1y",
                                          "3y": "3y", "max": "all" })
     property var __netCache: ({})
@@ -643,10 +637,9 @@ Item {
             d.pools = pools ? pools.d : null;
             done(d, null);
         };
-        // Die Pools laufen nebenher; kommen sie nicht, steht der Graph
-        // trotzdem. **`done` kann deshalb zweimal kommen**: erst mit dem
-        // Graphen, dann noch einmal, wenn die Pools nachgereicht sind. Der
-        // Aufrufer nimmt einfach die neuere Antwort.
+        // Pools are fetched on the side; if they fail the chart still shows. So
+        // `done` can be called twice: first with the chart, then again once the pools
+        // are in. The caller just takes the newer response.
         var p = root.__netCache.pools;
         if (!p || jetzt - p.ts > 1800) {
             root.__get("/v1/mining/pools/1w", function (txt) {
@@ -711,7 +704,7 @@ Item {
             root.__netCache = c;
             fertig();
         }, function () {
-            // Ein Verlauf von gestern ist besser als gar keiner
+            // Yesterday's history is better than none.
             if (alt)
                 fertig();
             else
@@ -719,9 +712,9 @@ Item {
         });
     }
 
-    // Wie `_duennen_mittel` im Dienst: je Fach der **Mittelwert**, nicht ein
-    // herausgegriffener Tag -- die Hashrate ist eine Tagesschaetzung und
-    // springt von Tag zu Tag um zehn, zwanzig Prozent.
+    // Like `_duennen_mittel` in the service: the mean per bucket, not one picked
+    // day. Hashrate is a daily estimate and jumps ten to twenty percent from day
+    // to day.
     function __duennenMittel(reihe, anzahl) {
         if (reihe.length <= anzahl)
             return reihe;
@@ -748,8 +741,8 @@ Item {
 
     function lookup(kind, arg, done) {
         if (kind === "projectedtiles") {
-            // Jede Abfrage verlaengert das Mithoeren; hoert die Ansicht auf zu
-            // fragen, wird von selbst wieder abbestellt.
+            // Each request extends the subscription; once the view stops asking, it is
+            // unsubscribed automatically.
             var rang = parseInt(String(arg).split("-")[0], 10) || 0;
             root.__want = rang;
             root.__trackUntil = Date.now() / 1000 + root.projectedLinger;
@@ -781,7 +774,7 @@ Item {
         }
         root.__get(pfad.replace("%1", encodeURIComponent(arg)), function (txt) {
             try {
-                // /block-height liefert nackten Text, kein JSON
+                // /block-height returns plain text, not JSON.
                 done(kind === "blockheight" ? txt.trim() : JSON.parse(txt), null);
             } catch (e) {
                 done(null, "Antwort nicht lesbar");
@@ -791,7 +784,7 @@ Item {
         });
     }
 
-    // -- Ausgabe -----------------------------------------------------------
+    // --- Output ---
     function __push() {
         if (!root.__dirty)
             return;
@@ -812,9 +805,8 @@ Item {
             "recent": root.__recent,
             "difficulty": root.__difficulty,
             "hashrate": root.__hashrate,
-            // Miner und Wallets kann der Direktbezug nicht -- leer, nicht
-            // fehlend, damit die Ansichten "nicht eingerichtet" zeigen und
-            // nicht auf undefined laufen.
+            // This feed provides no miner or wallet data. Empty rather than missing, so the
+            // views show "not set up" instead of running into undefined.
             "miners": [],
             "minerHistory": {},
             "minerTotal": {},
@@ -823,7 +815,7 @@ Item {
         };
     }
 
-    // -- Verbindung --------------------------------------------------------
+    // --- Connection ---
     WebSocket {
         id: sock
 
@@ -842,10 +834,9 @@ Item {
                 root.__slow();
             } else if (sock.status === WebSocket.Error) {
                 root.__source = "offline";
-                // **Qts Fehlertext gehoert ins Protokoll, nicht auf den
-                // Bildschirm.** Er ist englisch ("Connection refused"),
-                // unuebersetzt und sagt dem Ablesenden nichts, was er tun
-                // koennte. Die Oberflaeche uebersetzt nur, was sie kennt.
+                // Qt's error text goes to the log, not the screen. It is English
+                // ("Connection refused"), untranslated and tells the reader nothing they
+                // could act on. The UI only translates what it knows.
                 if (sock.errorString)
                     console.log("WebSocket:", sock.errorString);
                 root.__error = "Verbindung gestoert";
@@ -861,8 +852,8 @@ Item {
         }
     }
 
-    // Wieder anklopfen, wenn die Verbindung weg ist. `active` kurz aus und
-    // wieder an ist der einzige Weg, den WebSocket neu zu verbinden.
+    // Reconnect when the connection is lost. Toggling `active` off and on is the
+    // only way to reconnect the WebSocket.
     Timer {
         interval: 5000
         repeat: true
@@ -884,8 +875,8 @@ Item {
         onTriggered: root.__push()
     }
 
-    // An- und Abmelden des geplanten Blocks. Getrennt vom Abfragen, damit es
-    // nur einmal je Aenderung geschieht -- und nicht bei jedem Bildaufbau.
+    // Subscribing and unsubscribing the projected block. Separate from the
+    // requests so it happens once per change, not on every frame.
     Timer {
         interval: 1000
         repeat: true

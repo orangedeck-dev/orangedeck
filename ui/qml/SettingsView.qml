@@ -1,13 +1,13 @@
-// Einstellungen, nach denselben Reitern geordnet wie die Ansichten.
+// Settings, grouped by the same tabs as the views.
 //
-// Die Werte gehoeren dem Wirt: die eigenstaendige Anwendung legt sie ueber
-// QSettings ab, das Quickshell-Fenster in view.json, der Dashboard-Tab in den
-// Plugin-Einstellungen von DMS. Hier steht nur die Oberflaeche -- sie liest
-// `opts` und meldet jede Aenderung ueber `changed` zurueck.
+// The values belong to the host: the standalone app stores them with
+// QSettings, the Quickshell window in view.json, the dashboard tab in the
+// DMS plugin settings. This file is only the UI: it reads `opts` and
+// reports every change through `changed`.
 //
-// Bewusst mit eigenen kleinen Bedienelementen statt QtQuick.Controls: der Rest
-// des Programms kommt mit `import QtQuick` aus, und das soll so bleiben --
-// dieselben Dateien laufen im Fenster, im DMS-Plugin und spaeter unter Android.
+// Uses its own small controls instead of QtQuick.Controls on purpose: the
+// rest of the program only needs `import QtQuick`, and the same files run
+// in the window, in the DMS plugin and on Android.
 import QtQuick
 import "money.js" as Money
 import "strings.js" as Tr
@@ -20,7 +20,7 @@ pragma ComponentBehavior: Bound
 Item {
     id: root
 
-    // Tastatur: Bild auf/ab, Pos1, Ende (roll.js; aus Main.qml ueber FeedTabs)
+    // Keyboard: Page Up/Down, Home, End (roll.js; from Main.qml via FeedTabs)
     function rollen(wie) {
         return Roll.rollen(flaeche, wie);
     }
@@ -30,31 +30,28 @@ Item {
     property color dimColor: "#9a94a6"
     property color accentColor: "#f7931a"
     property color goodColor: "#57b894"
-    // Fuer die Auswahlfelder der Darstellungs-Seite: Rahmen und Untergrund
-    // der aufgeklappten Liste. Der Wirt reicht dieselben Toene durch, die
-    // seine uebrigen Flaechen tragen -- sonst erfindet die Liste eine eigene
-    // Deckkraft neben den Einstellungen, ueber denen sie liegt.
+    // For the dropdowns on the appearance page: border and background of the
+    // open list. The host passes the same colors its other surfaces use, so
+    // the list does not end up with its own opacity on top of the settings.
     property color lineColor: "#2a2a38"
     property color panelColor: "#16161f"
-    // Ansichten, hinter denen gerade nichts sein kann -- der Miner ohne
-    // Bitaxe, Wallet und Markt im Direktbezug. Sie stehen in der Reihenfolge
-    // trotzdem, sonst waere ihr Platz nicht einstellbar, solange man sie
-    // nicht hat; die Seite schreibt nur dazu, dass sie gerade nicht kommen.
+    // Views that currently cannot show anything: the miner without a Bitaxe,
+    // wallet and market in direct mode. They stay in the tab order anyway,
+    // otherwise their position could not be set while they are unavailable;
+    // the page only notes that they are not shown right now.
     property var nichtVerfuegbar: []
 
-    // **Seiten fuer Ansichten, die es hier nicht gibt, gehoeren weg.** Unter
-    // Android laufen Markt und Wallet nicht (beide brauchen den Dienst), die
-    // Schalter dafuer standen aber trotzdem in den Einstellungen -- am
-    // 11.09.2026 im Emulator gesehen. Anders als `nichtVerfuegbar` fragt das
-    // hier nicht, ob der Anwender etwas abgeschaltet hat, sondern ob es
-    // technisch geht: die Wallet-Seite ist die einzige Stelle, an der sich
-    // die Wallet einschalten laesst.
+    // Hide pages for views that do not exist on this platform. On Android
+    // market and wallet do not run (both need the daemon), so their switches
+    // must not appear. Unlike `nichtVerfuegbar` this is not about what the user
+    // turned off but about what is technically possible: the wallet page is the
+    // only place where the wallet can be turned on.
     property bool kannMarkt: true
     property bool kannWallet: true
     property real uiFont: 13
     property string lang: "de"
-    // Deckkraft und Startansicht gehoeren dem Fenster. Im Dashboard-Tab
-    // stellt die Flaeche der Wirt, dort waeren beide wirkungslos.
+    // Opacity and start view belong to the window. In the dashboard tab the
+    // host provides the surface, so both would have no effect there.
     property bool windowed: true
 
     signal changed(string key, var value)
@@ -66,13 +63,12 @@ Item {
         return v === undefined ? fallback : v;
     }
 
-    // Die Reihenfolge der Reiter, wie sie der Anwender festgelegt hat --
-    // aufgefuellt und von Unbekanntem befreit durch `views.js`. Dieselbe
-    // Rechnung wie in `FeedTabs`, aus derselben Tabelle.
+    // Tab order as set by the user, filled up and cleaned of unknown entries
+    // by `views.js`. Same calculation as in `FeedTabs`, from the same table.
     readonly property var reihenfolge: root.ohneEinstellungen(Views.ordnung(root.val("tabOrder", [])))
 
-    // Ist "Einstellungen" kein Reiter (die Anwendung hat ein Zahnrad), steht es
-    // weder in der Reihenfolge noch als Startansicht zur Wahl.
+    // If "Settings" is not a tab (the app has a gear button), it is offered
+    // neither in the order nor as a start view.
     property bool einstellungenAlsReiter: true
 
     function ohneEinstellungen(liste) {
@@ -83,9 +79,8 @@ Item {
         });
     }
 
-    // Die Auswahl in jedem Feld steht in der **Grundreihenfolge**, nicht in
-    // der des Anwenders: eine Liste, die sich beim Auswaehlen selbst
-    // umsortiert, springt einem unter dem Finger weg.
+    // The choices in every dropdown use the default order, not the user's: a
+    // list that re-sorts itself while picking jumps away under the finger.
     readonly property var ansichtsListe: {
         var out = [];
         var a = root.ohneEinstellungen(Views.alle());
@@ -96,15 +91,14 @@ Item {
         return out;
     }
 
-    // **Tauschen, nicht einfuegen.** Wer an Platz 2 den Markt waehlt, will
-    // ihn dort haben -- und was dort stand, muss irgendwohin. Ein Tausch
-    // laesst die Liste eine Vertauschung bleiben: jede Ansicht kommt genau
-    // einmal vor, ohne Nachrechnen. Beim Einfuegen und Nachruecken wandern
-    // dagegen alle dazwischenliegenden Reiter mit, und zwei Zuege hintereinander
-    // ergeben eine Reihenfolge, die niemand vorhergesehen hat.
+    // Swap, do not insert. Picking the market for position 2 means it should
+    // be there, and whatever was there has to go somewhere. A swap keeps the
+    // list a permutation: every view appears exactly once without any extra
+    // bookkeeping. Insert and shift would move every tab in between, and two
+    // moves in a row would give an order nobody expected.
     function reiterTauschen(pos, id) {
-        // Dieselbe Liste wie in der Anzeige -- sonst zaehlte `pos` in einer
-        // anderen Reihenfolge, sobald die Einstellungen herausgefiltert sind
+        // Same list as in the display, otherwise `pos` would count in a
+        // different order once the settings entry is filtered out
         var ord = root.ohneEinstellungen(Views.ordnung(root.val("tabOrder", [])));
         var j = ord.indexOf(id);
         if (j < 0 || j === pos)
@@ -117,9 +111,8 @@ Item {
         root.changed("tabOrder", ord);
     }
 
-    // Eine Mehrfachauswahl wird als Liste von Schluesseln gehalten. Leer heisst
-    // **alle** -- so bleibt eine spaeter hinzukommende Kennzahl sichtbar,
-    // statt stillschweigend zu fehlen.
+    // A multi-select is stored as a list of keys. Empty means all, so a metric
+    // added later shows up instead of silently missing.
     function has(key, id, alle) {
         var v = root.val(key, []);
         if (!v || !v.length || typeof v.indexOf !== "function")
@@ -139,7 +132,7 @@ Item {
         root.changed(key, cur);
     }
 
-    // ---------------------------------------------------- Bedienelemente
+    // ---------------------------------------------------- Controls
     component Zeile: Item {
         id: zeileRoot
 
@@ -154,27 +147,18 @@ Item {
             id: beschriftung
 
             anchors.left: parent.left
-            // **Oben ausrichten, wenn das Bedienelement hoeher ist.** Mittig
-            // stimmt fuer einen Schalter oder einen Regler. Bei einem hohen
-            // Gitter rutscht die Beschriftung dagegen in seine Mitte -- auf
-            // einem Telefon stand "Sprache" dadurch neben "Português (BR)",
-            // fuenf Zeilen unter dem ersten Knopf, zu dem sie gehoert. Am
-            // 08.09.2026 auf einem Galaxy A55 gesehen; am Schreibtisch faellt
-            // es nicht auf, weil die Gitter dort breiter und damit flacher
-            // sind.
+            // Align to the top when the control is taller than the label. Centering
+            // works for a switch or a slider, but next to a tall grid the label ends
+            // up in the grid's middle, e.g. "Language" next to "Português (BR)", five
+            // rows below the first button it belongs to. On a desktop this rarely
+            // shows because the grids are wider and therefore flatter.
             //
-            // **Als gerechnete Lage, nicht als wechselnde Anker.** Bis zum
-            // 10.09.2026 stand hier `anchors.verticalCenter` oder
-            // `anchors.top`, je nach derselben Bedingung. Beim Drehen des
-            // Telefons von quer auf hoch wird die Flaeche schmaler, die Knoepfe
-            // der Sprachwahl brechen auf mehr Zeilen um, `halter` wird hoeher,
-            // und die Bedingung kippt -- mitten in der Benachrichtigung ueber
-            // die neue Geometrie. Qt haengte die Anker um, waehrend es die
-            // Liste ihrer Beobachter noch durchlief, und las einen Nullzeiger:
-            // Absturz in jeder Ansicht, denn die Einstellungen sind immer
-            // angelegt, auch unsichtbar. Am Schreibtisch nachgestellt mit
-            // wechselnder Fenstergroesse im Xvfb; ohne SettingsView lief es,
-            // mit jeder anderen fehlenden Ansicht nicht.
+            // A computed `y`, not switching anchors. Rotating a phone from landscape
+            // to portrait makes the area narrower, the language buttons wrap to more
+            // rows, `halter` grows and the condition flips in the middle of the
+            // geometry change notification. Re-anchoring while Qt is still iterating
+            // its list of observers reads a null pointer and crashes every view,
+            // since the settings are always instantiated, even when hidden.
             y: halter.height > beschriftung.height
                ? root.uiFont * 0.55 : (parent.height - height) / 2
             width: parent.width * 0.42
@@ -249,24 +233,22 @@ Item {
         }
     }
 
-    // **Das erste Textfeld in den Einstellungen.** Bisher gab es hier nur
-    // Schalter, Auswahllisten und Regler; was Text brauchte (Wallets, die
-    // Miner-Adresse), lief ueber die Befehlszeile oder eine Datei -- und
-    // beides gibt es auf einem Handy nicht.
+    // Text input row. What needs text (wallets, the miner address) otherwise
+    // only works via the command line or a file, and neither exists on a
+    // phone.
     //
-    // Vorbild ist das Suchfeld im Explorer, das einzige `TextInput` in
-    // `ui/qml/`. Von dort kommen auch die beiden Lehren mit:
+    // Modeled on the search field in the explorer, the only other `TextInput`
+    // in `ui/qml/`, including two rules from there:
     //
-    //   Der Fokus braucht einen eigenen Ausgang. Escape gibt ihn her,
-    //   sonst sind die Reiter-Kuerzel nach einem Besuch hier tot (04.09.).
+    //   Focus needs a way out. Escape releases it, otherwise the tab
+    //   shortcuts stop working after visiting this field.
     //
-    //   Auf dem Finger holt sich das Feld den Fokus **nicht** von selbst.
-    //   Dort haengt daran die Bildschirmtastatur, und die deckt die halbe
-    //   Ansicht zu (05.09.).
+    //   On touch the field does not grab focus by itself. Focus brings up
+    //   the on-screen keyboard, which covers half the view.
     //
-    // Uebernommen wird erst bei Enter oder wenn das Feld den Fokus verliert
-    // -- nicht bei jedem Tastendruck. Eine Adresse, die nach dem dritten
-    // Zeichen abgefragt wird, ist eine Abfrage gegen den halben Text.
+    // The value is applied on Enter or when the field loses focus, not on
+    // every keystroke. Looking up an address after the third character would
+    // query half of it.
     component Textzeile: Rectangle {
         id: textRoot
 
@@ -322,8 +304,8 @@ Item {
     component Wahl: Flow {
         id: wahlRoot
 
-        // `Flow` statt `Row`: dreizehn Sprachen passen in keine Zeile mehr,
-        // und abgeschnittene Knoepfe sind schlimmer als zwei Zeilen.
+        // `Flow` instead of `Row`: thirteen languages do not fit in one row,
+        // and clipped buttons are worse than two rows.
         width: parent ? parent.width : 0
 
         property var eintraege: []      // [{ k, l }]
@@ -383,10 +365,9 @@ Item {
 
         signal gezogen(real w)
 
-        // **Nicht breiter als die Spalte.** Fest 16 Schrifthoehen waren am
-        // Telefon breiter als die rechte Haelfte der Zeile, und die Zahl
-        // rechts neben der Bahn stand abgeschnitten am Rand (11.09.2026,
-        // Galaxy A55).
+        // Not wider than the column. A fixed 16 font heights was wider than
+        // the right half of the row on a phone, and the number next to the
+        // track got cut off at the edge.
         width: Math.min(root.uiFont * 16, parent ? parent.width : root.uiFont * 16)
         height: root.uiFont * 1.6
 
@@ -450,7 +431,7 @@ Item {
         }
     }
 
-    // Kaestchen zum An- und Abwaehlen, fuer Mehrfachauswahl
+    // Checkboxes for multi-select
     component Haken: Flow {
         id: hakenRoot
 
@@ -465,9 +446,8 @@ Item {
         Repeater {
             model: hakenRoot.eintraege
 
-            // Ein `Item` um die Zeile herum: in einem `Row` darf ein Kind
-            // kein `anchors.fill` haben, die Beruehrungsflaeche braucht aber
-            // genau das.
+            // An `Item` around the row: a child of a `Row` must not use
+            // `anchors.fill`, but the touch area needs exactly that.
             Item {
                 id: hak
 
@@ -513,12 +493,10 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------ Aufbau
+    // ------------------------------------------------------------ Layout
 
-    // Die Schluessel der Seiten, in der Reihenfolge der Reiter darueber --
-    // an **einer** Stelle, damit Beschriftung und Wirkung nicht
-    // auseinanderlaufen koennen. Sie standen vorher zweimal da, einmal fuer
-    // `current` und einmal im Handler.
+    // Page keys in the order of the tabs above, kept in one place so labels
+    // and behavior cannot drift apart.
     readonly property var seiten: {
         var l = ["allgemein", "darstellung", "feed", "clock", "miner", "explorer"];
         if (root.kannMarkt)
@@ -528,16 +506,14 @@ Item {
         return l;
     }
 
-    // Faellt die offene Seite weg, bleibt der Reiter sonst ohne Inhalt stehen.
+    // If the open page disappears, the tab would otherwise stay without content.
     onSeitenChanged: if (root.seiten.indexOf(root.tab) < 0)
         root.tab = "allgemein";
 
-    // **Acht Reiter passen auf einem Telefon nicht mehr in eine Zeile.**
-    // `ViewTabs` ist eine `Row`: sie laeuft rechts einfach aus dem Bild,
-    // ohne Rand und ohne Hinweis. Schon mit sieben war es auf 440 Punkten
-    // knapp -- die achte Seite waere dort schlicht nicht erreichbar gewesen.
-    // Die Reihe liegt deshalb in einem waagerechten Schieber, der nur dann
-    // etwas tut, wenn sie wirklich zu breit ist.
+    // Eight tabs do not fit in one row on a phone. `ViewTabs` is a `Row` and
+    // simply runs off the right edge without a margin or any hint, so the
+    // last page would be unreachable. The row therefore sits in a horizontal
+    // Flickable that only scrolls when the row is actually too wide.
     Flickable {
         id: reiterBand
 
@@ -594,14 +570,14 @@ Item {
 
             width: parent.width
 
-            // ------------------------------------------------- Allgemein
+            // ------------------------------------------------- General
             Column {
                 width: parent.width
                 visible: root.tab === "allgemein"
 
-                // Ohne Dienst (Android, Windows) gibt es nichts zu waehlen. Das
-                // DMS-Plugin und Quickshell kennen den Schluessel nicht und
-                // behalten mit der Vorgabe beide Zeilen.
+                // Without a daemon (Android, Windows) there is nothing to choose. The
+                // DMS plugin and Quickshell do not know the key and keep both rows
+                // through the default.
                 Zeile {
                     label: Tr.t("set.source", root.lang)
                     help: Tr.t("set.sourceHelp", root.lang)
@@ -609,10 +585,9 @@ Item {
 
                     Wahl {
                         gewaehlt: root.val("dataSource", "daemon")
-                        // "auto" steht ueberall dort, wo es ueberhaupt einen
-                        // Dienst geben kann -- `FeedState` kennt die Betriebsart
-                        // in jedem Wirt. Vorgabe ist es nur im DMS-Plugin: dort
-                        // ist der Dienst die Ausnahme, in der Anwendung die Regel.
+                        // "auto" is offered wherever a daemon can exist at all; `FeedState`
+                        // knows the mode in every host. It is the default only in the DMS
+                        // plugin: there the daemon is the exception, in the app the rule.
                         eintraege: [
                             { "k": "auto", "l": Tr.t("src.auto", root.lang) },
                             { "k": "daemon", "l": Tr.t("src.daemon", root.lang) },
@@ -624,19 +599,19 @@ Item {
                     }
                 }
 
-                // **Der Weg zum Dienst auf einem anderen Geraet.** Leer ist
-                // der Dienst auf demselben Rechner; eingetragen ist es der
-                // im eigenen Netz -- und damit haben Tablett und Telefon
-                // Markt und Wallet, die sonst ausserhalb von Linux fehlen.
+                // Address of the daemon on another device. Empty means the daemon on
+                // the same machine; filled in, it is one on the local network, which
+                // gives tablets and phones market and wallet, otherwise missing outside
+                // Linux.
                 //
-                // Nur im Dienst-Betrieb sichtbar: im Direktbezug fragt
-                // niemand nach, und ein Feld ohne Wirkung ist eine Falle.
+                // Only shown in daemon mode: in direct mode nothing uses it, and a field
+                // without effect is a trap.
                 Zeile {
                     label: Tr.t("set.daemonHost", root.lang)
                     help: Tr.t("set.daemonHostHelp", root.lang)
-                    // Auch bei "auto" sichtbar: die Suche klopft an genau
-                    // dieser Adresse an. Nur im Direktbezug fragt niemand
-                    // nach, und ein Feld ohne Wirkung ist eine Falle.
+                    // Also shown for "auto": discovery tries exactly this address.
+                    // Only direct mode never uses it, and a field without effect is a
+                    // trap.
                     visible: root.val("dienstMoeglich", true)
                              && root.val("dataSource", "daemon") !== "direct"
 
@@ -654,11 +629,10 @@ Item {
                     help: Tr.t("set.currencyHelp", root.lang)
 
                     Wahl {
-                        // **Vorgabe ist USD, nicht EUR.** Bitcoin wird
-                        // weltweit in Dollar notiert; Euro ist eine bewusste
-                        // Wahl. Dieselbe Vorgabe steht in `DeckWidget.java`,
-                        // damit Reiter und Widget nicht auseinanderlaufen,
-                        // solange niemand etwas eingestellt hat.
+                        // Default is USD, not EUR. Bitcoin is quoted in dollars
+                        // worldwide; euro is a deliberate choice. `DeckWidget.java`
+                        // uses the same default so tab and widget agree as long as
+                        // nothing has been set.
                         gewaehlt: root.val("currency", "usd")
                         eintraege: {
                             var out = [];
@@ -678,10 +652,10 @@ Item {
                     label: Tr.t("set.language", root.lang)
                     help: Tr.t("set.languageHelp", root.lang)
 
-                    // **"Systemsprache" vorn: leer heisst, dem System folgen.**
-                    // Wirte ohne `langWahl` (DMS, Quickshell) speichern das
-                    // Leere unter `lang`, und FeedTabs faellt dann ebenso auf
-                    // die Systemsprache zurueck.
+                    // "System language" first: empty means follow the system.
+                    // Hosts without `langWahl` (DMS, Quickshell) store the empty
+                    // value under `lang`, and FeedTabs then also falls back to the
+                    // system language.
                     Wahl {
                         gewaehlt: root.val("langWahl", root.val("lang", root.lang))
                         eintraege: [{ "k": "", "l": Tr.t("set.langSystem", root.lang) }]
@@ -692,9 +666,8 @@ Item {
                     }
                 }
 
-                // **Nicht auf Android.** Die Activity wird dort immer deckend
-                // gezeichnet; der Regler bewegte am Telefon nichts
-                // (11.09.2026).
+                // Not on Android. The activity is always drawn opaque there, so
+                // the slider would have no effect.
                 Zeile {
                     visible: root.windowed && Qt.platform.os !== "android"
                              && Qt.platform.os !== "ios"
@@ -728,23 +701,15 @@ Item {
                 }
             }
 
-            // ----------------------------------------------- Darstellung
+            // ----------------------------------------------- Appearance
             //
-            // **Die Reihenfolge der Reiter gehoert dem Anwender.** Sie stand
-            // vorher fest in `FeedTabs`, und die Startansicht zaehlte daneben
-            // ein zweites Mal auf, welche Ansichten es ueberhaupt gibt -- eine
-            // Liste, die bei Feed, Uhr, Miner, Explorer stehengeblieben war.
-            // Markt und Wallet kamen spaeter dazu und fehlten dort seither:
-            // wer im Markt starten wollte, konnte es nicht einstellen. Beide
-            // lesen jetzt aus `views.js`.
+            // The tab order belongs to the user. Both the order and the start view
+            // read the list of views from `views.js`, so a new view is available in
+            // both places.
             //
-            // Hierher gehoeren auch die Schalter, mit denen sich ein Reiter
-            // ganz abschalten laesst. Sie lagen vorher je auf der Seite ihrer
-            // eigenen Ansicht -- also dort, wo man sie am wenigsten braucht
-            // und am schlechtesten findet: **wer einen Reiter abgeschaltet
-            // hat, kommt auf dessen Seite nicht mehr, um ihn wieder
-            // anzuschalten.** Erreichbar war er nur noch ueber diese Seite,
-            // auf der er bis eben nicht stand.
+            // The switches that turn a tab off entirely live here too, not on each
+            // view's own page: once a tab is turned off its page can no longer be
+            // reached to turn it back on.
             Column {
                 width: parent.width
                 visible: root.tab === "darstellung"
@@ -772,8 +737,8 @@ Item {
                     }
                 }
 
-                // Reiter im Wechsel, fuer eine Blockuhr an der Wand. Der Takt
-                // laeuft in `FeedTabs`.
+                // Rotate through tabs, e.g. for a block clock on the wall. The timer
+                // runs in `FeedTabs`.
                 Zeile {
                     label: Tr.t("set.tabRotate", root.lang)
                     help: Tr.t("set.tabRotateHelp", root.lang)
@@ -811,7 +776,7 @@ Item {
                                 { "id": "net", "l": m + Tr.t("miner.paneNet", root.lang) },
                                 { "id": "explorer", "l": Tr.t("tab.explorer", root.lang) }
                             ];
-                            // Den Markt nur, wo es ihn gibt (nicht im Direktbezug)
+                            // Market only where it exists (not in direct mode)
                             if (root.nichtVerfuegbar.indexOf(6) < 0)
                                 out.push({ "id": "market", "l": Tr.t("tab.market", root.lang) });
                             return out;
@@ -833,9 +798,9 @@ Item {
                             root.nichtVerfuegbar.indexOf(platz.modelData) < 0
 
                         label: Tr.t("set.tabPos", root.lang, platz.index + 1)
-                        // Der Hinweis steht **einmal**, an der ersten Zeile.
-                        // Siebenmal derselbe Satz untereinander liest sich
-                        // wie ein Fehler, nicht wie eine Erklaerung.
+                        // The hint appears once, on the first row. The same
+                        // sentence seven times in a row reads like an error,
+                        // not an explanation.
                         help: !platz.moeglich ? Tr.t("set.tabUnavailable", root.lang)
                               : (platz.index === 0 ? Tr.t("set.tabOrderHelp", root.lang) : "")
 
@@ -843,21 +808,17 @@ Item {
                             id: feld
 
                             anchors.left: parent.left
-                            // **Immer bis an den Schalter, auch wo keiner
-                            // gezeichnet wird.** Ein unsichtbares Element
-                            // behaelt seine Breite: laesst man die Felder
-                            // ohne Schalter bis an den Rand laufen, enden
-                            // fuenf an einer Kante und zwei an einer
-                            // anderen. Der leere Platz kostet nichts, die
-                            // ausgefranste Kante faellt sofort auf.
+                            // Always extend to the switch, even where none is
+                            // drawn. An invisible item keeps its width: letting
+                            // rows without a switch run to the edge would end five
+                            // fields at one edge and two at another. The empty
+                            // space costs nothing, a ragged edge stands out.
                             anchors.right: schalt.left
                             anchors.rightMargin: root.uiFont * 0.7
-                            // **Der Rahmen ist die Seite, nicht die Zeile.**
-                            // Die aufgeklappte Liste haengt sich in dieses
-                            // Element um -- und es liegt ausserhalb des
-                            // Schiebers, der den Inhalt beschneidet. In der
-                            // Zeile stehend waere sie an dessen Rand
-                            // abgeschnitten worden.
+                            // The bounds are the page, not the row. The open list
+                            // reparents itself into this item, which lies outside
+                            // the Flickable that clips the content. Inside the row
+                            // it would be cut off at the Flickable's edge.
                             bounds: root
                             model: root.ansichtsListe
                             current: String(platz.modelData)
@@ -871,11 +832,10 @@ Item {
                                 root.reiterTauschen(platz.index, parseInt(k, 10));
                             }
 
-                            // Die Liste misst ihre Lage **beim Aufklappen**
-                            // und danach nicht mehr -- absichtlich, siehe
-                            // `DropDown.qml`. Auf einer Seite, die scrollt,
-                            // heisst das: wer bei offener Liste schiebt,
-                            // laesst sie stehen. Also zuklappen.
+                            // The list measures its position when it opens and not
+                            // afterwards, on purpose (see `DropDown.qml`). On a
+                            // scrolling page it would stay behind while the content
+                            // moves, so close it.
                             Connections {
                                 target: flaeche
 
@@ -890,10 +850,10 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: feld.verticalCenter
-                            // Einstellungen und Wallet tragen keinen: die
-                            // einen bleiben immer, die andere haengt am
-                            // Schalter mit der Warnung davor. Ein zweiter
-                            // daneben waere nur die Frage, welcher gilt.
+                            // Settings and wallet have no switch: settings always
+                            // stays, and the wallet depends on the switch with the
+                            // warning on its page. A second one here would only
+                            // raise the question which one applies.
                             visible: platz.schluessel.length > 0
                             an: root.val(platz.schluessel, true)
                             onUmgelegt: root.changed(platz.schluessel,
@@ -1013,7 +973,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------ Uhr
+            // ------------------------------------------------ Clock
             Column {
                 width: parent.width
                 visible: root.tab === "clock"
@@ -1120,8 +1080,8 @@ Item {
                 width: parent.width
                 visible: root.tab === "miner"
 
-                // Welche Seiten der Reiter hat. Ohne "Geraet" nur das Netz,
-                // auch mit eingetragenem Miner.
+                // Which pages the tab has. Without "Device" only the network,
+                // even with a miner configured.
                 Zeile {
                     label: Tr.t("set.minerPanes", root.lang)
                     help: Tr.t("set.minerPanesHelp", root.lang)
@@ -1289,7 +1249,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------------ Markt
+            // ------------------------------------------------------ Market
             Column {
                 width: parent.width
                 visible: root.tab === "markt"
@@ -1330,11 +1290,10 @@ Item {
                     font.pixelSize: root.uiFont * 1.15
                 }
 
-                // Der Reiter erscheint erst, wenn das hier gelesen und
-                // bestaetigt wurde. Nicht wegen der Guthaben -- die sind
-                // watch-only vollstaendig geschuetzt --, sondern wegen der
-                // Verkettung: das ist der einzige Teil des Programms, bei dem
-                // der Benutzer etwas ueber sich preisgibt.
+                // The tab only appears after this has been read and confirmed.
+                // Not because of the funds, which watch-only keeps fully safe,
+                // but because of linkability: this is the only part of the
+                // program where the user reveals something about themselves.
                 Rectangle {
                     width: parent.width
                     height: warnung.height + root.uiFont * 1.6

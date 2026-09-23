@@ -1,20 +1,18 @@
-// Schriftfamilien an einer Stelle.
+// Font families in one place.
 //
-// Bisher stand ueberall `font.family: "monospace"` bzw. `"sans-serif"`. Das
-// sind **fontconfig-Namen**: unter Linux loest fontconfig sie auf die vom
-// Benutzer eingestellte Standardschrift auf, unter Windows und macOS gibt es
-// sie nicht. Dort faellt Qt auf irgendeine Schrift zurueck -- an einer
-// Monospace-Stelle womoeglich auf eine proportionale, und dann stehen Hashes
-// und Betraege nicht mehr untereinander.
+// "monospace" and "sans-serif" are fontconfig names: on Linux fontconfig
+// resolves them to the user's default fonts, on Windows and macOS they do
+// not exist. There Qt falls back to some font, possibly a proportional one
+// where monospace is needed, and then hashes and amounts no longer line up.
 //
-// `font.families` waere der naheliegende Weg, **gibt es in QML aber nicht**:
-// die Wertetyp-`font` kennt nur `family` (geprueft mit Qt 6.11.2, die
-// Zuweisung wird mit "Cannot assign to non-existent property" abgelehnt).
-// Also wird hier ausgewaehlt statt aufgezaehlt.
+// `font.families` would be the obvious way, but QML does not have it: the
+// `font` value type only knows `family` (checked with Qt 6.11.2, the
+// assignment fails with "Cannot assign to non-existent property"). So this
+// picks one family instead of listing several.
 //
-// Unter Linux bleibt es beim generischen Namen -- dort aendert sich nichts,
-// es bleibt die eingestellte Standardschrift. Nur auf Windows und macOS wird
-// die erste tatsaechlich vorhandene Schrift aus der Liste genommen.
+// On Linux the generic name stays and the user's default font is used.
+// Only on Windows and macOS the first installed font from the list is
+// picked.
 .pragma library
 
 var _kandidaten = {
@@ -27,9 +25,9 @@ var _kandidaten = {
 
 var _generisch = { "mono": "monospace", "sans": "sans-serif", "serif": "serif" };
 
-// Einmal ausgerechnet, dann gemerkt: `Qt.fontFamilies()` liest die ganze
-// Schriftdatenbank, und das gehoert nicht in eine Bindung, die bei jeder
-// Zeile neu rechnet.
+// Computed once, then cached: `Qt.fontFamilies()` reads the whole font
+// database, which does not belong in a binding that is re-evaluated for
+// every line.
 var _gemerkt = {};
 
 function _waehle(art) {
@@ -63,10 +61,10 @@ function serif() {
     return _waehle("serif");
 }
 
-// Fuer `ctx.font` auf einer Leinwand: dort gilt die CSS-Kurzschreibweise.
-// Ein Name mit Leerzeichen gehoert dort in Anfuehrungszeichen, ein
-// generischer ausdruecklich **nicht** -- in Anfuehrungszeichen waere er ein
-// gesuchter Schriftname statt einer Gattung, und dann findet Qt ihn nicht.
+// For `ctx.font` on a Canvas, which uses CSS shorthand. A name with spaces
+// needs quotes there, a generic family must not have them: quoted it
+// would be looked up as a font name instead of a generic family, and Qt
+// would not find it.
 function _css(name) {
     return name.indexOf(" ") >= 0 ? '"' + name + '"' : name;
 }

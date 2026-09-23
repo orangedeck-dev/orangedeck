@@ -1,13 +1,13 @@
-// Die Kette in einer Leiste: links die geplanten Bloecke aus dem Mempool,
-// rechts die bestaetigten -- dazwischen die Grenze zwischen "steht noch aus"
-// und "steht fest". So sieht man unmittelbar, welcher Block als naechster
-// bestaetigt wuerde.
+// The chain in one strip: projected blocks from the mempool on the left,
+// confirmed blocks on the right, with the boundary between "pending" and
+// "settled" in between. You see right away which block would be confirmed
+// next.
 //
-// Reihenfolge wie im Original: die geplanten laufen von weit draussen nach
-// innen, der naechste steht direkt an der Grenze; rechts davon der neueste
-// bestaetigte, dann aelter werdend.
+// Order as in the original: projected blocks run from far out inwards,
+// the next one sits right at the boundary; to its right the newest
+// confirmed block, then older ones.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 
@@ -20,32 +20,31 @@ Item {
     property color textColor: "#f2eef8"
     property color dimColor: "#9a94a6"
     property color accentColor: "#f7931a"
-    // Die Farbe trennt den Zustand: gruen steht aus, violett steht fest.
+    // Color separates the states: green is pending, violet is settled.
     property color pendingColor: "#2f9e63"
     property color minedColor: "#7b5cd6"
     property real uiFont: 13
     property string lang: "de"
 
     property var blocks: []
-    // Rueckfallweg: die geplanten Bloecke ueber REST. Gebraucht wird er nur,
-    // solange der Zustand sie noch nicht mitfuehrt.
+    // Fallback: projected blocks via REST. Only needed while the state does
+    // not carry them yet.
     property var projected: []
     property string error: ""
 
-    // Bevorzugt aus dem Zustand -- die kommen ueber den WebSocket herein und
-    // aendern sich damit im Takt des Feeds, ohne eigene Abfrage.
+    // Preferably from the state: they arrive over the WebSocket and change
+    // with the feed, without a separate request.
     readonly property var projectedNow: (root.feed && root.feed.projected
                                          && root.feed.projected.length)
         ? root.feed.projected : root.projected
 
     signal blockPicked(string hash)
-    // Ein geplanter Block hat keinen Hash -- er wird ueber seinen Rang
-    // gemeldet (0 = der naechste).
+    // A projected block has no hash, so it is reported by its rank
+    // (0 = the next one).
     signal projectedPicked(int rank, var data)
 
-    // Wie lange es voraussichtlich bis zu diesem geplanten Block dauert.
-    // Grundlage ist die **gemessene** durchschnittliche Blockzeit aus der
-    // Schwierigkeitsanpassung, nicht die nominellen zehn Minuten.
+    // Expected time until this projected block. Based on the measured average
+    // block time from the difficulty adjustment, not the nominal ten minutes.
     function etaFor(rank) {
         var avg = (root.feed && root.feed.difficulty.timeAvg) || 600000;
         var min = Math.round((rank + 1) * avg / 60000);
@@ -57,24 +56,22 @@ Item {
 
     implicitHeight: uiFont * 13.5
 
-    // Die Kacheln sind **quadratisch**. Vorher fuellten sie den Streifen und
-    // wurden dabei hochkant -- ein Block ist aber keine Saeule. Die Kantenlaenge
-    // ist das Kleinere aus Spaltenbreite und dem, was unter der Beschriftung
-    // uebrig bleibt.
+    // Tiles are square; a block is not a column. The edge length is the
+    // smaller of column width and the space left below the label.
     readonly property real cellWidth: uiFont * 9
     readonly property real cardSide: Math.max(uiFont * 4,
         Math.min(cellWidth, implicitHeight - uiFont * 3.2))
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // This matters: "1.234" means either one thousand two hundred thirty-four
+    // or one point two three four depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
 
-    // Gebuehren unter 10 sat/vB brauchen eine Nachkommastelle. Gerundet steht
-    // sonst bei jedem Block "~0 sat/vB" und als Spanne "0 – 0" -- genau in den
-    // ruhigen Zeiten, in denen die Zahl interessant waere.
+    // Fees below 10 sat/vB need one decimal. Rounded, every block would show
+    // "~0 sat/vB" and a range of 0 to 0, exactly in the quiet times when the
+    // number is interesting.
     function fee(n) {
         if (n === undefined || n === null)
             return "–";
@@ -96,8 +93,8 @@ Item {
         return Tr.t("ago.day", root.lang, Math.floor(h / 24));
     }
 
-    // Abgestuft nach Gebuehr, im selben Gruen -- der naechste Block traegt die
-    // hoechsten Gebuehren und leuchtet am staerksten.
+    // Graded by fee in the same green: the next block carries the highest
+    // fees and is brightest.
     function feeShade(medianFee) {
         var f = Math.max(0, Math.min(1, (medianFee || 0) / 12));
         return Qt.hsva(root.pendingColor.hsvHue, 0.45 + 0.3 * f, 0.34 + 0.30 * f, 1);
@@ -114,8 +111,8 @@ Item {
             root.error = "";
             root.blocks = d || [];
         });
-        // Nur fragen, wenn der Zustand nichts liefert -- sonst ist die Abfrage
-        // eine Doppelung dessen, was ohnehin schon da ist.
+        // Only request when the state has nothing; otherwise the request just
+        // duplicates data that is already there.
         if (!(root.feed.projected && root.feed.projected.length))
             root.feed.lookup("mempoolblocks", "now", function (d, err) {
                 if (!err)
@@ -140,12 +137,12 @@ Item {
         onTriggered: root.reload()
     }
 
-    // Der naechste Block steht rechts an der Grenze, die ferneren links davon
+    // The next block sits on the right at the boundary, later ones to its left
     readonly property var projectedShown: {
         var p = (root.projectedNow || []).slice(0, 8);
         var out = [];
-        // Umgedreht, damit der naechste rechts an der Grenze steht -- der
-        // urspruengliche Rang wird dabei mitgefuehrt.
+        // Reversed so the next block sits on the right at the boundary; the
+        // original rank is carried along.
         for (var i = p.length - 1; i >= 0; i--) {
             var e = {};
             for (var k in p[i])
@@ -180,7 +177,7 @@ Item {
         flickableDirection: Flickable.HorizontalFlick
         boundsBehavior: Flickable.StopAtBounds
 
-        // Beim ersten Aufbau an die Grenze rollen -- dort spielt die Musik
+        // On first layout scroll to the boundary, that is where things happen
         onContentWidthChanged: {
             if (contentWidth > width && contentX === 0)
                 contentX = Math.max(0, pending.width - width * 0.45);
@@ -191,7 +188,7 @@ Item {
 
             spacing: root.uiFont * 0.55
 
-            // ------------------------------------------------ geplant
+            // ------------------------------------------------ projected
             Row {
                 id: pending
 
@@ -272,19 +269,17 @@ Item {
                                 }
                             }
 
-                            // Fuellstand. Er ist das Einzige an der Kachel, das
-                            // sich sichtbar bewegt, und zeigt, dass die Reihe
-                            // lebt -- der letzte Block ist der Sammelposten und
-                            // deshalb immer randvoll.
+                            // Fill level. It is the only part of the tile that visibly moves and
+                            // shows the row is alive. The last block collects everything else and is
+                            // therefore always full.
                             Item {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 anchors.bottom: parent.bottom
                                 anchors.margins: root.uiFont * 0.4
                                 height: root.uiFont * 0.28
-                                // Nur zeigen, wenn er etwas zu sagen hat: ein
-                                // randvoller Block ist der Normalfall, und ein
-                                // immer voller Balken ist eine Zierlinie.
+                                // Only show it when it says something: a full block is the normal case,
+                                // and a bar that is always full is just decoration.
                                 visible: pcell.modelData.blockVSize !== undefined
                                          && pcell.modelData.blockVSize < 0.99e6
 
@@ -323,7 +318,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------- die Grenze
+            // ------------------------------------------------- the boundary
             Item {
                 width: root.uiFont * 1.6
                 height: strip.height
@@ -340,7 +335,7 @@ Item {
                 }
             }
 
-            // --------------------------------------------- bestaetigt
+            // --------------------------------------------- confirmed
             Repeater {
                 model: root.blocks
 

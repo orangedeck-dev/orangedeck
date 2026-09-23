@@ -1,15 +1,14 @@
-// Die Transaktionen eines Blocks zum Durchblaettern.
+// Browsable list of a block's transactions.
 //
-// Die Kachelgrafik zeigt den Block auf einen Blick, sagt aber nichts der Reihe
-// nach. Hier steht dieselbe Liste als Liste: in der Reihenfolge des Blocks,
-// mit Betrag, Groesse, Gebuehrenrate und -- wenn die Farben nach Art stehen --
-// der gedeuteten Art.
+// The tile view shows the block at a glance but not in order. This shows
+// the same data as a list: in block order, with amount, size, fee rate and,
+// when tiles are colored by type, the derived type.
 //
-// Die Daten sind schon da: `blocktiles` und `projectedtiles` liefern zu jeder
-// Kachel eine Zeile [txid, vsize, fee, value, rate]. Es wird also nichts
-// nachgeladen, nur anders dargestellt.
+// The data is already there: `blocktiles` and `projectedtiles` provide one
+// row [txid, vsize, fee, value, rate] per tile. Nothing is fetched, it is
+// only presented differently.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "txtype.js" as TxType
 import "strings.js" as Tr
@@ -20,7 +19,7 @@ pragma ComponentBehavior: Bound
 Column {
     id: root
 
-    // Die aufbereiteten Kacheldaten
+    // Prepared tile data
     property var block: null
     property string colorMode: "fee"
     property int perPage: 25
@@ -39,14 +38,14 @@ Column {
     readonly property int step: (block && block.tileStep) || 1
     readonly property string types: (block && block.types) || ""
 
-    // Beim Wechsel des Blocks wieder von vorn
+    // Back to the start when the block changes
     onBlockChanged: root.page = 0
 
     spacing: uiFont * 0.3
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // This matters: "1.234" means either one thousand two hundred thirty-four
+    // or one point two three four depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -69,7 +68,7 @@ Column {
         return out;
     }
 
-    // ------------------------------------------------------- Kopfzeile
+    // ------------------------------------------------------- Header
     Row {
         width: parent.width
         spacing: root.uiFont * 0.8
@@ -82,8 +81,8 @@ Column {
             font.pixelSize: root.uiFont * 0.95
         }
 
-        // Bei sehr grossen Bloecken ist die Liste ausgeduennt -- das gehoert
-        // dazugesagt, sonst zaehlt jemand mit und wundert sich.
+        // For very large blocks the list is thinned out. Say so, otherwise
+        // someone counts along and is confused.
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.step > 1
@@ -105,7 +104,7 @@ Column {
         }
     }
 
-    // ------------------------------------------------------------ Liste
+    // ------------------------------------------------------------ List
     Repeater {
         model: root.seite()
 
@@ -135,9 +134,9 @@ Column {
                     font.pixelSize: root.uiFont * 0.8
                 }
 
-                // Der Farbpunkt zeigt dieselbe Art wie die Kachelgrafik --
-                // nur wenn dort auch nach Art gefaerbt wird, sonst waeren es
-                // zwei Farblogiken nebeneinander.
+                // The color dot shows the same type as the tile view, but only when that
+                // view is colored by type; otherwise there would be two color schemes
+                // side by side.
                 Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     visible: root.colorMode === "type" && zeile.modelData.k >= 0
@@ -194,7 +193,7 @@ Column {
         }
     }
 
-    // ---------------------------------------------------------- Blaettern
+    // ---------------------------------------------------------- Paging
     Row {
         spacing: root.uiFont * 0.6
         visible: root.seiten > 1

@@ -1,21 +1,20 @@
-// Liquidationen und Positionierung -- der zweite Unterreiter im Markt.
+// Liquidations and positioning, the second sub-tab of the market view.
 //
-// Zwei Fragen, die der Kurs nicht beantwortet:
+// Two questions the price alone does not answer:
 //
-//   **Wie stehen die anderen?**  Der Anteil der Konten, die long sind, je
-//   Boerse. Echte Zahlen der Boersen, keine Schaetzung.
+//   How are others positioned? The share of accounts that are long, per
+//   exchange. Real numbers from the exchanges, not an estimate.
 //
-//   **Wo mussten Positionen aufgeben?**  Ein Balken je Preisstufe aus den
-//   Zwangsliquidationen, die der Dienst selbst gehoert hat.
+//   Where were positions forced out? One bar per price level, built from
+//   the forced liquidations the service has observed itself.
 //
-// **Bewusst keine Heatmap nach Art von Coinglass.** Deren Bild ist gerechnet,
-// nicht gemessen: aus offenem Interesse und *angenommenen* Hebeln wird
-// hochgerechnet, wo Liquidationen laegen. Die echten Liquidationspreise
-// offener Positionen kennt nur die Boerse, und niemand veroeffentlicht sie.
-// Hier steht deshalb nur, was wirklich passiert ist -- weniger Bild, aber
-// jede Angabe belegbar.
+// Deliberately no Coinglass-style heatmap. That picture is computed, not
+// measured: it extrapolates from open interest and assumed leverage where
+// liquidations would sit. Only the exchange knows the real liquidation
+// prices of open positions, and nobody publishes them. So this view shows
+// only what actually happened. Less picture, but every number can be backed up.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so this also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "fonts.js" as Fonts
@@ -27,18 +26,18 @@ Item {
 
     property string lang: "de"
     property string zeichen: "$"
-    // [[preisMitte, wertLong, wertShort], ...] -- Dollar je Preisstufe
+    // [[priceMid, longValue, shortValue], ...] in dollars per price level
     property var hist: []
-    // [{id, name, long}] -- Anteil der Konten, die long stehen
+    // [{id, name, long}]: share of accounts that are long
     property var ratio: []
-    // Seit wann ueberhaupt zugehoert wird, 0 = noch nie
+    // Start of listening, 0 = never
     property int seit: 0
-    // {id, name, online, since} je Quelle; `since` gibt es nur im Direktbezug
+    // {id, name, online, since} per source; `since` only exists in the direct feed
     property var liqQuellen: []
-    // **Bybit getrennt, wenn es spaeter kam.** Im Direktbezug ist `seit` der
-    // Beginn des OKX-Rueckgriffs, rund ein Tag zurueck; Bybit hat keinen
-    // Rueckgriff und zaehlt erst ab dem Verbinden (15.09.2026). Der Dienst
-    // hoert beiden gleich lange zu und schickt kein `since`.
+    // Bybit shown separately if it started later. In the direct feed `seit`
+    // is the start of the OKX backfill, about a day back; Bybit has no
+    // backfill and only counts from the moment it connects. The service
+    // listens to both for the same time and sends no `since`.
     readonly property int bybitSeit: {
         for (var i = 0; i < root.liqQuellen.length; i++) {
             var q = root.liqQuellen[i];
@@ -67,7 +66,7 @@ Item {
     readonly property color upColor: "#5cb946"
     readonly property color downColor: "#d33f3f"
 
-    // Summen ueber das ganze Fenster -- die Zeile, die man zuerst liest
+    // Totals over the whole window, the line people read first
     readonly property real summeLong: {
         var s = 0;
         for (var i = 0; i < root.hist.length; i++)
@@ -86,14 +85,14 @@ Item {
             m = Math.max(m, root.hist[i][1] + root.hist[i][2]);
         return m;
     }
-    // Der Dienst schickt auch leere Stufen -- sonst waere die Preisachse
-    // keine. "Nichts gehoert" erkennt man deshalb nicht an der Laenge der
-    // Liste, sondern daran, dass nirgends etwas steht.
+    // The service also sends empty levels, otherwise there would be no price
+    // axis. So "nothing observed" is not detected by the list length but by
+    // every level being zero.
     readonly property bool hatDaten: root.groessteStufe > 0
 
-    // Kurze Schreibweise fuer Geld: 298.826 wird zu "299 k", 1.240.000 zu
-    // "1,2 M". Neben zwanzig Balken hat eine volle Zahl keinen Platz, und
-    // die Groessenordnung ist ohnehin das, was zaehlt.
+    // Short money format: 298,826 becomes "299 k", 1,240,000 becomes "1.2 M".
+    // Next to twenty bars a full number has no room, and the order of
+    // magnitude is what matters anyway.
     function geld(v) {
         if (v >= 1e9)
             return Tr.fixed(v / 1e9, 1, root.lang) + " G";
@@ -104,7 +103,7 @@ Item {
         return Math.round(v) + "";
     }
 
-    // ------------------------------------------------------ Positionierung
+    // ------------------------------------------------------ positioning
     Column {
         id: oben
 
@@ -120,9 +119,9 @@ Item {
             font.bold: true
         }
 
-        // **Anteil der Konten, nicht des Kapitals.** Ohne diesen Satz liest
-        // man 53 % als Uebergewicht -- es heisst aber nur, dass jedes zweite
-        // Konto long steht, nicht dass dort das halbe Geld liegt.
+        // Share of accounts, not of capital. Without this line 53 % reads
+        // like an imbalance, but it only means that every second account is
+        // long, not that half the money is there.
         Text {
             text: Tr.t("market.accountShare", root.lang)
             color: root.dimColor
@@ -149,8 +148,8 @@ Item {
                     elide: Text.ElideRight
                 }
 
-                // Der Balken: gruen der Long-Anteil, rot der Rest. Die Mitte
-                // ist markiert -- ohne Bezugslinie sagt "53 %" nichts.
+                // The bar: green is the long share, red the rest. The middle
+                // is marked, without a reference line "53 %" says nothing.
                 Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     width: root.baseFont * 14
@@ -198,7 +197,7 @@ Item {
             height: root.baseFont * 0.6
         }
 
-        // ------------------------------------------------- Liquidationen
+        // ------------------------------------------------- liquidations
         Text {
             text: Tr.t("market.liqTitle", root.lang)
             color: root.textColor
@@ -216,9 +215,8 @@ Item {
             wrapMode: Text.WordWrap
         }
 
-        // **Flow, nicht Row**: am Telefon passen beide Summen nicht
-        // nebeneinander, und "Shorts liquidiert" lief rechts aus dem Bild
-        // (13.09.2026, 384 Punkte breit).
+        // Flow, not Row: on a phone both totals do not fit side by side,
+        // and "Shorts liquidated" ran off the right edge.
         Flow {
             width: parent.width
             spacing: root.baseFont * 1.2
@@ -242,9 +240,9 @@ Item {
         }
     }
 
-    // -------------------------------------------------------- Histogramm
-    // Preis nach oben, Betrag nach rechts. **Quer, nicht laengs**: die Frage
-    // ist "auf welcher Hoehe", nicht "wann" -- das beantwortet der CVD.
+    // -------------------------------------------------------- histogram
+    // Price goes up, amount goes right. Horizontal bars, because the question
+    // is "at what level", not "when" (the CVD answers that).
     Item {
         id: bild
 
@@ -268,16 +266,15 @@ Item {
             font.pixelSize: root.baseFont - 1
         }
 
-        // Wie viele Beschriftungen die Achse vertraegt, ohne dass sie
-        // uebereinander liegen -- lieber jede dritte lesbar als jede
-        // unleserlich.
+        // How many axis labels fit without overlapping. Every third one
+        // readable beats all of them unreadable.
         readonly property real zeilenhoehe: Math.max(2, height / Math.max(1, root.hist.length))
         readonly property int jedeWievielte:
             Math.max(1, Math.ceil((root.baseFont + 2) / zeilenhoehe))
 
         Repeater {
-            // Die hoechste Preisstufe oben -- der Dienst schickt sie
-            // aufsteigend, gezeichnet wird andersherum.
+            // Highest price level on top. The service sends them
+            // ascending, so they are drawn reversed.
             model: root.hatDaten ? root.hist.slice().reverse() : []
 
             Item {
@@ -300,9 +297,8 @@ Item {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     width: bild.achse
-                    // Die Stufe am laufenden Kurs steht immer da, egal wie
-                    // eng es wird -- sie ist der Bezugspunkt fuer alles
-                    // andere.
+                    // The level at the current price is always labelled, however
+                    // tight it gets, since it is the reference for everything else.
                     visible: stufe.amKurs || stufe.index % bild.jedeWievielte === 0
                     text: Tr.group(stufe.modelData[0], root.lang)
                     color: stufe.amKurs ? root.accentColor : root.dimColor
@@ -311,16 +307,16 @@ Item {
                     horizontalAlignment: Text.AlignRight
                 }
 
-                // Rot: liquidierte Longs. Gruen: liquidierte Shorts. Beide
-                // von links, aneinander -- so bleibt die Gesamtlaenge der
-                // Betrag der Stufe.
+                // Red: liquidated longs. Green: liquidated shorts. Both start
+                // on the left, end to end, so the total length is the
+                // level's amount.
                 Rectangle {
                     id: balkenLong
 
                     x: bild.achse + root.baseFont * 0.5
                     anchors.verticalCenter: parent.verticalCenter
-                    // Eine leere Stufe zeichnet nichts, aber sie **haelt
-                    // ihren Platz** -- daran haengt die Achse.
+                    // An empty level draws nothing but keeps its slot,
+                    // the axis depends on it.
                     height: Math.max(1, parent.height - 2)
                     width: root.groessteStufe > 0
                            ? bild.feld * stufe.modelData[1] / root.groessteStufe : 0
@@ -348,12 +344,12 @@ Item {
             }
         }
 
-        // Der laufende Kurs als Linie -- ohne ihn sagt "wo" nichts, weil die
-        // Frage immer "wo **relativ zu jetzt**" heisst.
+        // The current price as a line. Without it "where" means nothing,
+        // the question is always "where relative to now".
         Rectangle {
             visible: root.hatDaten && root.hist.length > 1 && root.preis > 0
-            // **Nur ueber der Balkenflaeche.** Ueber die volle Breite lief
-            // sie durch die Wertangaben rechts und strich sie durch.
+            // Only across the bar area. At full width it ran through the
+            // amounts on the right and struck them out.
             x: bild.achse + root.baseFont * 0.5
             width: bild.feld
             height: 1

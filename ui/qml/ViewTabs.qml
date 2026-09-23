@@ -1,6 +1,5 @@
-// Umschalter zwischen den Ansichten. Bewusst ein eigenes Bauteil, damit
-// Fenster und Dashboard-Tab denselben benutzen -- und nur `import QtQuick`,
-// damit es auch unter Android laeuft.
+// Switcher between the views. A separate component so the window and the
+// dashboard tab share it. Only `import QtQuick`, so it also runs on Android.
 import QtQuick
 
 pragma ComponentBehavior: Bound
@@ -32,8 +31,8 @@ Row {
 
             width: label.width
             height: label.height + root.fontSize * 0.55
-            // Beruehrungsflaeche ist hoeher als die Schrift -- auf einem
-            // Bildschirm mit den Fingern trifft man sonst schlecht.
+            // The touch area is taller than the text, otherwise it is hard
+            // to hit with a finger.
             implicitHeight: height
 
             Text {

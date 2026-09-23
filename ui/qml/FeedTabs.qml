@@ -1,20 +1,19 @@
-// Der ganze Satz Ansichten mit der Reiterzeile darueber -- Feed, Uhr,
-// Miner, Explorer, Wallet, Einstellungen.
+// The full set of views with the tab row above them: Feed, Clock, Miner,
+// Explorer, Wallet, Settings.
 //
-// **Einmal gebaut, dreimal benutzt**: im Dashboard-Tab von DMS, im Popout der
-// Leisten-Pille und in der Kachel des Control Centers. Vorher stand der Satz
-// nur im Dashboard-Tab; die beiden anderen zeigten allein den Feed und lasen
-// vier von dreissig Einstellungen -- Sprache und Waehrung kamen dort nie an.
+// Built once, used in three places: the DMS dashboard tab, the bar pill
+// popout and the Control Center tile. All three get the same views and read
+// all settings, including language and currency.
 //
-// Der Wirt haelt den Zustand, dieses Bauteil zeigt ihn nur:
+// The host holds the state, this component only displays it:
 //
-//   opts          dieselbe Sammlung, die auch `SettingsView` liest
-//   view          welche Ansicht gerade oben liegt
-//   optRequested  "stell das bitte um" -- der Wirt legt es ab, wo er mag
-//                 (QSettings im Fenster, Plugin-Ablage in DMS)
-//   viewRequested dasselbe fuer den Reiter
+//   opts          the same collection `SettingsView` reads
+//   view          which view is currently on top
+//   optRequested  "please change this"; the host stores it wherever it likes
+//                 (QSettings in the window, plugin storage in DMS)
+//   viewRequested the same for the tab
 //
-// Nur `import QtQuick` -- damit laeuft es auch unter Android.
+// Only `import QtQuick`, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "views.js" as Views
@@ -24,44 +23,43 @@ Item {
     id: root
 
     property var feed: null
-    // Sieht niemand hin, rechnet auch nichts
+    // Nothing is computed while nobody is looking
     property bool live: true
     property var opts: ({})
-    // 0 Feed, 1 Uhr, 2 Miner, 3 Explorer, 4 Wallet, 5 Einstellungen
+    // 0 Feed, 1 Clock, 2 Miner, 3 Explorer, 4 Wallet, 5 Settings, 6 Market
     property int view: 0
-    // Die Einstellungsseite blendet Deckkraft und Startansicht aus, wo das
-    // Fenster nicht dem Programm gehoert.
+    // The settings page hides opacity and start view where the window does not
+    // belong to the app.
     property bool windowedSettings: false
-    // Im Dashboard stellt die Leiste oben rechts die Knoepfe des Miners --
-    // dort kann sie nichts ueberdecken.
+    // In the dashboard the bar at the top right holds the miner buttons, where
+    // they cannot cover anything.
     property bool minerActions: true
-    // Das Desktop-Widget zeigt **eine** Ansicht ohne Reiterzeile. Es benutzt
-    // trotzdem dieses Bauteil, damit die Ansichten nur an einer Stelle
-    // verdrahtet sind.
+    // The desktop widget shows a single view without the tab row. It still uses
+    // this component so the views are wired up in only one place.
     property bool tabsVisible: true
-    // Die Einstellungen als Reiter. Die eigenstaendige Anwendung stellt das ab
-    // und zeigt ein Zahnrad; Dashboard, Popout und Quickshell haben keins und
-    // behalten den Reiter. Ohne Reiter bleibt Ansicht 5 trotzdem gueltig.
+    // Settings as a tab. The standalone app turns this off and shows a gear
+    // instead; dashboard, popout and Quickshell have no gear and keep the tab.
+    // View 5 stays valid without the tab.
     property bool settingsTab: true
-    // Platz rechts neben den Reitern, den der Wirt fuer eigene Knoepfe braucht
+    // Space to the right of the tabs that the host needs for its own buttons
     property real tabsRechts: 0
-    // Bedienung mit dem Finger (Telefon, Tablet): groessere Tippflaechen.
-    // Setzt der Wirt, der weiss, wo er laeuft.
+    // Touch input (phone, tablet): larger tap targets. Set by the host, which
+    // knows where it runs.
     property bool finger: false
-    // Darf sich das Suchfeld des Explorers beim Aufschlagen den Tastaturfokus
-    // holen? Auf dem Desktop-Widget nicht -- dort tippt niemand.
+    // May the explorer search field take keyboard focus when the view opens?
+    // Not on the desktop widget, nobody types there.
     property bool searchFocus: true
 
     property color textColor: "#e6e0e9"
     property color dimColor: "#9a94a6"
     property color accentColor: "#f7931a"
     property color lineColor: "#2a2a38"
-    // Untergrund fuer aufklappende Flaechen (Auswahlfelder). In DMS ist das
-    // dessen eigene Flaechenfarbe -- damit traegt das Auswahlfeld dieselbe
-    // Deckkraft wie die Einstellungen daneben, statt eine eigene zu erfinden.
+    // Background for popup surfaces (combo boxes). In DMS this is DMS's own
+    // surface color, so a combo box gets the same opacity as the settings next
+    // to it instead of its own.
     property color panelColor: "#16161f"
-    // Toenung der Milchglas-Kaestchen im Feed; getrennt von panelColor, damit
-    // App und Quickshell-Fenster ihr bisheriges Dunkel behalten
+    // Tint of the frosted glass boxes in the feed. Separate from panelColor so
+    // the app and the Quickshell window keep their darker tone.
     property color frostedTint: "#0b0b12"
     property real baseFont: 13
     property real tabFont: 12
@@ -69,12 +67,12 @@ Item {
 
     signal optRequested(string key, var value)
     signal viewRequested(int v)
-    // Der Explorer hat den Tastaturfokus wieder hergegeben.
+    // The explorer has released keyboard focus.
     signal searchFocusReleased()
     signal searchFocusTaken()
 
-    // **Rollen mit der Tastatur**, an die sichtbare Ansicht gereicht. Feed und
-    // Markt rollen nicht; dort geht die Taste ins Leere.
+    // Keyboard scrolling, forwarded to the visible view. Feed and Market do not
+    // scroll, so the key does nothing there.
     function rollen(wie) {
         if (root.view === 1)
             return uhr.visible && uhr.rollen(wie);
@@ -93,49 +91,41 @@ Item {
         return root.opts[key] === undefined ? def : root.opts[key];
     }
 
-    // Nichts gewaehlt (fehlt oder leer): die Vorgabe von aussen, sonst die
-    // Sprache des Systems. Das DMS-Plugin setzt die Vorgabe auf die Sprache
-    // von DMS.
+    // Nothing chosen (missing or empty): the default from the host, otherwise
+    // the system language. The DMS plugin sets the default to the DMS language.
     property string defaultLang: ""
     readonly property string lang: root.o("lang", "") || root.defaultLang || Tr.systemLang()
 
-    // **Das Bitcoin-Zeichen, wenn die Schrift es fuehrt -- sonst "BTC".**
-    // Am 08.09.2026 auf einem Galaxy A55 stand ueberall ein leeres Kaestchen
-    // mit Kreuz statt `₿`, das Euro-Zeichen daneben sass. Nachgemessen: die
-    // Standardschrift des Geraets (OneUISans) fuehrt U+20BF sehr wohl
-    // (`20a0-20bf`), Roboto nicht (`20a0-20be`) -- und Qt greift auf Android
-    // nach Roboto. Die Schrift zu erzwingen waere geraten; gefragt wird
-    // besser.
+    // The bitcoin sign if the font has it, otherwise "BTC". Some Android
+    // system fonts do have U+20BF, but Qt on Android falls back to Roboto,
+    // which does not (its range ends at U+20BE), so the glyph shows up as an
+    // empty box. Forcing a font would be guesswork; checking is better.
     //
-    // Fragen kann man es in QML nicht, also messen: `₿` gegen ein Zeichen
-    // aus dem privaten Bereich, das **keine** Schrift fuehrt. Kommen beide
-    // gleich breit heraus, ist auch das erste ein Kaestchen.
+    // QML cannot ask a font whether it has a glyph, so measure instead: compare
+    // `₿` with a private use character that no font has. If both come out the
+    // same width, the first one is a missing-glyph box too.
     //
-    // **Eine Eigenschaft, kein gemerkter Wert in der JS-Bibliothek.** Eine
-    // Funktion mit verstecktem Zustand wird in einer Bindung genau einmal
-    // ausgewertet; was danach gemessen wird, kommt nie an. Als Eigenschaft
-    // haengt die Anzeige daran und richtet sich mit.
+    // A property, not a cached value inside the JS library. A function with
+    // hidden state is evaluated exactly once inside a binding, and anything
+    // measured later never arrives. As a property the display depends on it
+    // and updates with it.
     //
-    // **Auf Android wird nicht mehr gemessen, dort gilt immer der Text.** Am
-    // 11.09.2026 im Emulator mit Android 11 ging die Messung schief: die
-    // Kaestchen fuer `₿` und fuer das Vergleichszeichen kamen aus
-    // verschiedenen Ersatzschriften und waren verschieden breit, die Messung
-    // sagte "vorhanden", und im Feed stand wieder das Kaestchen mit Kreuz.
-    // Qt nimmt auf Android Roboto, und Roboto fuehrt weder `₿` noch die
-    // Pfeile -- auf dem Galaxy A55 kam deshalb schon immer "BTC" und "->"
-    // heraus. Auf dem Schreibtisch bleibt die Messung: dort gibt es die
-    // Schriften meist, und sie hat bisher nie getaeuscht.
+    // Android always gets the text, no measuring. There the missing-glyph boxes
+    // for `₿` and for the comparison character can come from different fallback
+    // fonts with different widths, so the measurement says "present" and the
+    // box shows up anyway. Qt uses Roboto on Android, which has neither `₿` nor
+    // the arrows, so the result would be "BTC" and "->" regardless. On the
+    // desktop the fonts are usually there and the measurement is reliable.
     readonly property bool ohneSonderzeichen: Qt.platform.os === "android"
     readonly property string btcZeichen:
         !root.ohneSonderzeichen && probeBtc.implicitWidth !== probeLeer.implicitWidth
         ? "\u20BF" : "BTC"
 
-    // Dieselbe Probe fuer die Pfeile. **Je Zeichen einmal gemessen, nicht von
-    // einem auf das andere geschlossen:** auf dem Galaxy A55 fuehrt keine der
-    // Schriften einen der beiden, aber `→` ist im Allgemeinen viel weiter
-    // verbreitet als `⟶`, und eine Schrift mit dem einen und ohne das andere
-    // waere nichts Besonderes. Ein anderes Pfeilzeichen zu nehmen hilft dort
-    // ohnehin nicht -- es braucht einen Textrueckfall.
+    // The same probe for the arrows. Each glyph is measured on its own instead
+    // of inferring one from the other: `→` is far more common than `⟶`, and a
+    // font with one but not the other is nothing unusual. Picking a different
+    // arrow glyph does not help where neither exists, so a text fallback is
+    // needed.
     readonly property string pfeilLang:
         !root.ohneSonderzeichen && probePfeilL.implicitWidth !== probeLeer.implicitWidth
         ? "\u27F6" : "->"
@@ -146,34 +136,30 @@ Item {
 
     readonly property string currency: root.o("currency", "usd")
     readonly property bool walletEnabled: root.o("walletEnabled", false)
-    // **Ein unsichtbares Element behaelt seine Hoehe.** Ohne die Abfrage
-    // stuende im nackten Widget oben ein leerer Streifen in Reiterhoehe.
+    // An invisible item keeps its height. Without this check the bare widget
+    // would show an empty strip the height of the tab row at the top.
     readonly property real tabSpace: root.tabsVisible ? tabs.height + root.gap : 0
 
-    // Die Wallet faellt im Direktbezug weg, und zwar nicht aus Bequemlichkeit:
-    // die Ableitung ist Rechenarbeit des Dienstes. Ein Reiter, hinter dem
-    // nichts sein kann, ist schlimmer als keiner. Der Markt stand hier bis zum
-    // 13.09.2026 auch; seitdem rechnet `DirectMarket` ihn selbst, und nur ein
-    // fehlendes QtWebSockets nimmt ihn noch weg. (Der Miner zeigt seit dem
-    // 11.09.2026 ohne Geraet das Netz.)
+    // The wallet is dropped in direct mode, and not for convenience: key
+    // derivation is work done by the service. A tab that can never show
+    // anything is worse than no tab. The market is computed locally by
+    // `DirectMarket`; only a missing QtWebSockets removes it. (Without a device
+    // the miner tab shows the network.)
     readonly property bool canMarket: !!(root.feed && root.feed.canMarket)
 
-    // **Jeder Reiter laesst sich abschalten, und die Reihenfolge gehoert dem
-    // Anwender.** Wer keinen Miner hat, braucht den Reiter nicht; wer meist
-    // auf den Markt sieht, stellt ihn nach vorn. Beides steht in `tabOrder`
-    // und in den `show...`-Schaltern, gerechnet wird es in `views.js` -- der
-    // einen Stelle, an der die Ansichten aufgezaehlt sind.
+    // Every tab can be turned off, and the user owns the order. Without a miner
+    // the miner tab is not needed; someone who mostly watches the market moves
+    // it to the front. Both live in `tabOrder` and the `show...` switches and
+    // are computed in `views.js`, the one place that lists the views.
     //
-    // Was technisch nicht geht, faellt ohnehin weg; der Schalter kommt oben
-    // drauf und kann nichts erzwingen. Die Einstellungen bleiben immer --
-    // sonst schaltet man den letzten Reiter ab und kommt an keinen Schalter
-    // mehr heran.
+    // Whatever is technically impossible is dropped anyway; the switch comes on
+    // top and cannot force anything. Settings always stay, otherwise turning off
+    // the last tab would leave no way back to any switch.
     readonly property var tabViews: Views.reiter(
         root.o("tabOrder", []),
         function (id) {
-            // Der Miner-Reiter ist immer moeglich: ohne eigenes Geraet zeigt
-            // er das Netz (seit dem 11.09.2026, vorher blieb er im
-            // Direktbezug ohne Adresse weg).
+            // The miner tab is always possible: without a device of its own it
+            // shows the network.
             if (id === 4)
                 return root.walletEnabled && !!(root.feed && root.feed.canWallet);
             if (id === 6)
@@ -185,9 +171,8 @@ Item {
         },
         root.settingsTab)
 
-    // Die Beschriftungen in derselben Reihenfolge, aus derselben Tabelle.
-    // Hier stand vorher eine zweite, von Hand gepflegte Liste daneben, und
-    // ein Kommentar bat darum, sie nicht auseinanderlaufen zu lassen.
+    // The labels in the same order, from the same table, so there is no second
+    // hand-maintained list that can drift apart.
     readonly property var tabLabels: {
         var l = [];
         for (var i = 0; i < root.tabViews.length; i++)
@@ -195,30 +180,27 @@ Item {
         return l;
     }
 
-    // Steht die Ansicht auf einem Reiter, den es gerade nicht gibt, zurueck auf
-    // den ersten vorhandenen -- sonst bliebe eine leere Seite stehen.
+    // If the view sits on a tab that does not exist right now, fall back to the
+    // first existing one, otherwise an empty page stays up.
     //
-    // **Nicht fest auf 0.** Ist der Feed abgeschaltet, ist 0 selbst kein
-    // vorhandener Reiter -- die Aufforderung waere dann bei jedem Durchlauf
-    // dieselbe und liefe im Kreis. `tabViews[0]` ist immer vorhanden; die
-    // Liste traegt mindestens die Einstellungen.
+    // Not hard-coded to 0. With the feed turned off, 0 is itself not an
+    // existing tab, and the request would repeat on every pass and loop.
+    // `tabViews[0]` always exists; the list holds at least the settings.
     //
-    // **Und ausdruecklich kein `onViewChanged` daneben.** Der Gedanke liegt
-    // nahe -- der Rueckfall soll ja auch greifen, wenn die *Ansicht* von
-    // aussen gesetzt wird -- und er zerstoert die Anzeige. `view` haengt am
-    // Fenster (`view: win.view`); ein Handler, der beim Aktualisieren dieser
-    // Bindung auf die Quelle zurueckschreibt, ist eine Bindungsschleife, und
-    // QML loest sie, indem es die Bindung fallen laesst. Danach steht das
-    // Fenster auf der richtigen Ansicht und `FeedTabs` auf der alten: am
-    // 05.09.2026 gemessen als `win=0 tabs=6` bei leerer Seite. Der Fall
-    // "von aussen gesetzt" gehoert deshalb nach `Main.qml`, gleich hinter
-    // die Zuweisung.
+    // Deliberately no `onViewChanged` next to it. It is tempting, since the
+    // fallback should also apply when the view is set from outside, but it
+    // breaks the display. `view` is bound to the window (`view: win.view`); a
+    // handler that writes back to the source while that binding updates is a
+    // binding loop, and QML resolves it by dropping the binding. After that the
+    // window shows the right view and `FeedTabs` the old one, leaving an empty
+    // page. The "set from outside" case therefore belongs in `Main.qml`, right
+    // after the assignment.
     function reiterPruefen() {
         if (!root.tabsVisible || root.tabViews.length === 0)
             return;
-        // Ohne Reiter kommt man ueber das Zahnrad in die Einstellungen --
-        // zurueckgeworfen zu werden, sobald dort ein Schalter die Reiter
-        // aendert, waere genau das Falsche.
+        // Without a settings tab, the settings are reached through the gear. Being
+        // thrown out as soon as a switch there changes the tabs would be exactly
+        // wrong.
         if (root.view === 5 && !root.settingsTab)
             return;
         if (root.tabViews.indexOf(root.view) < 0)
@@ -227,18 +209,17 @@ Item {
 
     onTabViewsChanged: root.reiterPruefen()
 
-    // ------------------------------------------------- Reiter im Wechsel
-    // **Fuer eine Blockuhr an der Wand** (Wunsch vom 11.09.2026): alle
-    // `tabRotate` Sekunden die naechste Station. Mining zaehlt doppelt --
-    // Geraet und Netzwerk sind zwei Stationen, sonst saehe man an der Wand
-    // immer nur die Seite, die zuletzt offen war.
+    // ------------------------------------------------- Rotating tabs
+    // For a block clock on the wall: every `tabRotate` seconds the next station.
+    // Mining counts twice (device and network are two stations), otherwise the
+    // wall would only ever show the page that was last open.
     //
-    // Gewechselt wird ueber dieselben Wege wie beim Antippen (`viewRequested`,
-    // `optRequested("minerPane")`); der Wirt legt beides ab wie immer.
+    // Switching goes through the same paths as a tap (`viewRequested`,
+    // `optRequested("minerPane")`); the host stores both as usual.
     //
-    // Nicht im Wechsel: Wallet (gehoert nicht an eine Wand) und die
-    // Einstellungen. Stehen die Einstellungen offen, steht der Wechsel still
-    // -- sonst zoege er einem die Seite beim Einstellen weg.
+    // Not in the rotation: Wallet (does not belong on a wall) and Settings.
+    // While Settings is open the rotation pauses, otherwise it would pull the
+    // page away while the user is changing something.
     property bool rotationAllowed: true
     readonly property int rotateSec: root.o("tabRotate", 0)
     readonly property var stationen: {
@@ -287,15 +268,14 @@ Item {
         onTriggered: root.naechsteStation()
     }
 
-    // **Eine Beruehrung setzt den Takt zurueck.** Wer an der Wand etwas
-    // nachliest, dem soll die Seite nicht unter dem Finger wegwechseln. Nur
-    // mitlesen (PointHandler greift nicht zu): Knoepfe, Graphen und Rollen
-    // bekommen ihre Ereignisse wie vorher.
+    // A touch resets the timer. Someone reading something on the wall should
+    // not have the page switch away under their finger. Observe only
+    // (PointHandler does not grab): buttons, charts and scrolling get their
+    // events as before.
     //
-    // **In einer eigenen obersten Schicht**, nicht am Wurzelelement: dort
-    // kam er erst nach den Ansichten dran, und ein Graph mit eigener
-    // MouseArea hatte den Druck schon genommen (11.09.2026 im Xvfb, der
-    // Wechsel kam trotz Klick nach Takt).
+    // In its own top layer, not on the root item: there it ran after the views,
+    // and a chart with its own MouseArea had already taken the press, so the
+    // rotation switched pages despite the click.
     Item {
         anchors.fill: parent
         z: 1000
@@ -335,16 +315,16 @@ Item {
         Text {
             id: probeLeer
 
-            // Privater Bereich: absichtlich nichts, was je eine Schrift fuehrt.
+            // Private use area: deliberately something no font ever has.
             text: "\uE000"
             font.family: Fonts.sans()
             font.pixelSize: 64
         }
     }
 
-    // **Wischbar, wenn die Reiter nicht passen.** Die Zeile hat keine
-    // Breitengrenze; am Galaxy (384 Punkte) lief sie mit dem Markt bis unter
-    // den Vollbildknopf. `tabsRechts` haelt dem Wirt seine Knoepfe frei.
+    // Swipeable when the tabs do not fit. The row has no width limit and on a
+    // narrow phone (384 points) it ran under the fullscreen button with the
+    // market tab. `tabsRechts` keeps the host's buttons clear.
     Flickable {
         id: reiterFlaeche
 
@@ -492,15 +472,15 @@ Item {
         onTileColorModeRequested: function (m) {
             root.optRequested("tileColorMode", m);
         }
-        // Weiterreichen: der Wirt holt sich seine Tastenkuerzel zurueck.
+        // Pass it on: the host takes back its keyboard shortcuts.
         onSearchFocusReleased: root.searchFocusReleased()
         onSearchFocusTaken: root.searchFocusTaken()
     }
 
     MarketView {
         visible: root.live && root.view === 6 && root.canMarket
-        // Nur abfragen, wenn der Reiter auch offen ist -- jede Abfrage haelt
-        // im Dienst die Boersenstroeme am Leben.
+        // Only poll while the tab is open; every request keeps the exchange
+        // streams alive in the service.
         live: visible
         anchors.fill: parent
         anchors.topMargin: root.tabSpace
@@ -546,7 +526,7 @@ Item {
         id: wallet
 
         visible: root.live && root.view === 4 && root.walletEnabled
-        // Nur nachfragen, wenn die Ansicht auch zu sehen ist
+        // Only ask while the view is visible
         live: visible
         anchors.fill: parent
         anchors.topMargin: root.tabSpace
@@ -581,12 +561,11 @@ Item {
         accentColor: root.accentColor
         lineColor: root.lineColor
         panelColor: root.panelColor
-        // Damit die Darstellungs-Seite dazuschreiben kann, welche Ansicht
-        // gerade nichts zeigen koennte. Dieselbe Frage wie in `tabViews`,
-        // nur andersherum gestellt -- und sie steht hier, weil nur dieses
-        // Bauteil den Feed kennt.
-        // Was der Wirt technisch nicht kann, bekommt auch keine Seite in den
-        // Einstellungen (siehe dort).
+        // Lets the display page note which view could show nothing right now.
+        // The same question as in `tabViews`, asked the other way round; it lives
+        // here because only this component knows the feed.
+        // What the host technically cannot do gets no page in the settings
+        // either (see there).
         kannMarkt: root.canMarket
         kannWallet: !!(root.feed && root.feed.canWallet)
         einstellungenAlsReiter: root.settingsTab
@@ -603,15 +582,15 @@ Item {
         }
     }
 
-    // Die Blockanimation von Hand ausloesen -- das Fenster legt sie auf die
-    // Taste b, zum Pruefen ohne zehn Minuten Wartezeit.
+    // Trigger the block animation by hand. The window binds it to the b key,
+    // for testing without waiting ten minutes.
     function triggerBlockAnimation() {
         halde.triggerBlockAnimation();
     }
 
-    // Der Miner traegt zwei Knoepfe, die im Dashboard nicht bei ihm, sondern in
-    // der Leiste oben rechts sitzen. Damit der Wirt sie dort stellen kann,
-    // reicht dieses Bauteil sie durch.
+    // The miner has two buttons that sit in the top right bar in the dashboard
+    // instead of next to it. This component passes them through so the host
+    // can place them there.
     readonly property string minerWebUrl: miner.webUrl
 
     function minerOpenWeb() {
@@ -622,8 +601,8 @@ Item {
         miner.toggleInfo();
     }
 
-    // Von aussen ansteuerbar -- der Wirt kann von der Pille aus direkt in eine
-    // Transaktion springen.
+    // Controllable from outside: the host can jump straight into a transaction
+    // from the pill.
     function goExplorer(art, wert) {
         root.viewRequested(3);
         explorer.go(art, wert);

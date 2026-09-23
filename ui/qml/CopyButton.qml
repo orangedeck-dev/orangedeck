@@ -1,7 +1,7 @@
-// Kopier-Knopf als Zeichen. Gezeichnet statt gesetzt -- ein Schriftzeichen
-// dafuer gibt es nicht ueberall, und Symbolschriften sind nicht verlaesslich.
+// Copy button as an icon. Drawn on a Canvas instead of using a glyph: there
+// is no copy glyph in every font, and symbol fonts are not reliable.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so it also runs on Android.
 import QtQuick
 
 Item {
@@ -46,7 +46,7 @@ Item {
             ctx.lineJoin = "round";
 
             if (root.done) {
-                // Haken
+                // Check mark
                 ctx.beginPath();
                 ctx.moveTo(width * 0.2, height * 0.55);
                 ctx.lineTo(width * 0.42, height * 0.78);
@@ -55,7 +55,7 @@ Item {
                 return;
             }
 
-            // Zwei versetzte Blaetter -- das uebliche Bild fuers Kopieren
+            // Two offset sheets, the usual copy icon
             var r = width * 0.12;
             function rect(x, y, w2, h2) {
                 ctx.beginPath();

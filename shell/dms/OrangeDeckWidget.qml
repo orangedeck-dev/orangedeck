@@ -1,11 +1,9 @@
-// Leiste: Pille mit Mempool-Zahl, Klick oeffnet die Live-Ansicht.
-// Rechtsklick oeffnet sie in einem eigenen Fenster.
-// Ausserdem als Control-Center-Kachel mit ausklappbarer Ansicht.
+// Bar widget: pill with the mempool count, click opens the live view.
+// Right click opens it in a separate window.
+// Also available as a Control Center tile with an expandable view.
 //
-// **Popout und Kachel zeigen denselben Satz Ansichten wie das Dashboard**
-// (`FeedTabs.qml`) und lesen dieselben Einstellungen. Vorher stand hier nur der
-// Feed, und von dreissig Einstellungen kamen vier an -- Sprache und Waehrung
-// blieben auf den Vorgaben, obwohl sie anderswo eingestellt waren.
+// Popout and tile show the same set of views as the dashboard
+// (`FeedTabs.qml`) and read the same settings.
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -17,7 +15,7 @@ import "strings.js" as Tr
 PluginComponent {
     id: root
 
-    // Dieselbe Sprache wie die Ansichten darin; leer heisst die von DMS.
+    // Same language as the views inside; empty means the DMS language.
     readonly property string dmsLang: Tr.systemLang(SessionData.locale)
     readonly property string lang: String(root.get("lang", "") || "") || root.dmsLang
 
@@ -28,11 +26,8 @@ PluginComponent {
     property string windowCommand: Quickshell.env("HOME") + "/.local/bin/orangedeck-window"
     readonly property string pid: "orangedeck"
 
-    // **Durch dieselbe Schreibweise wie jede andere Zahl.** Hier stand die
-    // Trennung mit dem Punkt fest verdrahtet, waehrend `ui/qml` sie laengst
-    // ueber `Tr.group` nach der Sprache setzt: in der englischen Oberflaeche
-    // las die Kopfzeile des Popouts "78.324 transactions in the mempool".
-    // Am 20.09.2026 auf den Bildern fuer das DMS-Verzeichnis gesehen.
+    // Formatted like every other number: `Tr.group` picks the separator by
+    // language, so the English UI shows "78,324 transactions in the mempool".
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -46,18 +41,18 @@ PluginComponent {
     FeedState {
         id: feedState
 
-        // Die Pille zeigt nur Text -- Blockhoehe und Mempool-Zahl. Die aendern
-        // sich im Sekundentakt kaum, und die Pille ist **immer** sichtbar:
-        // was sie kostet, kostet sie den ganzen Tag. Zwei Abfragen pro Sekunde
-        // waren dafuer vierfach zu viel.
+        // The pill only shows text: block height and mempool count. They hardly
+        // change second by second, and the pill is always visible, so whatever it
+        // costs it costs all day. Two requests per second would be four times
+        // more than needed.
         pollMs: 2000
         mode: root.get("dataSource", "auto")
     }
 
-    // ------------------------------------------------------ Einstellungen
-    // Dieselbe Ablage wie im Dashboard-Tab: `PluginService.loadPluginData`
-    // reicht auf `SettingsData.getPluginSetting` durch. Was hier umgestellt
-    // wird, steht dort also auch -- und umgekehrt.
+    // ------------------------------------------------------ Settings
+    // Same storage as the dashboard tab: `PluginService.loadPluginData`
+    // passes through to `SettingsData.getPluginSetting`. Whatever is changed
+    // here shows up there and vice versa.
     function get(key, def) {
         return root.pluginService ? root.pluginService.loadPluginData(root.pid, key, def) : def;
     }
@@ -67,8 +62,8 @@ PluginComponent {
         return v.length ? v.split("|") : [];
     }
 
-    // Neu gebaut, sobald DMS meldet, dass sich etwas geaendert hat -- eine
-    // Bindung je Einstellung waeren dreissig, die alle dasselbe tun.
+    // Rebuilt whenever DMS reports a change; one binding per setting would be
+    // thirty bindings all doing the same thing.
     property var opts: root.buildOpts()
     property int view: root.get("view", 0)
 
@@ -76,7 +71,7 @@ PluginComponent {
         return ({
             "dataSource": root.get("dataSource", "auto"),
             "currency": root.get("currency", "usd"),
-            // Leer heisst: FeedTabs nimmt die Sprache des Systems.
+            // Empty means FeedTabs uses the system language.
             "lang": root.get("lang", ""),
             "density": root.get("density", 1),
             "colorMode": root.get("colorMode", "age"),
@@ -137,8 +132,8 @@ PluginComponent {
     }
 
     function setOpt(key, value) {
-        // Listen kommen als Feld herein und gehen als Zeichenkette hinaus --
-        // eine leere Liste ueberlebt die Ablage sonst nicht.
+        // Lists come in as arrays and are stored as strings, otherwise an empty
+        // list does not survive storage.
         if (key === "clockFields" || key === "minerFields" || key === "bigFields"
                 || key === "explorerParts" || key === "explorerPanels"
                 || key === "minerPanes" || key === "netParts"
@@ -174,12 +169,12 @@ PluginComponent {
         running: false
     }
 
-    // **Das eigene Fenster gibt es nur, wenn OrangeDeck auf dem Rechner
-    // liegt.** Aus dem Verzeichnis von DMS installiert, ist das Plugin der
-    // ganze Bestand -- dann fuehrt ein Knopf "in eigenem Fenster oeffnen" ins
-    // Leere. Einmal beim Start nachgesehen, nicht bei jedem Klick: die Antwort
-    // aendert sich waehrend einer Sitzung praktisch nie, und `test -x` je
-    // Rechtsklick waere ein Prozess fuer nichts.
+    // The separate window only exists when OrangeDeck is installed on the
+    // machine. Installed from the DMS plugin registry, the plugin is all there
+    // is, and an "open in separate window" button would lead nowhere. Checked
+    // once at startup, not on every click: the answer practically never
+    // changes during a session, and `test -x` per right click would be a
+    // process for nothing.
     property bool fensterMoeglich: false
 
     Process {
@@ -193,7 +188,7 @@ PluginComponent {
         }
     }
 
-    // ------------------------------------------------ Control-Center-Kachel
+    // ------------------------------------------------ Control Center tile
     ccWidgetIcon: "currency_bitcoin"
     ccWidgetPrimaryText: "Bitcoin"
     ccWidgetSecondaryText: feedState.online
@@ -232,7 +227,7 @@ PluginComponent {
         }
     }
 
-    // ------------------------------------------------------------- Pille
+    // ------------------------------------------------------------- Pill
     pillRightClickAction: () => {
         if (root.fensterMoeglich)
             root.openInWindow();
@@ -279,8 +274,8 @@ PluginComponent {
     }
 
     // ------------------------------------------------------------- Popout
-    // Groesser als frueher: mit Reiterzeile und Legende braucht der Feed Platz,
-    // und unter 420 Punkten Hoehe faellt die Legende weg.
+    // With tab bar and legend the feed needs room, and below 420 px of height
+    // the legend is dropped.
     popoutWidth: 720
     popoutHeight: 560
 

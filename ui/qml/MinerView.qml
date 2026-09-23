@@ -1,20 +1,18 @@
-// Eigene Miner. Zeigt, was die Geraete melden, und stellt die erreichte
-// Schwierigkeit der des Netzes gegenueber -- das ist die Zahl, um die es beim
-// Solomining eigentlich geht.
+// Own miners. Shows what the devices report and compares the best share
+// difficulty with the network difficulty, which is the number that actually
+// matters for solo mining.
 //
-// Bewusst **nicht** auf ein Geraet festgelegt: der Daemon spricht AxeOS
-// (Bitaxe, NerdAxe und die uebrigen ESP-Miner-Abkoemmlinge) und die
-// cgminer-Schnittstelle (Antminer, Avalon, Whatsminer und Nachbauten) und
-// liefert beides normalisiert, Hashrate in H/s. Mehrere Geraete zugleich sind
-// vorgesehen.
+// Not tied to one device type: the daemon speaks AxeOS (Bitaxe, NerdAxe and
+// the other ESP-Miner derivatives) and the cgminer API (Antminer, Avalon,
+// Whatsminer and clones) and delivers both normalized, hashrate in H/s.
+// Several devices at once are supported.
 //
-// **Zwei Seiten seit dem 11.09.2026: "Geraet" und "Netz".** Die zweite zeigt
-// Hashrate, Schwierigkeit, Blockzeit und Pools des ganzen Netzes
-// (`NetworkView`). Damit hat der Reiter auch ohne eigenen Miner einen Inhalt
-// -- vorher blieb er auf dem Telefon ohne eingetragene Adresse ganz weg. Ist
-// kein Geraet eingetragen, gibt es nur das Netz und keinen Umschalter.
+// Two pages, "Device" and "Network". The second shows hashrate, difficulty,
+// block time and pools of the whole network (`NetworkView`), so the tab has
+// content even without an own miner. With no device configured there is
+// only the network page and no switcher.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "roll.js" as Roll
@@ -24,8 +22,8 @@ pragma ComponentBehavior: Bound
 Item {
     id: root
 
-    // Tastatur: Bild auf/ab, Pos1, Ende -- im Netzwerk-Bereich rollt dessen
-    // Flaeche, am Geraet die eigene (roll.js; aus Main.qml ueber FeedTabs)
+    // Keyboard: Page Up/Down, Home, End. On the network page its own area
+    // scrolls, on the device page this one (roll.js; from Main.qml via FeedTabs)
     function rollen(wie) {
         return root.paneNow === "net" ? netz.rollen(wie) : Roll.rollen(flick, wie);
     }
@@ -37,23 +35,23 @@ Item {
     property color goodColor: "#57b894"
     property color badColor: "#d9534f"
     property real scaleUnit: Math.max(10, Math.min(width / 26, height / 16))
-    // Bedienung mit dem Finger: groessere Knoepfe am Netz-Graphen
+    // Touch input: larger buttons on the network chart
     property bool finger: false
-    // Sieht niemand hin, holt die Netz-Seite nichts
+    // When nobody is looking, the network page fetches nothing.
     property bool live: true
 
-    // Welche Seite oben liegt: "device", "net", oder leer fuer "von selbst" --
-    // das Geraet, wenn eines eingetragen ist. Der Wirt haelt die Wahl.
+    // Which page is on top: "device", "net", or empty for automatic (the device
+    // page if one is configured). The host keeps the choice.
     property string pane: ""
     property string netSpan: "1y"
     signal paneRequested(string p)
     signal netSpanRequested(string s)
 
-    // Welche Seiten es ueberhaupt gibt -- aus den Einstellungen, leer heisst
-    // beide. Ohne "Geraet" zeigt der Reiter nur das Netz, auch wenn ein
-    // Miner eingetragen ist; ohne eingetragenen Miner gibt es ohnehin nur das
-    // Netz. Ist das Netz abgewaehlt und kein Geraet da, bleibt es trotzdem:
-    // eine leere Seite hilft niemandem.
+    // Which pages exist at all, from the settings; empty means both. Without
+    // "device" the tab only shows the network, even with a miner configured;
+    // without a configured miner there is only the network anyway. If the
+    // network is deselected and there is no device, it stays anyway: an empty
+    // page helps nobody.
     property var panes: []
     function erlaubt(p) {
         var v = root.panes;
@@ -67,9 +65,9 @@ Item {
     readonly property string paneNow: !root.mitGeraet ? "net"
                                     : !root.mitNetz ? "device"
                                     : (root.pane === "net" ? "net" : "device")
-    // Die Solo-Chance beim Geraet, abschaltbar wie Kurve und Bestenliste
+    // Solo chance on the device page, can be turned off like chart and best list.
     property bool showSolo: true
-    // Was die Netz-Seite zeigt: "stats", "chart", "pools", leer heisst alles
+    // What the network page shows: "stats", "chart", "pools"; empty means all.
     property var netParts: []
 
     readonly property var miners: feed ? feed.miners : []
@@ -81,11 +79,10 @@ Item {
     readonly property real bestShare: (netDiff > 0 && total.bestDiff)
         ? total.bestDiff / netDiff : 0
 
-    // **Die Solo-Chance.** Eigene Hashrate durch die des Netzes ist der Anteil
-    // an jedem Block; bei 144 Bloecken am Tag ergibt das die Chance pro Tag
-    // und ihren Kehrwert, die mittlere Wartezeit. Beides sind Erwartungswerte
-    // eines Zufalls ohne Gedaechtnis -- nach tausend Jahren ist die Chance
-    // fuer den naechsten Tag dieselbe.
+    // Solo chance. Own hashrate divided by network hashrate is the share of each
+    // block; with 144 blocks a day that gives the chance per day and its inverse,
+    // the mean waiting time. Both are expected values of a memoryless random
+    // process: after a thousand years the chance for the next day is the same.
     readonly property real soloAnteil: (root.netHash > 0 && root.total.hashRate > 0)
         ? root.total.hashRate / root.netHash : 0
     readonly property real soloTag: root.soloAnteil * 144
@@ -103,28 +100,24 @@ Item {
             return Tr.t("duration.days", root.lang, Tr.group(tage, root.lang));
         return root.span(tage * 86400);
     }
-    // Bei genau einem Geraet ist Platz fuer die Einzelheiten
+    // With exactly one device there is room for the details.
     readonly property var one: (miners.length === 1 && miners[0].online) ? miners[0] : null
     readonly property var oneHist: (one && feed) ? (feed.minerHistory[one.id] || ({})) : ({})
-    // Seit der Inhalt rollbar ist, muss nichts mehr wegen Platzmangel
-    // wegbleiben. Die Schwellen halten nur noch das ganz kleine
-    // Desktop-Widget frei, wo Kurve und Liste sinnlos waeren.
-    // Hat der Wirt schon eine Knopfleiste (im Dashboard die von DMS), stellt
-    // er die Knoepfe selbst und schaltet unsere ab. Sie sitzen dann in der
-    // obersten Zeile, wo nichts sie ueberdecken kann.
+    // If the host already has a button bar (the DMS one in the dashboard), it
+    // provides the buttons itself and turns ours off. They then sit in the top
+    // row where nothing can cover them.
     property bool showActions: true
-    // Fuer den Wirt: Legende auf- und zuklappen
+    // For the host: expand or collapse the legend.
     function toggleInfo() {
         info.open = !info.open;
     }
-    // Weboberflaeche des Geraets oeffnen. Gilt fuer jeden Miner, der eine hat.
+    // Open the device's web UI. Works for any miner that has one.
     //
-    // **Mit Schema.** Die Kennung ist die Adresse, wie sie eingetragen wurde
-    // -- am Telefon oft ohne "http://". `DirectMiner` setzt es fuer die
-    // Abfragen selbst davor (`basis()`), hier fehlte es: Qt las die blanke
-    // Adresse als Pfad relativ zur QML-Datei, und Android meldete
-    // "No Activity found to handle Intent { dat=qrc:/... }". Der Pfeil tat
-    // am Galaxy A55 nichts (11.09.2026).
+    // Add the scheme. The id is the address as entered, on the phone often
+    // without "http://". `DirectMiner` prepends it for its own requests
+    // (`basis()`). Without it Qt treats the bare address as a path relative to
+    // the QML file, and Android fails with "No Activity found to handle Intent
+    // { dat=qrc:/... }".
     readonly property string webUrl: {
         if (!(root.one && root.one.type === "axeos"))
             return "";
@@ -136,13 +129,13 @@ Item {
             Qt.openUrlExternally(webUrl);
     }
     readonly property bool roomForChart: height > 200
-    // Ueber wie viele Minuten die Rechenwerke gemittelt sind: eine Messung je
-    // fuenf Sekunden, im Daemon wie in `DirectMiner`
+    // Minutes over which the hash domains are averaged: one sample every five
+    // seconds, in the daemon as in `DirectMiner`.
     readonly property real domainMin: root.one && root.one.domainSamples
         ? root.one.domainSamples * 5 / 60 : 0
 
-    // Welche Kennzahlen ueberhaupt gezeigt werden. Leere Liste heisst alle --
-    // die Auswahl kommt aus den Einstellungen, hier steht nur der Filter.
+    // Which metrics are shown. An empty list means all; the selection comes from
+    // the settings, this is only the filter.
     property var metricKeys: []
     property bool showChart: true
     property bool showDomains: true
@@ -174,7 +167,7 @@ Item {
         });
     }
 
-    // Ab sechs Kennzahlen auf Zeilen zu je drei verteilen, darunter eine Zeile.
+    // From six metrics on, split into rows of three; below that one row.
     readonly property var metricRows: {
         var m = root.metrics;
         if (m.length < 6)
@@ -210,10 +203,7 @@ Item {
         return Tr.t("duration.min", root.lang, m);
     }
 
-    // Zu den Einstellungen geht es in der Weboberflaeche des Geraets -- die
-    // bleiben dort, hier wird nur angezeigt. Nur ein Zeichen, keine
-    // Beschriftung: so passt der Knopf fuer jeden Miner.
-    // Alle Erklaerungen an einem Ort, statt sie in die Flaeche zu streuen
+    // All explanations in one place instead of scattered over the page.
     InfoPopup {
         id: info
 
@@ -225,7 +215,7 @@ Item {
         dimColor: root.dimColor
         lang: root.lang
         title: Tr.t("miner.whatIsThis", root.lang)
-        // Die Erklaerungen der Seite, die gerade oben liegt
+        // Explanations for the page currently on top.
         entries: root.paneNow === "net" ? [
             {
                 "color": root.accentColor,
@@ -294,10 +284,9 @@ Item {
         border.color: Qt.rgba(1, 1, 1, 0.12)
         z: 20
 
-        // **Gezeichnet, nicht als Zeichen.** "↗" (U+2197) hat eine
-        // Emoji-Darstellung, und Samsung nimmt sie: am Galaxy A55 stand ein
-        // blaues Kaestchen mit weissem Pfeil neben dem schlichten "i"
-        // (11.09.2026). Strich in Farbe und Staerke des "i" daneben.
+        // Drawn, not a glyph. "↗" (U+2197) has an emoji presentation, and Samsung
+        // uses it: a blue box with a white arrow next to the plain "i". The stroke
+        // matches the color and weight of the "i" next to it.
         Canvas {
             id: pfeil
 
@@ -333,9 +322,8 @@ Item {
         }
     }
 
-    // ------------------------------------------------------ Geraet | Netz
-    // Nur, wenn es zwei Seiten gibt. Er liegt fest oben, beide Seiten rollen
-    // darunter.
+    // --- Device | Network ---
+    // Only when there are two pages. Fixed at the top, both pages scroll below it.
     readonly property real kopfHoehe: root.zweiSeiten ? umschalter.height + root.scaleUnit * 0.5 : 0
 
     TileGoggles {
@@ -365,17 +353,17 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------- Netz
-    // Ohne eingetragenes Geraet steht darunter, wie eines dazukommt: auf dem
-    // Telefon in den Einstellungen, am Rechner ueber die Suche des Dienstes.
+    // --- Network ---
+    // Without a configured device, a hint below explains how to add one: in the
+    // settings on the phone, via the service's discovery on the desktop.
     NetworkView {
         id: netz
 
         anchors.fill: parent
         visible: root.paneNow === "net"
         live: root.live && root.visible && root.paneNow === "net"
-        // Ohne Umschalter beginnt die Seite oben -- dort sitzt der i-Knopf
-        // und braucht seine Zeile.
+        // Without the switcher the page starts at the top, where the i button sits
+        // and needs its row.
         topInset: root.zweiSeiten ? root.kopfHoehe
                                   : (root.showActions ? info.buttonWidth + root.scaleUnit * 0.3 : 0)
         feed: root.feed
@@ -383,10 +371,9 @@ Item {
         span: root.netSpan
         parts: root.netParts
         finger: root.finger
-        // **Am Finger nicht unter 20.** `scaleUnit` folgt der Breite; hochkant
-        // am Telefon sind das rund 16 Punkte, und die Beschriftungen der
-        // Kennzahlen und Pools standen in knapp neun. Am Rechner bleibt es,
-        // wie es war.
+        // With touch input not below 20. `scaleUnit` follows the width; in portrait
+        // on a phone that is about 16, and the labels of metrics and pools ended up
+        // at barely nine. The desktop is unchanged.
         scaleUnit: root.finger ? Math.max(20, root.scaleUnit) : root.scaleUnit
         textColor: root.textColor
         dimColor: root.dimColor
@@ -403,7 +390,7 @@ Item {
         }
     }
 
-    // ------------------------------------------- eingetragen, aber alle aus
+    // --- Configured, but all offline ---
     Column {
         anchors.centerIn: parent
         spacing: root.scaleUnit * 0.35
@@ -425,11 +412,10 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------- im Betrieb
-    // Der Inhalt kann hoeher werden als die Flaeche -- im Dashboard-Tab
-    // (410 px) reicht es nicht fuer Kurve, Rechenwerke und Bestenliste
-    // zugleich. Deshalb rollbar: passt alles, bleibt es mittig stehen; passt
-    // es nicht, laesst es sich schieben.
+    // --- Running ---
+    // The content can be taller than the area: the dashboard tab (410 px) is not
+    // enough for chart, hash domains and best list at once. So it scrolls: if
+    // everything fits it stays centered, otherwise it can be dragged.
     Flickable {
         id: flick
 
@@ -442,7 +428,7 @@ Item {
         boundsBehavior: Flickable.StopAtBounds
         flickDeceleration: 2500
 
-        // Schmaler Balken rechts, nur solange es etwas zu rollen gibt
+        // Thin bar on the right, only while there is something to scroll.
         Rectangle {
             parent: flick
             anchors.right: parent.right
@@ -460,10 +446,8 @@ Item {
 
                 width: flick.width * 0.9
                 x: (flick.width - width) / 2
-                // Mittig, solange Platz ist -- sonst oben anfangen. Am
-                // 11.09.2026 kurz oben festgesetzt; mit nur der Geraeteseite
-                // hing der Inhalt dann am oberen Rand und die untere Haelfte
-                // blieb leer. Zurueck, auf Wunsch des Anwenders.
+                // Centered while there is room, otherwise start at the top. Pinning it to the
+                // top leaves the lower half empty when only the device page is shown.
                 y: Math.max(root.scaleUnit * 0.3, (flick.height - implicitHeight) / 2)
                 spacing: root.scaleUnit * 0.45
 
@@ -484,9 +468,9 @@ Item {
                 font.bold: true
             }
 
-            // Die Momentanrate schwankt um rund zehn Prozent -- oben steht deshalb
-            // der geglaettete Zehnminutenwert, hier der Vergleich mit dem, was das
-            // Geraet bei seiner Taktung erwarten laesst.
+            // The instantaneous rate swings by about ten percent, so the top shows the
+            // smoothed ten-minute value, and this compares it with what the device
+            // should deliver at its clock setting.
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 visible: root.one && root.one.expected
@@ -497,7 +481,7 @@ Item {
                 font.pixelSize: root.scaleUnit * 0.55
             }
 
-            // Der Grund, warum man das ueberhaupt macht
+            // The reason anyone does this.
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 visible: root.one && root.one.blockFound > 0
@@ -521,7 +505,7 @@ Item {
                 }
             }
 
-            // Die eigentliche Zahl beim Solomining
+            // The number that matters for solo mining.
             Column {
                 width: parent.width
                 spacing: root.scaleUnit * 0.15
@@ -546,8 +530,7 @@ Item {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     visible: root.bestShare > 0
-                    // Winzige Anteile -- "1 zu N" liest sich besser als eine
-                    // Prozentzahl mit acht Nullen.
+                    // Tiny shares: "1 in N" reads better than a percentage with eight zeros.
                     text: root.bestShare >= 1
                         ? Tr.t("miner.enoughForBlock", root.lang)
                         : Tr.t("miner.oneInN", root.lang, root.big(1 / root.bestShare))
@@ -556,9 +539,9 @@ Item {
                 }
             }
 
-            // Die Chance, dass einer der naechsten Bloecke der eigene ist.
-            // Unter einem Block am Tag als "1 zu N pro Tag" mit der mittleren
-            // Wartezeit darunter; darueber reicht die Wartezeit allein.
+            // Chance that one of the next blocks is ours. Below one block a day it shows
+            // "1 in N per day" with the mean waiting time below; above that the waiting
+            // time alone is enough.
             Column {
                 width: parent.width
                 spacing: root.scaleUnit * 0.15
@@ -594,16 +577,15 @@ Item {
                 height: root.scaleUnit * 0.3
             }
 
-            // --------------------------------------- Einzelheiten, ein Geraet
+            // --- Details, single device ---
             Column {
                 width: parent.width
                 spacing: root.scaleUnit * 0.2
                 visible: root.one !== null
 
-                // Die Kennzahlen. Ab sechs Stueck werden sie auf Zeilen zu je
-                // drei verteilt -- in einer Reihe liefen sie im Dashboard ueber
-                // den Rand hinaus und die aeusseren beiden wurden abgeschnitten.
-                // Bis fuenf bleibt es bei einer Zeile.
+                // The metrics. From six on they are split into rows of three: in a single
+                // row they ran past the edge in the dashboard and the outer two were cut
+                // off. Up to five stay in one row.
                 Column {
                     width: parent.width
                     spacing: root.scaleUnit * 0.45
@@ -650,8 +632,8 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    // Nur der Wirt des Pools -- der Benutzername enthaelt beim
-                    // Solomining die Auszahlungsadresse und wird nirgends angezeigt.
+                    // Only the pool host: for solo mining the user name contains the payout
+                    // address and is never shown.
                     text: root.one
                         ? [root.one.model, root.one.version, root.one.pool].filter(function (x) {
                               return !!x;
@@ -662,7 +644,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------------- Verlauf
+            // --- History ---
             MinerChart {
                 width: parent.width
                 height: root.scaleUnit * 4.2
@@ -675,12 +657,11 @@ Item {
                 labelSize: root.scaleUnit * 0.5
             }
 
-            // **Wo der lange Verlauf herkaeme.** Zeichnet das Geraet nicht
-            // selbst auf, reicht der Graph nur so weit zurueck, wie die
-            // Anwendung offen ist. Der Schalter liegt in AxeOS, nicht hier:
-            // die Anwendung stellt am Miner nichts um, ohne dass man es sieht.
-            // `statsFrequency` meldet nur `DirectMiner`; beim Daemon fehlt es,
-            // und dort bleibt der Satz weg.
+            // Where a longer history would come from. If the device does not record its
+            // own, the chart only reaches back as far as the app has been open. The
+            // switch is in AxeOS, not here: the app does not change settings on the miner
+            // behind the user's back. Only `DirectMiner` reports `statsFrequency`; the
+            // daemon does not, and then this line is hidden.
             Text {
                 width: parent.width
                 visible: root.showChart && root.one !== null && root.roomForChart
@@ -692,7 +673,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
             }
 
-            // ------------------------------------------ Rechenwerke einzeln
+            // --- Individual hash domains ---
             Column {
                 width: parent.width
                 spacing: root.scaleUnit * 0.15
@@ -700,13 +681,10 @@ Item {
                          && root.roomForChart && root.showDomains
 
                 Text {
-                    // Der Chip ist intern in Hash-Domaenen geteilt (beim BM1370
-                    // vier). Die Einzelmessungen rauschen um ueber zehn Prozent --
-                    // gezeigt wird deshalb der geglaettete Wert, sonst sieht
-                    // Rauschen wie ein Defekt aus.
-                    // Die Minuten in der Schreibweise der Sprache: bis zum
-                    // 11.09.2026 stand dort "0.3 Min" mit Punkt, weil die
-                    // Zahl roh eingesetzt wurde. Ab einer Minute ganz.
+                    // The chip is split internally into hash domains (four on the BM1370). Single
+                    // readings fluctuate by more than ten percent, so the smoothed value is shown;
+                    // otherwise noise looks like a defect.
+                    // Minutes formatted per language, whole numbers from one minute up.
                     text: root.one && root.one.domainSamples
                         ? Tr.t("miner.domainsAvg", root.lang, root.domainMin >= 1
                                ? Math.round(root.domainMin)
@@ -737,8 +715,7 @@ Item {
                             color: Qt.rgba(1, 1, 1, 0.06)
 
                             Rectangle {
-                                // Anteil am staerksten Rechenwerk -- so sieht man
-                                // sofort, wenn eines abfaellt.
+                                // Share relative to the strongest domain, so a weak one stands out at once.
                                 width: parent.width * Math.max(0.05, Math.min(1,
                                     dom.modelData / Math.max.apply(null, dom.vals)))
                                 height: parent.height
@@ -758,7 +735,7 @@ Item {
                 }
             }
 
-            // -------------------------------------------------- Bestenliste
+            // --- Best list ---
             Column {
                 width: parent.width
                 spacing: root.scaleUnit * 0.12
@@ -817,7 +794,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------ Geraete einzeln
+            // --- Individual devices ---
             Column {
                 width: parent.width
                 spacing: root.scaleUnit * 0.2

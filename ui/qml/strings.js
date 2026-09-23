@@ -1,41 +1,37 @@
-// Alle Texte der Oberflaeche, an einer Stelle.
+// All UI texts in one place.
 //
-// Aufbau: ein Schluessel je Textstelle, dahinter eine Zeile mit einem Eintrag
-// je Sprache -- in der Reihenfolge von `LANGS`. Kompakter als geschachtelte
-// Objekte und beim Nachtragen einer Sprache eine Spalte statt hundert Zeilen.
+// Layout: one key per text, followed by one row with an entry per language
+// in the order of `LANGS`. More compact than nested objects, and adding a
+// language means one more column instead of a hundred new lines.
 //
-// **Warum eine Funktion statt eines Singletons:** dieselben Dateien laufen in
-// drei Wirten (Anwendung, Quickshell-Fenster, DMS-Plugin). Ein QML-Singleton
-// braucht ein `qmldir`, und das entsteht nur im CMake-Modul. `t(key, lang)`
-// ist dagegen eine reine Funktion: gibt man `lang` mit, haengt die Bindung
-// daran und wird beim Umschalten von selbst neu gerechnet.
+// A function instead of a singleton: the same files run in three hosts
+// (app, Quickshell window, DMS plugin). A QML singleton needs a `qmldir`,
+// which only the CMake module generates. `t(key, lang)` is a pure function:
+// passing `lang` makes the binding depend on it, so it re-evaluates by
+// itself when the language changes.
 //
-// Wortwahl nach den ueblichen Bitcoin-Explorern (mempool.space): "Mempool",
-// "Hashrate", "Coinbase" und "RBF" bleiben in allen Sprachen stehen, weil sie
-// ueberall so heissen.
+// Wording follows the common Bitcoin explorers (mempool.space): "Mempool",
+// "Hashrate", "Coinbase" and "RBF" stay the same in every language because
+// that is what they are called everywhere.
 .pragma library
 
-// Die Reihenfolge ist die Spaltenordnung der Tabelle unten. Neue Sprachen
-// kommen **hinten** dazu -- so bleiben alle bestehenden Zeilen gueltig.
+// The order is the column order of the table below. New languages are
+// appended at the end so all existing rows stay valid.
 var LANGS = ["de", "en", "es", "fr", "it", "pt-pt", "nl", "ru", "ja", "zh",
              "pt-br", "pl", "cs"];
 
-// **Die Sprache des Systems, als Schluessel aus LANGS; sonst Englisch.**
-// Bis zum 10.09.2026 fing jede Oberflaeche auf Deutsch an, auch auf einem
-// englischen Ubuntu (in der Pruef-VM gesehen) oder einem spanischen
-// Telefon. Eine gewaehlte Sprache bleibt: das hier ist nur die Vorgabe.
-// **Sie gilt beim ersten Start und wird dann festgehalten** -- QML-Settings
-// schreibt beim Beenden auch Werte, die niemand geaendert hat (am 10.09.2026
-// nachgesehen: nach einem Lauf unter en_US stand `lang=en` in der ini).
-// Wer spaeter die Systemsprache wechselt, stellt die Anwendung also in den
-// Einstellungen um. Die Widgets lesen dieselbe ini (`Texte.java`) und
-// folgen damit derselben Sprache.
+// The system language as a key from LANGS, English otherwise. This is only
+// the default; a chosen language is kept. It applies on first start and is
+// then persisted, because QML Settings writes values on exit even if nobody
+// changed them. Whoever changes the system language later switches the app
+// in the settings. The widgets read the same ini (`Texte.java`) and follow
+// the same language.
 //
-// `Qt.locale().name` ist "de_AT", "pt_BR", "zh_CN" -- Portugiesisch gibt es
-// zweimal, Brasilien fuer sich, alle anderen europaeisch.
+// `Qt.locale().name` is "de_AT", "pt_BR", "zh_CN". Portuguese exists twice:
+// Brazil on its own, everything else European.
 //
-// Mit `name` gilt diese Sprache statt der des Systems: das DMS-Plugin gibt die
-// Sprache von DMS hinein, damit es der Shell folgt und nicht `LANG`.
+// With `name` that language is used instead of the system's: the DMS plugin
+// passes in the DMS language so it follows the shell and not `LANG`.
 function systemLang(name) {
     if (!name)
         name = (typeof Qt !== "undefined" && Qt.locale) ? String(Qt.locale().name) : "";
@@ -62,28 +58,27 @@ var NAMES = {
     "zh": "中文"
 };
 
-// Platzhalter sind {0}, {1} ... und werden von `t` eingesetzt.
+// Placeholders are {0}, {1} ... and are filled in by `t`.
 var S = {
-    // ---------------------------------------------------------- Ansichten
+    // -------------------------------------------------------------- Views
     "tab.feed": ["Feed", "Feed", "Feed", "Flux", "Feed", "Feed", "Feed", "Лента", "フィード", "动态", "Feed", "Kanał", "Kanál"],
-    // **Der Reiter heisst schlicht "Uhr".** Der naheliegende Name ist ein
-    // angemeldetes Zeichen von Coinkite (USPTO 90900261 und 97080272, dazu
-    // CIPO 2135649), gefuehrt mit (R) fuer Anzeigegeraete, die Kurs,
-    // Blockhoehe und Moscow Time zeigen -- also fuer genau das, was diese
-    // Ansicht tut. Am 06.09.2026 nachgeschlagen und daraufhin auch aus
-    // Metadaten, Antragstext und Seite entfernt.
+    // The tab is simply called "Clock". The obvious name is a registered
+    // trademark of Coinkite (USPTO 90900261 and 97080272, plus CIPO 2135649),
+    // registered for display devices showing price, block height and Moscow
+    // Time, which is exactly what this view does. Keep it out of metadata,
+    // store texts and the website as well.
     //
-    // Das schlichte Wort fuer Uhr ist niemandes Marke, und "Blockhoehe" ist
-    // die Bezeichnung, die Coinkite selbst zum Beschreiben benutzt.
+    // The plain word for clock is nobody's trademark, and "block height" is the
+    // term Coinkite itself uses to describe the product.
     "tab.clock": ["Uhr", "Clock", "Reloj", "Horloge", "Orologio", "Relógio", "Klok", "Часы", "時計", "时钟", "Relógio", "Zegar", "Hodiny"],
-    // "Mining" statt "Miner" seit dem 11.09.2026: der Reiter zeigt auch das
-    // Netz, nicht nur das eigene Geraet.
+    // "Mining" rather than "Miner": the tab also shows the network, not only
+    // your own device.
     "tab.miner": ["Mining", "Mining", "Minería", "Minage", "Mining", "Mineração", "Mining", "Майнинг", "マイニング", "挖矿", "Mineração", "Kopanie", "Těžba"],
     "tab.explorer": ["Explorer", "Explorer", "Explorador", "Explorateur", "Explorer", "Explorador", "Verkenner", "Обозреватель", "エクスプローラ", "浏览器", "Explorador", "Eksplorator", "Průzkumník"],
     "tab.wallet": ["Wallet", "Wallet", "Cartera", "Portefeuille", "Portafoglio", "Carteira", "Wallet", "Кошелёк", "ウォレット", "钱包", "Carteira", "Portfel", "Peněženka"],
     "tab.settings": ["Einstellungen", "Settings", "Ajustes", "Paramètres", "Impostazioni", "Definições", "Instellingen", "Настройки", "設定", "设置", "Configurações", "Ustawienia", "Nastavení"],
 
-    // ------------------------------------------------------- Grundbegriffe
+    // -------------------------------------------------------- Basic terms
     "block": ["Block", "Block", "Bloque", "Bloc", "Blocco", "Bloco", "Blok", "Блок", "ブロック", "区块", "Bloco", "Blok", "Blok"],
     "blocks": ["Blöcke", "blocks", "bloques", "blocs", "blocchi", "blocos", "blokken", "блоков", "ブロック", "个区块", "blocos", "bloków", "bloků"],
     "blockHeight": ["Blockhöhe", "Block height", "Altura del bloque", "Hauteur de bloc", "Altezza blocco", "Altura do bloco", "Blokhoogte", "Высота блока", "ブロック高", "区块高度", "Altura do bloco", "Wysokość bloku", "Výška bloku"],
@@ -111,7 +106,7 @@ var S = {
     "offline": ["keine Verbindung", "no connection", "sin conexión", "pas de connexion", "nessuna connessione", "sem ligação", "geen verbinding", "нет соединения", "接続なし", "无连接", "sem conexão", "brak połączenia", "bez připojení"],
     "none": ["–", "–", "–", "–", "–", "–", "–", "–", "–", "–", "–", "–", "–"],
 
-    // --------------------------------------------------------------- Zeit
+    // --------------------------------------------------------------- Time
     "ago.now": ["gerade eben", "just now", "ahora mismo", "à l’instant", "proprio ora", "agora mesmo", "zojuist", "только что", "たった今", "刚刚", "agora mesmo", "przed chwilą", "právě teď"],
     "price.24h": ["24 Std", "24h", "24 h", "24 h", "24 h", "24 h", "24 u", "24 ч", "24時間", "24小时", "24 h", "24 godz.", "24 h"],
     "price.7d": ["7 T", "7d", "7 d", "7 j", "7 g", "7 d", "7 d", "7 д", "7日", "7天", "7 d", "7 d", "7 d"],
@@ -186,7 +181,7 @@ var S = {
     "duration.hourMin": ["{0} Std {1} Min", "{0}h {1}m", "{0} h {1} min", "{0} h {1} min", "{0} h {1} min", "{0} h {1} min", "{0} u {1} min", "{0} ч {1} мин", "{0}時間{1}分", "{0} 小时 {1} 分", "{0} h {1} min", "{0} godz. {1} min", "{0} h {1} min"],
     "duration.min": ["{0} Min", "{0} min", "{0} min", "{0} min", "{0} min", "{0} min", "{0} min", "{0} мин", "{0}分", "{0} 分钟", "{0} min", "{0} min", "{0} min"],
 
-    // ------------------------------------------------- Umschalter Farben
+    // ------------------------------------------------------- Color switch
     "color.label": ["Farbe:", "Color:", "Color:", "Couleur :", "Colore:", "Cor:", "Kleur:", "Цвет:", "配色:", "配色：", "Cor:", "Kolor:", "Barva:"],
     "color.age": ["Alter", "Age", "Antigüedad", "Âge", "Età", "Idade", "Leeftijd", "Возраст", "経過時間", "存在时长", "Idade", "Wiek", "Stáří"],
     "color.fee": ["Gebühr", "Fee", "Comisión", "Frais", "Commissione", "Taxa", "Kosten", "Комиссия", "手数料", "手续费", "Taxa", "Opłata", "Poplatek"],
@@ -217,7 +212,7 @@ var S = {
     , "Aplica-se ao bloco; a fonte não fornece tipo para o mempool.", "Dotyczy bloku; dla mempoola źródło nie podaje typu.", "Platí pro blok; pro mempool zdroj typ neposkytuje."],
     "pct.lessThanOne": ["<1 %", "<1%", "<1 %", "< 1 %", "<1 %", "<1 %", "<1 %", "<1 %", "1 %未満", "<1%", "<1 %", "<1 %", "<1 %"],
 
-    // ------------------------------------------------ Transaktionsliste
+    // --------------------------------------------------- Transaction list
     "txlist.tiles": ["{0} Kacheln", "{0} tiles", "{0} celdas", "{0} tuiles", "{0} caselle", "{0} blocos", "{0} tegels", "{0} плиток", "{0} 個のタイル", "{0} 个方块", "{0} blocos", "{0} kafelków", "{0} dlaždic"],
     "txlist.count": ["{0} Transaktionen", "{0} transactions", "{0} transacciones", "{0} transactions", "{0} transazioni", "{0} transações", "{0} transacties", "{0} транзакций", "{0} 件のトランザクション", "{0} 笔交易", "{0} transações", "{0} transakcji", "{0} transakcí"],
     "txlist.sampled": ["jede {0}. Transaktion", "every {0}th transaction", "cada {0}ª transacción", "une transaction sur {0}", "una transazione ogni {0}", "cada {0}.ª transação", "elke {0}e transactie", "каждая {0}-я транзакция", "{0} 件ごとに 1 件", "每 {0} 笔取 1 笔", "cada {0}.ª transação", "co {0}. transakcja", "každá {0}. transakce"],
@@ -228,7 +223,7 @@ var S = {
     "page.next": ["weiter ›", "Next ›", "Siguiente ›", "Suivant ›", "Avanti ›", "Seguinte ›", "Verder ›", "Вперёд ›", "次へ ›", "下一页 ›", "Seguinte ›", "Dalej ›", "Další ›"],
     "page.last": ["Ende ››", "Last ››", "Última ››", "Fin ››", "Fine ››", "Fim ››", "Einde ››", "Конец ››", "最後 ››", "末页 ››", "Fim ››", "Koniec ››", "Konec ››"],
 
-    // -------------------------------------------------- Blockhistorie
+    // ------------------------------------------------------ Block history
     "history.title": ["Blockhistorie", "Block history", "Historial de bloques", "Historique des blocs", "Storico dei blocchi", "Histórico de blocos", "Blokgeschiedenis", "История блоков", "ブロック履歴", "区块历史", "Histórico de blocos", "Historia bloków", "Historie bloků"],
     "history.range": ["{0} bis {1}", "{0} to {1}", "{0} a {1}", "{0} à {1}", "da {0} a {1}", "{0} a {1}", "{0} tot {1}", "{0} — {1}", "{0} 〜 {1}", "{0} 至 {1}", "{0} a {1}", "{0} do {1}", "{0} až {1}"],
     "history.newest": ["‹‹ neueste", "‹‹ Newest", "‹‹ Más nuevos", "‹‹ Plus récents", "‹‹ Più recenti", "‹‹ Mais recentes", "‹‹ Nieuwste", "‹‹ Новейшие", "‹‹ 最新", "‹‹ 最新", "‹‹ Mais recentes", "‹‹ Najnowsze", "‹‹ Nejnovější"],
@@ -247,7 +242,7 @@ var S = {
         "此处显示的是区块时间戳，而非实际出块时刻——它可能偏差两小时，只需大于前十一个区块的中位数即可。"
     , "A hora indicada é a marca temporal do bloco, não o momento em que foi encontrado — pode desviar até duas horas e só precisa ser maior que a mediana dos onze blocos anteriores.", "Podany czas to znacznik czasu bloku, a nie moment jego znalezienia — może odbiegać nawet o dwie godziny i musi jedynie przekraczać medianę jedenastu poprzednich bloków.", "Uvedený čas je časové razítko bloku, nikoli okamžik nalezení — může se lišit až o dvě hodiny a musí jen převyšovat medián jedenácti předchozích bloků."],
 
-    // ------------------------------------------------- Geplanter Block
+    // ---------------------------------------------------- Projected block
     "chain.label": ["Geplant  ·  bestätigt", "Projected  ·  confirmed", "Previstos  ·  confirmados", "Prévus  ·  confirmés", "Previsti  ·  confermati", "Previstos  ·  confirmados", "Verwacht  ·  bevestigd", "Ожидаемые  ·  подтверждённые", "予測  ·  確定", "预计  ·  已确认", "Previstos  ·  confirmados", "Przewidywane  ·  potwierdzone", "Očekávané  ·  potvrzené"],
     "proj.nth": ["{0}. Block voraus", "{0} blocks ahead", "{0}.º bloque por delante", "{0}e bloc à venir", "{0}° blocco più avanti", "{0}.º bloco à frente", "{0}e blok verderop", "{0}-й блок впереди", "{0} ブロック先", "第 {0} 个区块之后", "{0}.º bloco à frente", "{0}. blok dalej", "{0}. blok napřed"],
     "proj.changed": ["+{0} hinzugekommen", "+{0} added", "+{0} añadidas", "+{0} ajoutées", "+{0} aggiunte", "+{0} adicionadas", "+{0} bijgekomen", "+{0} добавлено", "+{0} 件追加", "新增 {0} 笔", "+{0} adicionadas", "+{0} dodano", "+{0} přidáno"],
@@ -283,14 +278,14 @@ var S = {
         "此区块的手续费在 {0} 到 {1} sat/vB 之间。矿工优先打包出价高的——出价低就会被推到后面的区块。"
     , "As taxas neste bloco vão de {0} a {1} sat/vB. Os mineradores pegam primeiro as mais altas — quem paga menos cai para um bloco posterior.", "Opłaty w tym bloku wynoszą od {0} do {1} sat/vB. Koparki biorą najpierw najdroższe — kto płaci mniej, trafia do późniejszego bloku.", "Poplatky v tomto bloku sahají od {0} do {1} sat/vB. Těžaři berou nejdřív ty nejdražší — kdo platí méně, sklouzne do pozdějšího bloku."],
 
-    // -------------------------------------------------------- Kacheldaten
+    // ---------------------------------------------------------- Tile data
     "tile.tooltip": ["{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿", "{0} vByte · {1} sat/vB · {2} ₿"],
     "legend": ["Legende", "Legend", "Leyenda", "Légende", "Legenda", "Legenda", "Legenda", "Легенда", "凡例", "图例", "Legenda", "Legenda", "Legenda"],
     "explorer.browseAll": ["Alle Blöcke durchblättern ›", "Browse all blocks ›", "Ver todos los bloques ›", "Parcourir tous les blocs ›", "Sfoglia tutti i blocchi ›", "Ver todos os blocos ›", "Alle blokken doorbladeren ›", "Просмотреть все блоки ›", "すべてのブロックを見る ›", "浏览全部区块 ›", "Ver todos os blocos ›", "Przeglądaj wszystkie bloki ›", "Procházet všechny bloky ›"],
     "explorer.inMempool": ["Im Mempool", "In mempool", "En el mempool", "Dans le mempool", "Nel mempool", "No mempool", "In mempool", "В мемпуле", "メンプール内", "内存池中", "No mempool", "W mempoolu", "V mempoolu"],
     "explorer.recent": ["Zuletzt im Mempool gesehen", "Recently seen in the mempool", "Vistas hace poco en el mempool", "Vues récemment dans le mempool", "Viste di recente nel mempool", "Vistas recentemente no mempool", "Onlangs gezien in de mempool", "Недавно замечены в мемпуле", "メンプールで最近見られたもの", "内存池中最近出现", "Vistas recentemente no mempool", "Ostatnio widziane w mempoolu", "Naposledy viděné v mempoolu"],
 
-    // ------------------------------------------------------ Vier Tafeln
+    // -------------------------------------------------------- Four panels
     "panel.fees": ["TRANSAKTIONSGEBÜHR", "TRANSACTION FEE", "COMISIÓN DE TRANSACCIÓN", "FRAIS DE TRANSACTION", "COMMISSIONE DI TRANSAZIONE", "TAXA DE TRANSAÇÃO", "TRANSACTIEKOSTEN", "КОМИССИЯ ЗА ТРАНЗАКЦИЮ", "トランザクション手数料", "交易手续费", "TAXA DE TRANSAÇÃO", "OPŁATA TRANSAKCYJNA", "POPLATEK ZA TRANSAKCI"],
     "panel.difficulty": ["SCHWIERIGKEITSANPASSUNG", "DIFFICULTY ADJUSTMENT", "AJUSTE DE DIFICULTAD", "AJUSTEMENT DE DIFFICULTÉ", "AGGIUSTAMENTO DIFFICOLTÀ", "AJUSTE DE DIFICULDADE", "MOEILIJKHEIDSAANPASSING", "КОРРЕКТИРОВКА СЛОЖНОСТИ", "難易度調整", "难度调整", "AJUSTE DE DIFICULDADE", "KOREKTA TRUDNOŚCI", "ÚPRAVA OBTÍŽNOSTI"],
     "panel.mempool": ["MEMPOOL", "MEMPOOL", "MEMPOOL", "MEMPOOL", "MEMPOOL", "MEMPOOL", "MEMPOOL", "МЕМПУЛ", "メンプール", "内存池", "MEMPOOL", "MEMPOOL", "MEMPOOL"],
@@ -312,7 +307,7 @@ var S = {
     "mempool.noInflow": ["Den Zulauf schreibt der Dienst mit. Im Direktbezug schickt mempool.space nicht genug, um ihn zu zählen.", "The inflow is recorded by the service. Fetching directly, mempool.space does not send enough to count it.", "La afluencia la registra el servicio. En conexión directa, mempool.space no envía lo suficiente para contarla.", "L'afflux est enregistré par le service. En accès direct, mempool.space n'envoie pas assez pour le compter.", "L'afflusso lo registra il servizio. In collegamento diretto, mempool.space non invia abbastanza per contarlo.", "A afluência é registada pelo serviço. Em ligação direta, o mempool.space não envia o suficiente para a contar.", "De toevoer houdt de dienst bij. Bij een directe verbinding stuurt mempool.space niet genoeg om die te tellen.", "Приток записывает служба. При прямом подключении mempool.space присылает слишком мало, чтобы его посчитать.", "流入はサービスが記録します。直接接続では、mempool.space から数えるのに足りるだけのデータが届きません。", "流入由服务记录。直连时，mempool.space 发送的数据不足以统计流入。", "A afluência é registrada pelo serviço. Na conexão direta, o mempool.space não envia o suficiente para contá-la.", "Napływ zapisuje usługa. Przy połączeniu bezpośrednim mempool.space nie przysyła dość danych, by go policzyć.", "Příliv zaznamenává služba. Při přímém připojení mempool.space neposílá dost dat, aby se dal spočítat."],
     "mempool.perMin": ["{0} Min · Ø {1}", "{0} min · avg {1}", "{0} min · med. {1}", "{0} min · moy. {1}", "{0} min · media {1}", "{0} min · méd. {1}", "{0} min · gem. {1}", "{0} мин · сред. {1}", "{0} 分 · 平均 {1}", "{0} 分钟 · 平均 {1}", "{0} min · méd. {1}", "{0} min · śr. {1}", "{0} min · prům. {1}"],
 
-    // ---------------------------------------------------------- Feed
+    // --------------------------------------------------------------- Feed
     "feed.movedValue": ["Bewegter Wert", "Value moved", "Valor movido", "Valeur déplacée", "Valore movimentato", "Valor movimentado", "Verplaatste waarde", "Перемещённая сумма", "移動額", "转移金额", "Valor movimentado", "Przemieszczona wartość", "Přesunutá hodnota"],
     "feed.avgFee": ["Ø Gebühr", "Avg fee", "Comisión media", "Frais moyens", "Commissione media", "Taxa média", "Gem. kosten", "Сред. комиссия", "平均手数料", "平均手续费", "Taxa média", "Śr. opłata", "Prům. poplatek"],
     "feed.bytes": ["{0} Bytes", "{0} bytes", "{0} bytes", "{0} octets", "{0} byte", "{0} bytes", "{0} bytes", "{0} байт", "{0} バイト", "{0} 字节", "{0} bytes", "{0} bajtów", "{0} bajtů"],
@@ -330,9 +325,9 @@ var S = {
     "tip.txid": ["TxID: {0}", "TxID: {0}", "TxID: {0}", "TxID : {0}", "TxID: {0}", "TxID: {0}", "TxID: {0}", "TxID: {0}", "TxID: {0}", "TxID: {0}", "TxID: {0}", "TxID: {0}", "TxID: {0}"],
     "tip.size": ["Größe: {0} vBytes", "Size: {0} vBytes", "Tamaño: {0} vBytes", "Taille : {0} vOctets", "Dimensione: {0} vByte", "Tamanho: {0} vBytes", "Grootte: {0} vBytes", "Размер: {0} vBytes", "サイズ: {0} vBytes", "大小：{0} vBytes", "Tamanho: {0} vBytes", "Rozmiar: {0} vBytes", "Velikost: {0} vBytes"],
     "tip.rate": ["Gebührenrate: {0} sat/vByte", "Fee rate: {0} sat/vByte", "Tasa: {0} sat/vByte", "Taux : {0} sat/vOctet", "Tasso: {0} sat/vByte", "Taxa: {0} sat/vByte", "Tarief: {0} sat/vByte", "Ставка: {0} sat/vByte", "手数料率: {0} sat/vByte", "费率：{0} sat/vByte", "Taxa: {0} sat/vByte", "Stawka: {0} sat/vByte", "Sazba: {0} sat/vByte"],
-    // Die wirksame Rate von mempool.space -- sie rechnet Vorgaenger (CPFP) und
-    // Sigops mit ein und ist deshalb nicht Gebuehr geteilt durch vBytes. Steht
-    // nur da, wenn sie von der eigenen Rechnung abweicht.
+    // The effective rate from mempool.space. It includes ancestors (CPFP) and
+    // sigops, so it is not simply fee divided by vbytes. Only shown when it
+    // differs from the rate computed from size and fee.
     "tip.rateEff": ["Wirksam: {0} sat/vByte", "Effective: {0} sat/vByte", "Efectiva: {0} sat/vByte", "Effectif : {0} sat/vOctet", "Effettivo: {0} sat/vByte", "Efetiva: {0} sat/vByte", "Effectief: {0} sat/vByte", "Эффективная: {0} sat/vByte", "実効: {0} sat/vByte", "有效费率：{0} sat/vByte", "Efetiva: {0} sat/vByte", "Efektywna: {0} sat/vByte", "Efektivní: {0} sat/vByte"],
     "tip.fee": ["Gebühr: {0} sats", "Fee: {0} sats", "Comisión: {0} sats", "Frais : {0} sats", "Commissione: {0} sats", "Taxa: {0} sats", "Kosten: {0} sats", "Комиссия: {0} sats", "手数料: {0} sats", "手续费：{0} sats", "Taxa: {0} sats", "Opłata: {0} sats", "Poplatek: {0} sats"],
     "tip.total": ["Gesamtwert: ₿ {0}", "Total value: ₿ {0}", "Valor total: ₿ {0}", "Valeur totale : ₿ {0}", "Valore totale: ₿ {0}", "Valor total: ₿ {0}", "Totale waarde: ₿ {0}", "Общая сумма: ₿ {0}", "合計額: ₿ {0}", "总额：₿ {0}", "Valor total: ₿ {0}", "Wartość łączna: ₿ {0}", "Celková hodnota: ₿ {0}"],
@@ -342,13 +337,13 @@ var S = {
     "out.one": ["Ausgang", "output", "salida", "sortie", "uscita", "saída", "uitvoer", "выход", "出力", "输出", "saída", "wyjście", "výstup"],
     "out.many": ["Ausgänge", "outputs", "salidas", "sorties", "uscite", "saídas", "uitvoeren", "выходов", "出力", "输出", "saídas", "wyjść", "výstupů"],
 
-    // --------------------------------------------------------- Uhr
+    // -------------------------------------------------------------- Clock
     "clock.moscow": ["Moscow Time", "Moscow Time", "Moscow Time", "Moscow Time", "Moscow Time", "Moscow Time", "Moscow Time", "Moscow Time", "モスクワタイム", "莫斯科时间", "Moscow Time", "Moscow Time", "Moscow Time"],
     "clock.diffLine": ["Schwierigkeit {0}", "Difficulty {0}", "Dificultad {0}", "Difficulté {0}", "Difficoltà {0}", "Dificuldade {0}", "Moeilijkheid {0}", "Сложность {0}", "難易度 {0}", "难度 {0}", "Dificuldade {0}", "Trudność {0}", "Obtížnost {0}"],
     "clock.remaining": ["noch {0} Blöcke · {1}", "{0} blocks left · {1}", "faltan {0} bloques · {1}", "encore {0} blocs · {1}", "mancano {0} blocchi · {1}", "faltam {0} blocos · {1}", "nog {0} blokken · {1}", "осталось {0} блоков · {1}", "残り {0} ブロック · {1}", "还剩 {0} 个区块 · {1}", "faltam {0} blocos · {1}", "pozostało {0} bloków · {1}", "zbývá {0} bloků · {1}"],
     "clock.halving": ["Halving bei {0} · noch {1} Blöcke · rund {2}", "Halving at {0} · {1} blocks left · about {2}", "Halving en {0} · faltan {1} bloques · unos {2}", "Halving à {0} · encore {1} blocs · environ {2}", "Halving a {0} · mancano {1} blocchi · circa {2}", "Halving em {0} · faltam {1} blocos · cerca de {2}", "Halving bij {0} · nog {1} blokken · ongeveer {2}", "Халвинг на {0} · осталось {1} блоков · примерно {2}", "半減期 {0} · 残り {1} ブロック · 約 {2}", "减半于 {0} · 还剩 {1} 个区块 · 约 {2}", "Halving em {0} · faltam {1} blocos · cerca de {2}", "Halving przy {0} · pozostało {1} bloków · około {2}", "Halving na {0} · zbývá {1} bloků · asi {2}"],
 
-    // ------------------------------------------------------------- Miner
+    // -------------------------------------------------------------- Miner
     "miner.title": ["Miner", "Miner", "Minero", "Mineur", "Miner", "Minerador", "Miner", "Майнер", "マイナー", "矿机", "Minerador", "Koparka", "Těžař"],
     "miner.none": ["Kein Miner eingetragen", "No miner configured", "Ningún minero configurado", "Aucun mineur configuré", "Nessun miner configurato", "Nenhum minerador configurado", "Geen miner ingesteld", "Майнер не настроен", "マイナー未設定", "未配置矿机", "Nenhum minerador configurado", "Nie skonfigurowano koparki", "Není nastaven žádný těžař"],
     "miner.unreachable": ["Kein Miner erreichbar", "No miner reachable", "Ningún minero accesible", "Aucun mineur joignable", "Nessun miner raggiungibile", "Nenhum minerador acessível", "Geen miner bereikbaar", "Майнер недоступен", "マイナーに接続できません", "无法连接矿机", "Nenhum minerador acessível", "Żadna koparka nieosiągalna", "Žádný těžař není dostupný"],
@@ -473,12 +468,11 @@ var S = {
         "芯片丢弃结果的比例。百分之几属正常；明显上升说明频率过高或电压过低。"
     , "Percentagem de resultados descartados pelo chip. Alguns por cento são normais; se subir claramente, a frequência está alta demais ou a tensão baixa demais.", "Udział wyników odrzuconych przez układ. Kilka procent to norma; wyraźny wzrost oznacza za wysokie taktowanie albo za niskie napięcie.", "Podíl výsledků, které čip zahodil. Několik procent je normální; výrazný nárůst znamená příliš vysoký takt nebo příliš nízké napětí."],
     "miner.oneInN": ["das ist 1 zu {0}", "that is 1 in {0}", "eso es 1 entre {0}", "c’est 1 sur {0}", "è 1 su {0}", "isso é 1 em {0}", "dat is 1 op {0}", "это 1 к {0}", "{0} 分の 1 です", "即 {0} 分之一", "isso é 1 em {0}", "to jest 1 na {0}", "to je 1 ku {0}"],
-    // Bis zum 11.09.2026 stand beides fest auf Deutsch in MinerView.qml --
-    // auch in der englischen Anwendung "674 M von 127 T" und "1 zu 189 k".
+    // Used by MinerView.qml, e.g. "674 M of 127 T" and "1 in 189 k".
     "miner.ofNet": ["{0} von {1}", "{0} of {1}", "{0} de {1}", "{0} sur {1}", "{0} su {1}", "{0} de {1}", "{0} van {1}", "{0} из {1}", "{1} 中 {0}", "{0} / {1}", "{0} de {1}", "{0} z {1}", "{0} z {1}"],
     "miner.off": ["aus", "off", "apagado", "éteint", "spento", "desligado", "uit", "выкл.", "オフ", "关机", "desligado", "wył.", "vyp."],
     "miner.oneTo": ["1 zu {0}", "1 in {0}", "1 entre {0}", "1 sur {0}", "1 su {0}", "1 em {0}", "1 op {0}", "1 к {0}", "{0} 分の 1", "{0} 分之一", "1 em {0}", "1 na {0}", "1 ku {0}"],
-    // Solo-Chance: eigene Hashrate gegen die des Netzes
+    // Solo chance: own hashrate against the network's
     "miner.solo": ["Chance auf einen Block", "Chance of finding a block", "Probabilidad de encontrar un bloque", "Chance de trouver un bloc", "Probabilità di trovare un blocco", "Probabilidade de encontrar um bloco", "Kans op een blok", "Шанс найти блок", "ブロック発見の確率", "出块概率", "Chance de encontrar um bloco", "Szansa na blok", "Šance na blok"],
     "miner.soloDay": ["1 zu {0} pro Tag", "1 in {0} per day", "1 entre {0} al día", "1 sur {0} par jour", "1 su {0} al giorno", "1 em {0} por dia", "1 op {0} per dag", "1 к {0} в день", "1日あたり {0} 分の 1", "每天 {0} 分之一", "1 em {0} por dia", "1 na {0} dziennie", "1 ku {0} za den"],
     "miner.soloEvery": ["im Mittel alle {0}", "on average every {0}", "de media cada {0}", "en moyenne tous les {0}", "in media ogni {0}", "em média a cada {0}", "gemiddeld elke {0}", "в среднем раз в {0}", "平均 {0} に 1 回", "平均每 {0} 一次", "em média a cada {0}", "średnio co {0}", "v průměru jednou za {0}"],
@@ -500,9 +494,9 @@ var S = {
     "duration.years": ["{0} Jahre", "{0} years", "{0} años", "{0} ans", "{0} anni", "{0} anos", "{0} jaar", "{0} лет", "{0} 年", "{0} 年", "{0} anos", "{0} lat", "{0} let"],
     "duration.days": ["{0} Tage", "{0} days", "{0} días", "{0} jours", "{0} giorni", "{0} dias", "{0} dagen", "{0} дн.", "{0} 日", "{0} 天", "{0} dias", "{0} dni", "{0} dní"],
 
-    // -------------------------------------------------------------- Netz
-    // Der zweite Teil des Miner-Reiters: das ganze Netz statt des eigenen
-    // Geraets.
+    // ------------------------------------------------------------ Network
+    // Second part of the miner tab: the whole network instead of your own
+    // device.
     "miner.paneDevice": ["Gerät", "Device", "Equipo", "Appareil", "Dispositivo", "Equipamento", "Apparaat", "Устройство", "デバイス", "设备", "Equipamento", "Urządzenie", "Zařízení"],
     "miner.paneNet": ["Netzwerk", "Network", "Red", "Réseau", "Rete", "Rede", "Netwerk", "Сеть", "ネットワーク", "全网", "Rede", "Sieć", "Síť"],
     "net.nextAdj": ["Nächste Anpassung", "Next adjustment", "Próximo ajuste", "Prochain ajustement", "Prossimo aggiustamento", "Próximo ajuste", "Volgende aanpassing", "Следующая корректировка", "次回の調整", "下次调整", "Próximo ajuste", "Następna korekta", "Příští úprava"],
@@ -516,8 +510,8 @@ var S = {
     "net.loading": ["Netzwerkdaten werden geholt …", "Loading network data …", "Cargando datos de la red …", "Chargement des données du réseau …", "Caricamento dati di rete …", "A carregar dados da rede …", "Netwerkgegevens laden …", "Загрузка данных сети …", "ネットワークデータを取得中 …", "正在加载全网数据 …", "Carregando dados da rede …", "Wczytywanie danych sieci …", "Načítání dat sítě …"],
     "net.failed": ["Netzwerkdaten nicht verfügbar ({0})", "Network data unavailable ({0})", "Datos de la red no disponibles ({0})", "Données du réseau indisponibles ({0})", "Dati di rete non disponibili ({0})", "Dados da rede indisponíveis ({0})", "Netwerkgegevens niet beschikbaar ({0})", "Данные сети недоступны ({0})", "ネットワークデータを取得できません ({0})", "无法获取全网数据 ({0})", "Dados da rede indisponíveis ({0})", "Dane sieci niedostępne ({0})", "Data sítě nejsou dostupná ({0})"],
     "net.3y": ["3 J", "3y", "3 a", "3 ans", "3 a", "3 a", "3 j", "3 г", "3年", "3年", "3 a", "3 l", "3 r"],
-    // Die Reiter kommen als {0} und {1} aus "tab.settings" und "tab.miner" --
-    // abgeschrieben lief der Name hier nicht mit, als der Reiter "Mining" wurde.
+    // The tab names come in as {0} and {1} from "tab.settings" and "tab.miner",
+    // so a renamed tab shows up here too.
     "net.addMiner": ["Eigenen Miner eintragen: {0} · {1}", "Add your own miner: {0} · {1}", "Añadir tu propio minero: {0} · {1}", "Ajouter votre mineur : {0} · {1}", "Aggiungi il tuo miner: {0} · {1}", "Adicionar o seu minerador: {0} · {1}", "Eigen miner toevoegen: {0} · {1}", "Добавить свой майнер: {0} · {1}", "自分のマイナーを追加: {0} · {1}", "添加自己的矿机：{0} · {1}", "Adicionar seu minerador: {0} · {1}", "Dodaj własną koparkę: {0} · {1}", "Přidat vlastního těžaře: {0} · {1}"],
     "net.hashHelp": [
         "Die geschätzte Rechenleistung aller Miner zusammen, als Tagesmittel. Niemand meldet sie: sie wird aus der Zahl der gefundenen Blöcke und der Schwierigkeit zurückgerechnet und springt deshalb von Tag zu Tag.",
@@ -565,14 +559,12 @@ var S = {
         "Kdo našel bloky za posledních sedm dní, poznáno podle značky, kterou každý pool zapisuje do svých bloků. Pool není těžař: stojí za ním mnoho zařízení, která se dělí o odměnu."
     ],
 
-    // ---------------------------------------------------------- Explorer
+    // ----------------------------------------------------------- Explorer
     "search.placeholder": ["Blockhöhe, Blockhash, TxID oder Adresse …", "Block height, block hash, TxID or address …", "Altura, hash de bloque, TxID o dirección …", "Hauteur, hash de bloc, TxID ou adresse …", "Altezza, hash del blocco, TxID o indirizzo …", "Altura, hash do bloco, TxID ou endereço …", "Blokhoogte, blokhash, TxID of adres …", "Высота, хеш блока, TxID или адрес …", "ブロック高・ブロックハッシュ・TxID・アドレス …", "区块高度、区块哈希、TxID 或地址 …", "Altura, hash do bloco, TxID ou endereço …", "Wysokość, hash bloku, TxID lub adres …", "Výška, hash bloku, TxID nebo adresa …"],
     "search.searching": ["sucht …", "searching …", "buscando …", "recherche …", "ricerca …", "a procurar …", "zoeken …", "поиск …", "検索中 …", "搜索中 …", "procurando …", "szukanie …", "hledání …"],
     "search.invalid": ["Keine gültige Eingabe.", "Not a valid input.", "Entrada no válida.", "Saisie non valide.", "Voce non valida.", "Entrada inválida.", "Geen geldige invoer.", "Недопустимый ввод.", "入力が正しくありません。", "输入无效。", "Entrada inválida.", "Nieprawidłowe dane.", "Neplatný vstup."],
     "search.xpub": ["Erweiterte Schlüssel gehören in die Wallet-Ansicht — sie kommen später.", "Extended keys belong in the wallet view — they go there instead.", "Las claves extendidas van en la vista de cartera.", "Les clés étendues vont dans la vue portefeuille.", "Le chiavi estese vanno nella vista portafoglio.", "As chaves estendidas pertencem à vista da carteira.", "Uitgebreide sleutels horen in de walletweergave.", "Расширенные ключи — во вкладке кошелька.", "拡張鍵はウォレット画面で扱います。", "扩展公钥请在钱包视图中使用。", "As chaves estendidas pertencem à vista da carteira.", "Klucze rozszerzone należą do widoku portfela.", "Rozšířené klíče patří do zobrazení peněženky."],
-    // Der Hinweis rechts im Suchfeld: was die Eingabe ist oder werden kann.
-    // Bis 0.2.7 stand er fest auf Deutsch in search.js -- am 11.09.2026 im
-    // Bildschirmvergleich unter englischer Oberflaeche gefunden.
+    // Hint at the right of the search field: what the input is or can become.
     "search.kind.blockhash": ["Blockhash", "Block hash", "Hash de bloque", "Hash de bloc", "Hash del blocco", "Hash do bloco", "Blokhash", "Хеш блока", "ブロックハッシュ", "区块哈希", "Hash do bloco", "Hash bloku", "Hash bloku"],
     "search.kind.input": ["Transaktionseingang", "Transaction input", "Entrada de transacción", "Entrée de transaction", "Input della transazione", "Entrada da transação", "Transactie-invoer", "Вход транзакции", "トランザクションの入力", "交易输入", "Entrada da transação", "Wejście transakcji", "Vstup transakce"],
     "search.kind.output": ["Transaktionsausgang", "Transaction output", "Salida de transacción", "Sortie de transaction", "Output della transazione", "Saída da transação", "Transactie-uitvoer", "Выход транзакции", "トランザクションの出力", "交易输出", "Saída da transação", "Wyjście transakcji", "Výstup transakce"],
@@ -613,7 +605,7 @@ var S = {
     "flow.more": ["weitere {0}", "{0} more", "otras {0}", "{0} autres", "altre {0}", "mais {0}", "nog {0}", "ещё {0}", "他 {0} 件", "另外 {0} 个", "mais {0}", "jeszcze {0}", "dalších {0}"],
     "flow.fee": ["Gebühr {0} sat", "Fee {0} sat", "Comisión {0} sat", "Frais {0} sat", "Commissione {0} sat", "Taxa {0} sat", "Kosten {0} sat", "Комиссия {0} sat", "手数料 {0} sat", "手续费 {0} sat", "Taxa {0} sat", "Opłata {0} sat", "Poplatek {0} sat"],
 
-    // ------------------------------------------------ Transaktionsarten
+    // -------------------------------------------------- Transaction types
     "type.payment": ["Zahlung", "Payment", "Pago", "Paiement", "Pagamento", "Pagamento", "Betaling", "Платёж", "支払い", "支付", "Pagamento", "Płatność", "Platba"],
     "type.consolidation": ["Konsolidierung", "Consolidation", "Consolidación", "Consolidation", "Consolidamento", "Consolidação", "Consolidatie", "Консолидация", "統合", "整合", "Consolidação", "Konsolidacja", "Konsolidace"],
     "type.batch": ["Sammelzahlung", "Batch payment", "Pago por lotes", "Paiement groupé", "Pagamento in blocco", "Pagamento em lote", "Batchbetaling", "Пакетный платёж", "一括送金", "批量支付", "Pagamento em lote", "Płatność zbiorcza", "Hromadná platba"],
@@ -635,7 +627,7 @@ var S = {
     "type.inscription.help": ["Trägt Daten im Zeugnisteil (Witness) — Ordinals und Verwandtes. Die Daten zahlen dort weniger Gebühr als in einem OP_RETURN.", "Carries data in the witness — Ordinals and the like. Data pays less fee there than in an OP_RETURN.", "Lleva datos en el witness — Ordinals y similares. Ahí los datos pagan menos comisión que en un OP_RETURN.", "Porte des données dans le témoin (witness) — Ordinals et apparentés. Les données y coûtent moins qu’en OP_RETURN.", "Porta dati nel witness — Ordinals e simili. Lì i dati pagano meno commissione che in un OP_RETURN.", "Leva dados no witness — Ordinals e afins. Aí os dados pagam menos taxa do que num OP_RETURN.", "Draagt data in de witness — Ordinals en verwanten. Data betaalt daar minder kosten dan in een OP_RETURN.", "Несёт данные в witness — Ordinals и подобное. Там данные обходятся дешевле, чем в OP_RETURN.", "witness にデータを載せます (Ordinals など)。OP_RETURN より手数料が安く済みます。", "在见证数据(witness)中携带数据——Ordinals 之类。那里的数据比 OP_RETURN 便宜。", "Carrega dados no witness — Ordinals e afins. Ali os dados pagam menos taxa do que num OP_RETURN.", "Niesie dane w witness — Ordinals i pokrewne. Tam dane płacą mniejszą opłatę niż w OP_RETURN.", "Nese data ve witness — Ordinals a podobné. Tam data platí menší poplatek než v OP_RETURN."]
 ,
 
-    // ------------------------------------------------------------ Wallet
+    // ------------------------------------------------------------- Wallet
     "wallet.none": ["Keine Wallet eingetragen", "No wallet configured", "Ninguna cartera configurada", "Aucun portefeuille configuré", "Nessun portafoglio configurato", "Nenhuma carteira configurada", "Geen wallet ingesteld", "Кошелёк не настроен", "ウォレット未設定", "未配置钱包", "Nenhuma carteira configurada", "Nie skonfigurowano portfela", "Není nastavena žádná peněženka"],
     "wallet.intro": ["Diese Ansicht zeigt Guthaben und Verlauf einer Wallet, ohne sie anzufassen. Dafür genügt der erweiterte öffentliche Schlüssel — xpub, ypub oder zpub. Ein privater Schlüssel wird nicht entgegengenommen und wäre hier auch nutzlos: das Programm kann nicht signieren.", "This view shows a wallet’s balance and history without touching it. The extended public key is enough — xpub, ypub or zpub. A private key is not accepted and would be useless here: the program cannot sign.", "Esta vista muestra el saldo y el historial de una cartera sin tocarla. Basta con la clave pública extendida: xpub, ypub o zpub. No se acepta una clave privada y aquí sería inútil: el programa no puede firmar.", "Cette vue affiche le solde et l’historique d’un portefeuille sans y toucher. La clé publique étendue suffit — xpub, ypub ou zpub. Une clé privée n’est pas acceptée et serait inutile ici : le programme ne sait pas signer.", "Questa vista mostra saldo e cronologia di un portafoglio senza toccarlo. Basta la chiave pubblica estesa — xpub, ypub o zpub. Una chiave privata non viene accettata e sarebbe inutile: il programma non può firmare.", "Esta vista mostra o saldo e o histórico de uma carteira sem lhe tocar. Basta a chave pública estendida — xpub, ypub ou zpub. Uma chave privada não é aceite e seria inútil: o programa não consegue assinar.", "Deze weergave toont saldo en historie van een wallet zonder die aan te raken. De uitgebreide publieke sleutel volstaat — xpub, ypub of zpub. Een privésleutel wordt niet geaccepteerd en zou hier nutteloos zijn: het programma kan niet ondertekenen.", "Здесь показаны баланс и история кошелька, не касаясь его. Достаточно расширенного публичного ключа — xpub, ypub или zpub. Приватный ключ не принимается и был бы бесполезен: программа не умеет подписывать.", "この画面はウォレットに触れずに残高と履歴を表示します。拡張公開鍵 (xpub / ypub / zpub) だけで十分です。秘密鍵は受け付けませんし、署名できないので無意味です。", "此视图在不触碰钱包的前提下显示余额与历史。只需扩展公钥——xpub、ypub 或 zpub。程序不接受私钥，也无法签名，私钥在这里毫无用处。", "Esta vista mostra o saldo e o histórico de uma carteira sem tocá-la. Basta a chave pública estendida — xpub, ypub ou zpub. Uma chave privada não é aceita e seria inútil aqui: o programa não consegue assinar.", "Ten widok pokazuje saldo i historię portfela, nie dotykając go. Wystarczy rozszerzony klucz publiczny — xpub, ypub lub zpub. Klucza prywatnego program nie przyjmuje i byłby tu bezużyteczny: nie potrafi podpisywać.", "Toto zobrazení ukazuje zůstatek a historii peněženky, aniž by se jí dotklo. Stačí rozšířený veřejný klíč — xpub, ypub nebo zpub. Soukromý klíč se nepřijímá a byl by tu k ničemu: program neumí podepisovat."],
     "wallet.cliNote": ["Eingetragen wird bewusst auf der Kommandozeile: der Dienst im Hintergrund antwortet nur, er nimmt nichts entgegen. Der Schlüssel liegt danach in ~/.config/orangedeck/sources.json, für niemanden sonst lesbar.", "Deliberately configured on the command line: the background service only answers, it accepts nothing. The key then sits in ~/.config/orangedeck/sources.json, readable by no one else.", "Se configura a propósito en la línea de órdenes: el servicio en segundo plano sólo responde, no acepta nada. La clave queda en ~/.config/orangedeck/sources.json, ilegible para los demás.", "La configuration se fait volontairement en ligne de commande : le service en arrière-plan ne fait que répondre, il n’accepte rien. La clé se trouve ensuite dans ~/.config/orangedeck/sources.json, illisible pour les autres.", "Si configura di proposito da riga di comando: il servizio in background risponde soltanto, non accetta nulla. La chiave resta in ~/.config/orangedeck/sources.json, illeggibile per gli altri.", "É configurado propositadamente na linha de comandos: o serviço em segundo plano apenas responde, não aceita nada. A chave fica em ~/.config/orangedeck/sources.json, ilegível para os outros.", "Bewust via de opdrachtregel ingesteld: de achtergronddienst antwoordt alleen, hij neemt niets aan. De sleutel staat daarna in ~/.config/orangedeck/sources.json, voor niemand anders leesbaar.", "Настройка намеренно через командную строку: фоновая служба только отвечает и ничего не принимает. Ключ потом лежит в ~/.config/orangedeck/sources.json, недоступный другим.", "設定は意図的にコマンドラインで行います。バックグラウンドのサービスは応答するだけで、何も受け付けません。鍵は ~/.config/orangedeck/sources.json に置かれ、他者からは読めません。", "刻意通过命令行配置：后台服务只应答、不接收任何输入。密钥随后保存在 ~/.config/orangedeck/sources.json，他人无法读取。", "A configuração é feita de propósito na linha de comando: o serviço em segundo plano apenas responde, não aceita nada. A chave fica em ~/.config/orangedeck/sources.json, ilegível para os outros.", "Konfiguracja odbywa się celowo w wierszu poleceń: usługa w tle tylko odpowiada, niczego nie przyjmuje. Klucz leży potem w ~/.config/orangedeck/sources.json, nieczytelny dla innych.", "Nastavuje se záměrně z příkazové řádky: služba na pozadí jen odpovídá, nic nepřijímá. Klíč pak leží v ~/.config/orangedeck/sources.json, pro ostatní nečitelný."],
@@ -655,7 +647,7 @@ var S = {
     "wallet.footnote": ["Nur betrachtend: hier liegt ein öffentlicher Schlüssel, kein privater. Er verlässt das Gerät nicht — die Adressen werden hier abgeleitet und einzeln abgefragt. Was bleibt, ist ein Verkettungsproblem: wer viele Adressen nacheinander von derselben Stelle abfragt, zeigt dem Betreiber, dass sie zusammengehören. Ganz lösen lässt sich das nur mit einem eigenen Knoten.", "Watch-only: what is stored here is a public key, not a private one. It never leaves the device — addresses are derived here and queried one by one. What remains is a linkage problem: querying many addresses in a row from the same place shows the operator that they belong together. Only your own node solves that fully.", "Sólo lectura: aquí hay una clave pública, no privada. No sale del equipo: las direcciones se derivan aquí y se consultan una a una. Queda un problema de enlace: consultar muchas direcciones seguidas desde el mismo sitio le muestra al operador que van juntas. Sólo un nodo propio lo resuelve del todo.", "En lecture seule : ici se trouve une clé publique, pas une clé privée. Elle ne quitte pas l’appareil — les adresses sont dérivées ici et interrogées une à une. Reste un problème de corrélation : interroger beaucoup d’adresses d’affilée depuis le même endroit montre à l’opérateur qu’elles vont ensemble. Seul un nœud personnel règle cela complètement.", "Sola lettura: qui c’è una chiave pubblica, non privata. Non lascia il dispositivo — gli indirizzi sono derivati qui e interrogati uno per uno. Resta un problema di collegamento: interrogare molti indirizzi di fila dallo stesso punto mostra al gestore che stanno insieme. Solo un nodo proprio lo risolve del tutto.", "Apenas observação: aqui está uma chave pública, não privada. Não sai do dispositivo — os endereços são derivados aqui e consultados um a um. Resta um problema de ligação: consultar muitos endereços seguidos do mesmo sítio mostra ao operador que pertencem juntos. Só um nó próprio resolve isso por completo.", "Alleen bekijken: hier ligt een publieke sleutel, geen privésleutel. Hij verlaat het apparaat niet — adressen worden hier afgeleid en één voor één opgevraagd. Wat blijft is een koppelingsprobleem: veel adressen achter elkaar vanaf dezelfde plek opvragen toont de beheerder dat ze bij elkaar horen. Alleen een eigen node lost dat volledig op.", "Только просмотр: здесь публичный ключ, не приватный. Он не покидает устройство — адреса выводятся здесь и запрашиваются по одному. Остаётся проблема связывания: запрос многих адресов подряд с одного места показывает оператору, что они связаны. Полностью это решает только собственный узел.", "閲覧専用です。ここにあるのは公開鍵で、秘密鍵ではありません。鍵は端末から出ず、アドレスはここで導出して個別に問い合わせます。残る問題は関連付けです。同じ場所から多数のアドレスを続けて問い合わせると、事業者にそれらが同一のものだと分かります。完全な解決は自前ノードだけです。", "只读：这里保存的是公钥，不是私钥。它不会离开本机——地址在本地推导并逐个查询。剩下的是关联问题：从同一处连续查询大量地址，会让服务方看出它们属于同一钱包。只有自建节点才能彻底解决。", "Apenas observação: aqui está uma chave pública, não privada. Ela não sai do dispositivo — os endereços são derivados aqui e consultados um a um. Resta um problema de ligação: consultar muitos endereços seguidos do mesmo lugar mostra ao operador que pertencem juntos. Só um nó próprio resolve isso por completo.", "Tylko podgląd: leży tu klucz publiczny, nie prywatny. Nie opuszcza urządzenia — adresy są wyprowadzane tutaj i odpytywane pojedynczo. Zostaje problem powiązania: odpytywanie wielu adresów po kolei z tego samego miejsca pokazuje operatorowi, że należą do siebie. W pełni rozwiązuje to tylko własny węzeł.", "Pouze pro sledování: leží tu veřejný klíč, nikoli soukromý. Zařízení neopouští — adresy se odvozují zde a dotazují se jednotlivě. Zbývá problém propojení: kdo se z jednoho místa doptává na mnoho adres za sebou, ukáže provozovateli, že patří k sobě. Zcela to řeší jen vlastní uzel."]
 ,
 
-    // ------------------------------------------------------ Einstellungen
+    // ----------------------------------------------------------- Settings
     "set.general": ["Allgemein", "General", "General", "Général", "Generale", "Geral", "Algemeen", "Общие", "全般", "通用", "Geral", "Ogólne", "Obecné"],
     "set.currency": ["Währung", "Currency", "Moneda", "Devise", "Valuta", "Moeda", "Valuta", "Валюта", "通貨", "货币", "Moeda", "Waluta", "Měna"],
     "set.currencyHelp": ["Gilt überall, wo ein Gegenwert steht. Die Kurse kommen alle in derselben Nachricht mit, es kostet also nichts, umzustellen.", "Applies everywhere a fiat value is shown. All rates arrive in the same message, so switching costs nothing.", "Se aplica en todo lugar donde aparezca un contravalor. Todas las cotizaciones llegan en el mismo mensaje, cambiar no cuesta nada.", "S’applique partout où une contre-valeur est affichée. Tous les cours arrivent dans le même message, changer ne coûte rien.", "Vale ovunque compaia un controvalore. Tutti i cambi arrivano nello stesso messaggio, cambiare non costa nulla.", "Aplica-se onde quer que apareça um contravalor. Todas as cotações chegam na mesma mensagem, mudar não custa nada.", "Geldt overal waar een tegenwaarde staat. Alle koersen komen in hetzelfde bericht mee, omschakelen kost niets.", "Действует везде, где показан эквивалент. Все курсы приходят в одном сообщении, переключение ничего не стоит.", "換算額が表示されるすべての場所に適用されます。すべてのレートは同じメッセージで届くため、切り替えに費用はかかりません。", "适用于所有显示法币金额之处。所有汇率都在同一条消息中送达，切换不产生额外开销。", "Vale onde quer que apareça um contravalor. Todas as cotações chegam na mesma mensagem, mudar não custa nada.", "Obowiązuje wszędzie, gdzie widnieje równowartość. Wszystkie kursy przychodzą w tej samej wiadomości, przełączenie nic nie kosztuje.", "Platí všude, kde je uveden protihodnota. Všechny kurzy přicházejí ve stejné zprávě, přepnutí nic nestojí."],
@@ -669,7 +661,7 @@ var S = {
     "set.startView": ["Startansicht", "Start view", "Vista inicial", "Vue de départ", "Vista iniziale", "Vista inicial", "Startweergave", "Начальный вид", "起動時の画面", "启动视图", "Vista inicial", "Widok startowy", "Úvodní zobrazení"],
     "set.startViewHelp": ["Womit das Fenster aufgeht — für ein Tablet an der Wand meist die Uhr.", "What the window opens with — for a tablet on the wall usually the clock.", "Con qué se abre la ventana; para una tablet en la pared suele ser el reloj.", "Ce par quoi la fenêtre s’ouvre — pour une tablette murale, souvent l’horloge.", "Con cosa si apre la finestra — per un tablet a parete di solito l’orologio.", "Com o que a janela abre — para um tablet na parede normalmente o relógio.", "Waarmee het venster opent — voor een tablet aan de muur meestal de klok.", "С чего открывается окно — для планшета на стене обычно часы.", "ウィンドウを開いたときの画面です。壁掛けタブレットなら時計が定番です。", "窗口打开时显示的视图——挂墙平板通常选时钟。", "Com o que a janela abre — para um tablet na parede normalmente o relógio.", "Od czego zaczyna okno — dla tabletu na ścianie zwykle zegar.", "Čím se okno otevře — pro tablet na zdi obvykle hodiny."],
 
-    // ------------------------------------------------------- Darstellung
+    // --------------------------------------------------------- Appearance
     "set.display": ["Darstellung", "Layout", "Disposición", "Disposition", "Disposizione", "Disposição", "Indeling", "Оформление", "表示", "布局", "Disposição", "Układ", "Rozvržení"],
     "set.tabPos": ["{0}. Reiter", "Tab {0}", "Pestaña {0}", "Onglet {0}", "Scheda {0}", "Separador {0}", "Tabblad {0}", "Вкладка {0}", "{0} 番目のタブ", "第 {0} 个标签页", "Aba {0}", "Karta {0}", "Karta {0}"],
     "set.tabOrderHelp": ["Welche Ansicht an dieser Stelle steht. Die Auswahl tauscht die beiden Plätze; der Schalter daneben nimmt den Reiter ganz aus der Reihe.", "Which view sits in this slot. Picking one swaps the two places; the switch beside it takes the tab out of the row entirely.", "Qué vista ocupa este puesto. Al elegir otra se intercambian los dos puestos; el interruptor de al lado quita la pestaña por completo de la fila.", "Quelle vue occupe cette place. Le choix échange les deux places ; l’interrupteur à côté retire complètement l’onglet de la rangée.", "Quale vista occupa questo posto. La scelta scambia i due posti; l’interruttore accanto toglie del tutto la scheda dalla riga.", "Que vista ocupa este lugar. A escolha troca os dois lugares; o interruptor ao lado retira o separador por completo da linha.", "Welke weergave op deze plek staat. De keuze wisselt de twee plekken om; de schakelaar ernaast haalt het tabblad volledig uit de rij.", "Какой вид стоит на этом месте. Выбор меняет два места местами; переключатель рядом убирает вкладку из ряда полностью.", "この位置に置く画面です。選ぶと二つの位置が入れ替わります。隣のスイッチはタブを行から完全に外します。", "这个位置显示哪个视图。选择后两个位置互换；旁边的开关会把该标签页从标签栏中完全移除。", "Que vista ocupa este lugar. A escolha troca os dois lugares; o interruptor ao lado tira a aba por completo da linha.", "Który widok stoi w tym miejscu. Wybór zamienia oba miejsca; przełącznik obok całkowicie usuwa kartę z paska.", "Které zobrazení stojí na tomto místě. Volba prohodí obě místa; přepínač vedle vyjme kartu z řady úplně."],
@@ -752,10 +744,9 @@ var S = {
     "unit.byte": ["{0} Byte", "{0} bytes", "{0} bytes", "{0} octets", "{0} byte", "{0} bytes", "{0} bytes", "{0} байт", "{0} バイト", "{0} 字节", "{0} bytes", "{0} bajtów", "{0} bajtů"],
     "tx.nIn": ["{0} Eingänge", "{0} inputs", "{0} entradas", "{0} entrées", "{0} ingressi", "{0} entradas", "{0} invoeren", "{0} входов", "入力 {0} 件", "{0} 个输入", "{0} entradas", "{0} wejść", "{0} vstupů"],
     "tx.nOut": ["{0} Ausgänge", "{0} outputs", "{0} salidas", "{0} sorties", "{0} uscite", "{0} saídas", "{0} uitvoeren", "{0} выходов", "出力 {0} 件", "{0} 个输出", "{0} saídas", "{0} wyjść", "{0} výstupů"],
-    // Die beiden Gruende "err.unreachable" und "err.unreadable" standen bis
-    // zum 18.09.2026 zweimal in dieser Tabelle, hier und unten unter
-    // "Gruende". JS nimmt bei doppelten Schluesseln den spaeteren, die
-    // Fassung hier war also tot -- und wer sie aenderte, aenderte nichts.
+    // "err.unreachable" and "err.unreadable" are defined only once, in the
+    // reasons section at the end of this table. JS keeps the later of two
+    // duplicate keys, so a second copy here would be silently ignored.
     "wallet.cmdList": ["orangedeck --watch-list       zeigt, was eingetragen ist", "orangedeck --watch-list       shows what is configured", "orangedeck --watch-list       muestra lo configurado", "orangedeck --watch-list       montre la configuration", "orangedeck --watch-list       mostra la configurazione", "orangedeck --watch-list       mostra o que está configurado", "orangedeck --watch-list       toont wat is ingesteld", "orangedeck --watch-list       показывает настроенное", "orangedeck --watch-list       設定内容を表示", "orangedeck --watch-list       显示已配置内容", "orangedeck --watch-list       mostra o que está configurado", "orangedeck --watch-list       pokazuje, co jest ustawione", "orangedeck --watch-list       ukáže, co je nastaveno"],
     "wallet.cmdRemove": ["orangedeck --watch-remove 1  nimmt einen Eintrag heraus", "orangedeck --watch-remove 1  removes an entry", "orangedeck --watch-remove 1  elimina una entrada", "orangedeck --watch-remove 1  supprime une entrée", "orangedeck --watch-remove 1  rimuove una voce", "orangedeck --watch-remove 1  remove uma entrada", "orangedeck --watch-remove 1  verwijdert een item", "orangedeck --watch-remove 1  удаляет запись", "orangedeck --watch-remove 1  項目を削除", "orangedeck --watch-remove 1  移除一条记录", "orangedeck --watch-remove 1  remove uma entrada", "orangedeck --watch-remove 1  usuwa wpis", "orangedeck --watch-remove 1  odebere záznam"],
     "wallet.cmdRestart": ["systemctl --user restart orangedeck   übernimmt die Änderung", "systemctl --user restart orangedeck   applies the change", "systemctl --user restart orangedeck   aplica el cambio", "systemctl --user restart orangedeck   applique la modification", "systemctl --user restart orangedeck   applica la modifica", "systemctl --user restart orangedeck   aplica a alteração", "systemctl --user restart orangedeck   past de wijziging toe", "systemctl --user restart orangedeck   применяет изменение", "systemctl --user restart orangedeck   変更を反映", "systemctl --user restart orangedeck   应用更改", "systemctl --user restart orangedeck   aplica a alteração", "systemctl --user restart orangedeck   stosuje zmianę", "systemctl --user restart orangedeck   použije změnu"],
@@ -814,13 +805,13 @@ var S = {
         "Vlastní služba drží jedno připojení pro všechna okna a zvládne peněženku. Přímo služba není potřeba — peněženka vypadne, ale miner je dosažitelný i tak, jakmile zadáte jeho adresu."
     ],
     "src.daemon": ["Eigener Dienst", "Own service", "Servicio propio", "Service local", "Servizio locale", "Serviço próprio", "Eigen dienst", "Собственная служба", "自前のサービス", "本地服务", "Serviço próprio", "Własna usługa", "Vlastní služba"],
-    // "auto" ist die Vorgabe des DMS-Plugins: wer es aus dem Verzeichnis von
-    // DMS installiert, hat keinen Dienst -- und soll trotzdem Daten sehen.
+    // "auto" is the default of the DMS plugin: installed from the DMS plugin
+    // directory there is no daemon, and it should still show data.
     "src.auto": ["Automatisch: Dienst, sonst direkt", "Automatic: service, otherwise direct", "Automático: servicio, si no directo", "Automatique : service, sinon direct", "Automatico: servizio, altrimenti diretto", "Automático: serviço, senão direto", "Automatisch: dienst, anders rechtstreeks", "Автоматически: служба, иначе напрямую", "自動: サービス、なければ直接", "自动：有服务用服务，否则直连", "Automático: serviço, senão direto", "Automatycznie: usługa, inaczej bezpośrednio", "Automaticky: služba, jinak přímo"],
     "src.direct": ["Direkt zu mempool.space", "Directly to mempool.space", "Directo a mempool.space", "Directement à mempool.space", "Diretto a mempool.space", "Diretamente ao mempool.space", "Rechtstreeks naar mempool.space", "Напрямую к mempool.space", "mempool.space に直接", "直连 mempool.space", "Diretamente ao mempool.space", "Bezpośrednio do mempool.space", "Přímo na mempool.space"],
 
-    // ------------------------------------------- Gruende (siehe grund())
-    // ------------------------------------------- Nur im DMS-Plugin
+    // ---------------------------------------------- Reasons (see grund())
+    // ---------------------------------------------------- DMS plugin only
     "dms.widgetView": ["Ansicht des Desktop-Widgets", "View of the desktop widget", "Vista del widget de escritorio", "Vue du widget de bureau", "Vista del widget da scrivania", "Vista do widget do ambiente de trabalho", "Weergave van de bureaubladwidget", "Вид настольного виджета", "デスクトップウィジェットの表示", "桌面小部件显示的视图", "Vista do widget da área de trabalho", "Widok widżetu pulpitu", "Zobrazení plochového widgetu"],
     "dms.widgetViewHelp": ["Jede Instanz kann eine andere zeigen.", "Each instance can show a different one.", "Cada instancia puede mostrar una distinta.", "Chaque instance peut en montrer une autre.", "Ogni istanza può mostrarne una diversa.", "Cada instância pode mostrar uma diferente.", "Elke instantie kan een andere tonen.", "Каждый экземпляр может показывать свой.", "インスタンスごとに別の表示を選べます。", "每个实例可以显示不同的视图。", "Cada instância pode mostrar uma diferente.", "Każda instancja może pokazywać inną.", "Každá instance může zobrazit jinou."],
     "dms.desktopOpacity": ["Deckkraft des Desktop-Widgets", "Opacity of the desktop widget", "Opacidad del widget de escritorio", "Opacité du widget de bureau", "Opacità del widget da scrivania", "Opacidade do widget do ambiente de trabalho", "Dekking van de bureaubladwidget", "Непрозрачность настольного виджета", "デスクトップウィジェットの不透明度", "桌面小部件的不透明度", "Opacidade do widget da área de trabalho", "Krycie widżetu pulpitu", "Krytí plochového widgetu"],
@@ -849,18 +840,17 @@ var S = {
     "err.linkBroken": ["Verbindung gestört", "connection broken", "conexión interrumpida", "connexion interrompue", "connessione interrotta", "ligação interrompida", "verbinding verbroken", "соединение разорвано", "接続が切れました", "连接中断", "ligação interrompida", "połączenie przerwane", "spojení přerušeno"],
     "err.unknownPath": ["unbekannter Pfad", "unknown path", "ruta desconocida", "chemin inconnu", "percorso sconosciuto", "caminho desconhecido", "onbekend pad", "неизвестный путь", "不明なパス", "未知路径", "caminho desconhecido", "nieznana ścieżka", "neznámá cesta"],
 
-    // Die Tastenhilfe, die nach einem Tastendruck kurz eingeblendet wird. Bis
-    // 0.2.7 fest auf Deutsch in Main.qml und shell.qml.
+    // Key help shown briefly after a key press (Main.qml and shell.qml).
     "keys.help": ["1–6 Ansicht · c Farbe · s Größe · i Blockangaben · l Legende · + − Deckkraft", "1–6 View · c Color · s Size · i Block info · l Legend · + − Opacity", "1–6 Vista · c Color · s Tamaño · i Datos del bloque · l Leyenda · + − Opacidad", "1–6 Vue · c Couleur · s Taille · i Infos du bloc · l Légende · + − Opacité", "1–6 Vista · c Colore · s Dimensione · i Dati del blocco · l Legenda · + − Opacità", "1–6 Vista · c Cor · s Tamanho · i Dados do bloco · l Legenda · + − Opacidade", "1–6 Weergave · c Kleur · s Grootte · i Blokgegevens · l Legenda · + − Dekking", "1–6 Вид · c Цвет · s Размер · i Данные блока · l Легенда · + − Непрозрачность", "1–6 表示 · c 色 · s サイズ · i ブロック情報 · l 凡例 · + − 不透明度", "1–6 视图 · c 颜色 · s 大小 · i 区块信息 · l 图例 · + − 不透明度", "1–6 Tela · c Cor · s Tamanho · i Dados do bloco · l Legenda · + − Opacidade", "1–6 Widok · c Kolor · s Rozmiar · i Dane bloku · l Legenda · + − Krycie", "1–6 Zobrazení · c Barva · s Velikost · i Údaje bloku · l Legenda · + − Krytí"],
     "keys.fullscreen": ["F11 Vollbild", "F11 Full screen", "F11 Pantalla completa", "F11 Plein écran", "F11 Schermo intero", "F11 Ecrã inteiro", "F11 Volledig scherm", "F11 Полный экран", "F11 全画面", "F11 全屏", "F11 Tela cheia", "F11 Pełny ekran", "F11 Celá obrazovka"],
     "keys.search": ["Esc Suche verlassen", "Esc Leave search", "Esc Salir de la búsqueda", "Esc Quitter la recherche", "Esc Esci dalla ricerca", "Esc Sair da pesquisa", "Esc Zoeken verlaten", "Esc Выйти из поиска", "Esc 検索を終了", "Esc 退出搜索", "Esc Sair da busca", "Esc Wyjdź z wyszukiwania", "Esc Opustit hledání"]
 };
 
-// **Gruende, die als Text aus dem Datenweg kommen** -- FeedState, DirectFeed,
-// DirectMiner und der Daemon melden sie auf Deutsch, und sie landen in
-// Saetzen wie "Network data unavailable ({0})". Uebersetzt wird erst beim
-// Anzeigen, mit `grund()`; was hier nicht steht (HTTP-Status, Meldungen aus
-// Python), bleibt, wie es kam.
+// Reasons that arrive as text from the data path. FeedState, DirectFeed,
+// DirectMiner and the daemon report them in German, and they end up in
+// sentences like "Network data unavailable ({0})". They are translated only
+// when displayed, with `grund()`; anything not listed here (HTTP status,
+// Python messages) stays as it came.
 var GRUENDE = {
     "nicht erreichbar": "err.unreachable",
     "Antwort nicht lesbar": "err.unreadable",
@@ -870,15 +860,15 @@ var GRUENDE = {
     "Direktbezug nicht verfuegbar (QtWebSockets fehlt)": "err.noWebSockets",
     "Abfrage unvollstaendig": "err.incomplete",
     "unbekannter Pfad": "err.unknownPath",
-    // Seit dem 18.09.2026 schickt der Dienst nur noch diese kurzen Gruende,
-    // nicht mehr `str(e)`. Die technische Fassung steht in seinem Protokoll.
+    // The daemon only sends these short reasons, not `str(e)`. The technical
+    // detail goes to its log.
     "nicht gefunden": "err.notFound",
     "zu viele Abfragen": "err.tooMany",
     "unzulaessige Eingabe": "err.badInput",
     "Feed laeuft nicht": "err.feedDown",
     "keine Antwort vom Server": "err.noServerAnswer",
     "keine Transaktionsliste": "err.noTxList",
-    // Aus dem Direktbezug, wo es keinen Dienst gibt, der uebersetzen koennte.
+    // From direct mode, where there is no daemon that could translate.
     "noch keine Daten": "err.noDataYet",
     "unbekannte Abfrage": "err.unknownQuery",
     "Verbindung gestoert": "err.linkBroken"
@@ -889,9 +879,9 @@ function grund(text, lang) {
     return k ? t(k, lang) : text;
 }
 
-// Text holen. `lang` bestimmt die Spalte; fehlt der Schluessel oder die
-// Sprache, wird auf Englisch und zuletzt auf den Schluessel selbst
-// zurueckgefallen -- sichtbar, aber nie leer.
+// Look up a text. `lang` selects the column; if the key or the language is
+// missing, it falls back to English and finally to the key itself, so the
+// result is visible but never empty.
 function t(key, lang, a0, a1, a2) {
     var row = S[key];
     if (!row)
@@ -907,10 +897,10 @@ function t(key, lang, a0, a1, a2) {
     return s;
 }
 
-// Fuer die Sprachwahl in den Einstellungen. Die Reihenfolge hier ist eine
-// **andere** als die Spaltenordnung: dort kommen neue Sprachen hinten dazu,
-// hier stehen sie so, wie man sie sucht -- und die beiden portugiesischen
-// Fassungen nebeneinander.
+// For the language picker in the settings. This order differs from the
+// column order: there new languages go to the end, here they are sorted the
+// way people look for them, with both Portuguese variants next to each
+// other.
 var LANG_ORDER = ["de", "en", "es", "fr", "it", "nl", "pl", "pt-pt", "pt-br",
                   "cs", "ru", "ja", "zh"];
 
@@ -921,15 +911,15 @@ function languages() {
     return out;
 }
 
-// Zahlen mit Tausendertrennung. Deutsch und die romanischen Sprachen nehmen
-// den Punkt, Englisch das Komma, Franzoesisch und Russisch ein schmales
-// Leerzeichen. Das ist keine Kosmetik: "1.234" heisst je nach Sprache
-// tausendzweihundert oder eins Komma zwei.
+// Numbers with thousands separators. English, Japanese and Chinese use a
+// comma, French, Russian, Polish and Czech a narrow space, the rest a dot.
+// This is not cosmetic: depending on the language "1.234" means one
+// thousand two hundred thirty-four or one point two three four.
 function sep(lang) {
     if (lang === "en" || lang === "ja" || lang === "zh")
         return ",";
-    // Franzoesisch, Russisch, Polnisch und Tschechisch trennen mit einem
-    // schmalen Leerzeichen, nicht mit einem Punkt.
+    // French, Russian, Polish and Czech separate with a narrow space, not a
+    // dot.
     if (lang === "fr" || lang === "ru" || lang === "pl" || lang === "cs")
         return " ";
     return ".";
@@ -939,17 +929,16 @@ function decimal(lang) {
     return (lang === "en" || lang === "ja" || lang === "zh") ? "." : ",";
 }
 
-// Datumsformate, nach derselben Ueberlegung wie `sep()`: "03.04.2026" ist in
-// den USA der 4. Maerz und in Grossbritannien der 3. April. Englisch bekommt
-// deshalb ISO (`yyyy-MM-dd`) -- die einzige Schreibweise, die in beiden
-// dasselbe heisst, und mit zehn Zeichen genauso breit wie `dd.MM.yyyy`, was
-// fuer die Achsenbeschriftungen zaehlt. Japanisch und Chinesisch fangen mit
-// dem Jahr an, die romanischen Sprachen trennen mit Schraegstrich,
-// Niederlaendisch mit Bindestrich.
+// Date formats, following the same idea as `sep()`: "03.04.2026" is
+// March 4 in the US and April 3 in the UK. English therefore gets ISO
+// (`yyyy-MM-dd`), the only form that means the same in both and, at ten
+// characters, as wide as `dd.MM.yyyy`, which matters for axis labels.
+// Japanese and Chinese start with the year, the Romance languages use a
+// slash, Dutch a hyphen.
 //
-// Vier Formen, weil die Ansichten sie alle brauchen: voll, ohne Jahr (die
-// Achse einer Woche), mit kurzem Jahr (die Achse eines Jahres) und nur Monat
-// mit Jahr (die Achse von Jahren).
+// Four forms, because the views need all of them: full, without year (a
+// week axis), with short year (a year axis) and month with year only (a
+// multi-year axis).
 var DATUM = {
     "en":    ["yyyy-MM-dd", "MM-dd", "yy-MM-dd", "yyyy-MM"],
     "ja":    ["yyyy/MM/dd", "MM/dd", "yy/MM/dd", "yyyy/MM"],
@@ -962,8 +951,8 @@ var DATUM = {
     "nl":    ["dd-MM-yyyy", "dd-MM", "dd-MM-yy", "MM-yyyy"]
 };
 
-// Vorgabe ist die deutsche Reihe -- sie gilt auch fuer Russisch, Polnisch und
-// Tschechisch, die ebenfalls mit Punkten schreiben.
+// Default is the German form. It also applies to Russian, Polish and
+// Czech, which use dots as well.
 function __datum(lang, i) {
     var r = DATUM[lang];
     return r ? r[i] : ["dd.MM.yyyy", "dd.MM.", "dd.MM.yy", "MM.yyyy"][i];
@@ -998,8 +987,8 @@ function group(n, lang) {
     return out;
 }
 
-// Betrag in Landeswaehrung. Kurs und Zeichen kommen von `money.js` --
-// dort steht, welche Waehrung es ist, hier, wie sie geschrieben wird.
+// Amount in fiat currency. Rate and symbol come from `money.js`: that
+// file decides which currency it is, this one how it is written.
 function fiat(sats, rate, sym, lang) {
     if (!rate || !sats)
         return "";
@@ -1011,12 +1000,12 @@ function fiat(sats, rate, sym, lang) {
     return "≈ " + group(v, lang) + " " + sym;
 }
 
-// Der Kurs selbst, also der Preis eines ganzen Bitcoin
+// The rate itself, i.e. the price of one whole bitcoin
 function price1(rate, sym, lang) {
     return rate ? group(rate, lang) + " " + sym : "–";
 }
 
-// Nachkommastellen in der Schreibweise der Sprache
+// Decimal places in the notation of the language
 function fixed(n, digits, lang) {
     if (n === undefined || n === null || isNaN(n))
         return "–";
@@ -1025,15 +1014,15 @@ function fixed(n, digits, lang) {
     return parts.length > 1 ? ganz + decimal(lang) + parts[1] : ganz;
 }
 
-// Grosse Zahlen kurz, mit Vorsatz: 127450789715843 wird "127,45 T",
-// 9,26e20 H/s werden "926 EH/s". Dieselbe Staffel wie `big()` in
-// `MinerView.qml` und `kurz()` in `DeckWidget.java` -- Anwendung und Widget
-// schreiben dieselbe Zahl gleich. Ab hundert ohne Nachkommastellen, darunter
-// mit zwei.
+// Large numbers in short form with an SI prefix: 127450789715843 becomes
+// "127,45 T", 9.26e20 H/s becomes "926 EH/s". Same scale as `big()` in
+// `MinerView.qml` and `kurz()` in `DeckWidget.java`, so app and widget
+// write the same number the same way. No decimals from one hundred up,
+// two below.
 //
-// **Bei E ist Schluss.** Die Hashrate des Netzes pendelt um 1000 EH/s; mit
-// "Z" stand an der Achse "1,31 ZH/s" und darueber "928 EH/s" -- zwei
-// Einheiten fuer dieselbe Groesse. Man spricht von EH/s, auch ueber tausend.
+// E is the largest prefix. The network hashrate hovers around 1000 EH/s;
+// with "Z" the axis would read "1,31 ZH/s" next to "928 EH/s", two units
+// for the same quantity. EH/s is the usual unit, even above a thousand.
 function big(n, lang, unit) {
     if (!n || isNaN(n))
         return "–";
@@ -1047,15 +1036,14 @@ function big(n, lang, unit) {
     return vorsatz ? s + " " + vorsatz : s;
 }
 
-// **Zeichen, die nicht jede Schrift fuehrt.** `₿` (U+20BF) und `⟶` (U+27F6)
-// stehen in der Tabelle, weil sie dorthin gehoeren -- auf einem Galaxy A55
-// (Android 16) fuehrt sie aber keine der Schriften, die Qt dort waehlt, und
-// dann steht ein leeres Kaestchen mit Kreuz. Am 08.09.2026 im Tooltip des
-// Feeds gesehen: "1 Eingang ▯ 3 {3}" und "Gesamtwert: ▯ 3,47020139".
+// Glyphs not every font has. `₿` (U+20BF) and `⟶` (U+27F6) stay in the
+// table where they belong, but on some Android devices none of the fonts
+// Qt picks has them, and an empty box with a cross shows up instead
+// (e.g. "1 input ▯ 3" in the feed tooltip).
 //
-// Gemessen wird in `FeedTabs` (dort steht auch, warum je Zeichen einzeln);
-// hier werden die Ersatzzeichen nur eingesetzt. Reine Funktion, kein Zustand
-// -- wie alles in dieser Datei.
+// The check happens in `FeedTabs` (which also explains why it is done per
+// glyph); this function only substitutes the replacements. A pure function
+// without state, like everything in this file.
 function ersetzen(text, btc, pfeil) {
     if (typeof text !== "string")
         return text;

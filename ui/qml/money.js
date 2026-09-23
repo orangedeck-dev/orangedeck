@@ -1,8 +1,8 @@
-// Waehrungen an einer Stelle.
+// Currencies in one place.
 //
-// mempool.space liefert sieben Kurse in derselben Nachricht mit -- es kostet
-// also nichts, alle anzubieten. Welche gezeigt wird, steht in den
-// Einstellungen; hier stehen nur Zeichen, Namen und das Umrechnen.
+// mempool.space sends seven exchange rates in the same message, so offering
+// all of them costs nothing. Which one is shown is a setting; this file only
+// holds symbols, names and the rate lookup.
 .pragma library
 
 var CURRENCIES = [
@@ -31,8 +31,8 @@ function label(cur) {
     return cur;
 }
 
-// Der Kurs in der gewaehlten Waehrung. Fehlt sie, wird der Reihe nach
-// ausgewichen -- lieber eine andere Waehrung als ein Strich.
+// Rate in the chosen currency. If it is missing, fall back through the list
+// in order: another currency is better than a dash.
 function rate(price, cur) {
     if (!price)
         return 0;
@@ -45,7 +45,7 @@ function rate(price, cur) {
     return 0;
 }
 
-// Welche Waehrung tatsaechlich benutzt wird -- fuer die Beschriftung
+// The currency actually used, for the label.
 function actual(price, cur) {
     if (!price)
         return cur;
@@ -58,9 +58,8 @@ function actual(price, cur) {
     return cur;
 }
 
-// **Kein Formatieren hier.** Zahlen schreibt `strings.js`, denn die
-// Schreibweise haengt an der Sprache und nicht an der Waehrung. Ein
-// `.import` von dort waere der naheliegende Weg gewesen -- er traegt aber
-// nicht: eine `.pragma library` kann kein anderes Skript einbinden, das
-// Laden scheitert stumm ("Script ... unavailable"). Also andersherum: hier
-// nur Kurs und Zeichen, formatiert wird beim Aufrufer.
+// No number formatting here. `strings.js` formats numbers, because the
+// notation depends on the language, not the currency. Importing it from here
+// does not work: a `.pragma library` script cannot import another script,
+// and loading fails silently ("Script ... unavailable"). So this file only
+// returns rate and symbol, and the caller formats.

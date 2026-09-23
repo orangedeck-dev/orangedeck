@@ -1,32 +1,30 @@
-// Direktbezug fuer den Markt: Kerzen, Band, Liquidationen und Heatmap ohne
-// Dienst.
+// Direct feed for the market view: candles, tape, liquidations and heatmap
+// without the service.
 //
-// **Warum es die Datei gibt.** Bis zum 13.09.2026 gab es den Markt nur ueber
-// den Dienst, auch auf dem Telefon -- dort ueber "Dienst auf einem anderen
-// Geraet". Der Geraetelauf an dem Tag zeigte die Schwaeche: ein Rechner im
-// selben WLAN, ein geoeffneter Port, und schon ein VPN am Telefon liess die
-// App den Dienst nicht erreichen, waehrend die Shell auf demselben Geraet
-// durchkam. Unterwegs geht es ohnehin nicht.
+// Why this file exists: going through the service on a phone means "service
+// on another device", which needs a computer on the same Wi-Fi and an open
+// port, and a VPN on the phone was enough to cut the app off while a shell
+// on the same device still got through. On the road it does not work at all.
 //
-// **Die Antworten sind deckungsgleich mit dem Dienst** (`/market`,
-// `/market/overview`, `/market/heatmap` in `daemon/orangedeck`). `FeedState`
-// reicht `getJson` hierher durch, und die Ansichten merken den Unterschied
-// nicht -- dieselbe Linie wie bei `DirectFeed`.
+// The responses match the service (`/market`, `/market/overview`,
+// `/market/heatmap` in `daemon/orangedeck`). `FeedState` passes `getJson`
+// through to here and the views cannot tell the difference, same approach
+// as `DirectFeed`.
 //
-// Was hier anders ist als beim Dienst, und warum:
+// What differs from the service, and why:
 //
-//   Liquidationen  Der Dienst hoert rund um die Uhr zu und haelt zwei Tage.
-//                  Hier gibt es nur, was seit dem Oeffnen der Ansicht kam --
-//                  **und** den letzten Tag von OKX: `liquidation-orders` gibt
-//                  es auch per REST, am 13.09.2026 gemessen 402 Eintraege ueber
-//                  rund 23 Stunden, danach ist die Liste zu Ende. Binance hat
-//                  `allForceOrders` abgeschaltet (404), Bybit hat keinen Weg.
-//   Band, Trades   Nur solange die Ansicht offen ist, wie beim Dienst auch.
-//   Heatmap        Braucht nichts Gesammeltes: Kerzen und der Verlauf des
-//                  offenen Interesses kommen beide per REST.
+//   Liquidations  The service listens around the clock and keeps two days.
+//                 Here there is only what arrived since the view was opened,
+//                 plus the last day from OKX: `liquidation-orders` is also
+//                 available over REST, about 400 entries over roughly 23 hours,
+//                 then the list ends. Binance has switched off
+//                 `allForceOrders` (404), Bybit offers no way at all.
+//   Tape, trades  Only while the view is open, same as in the service.
+//   Heatmap       Needs nothing collected: candles and the open interest
+//                 history both come over REST.
 //
-// **Eigene Datei**, aus demselben Grund wie `DirectFeed`: `import QtWebSockets`
-// gibt es nicht ueberall, und als Loader faellt dann nur der Markt aus.
+// Separate file for the same reason as `DirectFeed`: `import QtWebSockets`
+// is not available everywhere, and as a Loader only the market view fails.
 import QtQuick
 import QtWebSockets
 
@@ -36,18 +34,18 @@ Item {
     visible: false
 
     property bool active: true
-    // Kurse von mempool.space, wie `DirectFeed` sie sammelt: {usd, eur, ...}.
-    // Daraus der Umrechnungsfaktor -- derselbe Weg wie `markt_kurs()` im Dienst.
+    // Prices from mempool.space as `DirectFeed` collects them: {usd, eur, ...}.
+    // The conversion factor comes from these, same as `markt_kurs()` in the service.
     property var preise: ({})
 
-    // -- Konstanten, gleich wie im Dienst ------------------------------------
+    // Constants, same as in the service
     readonly property int linger: 120          // MARKET_LINGER
-    readonly property int tapeMin: 1000        // MARKET_TAPE_MIN, Dollar
+    readonly property int tapeMin: 1000        // MARKET_TAPE_MIN, dollars
     readonly property int tapeKeep: 400        // MARKET_TAPE_KEEP
-    readonly property int liqSekunden: 172800  // LIQ_SEKUNDEN, zwei Tage
+    readonly property int liqSekunden: 172800  // LIQ_SEKUNDEN, two days
     readonly property int liqKeep: 20000       // LIQ_KEEP
     readonly property int oiMaxTage: 30        // OI_MAX_TAGE
-    readonly property real okxKontrakt: 0.01   // BTC je Kontrakt BTC-USDT-SWAP
+    readonly property real okxKontrakt: 0.01   // BTC per BTC-USDT-SWAP contract
     readonly property int timeoutMs: 20000
 
     readonly property var spans: ({
@@ -63,15 +61,15 @@ Item {
         "1m": 20, "5m": 60, "15m": 120, "1h": 300, "4h": 600, "1d": 1800,
         "1w": 3600
     })
-    // Die Annahmen der Heatmap -- erfunden, nicht gemessen, siehe
-    // `HEBEL_STUFEN` im Dienst. Sie gehen mit der Antwort hinaus.
+    // Heatmap assumptions, made up rather than measured, see `HEBEL_STUFEN`
+    // in the service. They are sent along with the response.
     readonly property var hebel: [[5, 0.30], [10, 0.30], [25, 0.20], [50, 0.13], [100, 0.07]]
     readonly property real longAnteil: 0.5
     readonly property var oiRaster: [["5m", 300], ["15m", 900], ["30m", 1800],
         ["1h", 3600], ["2h", 7200], ["4h", 14400], ["6h", 21600],
         ["12h", 43200], ["1d", 86400]]
 
-    // -- innerer Zustand ------------------------------------------------------
+    // Internal state
     property real __gefragt: 0
     property bool __erwuenscht: false
     readonly property bool laeuft: root.active && root.__erwuenscht
@@ -80,13 +78,13 @@ Item {
     property int __bandNr: 0
     property real __trades: 0
 
-    // [ts, preis, menge, istLong, quelle]
+    // [ts, price, amount, isLong, source]
     property var __liq: []
     property bool __liqUnsortiert: false
     property var __liqGesehen: ({})
     property int __liqGesehenZahl: 0
     property real __liqSeit: 0
-    property real __bybitSeit: 0    // erstes Verbinden, Bybit hat keinen Rueckgriff
+    property real __bybitSeit: 0    // first connect, Bybit has no backfill
     property real __nachgeholt: 0
 
     property var __puffer: ({})     // url -> {t, d}
@@ -100,7 +98,7 @@ Item {
     property var __ueb: ({ "t": 0, "d": [] })
     property var __uebWartend: null
 
-    // -- Einstieg ---------------------------------------------------------------
+    // Entry point
     function getJson(pfad, done) {
         var a = root.__abfrage(pfad);
         if (a.pfad === "/market")
@@ -113,7 +111,7 @@ Item {
             done(null, "im Direktbezug nicht verfuegbar");
     }
 
-    // -- kleine Helfer ------------------------------------------------------------
+    // Small helpers
     function __r(x, stellen) {
         var f = Math.pow(10, stellen);
         return Math.round(x * f) / f;
@@ -147,7 +145,7 @@ Item {
         return /^[A-Za-z]{3}$/.test(c) ? c.toLowerCase() : "usd";
     }
 
-    // [faktor, umgerechnet] -- `markt_kurs()` im Dienst
+    // [factor, converted], see `markt_kurs()` in the service
     function __kurs(cur) {
         if (cur === "usd")
             return [1.0, false];
@@ -157,7 +155,7 @@ Item {
         return [1.0, false];
     }
 
-    // -- HTTP -----------------------------------------------------------------
+    // HTTP
     Component {
         id: fristC
 
@@ -166,9 +164,9 @@ Item {
         }
     }
 
-    // Eine Abfrage, JSON zurueck. **Laeuft dieselbe URL schon, haengt sich der
-    // zweite Aufrufer an** -- die Ansicht fragt im Sekundentakt, eine langsame
-    // Boerse wuerde sonst Anfragen stapeln.
+    // One request, JSON back. If the same URL is already in flight, the
+    // second caller attaches to it. The view polls every second, and a slow
+    // exchange would otherwise pile up requests.
     function __hol(url, done) {
         var liste = root.__wartend[url];
         if (liste) {
@@ -178,8 +176,8 @@ Item {
         root.__wartend[url] = [done];
         var req = new XMLHttpRequest();
         var fertig = false;
-        // Eigene Frist, wie in `DirectMiner`: `XMLHttpRequest` in QML kennt
-        // kein verlaessliches `timeout`. Und sie muss auf beiden Wegen weg.
+        // Own timeout, as in `DirectMiner`: `XMLHttpRequest` in QML has no
+        // reliable `timeout`. The timer has to be cleaned up on both paths.
         var frist = fristC.createObject(root, { "interval": root.timeoutMs });
         function ab(obj, err) {
             if (frist) {
@@ -221,8 +219,8 @@ Item {
         }
     }
 
-    // Gepuffert und schon umgeformt. Faellt die Quelle aus, kommt der letzte
-    // Stand zurueck -- ein alter Kurs ist besser als ein leeres Bild.
+    // Cached and already transformed. If the source fails, the last result
+    // is returned, an old price beats an empty chart.
     function __gepuffert(url, ttl, umformen, done) {
         var e = root.__puffer[url];
         if (e && root.__jetzt() - e.t < ttl) {
@@ -232,8 +230,8 @@ Item {
         root.__hol(url, function (roh, err) {
             if (roh !== null && !err) {
                 var d = umformen(roh);
-                // Fenster in der Vergangenheit sind je Zug eine eigene URL.
-                // Eine grobe Grenze reicht, damit das nicht endlos waechst.
+                // Past windows get their own URL per step. A rough cap keeps
+                // the cache from growing forever.
                 if (!root.__puffer[url] && ++root.__pufferZahl > 300) {
                     root.__puffer = {};
                     root.__pufferZahl = 1;
@@ -248,8 +246,8 @@ Item {
         });
     }
 
-    // -- Kerzen -----------------------------------------------------------------
-    // `raster_fuer()` (grenze 400) und `raster_heat()` (grenze 200) im Dienst
+    // Candles
+    // `raster_fuer()` (limit 400) and `raster_heat()` (limit 200) in the service
     function __rasterFuer(sekunden, grenze) {
         for (var i = 0; i < root.ladder.length; i++) {
             var laenge = root.ladder[i][1];
@@ -259,8 +257,8 @@ Item {
         return ["1w", 1000];
     }
 
-    // [t, o, h, l, c, kauf, verkauf] -- Feld 9 bei Binance ist das Volumen der
-    // Kaeufe, der Rest ist verkauft. Daran haengt der CVD.
+    // [t, o, h, l, c, buy, sell]. Binance field 9 is the taker buy volume,
+    // the rest was sold. The CVD depends on this.
     function __kerzenAus(roh) {
         var aus = [];
         for (var i = 0; i < (roh || []).length; i++) {
@@ -284,14 +282,14 @@ Item {
             url += "&startTime=" + Math.floor(von) * 1000 + "&endTime=" + Math.floor(bis) * 1000;
         else if (bis)
             url += "&endTime=" + Math.floor(bis) * 1000;
-        // Vergangenes ist abgeschlossen -- eine Stunde Puffer schadet dort nicht
+        // Past candles are final, an hour of caching does no harm there
         var ttl = (bis && bis < root.__jetzt() - 120) ? 3600 : (root.kerzenTtl[raster] || 60);
         root.__gepuffert(url, ttl, root.__kerzenAus, function (d, err) {
             done(d || [], err);
         });
     }
 
-    // Tageskerzen seit 2017, vier Seiten zu je 1000 -- `uebersicht()`
+    // Daily candles since 2017, four pages of 1000, see `uebersicht()`
     function __uebersicht(done) {
         if (root.__ueb.d.length && root.__jetzt() - root.__ueb.t < 1800) {
             done(root.__ueb.d, null);
@@ -306,8 +304,8 @@ Item {
         function ende(err) {
             var wer = root.__uebWartend || [];
             root.__uebWartend = null;
-            // Bricht eine Seite ab, bleibt der alte Stand -- eine halbe
-            // Geschichte waere ein falscher Schieber.
+            // If a page fails, the old result stays. A partial history
+            // would give a wrong slider.
             if (!err)
                 root.__ueb = { "t": root.__jetzt(), "d": aus };
             var d = root.__ueb.d;
@@ -330,7 +328,7 @@ Item {
                     return;
                 }
                 aus = aus.concat(root.__kerzenAus(roh));
-                // Die naechste Seite beginnt einen Tag nach der letzten Kerze
+                // The next page starts one day after the last candle
                 var weiter = Math.floor(Number(roh[roh.length - 1][0]) / 1000) + 86400;
                 if (weiter <= start)
                     ende(null);
@@ -338,12 +336,12 @@ Item {
                     seite(weiter);
             });
         }
-        seite(1501459200);    // 31.07.2017, der erste Handelstag bei Binance
+        seite(1501459200);    // 2017-07-31, first trading day on Binance
     }
 
-    // -- Long/Short-Verhaeltnis -------------------------------------------------
-    // Drei Quellen nebeneinander; fertig ist es, wenn alle drei geantwortet
-    // haben. Bis dahin gilt der letzte Stand -- `/market` wartet nicht darauf.
+    // Long/short ratio
+    // Three sources in parallel; done once all three have answered. Until
+    // then the last result applies, `/market` does not wait for it.
     function __ratioAuffrischen() {
         if (root.__ratioLaeuft || (root.__ratio.length && root.__jetzt() - root.__ratioT < 300))
             return;
@@ -359,11 +357,10 @@ Item {
             });
             return k;
         }
-        // **Zwischenstaende, solange noch weniger da ist.** Bis zum 15.09.2026
-        // galt die Liste erst, wenn alle drei geantwortet hatten -- beim
-        // Oeffnen stand der Balken also so lange leer wie die langsamste
-        // Boerse brauchte, bei einer haengenden bis zur Frist von 20 s. Ein
-        // spaeteres Auffrischen ersetzt eine volle Liste nicht durch eine halbe.
+        // Partial results while fewer are in. Waiting for all three left the
+        // bar empty on open for as long as the slowest exchange took, up to
+        // the 20 s timeout if one hung. A later refresh never replaces a
+        // full list with a partial one.
         function fertig() {
             if (--offen > 0) {
                 if (aus.length > root.__ratio.length)
@@ -371,7 +368,7 @@ Item {
                 return;
             }
             root.__ratioLaeuft = false;
-            // Fielen alle aus, wird beim naechsten Mal neu gefragt
+            // If all failed, ask again next time
             if (aus.length) {
                 root.__ratio = geordnet();
                 root.__ratioT = root.__jetzt();
@@ -380,7 +377,7 @@ Item {
         root.__hol("https://www.okx.com/api/v5/rubik/stat/contracts/long-short-account-ratio?ccy=BTC&period=5m",
                    function (d) {
             try {
-                // OKX gibt das Verhaeltnis long/short, nicht die Anteile
+                // OKX returns the long/short ratio, not the shares
                 var v = Number(d.data[0][1]);
                 if (!isNaN(v))
                     aus.push({ "id": "okx", "name": "OKX", "long": v / (1 + v) });
@@ -407,7 +404,7 @@ Item {
         });
     }
 
-    // -- Trades und Band --------------------------------------------------------
+    // Trades and tape
     function __trade(ts, preis, menge, kauf, quelle) {
         if (!(preis > 0) || !(menge > 0))
             return;
@@ -422,7 +419,7 @@ Item {
             root.__band.splice(0, root.__band.length - root.tapeKeep);
     }
 
-    // `band_seit()`: was nach `nr` kam, hoechstens die juengsten 120
+    // `band_seit()`: what came after `nr`, at most the latest 120
     function __bandSeit(nr) {
         var b = root.__band;
         var i = b.length;
@@ -439,7 +436,7 @@ Item {
         } catch (e) {
             return;
         }
-        // `m` heisst "der Kaeufer war Maker" -- angegriffen hat dann ein Verkaeufer
+        // `m` means "the buyer was the maker", so the aggressor was a seller
         if (m.e === "aggTrade")
             root.__trade(Number(m.T) / 1000, Number(m.p), Number(m.q), !m.m, "binance");
     }
@@ -458,12 +455,12 @@ Item {
             root.__trade(Number(d[i].T) / 1000, Number(d[i].p), Number(d[i].v), d[i].S === "Buy", "bybit");
     }
 
-    // -- Liquidationen ------------------------------------------------------------
+    // Liquidations
     function __liqAdd(ts, preis, menge, istLong, quelle) {
         if (!(preis > 0) || !(menge > 0) || isNaN(ts))
             return;
-        // OKX schiebt beim Verbinden Zurueckliegendes nach, und der Rueckgriff
-        // per REST liefert dieselben Eintraege noch einmal
+        // OKX replays recent entries on connect, and the REST backfill
+        // delivers the same entries again
         var schluessel = root.__r(ts, 3) + "|" + root.__r(preis, 2) + "|" + root.__r(menge, 6) + "|" + quelle;
         if (root.__liqGesehen[schluessel])
             return;
@@ -493,12 +490,12 @@ Item {
         weg = Math.max(weg, l.length - root.liqKeep);
         if (weg > 0)
             l.splice(0, weg);
-        // Was vor der Grenze lag, ist weg -- `seit` rueckt mit, wie im Dienst
+        // Anything older than the cutoff is dropped and `seit` moves along, as in the service
         if (root.__liqSeit && root.__liqSeit < grenze)
             root.__liqSeit = Math.floor(grenze);
     }
 
-    // `fenster()`: bei mehr als 400 die groessten, wieder nach Zeit sortiert
+    // `fenster()`: above 400 keep the largest, sorted by time again
     function __liqFenster(von, bis) {
         var drin = [];
         for (var i = 0; i < root.__liq.length; i++) {
@@ -518,8 +515,8 @@ Item {
         return drin;
     }
 
-    // `histogramm()`: auch die leeren Stufen gehen mit, sonst ist die
-    // Preisachse keine Achse mehr
+    // `histogramm()`: empty levels are included too, otherwise the price
+    // axis is no longer an axis
     function __liqHist(von, bis, tief, hoch) {
         var stufen = 24;
         if (hoch <= tief)
@@ -545,13 +542,13 @@ Item {
     function __okxEintraege(daten) {
         var aeltest = 0;
         for (var b = 0; b < (daten || []).length; b++) {
-            // Der Kanal schuettet alle Swaps aus, `instFamily` wirkt dort nicht
+            // The channel streams all swaps, `instFamily` has no effect there
             if (daten[b].instId && daten[b].instId !== "BTC-USDT-SWAP")
                 continue;
             var det = daten[b].details || [];
             for (var i = 0; i < det.length; i++) {
                 var ts = Number(det[i].ts);
-                // `sz` sind Kontrakte; `posSide` sagt, was liquidiert wurde
+                // `sz` is in contracts; `posSide` says what was liquidated
                 root.__liqAdd(ts / 1000, Number(det[i].bkPx), Number(det[i].sz) * root.okxKontrakt,
                               det[i].posSide === "long", "okx");
                 if (!isNaN(ts) && (!aeltest || ts < aeltest))
@@ -575,8 +572,8 @@ Item {
         root.__okxEintraege(m.data);
     }
 
-    // `S` ist die Position, nicht die Zwangsorder: "Buy" heisst, ein Long
-    // wurde liquidiert (am 04.09.2026 im Dienst nachgemessen)
+    // `S` is the position, not the forced order: "Buy" means a long was
+    // liquidated (verified against the service)
     function __bybitLiqNachricht(text) {
         var m;
         try {
@@ -592,15 +589,15 @@ Item {
             root.__liqAdd(Number(d[i].T) / 1000, Number(d[i].p), Number(d[i].v), d[i].S === "Buy", "bybit-liq");
     }
 
-    // Der letzte Tag von OKX, per REST. Blaettert mit `after` zurueck, bis die
-    // Liste leer ist (am 13.09. nach fuenf Seiten, am 16.09. nach zwanzig). Hoechstens alle fuenf
-    // Minuten -- danach traegt der Strom.
+    // The last day from OKX over REST. Pages back with `after` until the
+    // list is empty. At most every five minutes, after that the stream
+    // takes over.
     //
-    // **`liqSince` wird damit zum Beginn dieses Rueckgriffs.** Ohne es stuende
-    // "zugehoert seit eben" ueber einem Tag voller Marken. Fuer Bybit ist das
-    // zu grosszuegig, dort gibt es nur, was seit dem Verbinden kam -- deshalb
-    // traegt seit dem 15.09.2026 jede Quelle in `liqSources` ihr eigenes
-    // `since`, und die Ansicht nennt Bybit getrennt, wenn es spaeter kam.
+    // `liqSince` becomes the start of this backfill. Without it the view
+    // would say "listening since just now" above a day full of marks. That
+    // is too generous for Bybit, which only has what arrived since connecting,
+    // so each source in `liqSources` carries its own `since` and the view
+    // lists Bybit separately when it started later.
     function __nachholen() {
         if (root.__jetzt() - root.__nachgeholt < 300)
             return;
@@ -616,9 +613,9 @@ Item {
                 var sek = Math.floor(aeltest / 1000);
                 if (!root.__liqSeit || sek < root.__liqSeit)
                     root.__liqSeit = sek;
-                // Bis OKX leer antwortet: es liefert genau 24 Stunden (gemessen
-                // 16.09.2026, 20 Seiten). Feste 30 Seiten reichten am 15.09.
-                // nur fuer 16,6 Stunden. 100 nur als Schutz, wie im Dienst.
+                // Until OKX answers empty: it delivers exactly 24 hours,
+                // about 20 pages. A fixed 30 pages is not always enough.
+                // 100 only as a safety limit, as in the service.
                 if (nr < 100 && (!nach || aeltest < nach))
                     seite(aeltest, nr + 1);
             });
@@ -631,7 +628,7 @@ Item {
             root.__liqSeit = Math.floor(root.__jetzt());
     }
 
-    // -- Antworten ------------------------------------------------------------------
+    // Responses
     function __markt(q, done) {
         root.__gefragt = root.__jetzt();
         root.__pruefen();
@@ -672,9 +669,9 @@ Item {
             var band = root.__bandSeit(bandAb);
             root.__liqAufraeumen();
             var liqVon = kerzen.length ? kerzen[0][0] : 0;
-            // Bis ans Ende der letzten Kerze, mindestens einen Tag -- wie im
-            // Dienst. Pauschal ein Tag liess bei Wochenkerzen ("all") die
-            // laufende Woche nach ihrem ersten Tag leer (16.09.2026).
+            // Up to the end of the last candle, at least one day, as in the
+            // service. A flat one day left the running week empty after its
+            // first day with weekly candles ("all").
             var schritt = kerzen.length > 1
                           ? kerzen[kerzen.length - 1][0] - kerzen[kerzen.length - 2][0] : 0;
             var liqBis = kerzen.length
@@ -693,7 +690,7 @@ Item {
             var f = k[0];
             var tape = band[0];
             if (f !== 1.0) {
-                // Preise umrechnen, Mengen nicht -- die sind in Bitcoin
+                // Convert prices, not amounts, those are in bitcoin
                 kerzen = kerzen.map(function (x) {
                     return [x[0], root.__r(x[1] * f, 2), root.__r(x[2] * f, 2),
                             root.__r(x[3] * f, 2), root.__r(x[4] * f, 2), x[5], x[6]];
@@ -753,7 +750,7 @@ Item {
         });
     }
 
-    // -- Heatmap ---------------------------------------------------------------------
+    // Heatmap
     function __oiRasterFuer(kerzen) {
         if (kerzen.length < 2)
             return "1h";
@@ -765,7 +762,7 @@ Item {
         return "1d";
     }
 
-    // {zeiten: [s...], werte: [BTC...]}, aufsteigend
+    // {zeiten: [s...], werte: [BTC...]}, ascending
     function __oiAus(roh) {
         var paare = [];
         for (var i = 0; i < (roh || []).length; i++) {
@@ -783,10 +780,10 @@ Item {
         };
     }
 
-    // `heatmap()` im Dienst, Schritt fuer Schritt: waechst das offene
-    // Interesse, wurden Positionen zum geltenden Kurs eroeffnet; sie sterben
-    // bei Kurs*(1-1/L) bzw. Kurs*(1+1/L), und ein Niveau lebt, bis der Kurs es
-    // durchschreitet.
+    // `heatmap()` in the service, step by step: when open interest grows,
+    // positions were opened at the current price; they die at
+    // price*(1-1/L) or price*(1+1/L), and a level lives until the price
+    // crosses it.
     function __heatmap(kerzen, oi) {
         var stufen = 64, schwelle = 0.004;
         if (kerzen.length < 3)
@@ -906,11 +903,10 @@ Item {
             var raster = root.__oiRasterFuer(kerzen);
             root.__gepuffert("https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period="
                              + raster + "&limit=500", 240, root.__oiAus, function (oi, oiErr) {
-                // **Keine Antwort ist nicht "kein offenes Interesse".** Bis zum
-                // 15.09.2026 wurde aus einem Ausfall von Binance Futures eine
-                // Heatmap mit `kein_oi`, und die Ansicht zeigte sie eine Minute
-                // lang als gueltig. Jetzt ein Fehler: die Ansicht behaelt das
-                // letzte Bild und fragt bald wieder.
+                // No response is not "no open interest". Turning a Binance
+                // Futures outage into a heatmap with `kein_oi` made the view
+                // show it as valid for a minute. So it is an error: the view
+                // keeps the last image and asks again soon.
                 if (!oi && oiErr) {
                     done(null, oiErr);
                     return;
@@ -934,18 +930,18 @@ Item {
         });
     }
 
-    // -- Verbindungen -----------------------------------------------------------------
-    // Die Stroeme laufen nur, solange jemand `/market` fragt, und noch
-    // `linger` Sekunden danach -- `gefragt()`/`erwuenscht()` im Dienst.
+    // Connections
+    // The streams run only while someone asks for `/market`, and for
+    // `linger` seconds afterwards, see `gefragt()`/`erwuenscht()` in the service.
     function __pruefen() {
         var soll = root.__jetzt() - root.__gefragt < root.linger;
         if (soll !== root.__erwuenscht)
             root.__erwuenscht = soll;
     }
 
-    // **Nicht gebunden, sondern gesetzt.** Zum Neuverbinden muss `active` kurz
-    // aus und wieder an; eine Zuweisung zerstoert aber eine Bindung, und danach
-    // folgte der Strom dem Schalter nicht mehr.
+    // Assigned, not bound. Reconnecting needs `active` briefly off and on;
+    // an assignment destroys a binding, and after that the stream no longer
+    // followed the switch.
     function __schalten() {
         var an = root.laeuft;
         binanceSock.active = an;
@@ -965,7 +961,7 @@ Item {
         onTriggered: root.__pruefen()
     }
 
-    // Wieder anklopfen, wenn eine Verbindung weg ist
+    // Knock again when a connection is gone
     Timer {
         interval: 5000
         repeat: true
@@ -983,7 +979,7 @@ Item {
         }
     }
 
-    // OKX schliesst nach 30 s Stille, Bybit nach rund zehn Minuten ohne Ping
+    // OKX closes after 30 s of silence, Bybit after about ten minutes without a ping
     Timer {
         interval: 18000
         repeat: true

@@ -1,15 +1,15 @@
-// Erkennung der Transaktionsart aus ihrer Struktur.
+// Detects the transaction type from its structure.
 //
-// Bitcoin kennt keine Typen -- was hier steht, ist eine **Deutung** anhand von
-// Ein- und Ausgaengen. Sie ist nuetzlich, aber nie sicher: eine Wallet kann
-// jedes Muster auch aus anderen Gruenden erzeugen. Deshalb nennt die Ansicht
-// die Art und keine Gewissheit.
+// Bitcoin has no transaction types. What this returns is an interpretation
+// based on inputs and outputs. It is useful but never certain: a wallet can
+// produce any pattern for other reasons. So the UI calls it a type, not a
+// certainty.
 .pragma library
 
-// Farben passend zum uebrigen Bild: warme Toene fuer alltaegliche Zahlungen,
-// kuehle fuer Umschichtungen, ein eigener Ton fuer Datenablage.
-// Farbe und Erklaerung je Art. Die **Bezeichnung** steht in strings.js unter
-// "type.<key>" -- sie ist uebersetzt, die Farbe nicht.
+// Colors fit the rest of the UI: warm tones for everyday payments, cool
+// ones for reshuffling, a separate tone for data storage.
+// Color per type. The label lives in strings.js under "type.<key>";
+// it is translated, the color is not.
 var TYPES = {
     "payment":       { "color": "#f7931a" },
     "consolidation": { "color": "#3fb3a3" },
@@ -21,13 +21,13 @@ var TYPES = {
     "inscription":   { "color": "#e0578f" }
 };
 
-// --- Deutung aus den `flags` von mempool.space ---------------------------
+// --- Interpretation of the mempool.space `flags` ------------------------
 //
-// Die Kachelgrafik kennt keine Ein- und Ausgaenge, nur die Kurzform. Darin
-// steckt aber ein Bitfeld, das mempool.space selbst berechnet. Die Bitlage ist
-// aus `frontend/src/app/shared/filters.utils.ts` (TransactionFlags) uebernommen
-// und am 02.09.2026 an echten Daten gegengeprueft: eine Transaktion mit
-// gesetztem Bit 24 hatte tatsaechlich einen OP_RETURN-Ausgang, eine ohne nicht.
+// The tile view has no inputs and outputs, only the short form. It does
+// carry a bit field that mempool.space computes itself. The bit positions
+// are taken from `frontend/src/app/shared/filters.utils.ts`
+// (TransactionFlags) and were checked against real data: a transaction
+// with bit 24 set did have an OP_RETURN output, one without did not.
 var FLAG = {
     "rbf": 0, "no_rbf": 1, "v1": 2, "v2": 3, "v3": 4, "nonstandard": 5,
     "p2pk": 8, "p2ms": 9, "p2pkh": 10, "p2sh": 11, "p2wpkh": 12, "p2wsh": 13, "p2tr": 14,
@@ -36,8 +36,8 @@ var FLAG = {
     "coinjoin": 32, "consolidation": 33, "batch_payout": 34
 };
 
-// Vorsicht: `>>` rechnet in JavaScript mit 32 Bit, die Flags reichen bis 2^44.
-// Also durch Zweierpotenzen teilen statt schieben.
+// Careful: `>>` works on 32 bits in JavaScript, the flags go up to 2^44.
+// So divide by powers of two instead of shifting.
 function hasFlag(flags, name) {
     var b = FLAG[name];
     if (b === undefined || !flags)
@@ -45,8 +45,8 @@ function hasFlag(flags, name) {
     return Math.floor(flags / Math.pow(2, b)) % 2 === 1;
 }
 
-// Reihenfolge der Arten in der Kachelgrafik. Der Daemon legt genau diese
-// Ziffer je Kachel ab -- **beide Listen muessen gleich bleiben.**
+// Order of the types in the tile view. The daemon stores exactly this
+// digit per tile, so both lists must stay in sync.
 var KINDS = ["payment", "consolidation", "batch", "coinjoin",
              "data", "inscription", "coinbase", "sweep"];
 
@@ -54,8 +54,8 @@ function kindAt(i) {
     return KINDS[i] || "payment";
 }
 
-// Aus dem Bitfeld die Art bestimmen. Die Reihenfolge ist die Rangfolge:
-// was seltener und aussagekraeftiger ist, geht vor.
+// Determine the type from the bit field. The order is the priority:
+// rarer and more telling types win.
 function fromFlags(flags, isCoinbase) {
     if (isCoinbase)
         return "coinbase";
@@ -81,13 +81,13 @@ function classify(tx) {
     if (nIn && vin[0] && vin[0].is_coinbase)
         return "coinbase";
 
-    // Datenablage geht vor: sie ist eindeutig erkennbar
+    // Data storage first: it is unambiguous
     for (var i = 0; i < nOut; i++) {
         if (vout[i] && vout[i].scriptpubkey_type === "op_return")
             return "data";
     }
 
-    // Gleich grosse Ausgaenge zaehlen -- das Merkmal eines CoinJoin
+    // Count equal-sized outputs, the mark of a CoinJoin
     var counts = {}, best = 0;
     for (i = 0; i < nOut; i++) {
         var v = vout[i] ? vout[i].value : 0;
@@ -102,8 +102,8 @@ function classify(tx) {
         return "consolidation";
     if (nIn <= 2 && nOut >= 5)
         return "batch";
-    // Umschichtung erst ab zwei Eingaengen -- eine Zahlung ohne Rueckgeld
-    // (1 zu 1) ist keine Umschichtung, und die kommt haeufig vor.
+    // Consolidation only from two inputs: a payment without change (1 to 1)
+    // is not a consolidation, and it is common.
     if (nOut === 1 && nIn >= 2)
         return "sweep";
     return "payment";
@@ -113,7 +113,7 @@ function info(kind) {
     return TYPES[kind] || TYPES["payment"];
 }
 
-// Uebersetzte Bezeichnung. Der Schluessel in strings.js heisst "type.<kind>".
+// Translated label. The key in strings.js is "type.<kind>".
 function labelKey(kind) {
     return "type." + (TYPES[kind] ? kind : "payment");
 }

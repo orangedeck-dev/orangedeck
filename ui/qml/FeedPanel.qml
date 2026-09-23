@@ -1,6 +1,6 @@
-// Rahmen um die Ansicht: Kopfzeile, Blockangaben, Grafik, Legende, Fusszeile.
-// Reines QtQuick -- die Farben werden von aussen gesetzt, damit derselbe
-// Baustein im DMS-Plugin und im eigenen Fenster laufen kann.
+// Frame around the view: header, block details, graphic, legend, footer.
+// Plain QtQuick. Colors are set from outside so the same component runs in
+// the DMS plugin and in the standalone window.
 import QtQuick
 import "colors.js" as Palette
 import "money.js" as Money
@@ -17,21 +17,21 @@ Item {
     property bool headerVisible: true
     property bool infoVisible: true
     property bool legendVisible: true
-    // Untergrund hinter den Textangaben. Ohne ihn gehen sie im Zoom unter,
-    // wenn grosse helle Kachelflaechen direkt dahinter liegen.
-    // Kachel angetippt -- wird von FeedCanvas durchgereicht
+    // `frostedInfo` (below): background behind the text details. Without it
+    // they get lost when zoomed in over large bright tile areas.
+    // Tile tapped, passed through from FeedCanvas
     signal txActivated(string txid)
-    // Der Wirt haelt die Lesart -- er merkt sie sich auch ueber Sitzungen
+    // The host keeps the color mode and remembers it across sessions
     signal colorModeRequested(string mode)
     property bool frostedInfo: true
     property bool frostedBlur: true
-    // Die gestrichelte Linie ueber der Halde
+    // The dashed line above the mempool pile
     property bool rulerVisible: true
     property bool footerVisible: true
-    // Die Kachelgrafik des letzten Blocks in der Mitte
+    // The tile graphic of the latest block in the middle
     property bool blockVisible: true
     property string colorMode: "age"
-    // Welche Waehrung angezeigt wird -- der Daemon liefert sieben mit
+    // Which currency is shown; the daemon provides seven
     property string currency: "eur"
     property string sizeMode: "value"
 
@@ -39,9 +39,9 @@ Item {
     property color dimColor: "#9a94a6"
     property color accentColor: "#c9a227"
     property color lineColor: "#2a2a38"
-    // Toenung der Milchglas-Kaestchen (Kopf, Info, Legende, Goggles). Vorgabe wie
-    // bisher dunkel; die DMS-Wirte geben eine Theme-Flaeche mit, damit sie im
-    // Hellmodus hell werden.
+    // Tint of the frosted boxes (header, info, legend, goggles). Dark by
+    // default; the DMS hosts pass a theme surface color so they turn light in
+    // light mode.
     property color frostedTint: "#0b0b12"
     property int baseFont: 12
     property string lang: "de"
@@ -51,48 +51,39 @@ Item {
     readonly property bool showHeader: headerVisible && height >= 108
     readonly property bool showFooter: footerVisible && height >= 168
     readonly property bool showInfo: infoVisible && width >= 480 && height >= 300
-    // In flachen Flaechen (Dashboard-Tab) nur das Noetigste, sonst laeuft die
-    // Spalte in die Halde hinein
+    // On flat surfaces (dashboard tab) only the essentials, otherwise the
+    // column runs into the pile
     readonly property bool infoCompact: height < 520
-    // 420 war zu hoch gegriffen: der Dashboard-Tab ist 410 hoch und bekam
-    // dadurch **nie** eine Legende -- und mit ihr auch nicht den Umschalter
-    // darunter. Gemessen passt sie samt Umschalter ab 330 in die Flaeche.
-    // **Und nur, wenn sie neben den Block passt.** Die feste Grenze von 420
-    // Punkten reichte nicht: der Block waechst mit der Hoehe
-    // (`blockSide`), und in einem schmalen, hohen Fenster (480 x 900) lag die
-    // Legende halb ueber ihm (11.09.2026 im Xvfb). Gerechnet wird mit dem
-    // Rand neben dem ungezoomten Block; `legend.width` ist auch dann bekannt,
-    // wenn sie ausgeblendet ist, das gibt keine Schleife. Die 16 sind die
-    // acht Punkte, die ihr Kasten nach aussen traegt, und etwas Luft.
+    // The legend together with the color switch fits from a height of 330;
+    // the dashboard tab is 410 high.
+    //
+    // It is also shown only if it fits next to the block. The block grows with
+    // the height (`blockSide`), so in a narrow, tall window (480 x 900) the
+    // legend would cover half of it. The check uses the margin next to the
+    // unzoomed block; `legend.width` is known even while the legend is hidden,
+    // so there is no binding loop. The 16 are the eight points its box extends
+    // outwards plus some air.
     readonly property bool legendePasst:
         (canvasView.width - canvasView.blockSide) / 2 >= legend.width + 16
     readonly property bool showLegend: legendVisible && width >= 420 && height >= 330
                                        && legendePasst
 
-    // **Der Umschalter haengt nicht am Platz fuer die Legende.** Bisher tat
-    // er es, weil beide an `showLegend` hingen -- und das ist zweierlei: die
-    // Legende ist eine Tafel, die Platz braucht, der Umschalter ein
-    // Bedienelement. Auf dem Schreibtisch schaltet `c` die Lesart durch, dort
-    // darf er unter 420 Punkten weg. Ohne Tastatur ist er die **einzige**
-    // Moeglichkeit, und ihn wegzulassen nimmt die Funktion ganz weg.
-    //
-    // Am 08.09.2026 auf einem Galaxy A55 gemeldet: bei 384 dp fiel er weg,
-    // und die drei Lesarten waren nicht mehr erreichbar. `Qt.platform.os`
-    // steht hier direkt, wie in `fonts.js` -- eine Eigenschaft durch drei
-    // Ebenen zu reichen waere fuer diese eine Frage zu viel Leitung.
+    // The color switch does not depend on the room for the legend. The legend
+    // is a panel that needs space, the switch is a control. On the desktop `c`
+    // cycles the color mode, so the switch may disappear below 420 points.
+    // Without a keyboard it is the only way to change the mode, so on phones it
+    // always stays. `Qt.platform.os` is checked directly, as in `fonts.js`;
+    // passing a property through three levels would be too much plumbing for
+    // this one question.
     readonly property bool showGoggles: legendVisible
         && (showLegend || Qt.platform.os === "android" || Qt.platform.os === "ios")
-    // **Links und rechts derselbe Abstand zur Kopfzeile.** Vorher rechnete
-    // jede Seite fuer sich: links 0,03/0,10 mit einem Mindestabstand, rechts
-    // 0,04/0,10 ohne. Zwischen 460 und 520 Pixeln Hoehe kam links der
-    // Mindestabstand zum Tragen und rechts schon der grosse Bruchteil -- die
-    // Legende sass dadurch bis zu dreissig Pixel tiefer als die Blockangaben.
-    // Sichtbar wird das, weil beide denselben Kasten ueber sich haben und die
-    // Fuge darunter ungleich breit ausfiel.
+    // Same top margin on the left and the right. If each side computes its own
+    // (with a minimum on one side only), the legend can sit up to thirty pixels
+    // lower than the block details between 460 and 520 px of height, and the
+    // gap below the header box looks uneven.
     //
-    // Der Mindestabstand gilt jetzt fuer beide: `FrostedPanel` traegt acht
-    // Pixel Rand nach aussen, ohne ihn stossen die Kaesten in flachen
-    // Flaechen aneinander.
+    // The minimum applies to both sides: `FrostedPanel` extends eight pixels
+    // outwards, and without it the boxes touch on flat surfaces.
     readonly property int sideTopMargin: Math.max(
         Math.round(root.baseFont * 1.6),
         Math.round(canvasView.height * (root.infoCompact ? 0.04 : 0.10)))
@@ -100,9 +91,8 @@ Item {
     readonly property var nextBlock: feed ? feed.nextBlock : ({})
     readonly property var block: feed ? feed.block : ({})
 
-    // Tausender- und Dezimaltrenner haengen an der Sprache -- Deutsch nimmt
-    // den Punkt, Englisch das Komma, Polnisch und Tschechisch ein schmales
-    // Leerzeichen.
+    // Thousands and decimal separators depend on the language: German uses a
+    // dot, English a comma, Polish and Czech a narrow space.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -139,8 +129,8 @@ Item {
                        Money.symbol(Money.actual(pr, root.currency)), root.lang);
     }
 
-    // Blockanimation von Hand ausloesen (Taste b im eigenen Fenster) -- zum
-    // Pruefen, ohne zehn Minuten auf den naechsten Block zu warten
+    // Trigger the block animation by hand (key b in the standalone window), for
+    // testing without waiting ten minutes for the next block
     function triggerBlockAnimation() {
         canvasView.startBlockAnimation();
     }
@@ -152,8 +142,8 @@ Item {
         onTriggered: agoLabel.text = root.ago(root.tip.time)
     }
 
-    // ------------------------------------------------------------ Kopfzeile
-    // ------------------------------------------------ Untergrund der Angaben
+    // ------------------------------------------------------------ Header
+    // ------------------------------------------------ Background of the details
     FrostedPanel {
         content: header
         backdropSource: canvasView
@@ -181,11 +171,9 @@ Item {
         z: 4
     }
 
-    // **Der Umschalter braucht denselben Untergrund wie die Legende.** Er
-    // steht unter ihr, also genau dort, wo die Halde bei vollem Mempool nach
-    // oben waechst -- und dann lagen die Knoepfe ueber den Kacheln und waren
-    // nicht mehr zu lesen. Dass es der Legende darueber nicht so ging, lag
-    // allein an ihrem Kasten.
+    // The color switch needs the same background as the legend. It sits below
+    // the legend, right where the pile grows upwards when the mempool is full,
+    // and without a background its buttons are unreadable over the tiles.
     FrostedPanel {
         content: goggles
         backdropSource: canvasView
@@ -285,7 +273,7 @@ Item {
         labelFont: root.baseFont - 1
     }
 
-    // -------------------------------------------------- Angaben zum Block
+    // -------------------------------------------------- Block details
     Column {
         id: info
 
@@ -318,11 +306,10 @@ Item {
             bottomPadding: 6
         }
 
-        // Ohne Beschriftung war nicht zu erkennen, was die Zahl meint. Sie ist
-        // die Summe **aller Ausgaenge dieses Blocks**, nicht der Mempool und
-        // nicht "was den Besitzer gewechselt hat": Wechselgeld an den Absender
-        // zaehlt mit, deshalb liegt sie regelmaessig ueber dem, was tatsaechlich
-        // geflossen ist.
+        // Label for the number below. It is the sum of all outputs of this
+        // block, not the mempool and not "what changed hands": change sent back
+        // to the sender counts too, so it is regularly higher than what actually
+        // moved.
         Text {
             visible: !root.infoCompact
             text: Tr.t("feed.movedValue", root.lang)
@@ -380,7 +367,7 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------- Legende
+    // ------------------------------------------------------------- Legend
     Column {
         id: legend
 
@@ -400,11 +387,10 @@ Item {
         }
 
         Repeater {
-            // **Die Zahlen der Legende gehen durch dieselbe Schreibweise wie
-            // jede andere Zahl.** Vorher standen sie hier als Text: in der
-            // englischen Oberflaeche las man "< 1.024" (tausendvierundzwanzig
-            // oder eins Komma null?) und "< 0,01" neben lauter englischen
-            // Formaten. Am 19.09.2026 auf den Bildern fuer F-Droid gesehen.
+            // The legend numbers use the same formatting as every other
+            // number. As plain text, the English UI showed "< 1.024"
+            // (one thousand twenty-four or one point zero?) and "< 0,01"
+            // next to English formats everywhere else.
             model: root.sizeMode === "vbytes"
                 ? [256, 1024, 2304, 4096, 6400].map(function (n) {
                     return "< " + Tr.group(n, root.lang);
@@ -449,7 +435,7 @@ Item {
             topPadding: 4
         }
 
-        // Farbtafel der Arten. Nur die, die im Block auch vorkommen.
+        // Color table of the transaction types. Only those present in the block.
         Repeater {
             model: {
                 if (root.colorMode !== "type")
@@ -549,70 +535,49 @@ Item {
         }
     }
 
-    // Umschalter fuer die Kachelfarbe. Dieselben Knoepfe wie im Explorer,
-    // hier mit drei Lesarten: Alter, Gebuehr, Art.
+    // Switch for the tile color. Same buttons as in the explorer, here with
+    // three modes: age, fee, type.
     TileGoggles {
         id: goggles
 
         z: 6
-        // Unter der Legende am rechten Rand. Unten links lag er in der Halde
-        // und war ueber den Kacheln nicht mehr zu lesen.
+        // Below the legend at the right edge. Bottom left it would sit in the
+        // pile and be unreadable over the tiles.
         anchors.right: legend.right
-        // **Unter der Legende, aber nicht tiefer als die Halde reicht.**
+        // Below the legend, but not lower than the pile reaches.
         //
-        // Der Abstand zur Legende ist gerechnet, nicht geraten: seit der
-        // Umschalter einen eigenen Untergrund hat, ist er die Fuge zwischen
-        // zwei Kaesten, und jeder traegt acht Pixel nach aussen
-        // (`FrostedPanel.pad`). Die frueheren 0,8 Schriftgraden waren
-        // weniger -- die Kaesten haetten sich ueberlappt, und zwei
-        // durchscheinende Flaechen uebereinander geben eine dunkle Naht.
+        // The gap to the legend is computed: the switch has its own background,
+        // so the gap lies between two boxes that each extend eight pixels
+        // outwards (`FrostedPanel.pad`). Less than that makes the boxes overlap,
+        // and two translucent surfaces on top of each other give a dark seam.
         //
-        // Der Boden darunter ist der zweite Teil: in der Lesart "Art" traegt
-        // die Legende sieben Zeilen mehr, und in einer flachen Flaeche schob
-        // sie den Umschalter aus der Zeichenflaeche heraus bis in die
-        // Fusszeile. Solange er nur Schrift war, sah man darueber hinweg;
-        // als Kasten deckt er den Kurs darunter zu. Also endet er
-        // spaetestens am unteren Rand der Halde.
+        // The lower clamp is the second part: in the "type" mode the legend has
+        // seven more rows, and on a flat surface it would push the switch out of
+        // the drawing area into the footer, where its box covers the price. So
+        // it ends at the bottom of the pile at the latest.
         //
-        // Und **ohne Legende dicht unter die Kopfzeile**, also direkt unter
-        // die Zeile mit Blockhoehe und sat/vB. Ein unsichtbares Element
-        // behaelt in QML seine Hoehe; unter der Legende klebte er sonst unter
-        // einer Tafel, die niemand sieht -- in der Lesart "Art" sieben Zeilen
-        // weit unten.
+        // Without a legend it sits right under the header, i.e. under the row
+        // with block height and sat/vB. An invisible item keeps its height in
+        // QML, so anchoring below the hidden legend would leave it below a panel
+        // nobody sees, seven rows down in the "type" mode.
         //
-        // Zwei Anlaeufe davor, beide am 08.09.2026 auf einem Galaxy A55
-        // verworfen:
+        // Positions derived from content move with it. That is fine for a label
+        // but not for a control, which belongs at a place where it can be found
+        // again, here the top edge. For that reason it is not placed below the
+        // block (with zoom the block can be anywhere) and not at `sideTopMargin`
+        // (ten percent of the height, meant for the legend; on a phone that puts
+        // the box back onto the tiles).
         //
-        //   unter dem Block   Die Lage kam aus `blockCenterY` und
-        //                     `blockSide`. **Bei Zoom zwangslaeufig falsch**,
-        //                     denn dann kann der Block ueberall stehen -- der
-        //                     Kasten landete mitten im Bild.
-        //   `sideTopMargin`   Das sind zehn Prozent der Flaechenhoehe (fuer
-        //                     die Legende gedacht, die weit oben ansetzt).
-        //                     Auf einem Telefon schob das den Kasten wieder
-        //                     auf die Kacheln.
-        //
-        // Der allgemeine Fall: **eine Lage, die sich aus dem Inhalt
-        // errechnet, wandert mit ihm.** Fuer eine Beschriftung ist das
-        // richtig, fuer ein Bedienelement nicht -- das gehoert an einen
-        // Platz, an dem man es wiederfindet, und der ist hier die Oberkante.
-        //
-        // Die Klemme nach unten bleibt in beiden Faellen: was nicht passt,
-        // endet am unteren Rand der Halde statt in der Fusszeile.
-        //
-        // **Unter der Kopfzeile dieselbe Fuge wie unter der Legende.** Hier
-        // stand `canvasView.y + 2`, also 6 Punkte unter der Kopfzeile -- aber
-        // beide Kaesten tragen 8 Punkte nach aussen, und sie ueberlappten
-        // sich um 10. Am 11.09.2026 auf dem Galaxy A55 gesehen: der Kasten
-        // mit "Farbe" lag ueber der Unterkante von Blockhoehe und sat/vB.
+        // Below the header the same gap as below the legend applies: both boxes
+        // extend 8 points outwards, so a smaller offset makes them overlap.
         y: Math.min(root.showLegend
                     ? legend.y + legend.height + 8 + 8 + 2
                     : (root.showHeader ? header.y + header.height + 8 + 8 + 2
                                        : canvasView.y + 2),
                     canvasView.y + canvasView.height - goggles.height)
-        // Genau so breit wie die Knopfreihe, damit der Untergrund dahinter
-        // sie umschliesst und nicht daneben steht. `baseFont * 14` war
-        // geraten und lag bei den deutschen Beschriftungen zu knapp.
+        // Exactly as wide as the button row so the background behind it
+        // encloses it instead of sitting next to it. A guessed width
+        // (`baseFont * 14`) was too tight for the German labels.
         width: goggles.schalterBreite
         alignRight: true
         visible: root.showGoggles
@@ -623,8 +588,8 @@ Item {
             { "k": "fee", "l": Tr.t("color.fee", root.lang) },
             { "k": "type", "l": Tr.t("color.type", root.lang) }
         ]
-        // Die Farbtafel steht schon in der Legende rechts -- zweimal dasselbe
-        // waere nur Rauschen. Hier bleibt der blosse Umschalter.
+        // The color table is already in the legend on the right; showing it
+        // twice would only be noise. Only the switch itself stays here.
         counts: []
         total: 0
         textColor: root.textColor
@@ -636,7 +601,7 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------ Fusszeile
+    // ------------------------------------------------------------ Footer
     Item {
         id: footer
 
@@ -682,9 +647,9 @@ Item {
     }
 
     // ---------------------------------------------------------- Tooltip
-    // Zeigt beim Ueberfahren die Angaben zur Transaktion, wie auf bitfeed.live.
-    // Ein- und Ausgaenge stehen nicht im Datenstrom und werden bei Bedarf
-    // einzeln nachgeladen.
+    // Shows the transaction details on hover, as on bitfeed.live. Inputs and
+    // outputs are not part of the data stream and are loaded one by one on
+    // demand.
     property var inOutCache: ({})
     property string inOutKey: ""
     property string inOutText: ""
@@ -770,37 +735,36 @@ Item {
 
         readonly property var tx: canvasView.hoveredTx
 
-        // **Die Rate muss zu den beiden Zeilen darueber passen.** Gezeigt
-        // wurde `r` aus dem Zustand -- das ist die *wirksame* Rate von
-        // mempool.space, die Vorgaenger (CPFP) und Sigops mitrechnet. Daneben
-        // standen Groesse und Gebuehr, und aus denen ergab sich eine andere
-        // Zahl: 1000 sat / 219,25 vB = 4,56, angezeigt 4,54 (19.09.2026). Der
-        // Explorer rechnet ebenfalls Gebuehr durch vBytes (`fee / (weight/4)`)
-        // und stand damit im Widerspruch zum Tooltip derselben Transaktion.
+        // The rate has to match the two rows above it. `r` from the state is
+        // the effective rate from mempool.space, which includes ancestors
+        // (CPFP) and sigops. Next to size and fee that gives a different
+        // number (1000 sat / 219.25 vB = 4.56, but 4.54 shown). The explorer
+        // also computes fee per vbyte (`fee / (weight/4)`), so the tooltip
+        // would contradict it for the same transaction.
         //
-        // Hier steht jetzt die Rechnung, die man an den eigenen Zahlen
-        // nachvollziehen kann; die wirksame Rate kommt als eigene Zeile dazu,
-        // wenn sie abweicht. **Die Farbe der Kachel bleibt bei der wirksamen
-        // Rate** -- sie ist die, nach der ein Miner auswaehlt.
+        // So this shows the rate that can be checked against the numbers
+        // shown; the effective rate is added as its own row when it differs.
+        // The tile color stays with the effective rate, since that is what a
+        // miner selects by.
         readonly property real eigenRate: tip.tx && tip.tx.v > 0
             ? tip.tx.f / tip.tx.v : (tip.tx ? (tip.tx.r || 0) : 0)
-        // Eine Abweichung ist erst eine, wenn man sie sieht: ein Prozent,
-        // mindestens aber 0,01 sat/vB -- darunter faellt sie beim Runden auf
-        // zwei Stellen ohnehin weg.
+        // A difference only counts if it is visible: one percent, but at least
+        // 0.01 sat/vB; anything smaller disappears when rounding to two
+        // decimals anyway.
         readonly property bool rateWeichtAb: tip.tx && (tip.tx.r || 0) > 0
             && Math.abs(tip.tx.r - tip.eigenRate)
                > Math.max(0.01, tip.eigenRate * 0.01)
 
         visible: tx !== null && root.width > 300
-        // Groesse aus dem Inhalt, aber ueber childrenRect statt ueber die
-        // Spalte: waere die Spalte im Rechteck zentriert, haenge die Groesse
-        // des Rechtecks an der Spalte und umgekehrt -- QML bricht diese
-        // Abhaengigkeit auf und laesst beides bei null.
+        // Size from the content, but via childrenRect instead of the column:
+        // if the column were centered in the rectangle, the rectangle's size
+        // would depend on the column and vice versa. QML breaks that loop and
+        // leaves both at zero.
         width: tipCol.width + 20
         height: tipCol.height + 16
         radius: 6
-        // Derselbe dunkle Untergrund wie bei den uebrigen Angaben: auf dem
-        // Kachelfeld ist die Linienfarbe zu hell, die Schrift verliert dagegen.
+        // Same dark background as the other details: on the tile field the line
+        // color is too light and the text gets lost against it.
         color: Qt.rgba(root.frostedTint.r, root.frostedTint.g, root.frostedTint.b, 0.88)
         border.width: 1
         border.color: Qt.lighter(root.lineColor, 1.4)
@@ -826,8 +790,8 @@ Item {
                 font.family: Fonts.mono()
             }
 
-            // Gehoert die Transaktion zu einer beobachteten Wallet, ist das
-            // die wichtigste Angabe an ihr -- also nach oben.
+            // If the transaction belongs to a watched wallet, that is the most
+            // important detail about it, so it goes to the top.
             Text {
                 visible: tip.tx && tip.tx.m === 1
                 text: Tr.t("feed.ownWallet", root.lang)
@@ -878,11 +842,10 @@ Item {
         }
     }
 
-    // **Auf eigenem Grund, nicht blank ueber dem Block.** Mittig stand der
-    // Satz genau auf dem orangen Block, in blasser Schrift -- am 10.09.2026
-    // auf dem Telefon als "kaum lesbar" gemeldet. Die Pille traegt dieselbe
-    // Deckkraft wie der Tooltip, und das Rot ist dasselbe wie bei "keine
-    // Verbindung" in der Uhr.
+    // On its own background, not bare over the block. Centered, the text
+    // sits right on the orange block and is hard to read in its dim color.
+    // The pill has the same opacity as the tooltip, and the red is the same
+    // as for "no connection" in the clock.
     Rectangle {
         anchors.centerIn: parent
         visible: root.feed !== null && !root.feed.online

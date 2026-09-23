@@ -1,17 +1,15 @@
-// Liquidations-Heatmap -- der dritte Unterreiter im Markt.
+// Liquidation heatmap, the third sub-tab of the market view.
 //
-// **Das hier ist gerechnet, nicht gemessen.** Es zeigt nicht, wo liquidiert
-// wurde -- das steht im Reiter daneben --, sondern wo Positionen *laegen*
-// und bei welchem Kurs sie sterben wuerden. Die hellen Baender liegen
-// deshalb **vor** dem Kurs; eine Messung kann das prinzipiell nicht, sie
-// kennt keine Zukunft.
+// This is computed, not measured. It does not show where liquidations
+// happened (the tab next to it does that), but where positions would sit
+// and at which price they would be wiped out. That is why the bright bands
+// lie ahead of the price; a measurement cannot do that, it knows no future.
 //
-// Zwei Annahmen stecken darin, beide erfunden: die Verteilung der Hebel und
-// die Aufteilung zwischen Long und Short. Der Dienst schickt sie mit, und
-// diese Ansicht nennt sie -- eine Schaetzung, die sich als Messung ausgibt,
-// waere schlimmer als gar keine.
+// Two assumptions go into it, both made up: the leverage distribution and
+// the long/short split. The service sends them along and this view shows
+// them. An estimate posing as a measurement would be worse than none.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so this also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "fonts.js" as Fonts
@@ -23,14 +21,14 @@ Item {
 
     property string lang: "de"
     property string zeichen: "$"
-    // Antwort von /market/heatmap
+    // Response of /market/heatmap
     property var yAchse: []
     property var zellen: []
     property real hoechst: 0
     property var schlusskurse: []
     property var hebel: []
-    // Wahr, wenn der gewaehlte Zeitraum laenger war als das Modell reicht
-    // und deshalb zurechtgeschnitten wurde.
+    // True when the chosen span was longer than the model covers and was
+    // clipped for that reason.
     property bool beschnitten: false
     property int maxTage: 30
 
@@ -44,23 +42,22 @@ Item {
     readonly property real letzterKurs: root.schlusskurse.length
         ? root.schlusskurse[root.schlusskurse.length - 1] : 0
 
-    // **Die Seite steht in der Lage, nicht in der Farbe** -- und zwar
-    // zwingend, nicht als Konvention.
+    // The side is given by position, not by colour, and that follows
+    // necessarily, it is not a convention.
     //
-    // Ein Long-Niveau liegt unter seinem Eroeffnungskurs. Laege der Kurs
-    // heute darunter, haette er es durchschritten -- dann waere es nach der
-    // Abraeum-Regel weg. Also liegt **jedes ueberlebende Long-Niveau unter
-    // dem Kurs** und jedes Short-Niveau darueber. Nachgemessen ueber dreissig
-    // Tage samt einem Sprung von 64.000 auf 78.000: 49 belegte Stufen, null
-    // Fehler, 0,0 % des Betrags falsch eingeordnet.
+    // A long level sits below its entry price. If the price were below it
+    // today, it would have crossed it and the sweep rule would have removed
+    // it. So every surviving long level is below the price and every short
+    // level above. Checked over thirty days including a jump from 64,000 to
+    // 78,000: 49 occupied levels, zero errors, 0.0 % of the amount misplaced.
     //
-    // Rot und Gruen wuerden hier also nichts hinzufuegen, was die Kurslinie
-    // nicht schon sagt -- und Coinglass macht es aus demselben Grund nicht
-    // (ihre Schnittstelle liefert je Zelle nur einen Betrag, keine Seite).
-    // Was fehlte, war nur, dass man die Regel **sieht**.
+    // Red and green would add nothing the price line does not already say.
+    // Coinglass does not colour sides for the same reason (their API returns
+    // one amount per cell, no side). What was missing was making the rule
+    // visible.
 
-    // Die Hebelstufen als Text, damit die Annahme dasteht statt im Quelltext
-    // zu verschwinden: "5x 30 %, 10x 30 %, ..."
+    // Leverage tiers as text so the assumption is shown instead of hidden
+    // in the source: "5x 30 %, 10x 30 %, ..."
     readonly property string hebelText: {
         var t = [];
         for (var i = 0; i < root.hebel.length; i++)
@@ -68,14 +65,13 @@ Item {
         return t.join(" · ");
     }
 
-    // **Die Farbe an einer Stelle.** Bewusst eine Funktion und nicht zweimal
-    // dieselbe Rechnung: sonst laufen Bild und Legende irgendwann
-    // auseinander, und eine Legende, die nicht stimmt, ist schlimmer als
-    // keine.
+    // The colour lives in one place. One function instead of the same
+    // formula twice, otherwise image and legend drift apart, and a wrong
+    // legend is worse than none.
     //
-    // `t` ist der Anteil am hoechsten Wert, mit **Wurzelkennlinie** statt
-    // linear -- die Betraege gehen ueber drei Groessenordnungen, linear waere
-    // alles ausser der hellsten Zelle schwarz.
+    // `t` is the share of the highest value, with a square-root-like curve
+    // instead of linear: amounts span three orders of magnitude, and linear
+    // would leave everything but the brightest cell black.
     function farbeFuer(anteil) {
         var t = Math.pow(Math.max(0, Math.min(1, anteil)), 0.45);
         return Qt.rgba(Math.min(1, 0.35 + t * 0.65),
@@ -94,7 +90,7 @@ Item {
         return Math.round(v) + "";
     }
 
-    // --------------------------------------------------------- Kopfzeile
+    // --------------------------------------------------------- header
     Column {
         id: kopf
 
@@ -114,8 +110,8 @@ Item {
                 font.bold: true
             }
 
-            // **Der Warnhinweis ist Teil der Ansicht, keine Fussnote.** Wer
-            // ihn wegnimmt, macht aus einer Schaetzung eine Behauptung.
+            // The warning badge is part of the view, not a footnote.
+            // Removing it turns an estimate into a claim.
             Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: warn.implicitWidth + root.baseFont * 0.8
@@ -155,8 +151,8 @@ Item {
             font.family: Fonts.mono()
         }
 
-        // **Ein anderer Zeitraum als der gewaehlte gehoert gesagt.** Sonst
-        // liest man Baender von dreissig Tagen als Baender von fuenf Jahren.
+        // A span different from the chosen one has to be stated, otherwise
+        // thirty-day bands get read as five-year bands.
         Text {
             width: parent.width
             visible: root.beschnitten
@@ -167,7 +163,7 @@ Item {
         }
     }
 
-    // ---------------------------------------------------------- Das Bild
+    // ---------------------------------------------------------- image
     Item {
         id: bild
 
@@ -212,22 +208,20 @@ Item {
                 var stufen = root.yAchse.length || 1;
                 var bw = width / spalten;
                 var bh = height / stufen;
-                // **Wurzelkennlinie statt linear.** Die Betraege gehen ueber
-                // drei Groessenordnungen; linear waere alles ausser der
-                // hellsten Zelle schwarz.
+                // Square-root-like curve instead of linear, see farbeFuer.
                 for (var i = 0; i < n; i++) {
                     var z = root.zellen[i];
-                    // Von dunkelrot ueber orange nach gelb -- dieselbe
-                    // Richtung wie die Waerme, die der Name verspricht.
+                    // Dark red through orange to yellow, matching the
+                    // heat the name promises.
                     ctx.fillStyle = root.farbeFuer(z[2] / root.hoechst);
-                    // Die Stufe 0 liegt unten: y-Achse umgedreht
+                    // Level 0 is at the bottom: flip the y axis
                     ctx.fillRect(Math.floor(z[0] * bw),
                                  Math.floor((stufen - 1 - z[1]) * bh),
                                  Math.ceil(bw) + 1, Math.ceil(bh) + 1);
                 }
 
-                // Der Kurs darueber -- ohne ihn sagen die Baender nichts,
-                // weil die Frage immer "wo relativ zu jetzt" heisst.
+                // Price line on top. Without it the bands mean nothing,
+                // the question is always "where relative to now".
                 if (root.yAchse.length > 1 && root.schlusskurse.length > 1) {
                     var tief = root.yAchse[0];
                     var hoch = root.yAchse[root.yAchse.length - 1];
@@ -250,9 +244,9 @@ Item {
             }
         }
 
-        // Wo der Kurs gerade steht -- die Linie, an der sich Long und Short
-        // scheiden. Die laufende Kurve zeigt es ueber die ganze Zeit, diese
-        // Marke sagt es fuer den Augenblick.
+        // Where the price is right now, the line that separates long and
+        // short. The running curve shows it over time, this marker shows
+        // the current moment.
         Item {
             id: kursMarke
 
@@ -297,7 +291,7 @@ Item {
             }
         }
 
-        // Preisachse links
+        // Price axis on the left
         Repeater {
             model: root.hatDaten ? root.yAchse : []
 
@@ -328,13 +322,12 @@ Item {
 
     }
 
-    // ---------------------------------------------------------- Legende
-    // Ohne sie ist das Bild huebsch und stumm: niemand weiss, ob hell viel
-    // oder wenig heisst, und die weisse Linie koennte alles sein.
-    // **Zwei Gruppen in einem Flow**: am Telefon passt die Legende nicht in
-    // eine Zeile, und "Kurs · ueber der Linie ..." endete am Bildrand
-    // (13.09.2026, 384 Punkte breit). Innerhalb einer Gruppe bleibt es eine
-    // Row, weil ein Flow keine senkrechte Mitte kennt.
+    // ---------------------------------------------------------- legend
+    // Without it the image is pretty and mute: nobody knows whether bright
+    // means much or little, and the white line could be anything.
+    // Two groups in one Flow: on a phone the legend does not fit on one
+    // line and the price-line text ran off the edge. Each group stays a Row
+    // because Flow has no vertical centering.
     Flow {
         id: legende
 
@@ -354,7 +347,7 @@ Item {
                 font.pixelSize: Math.max(7, root.baseFont - 3)
             }
 
-            // Der Verlauf kommt aus **derselben** Funktion wie das Bild
+            // The gradient comes from the same function as the image
             Canvas {
                 id: verlauf
 
@@ -387,7 +380,7 @@ Item {
         Row {
             spacing: root.baseFont * 0.5
 
-            // Damit die weisse Linie nicht geraten werden muss
+            // So nobody has to guess what the white line is
             Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: root.baseFont * 1.6

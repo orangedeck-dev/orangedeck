@@ -1,11 +1,10 @@
-// Die vier Tafeln der Startseite: Gebuehrenstufen, Schwierigkeitsanpassung,
-// Zustand des Mempools mit Zulaufkurve und die zuletzt ersetzten
-// Transaktionen (RBF).
+// The four panels of the home page: fee levels, difficulty adjustment,
+// mempool state with inflow chart, and recently replaced transactions (RBF).
 //
-// Alles bis auf die Ersetzungen kommt aus `FeedState` -- also ohne
-// zusaetzlichen Abruf.
+// Everything except the replacements comes from `FeedState`, so no extra
+// request is needed.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "fonts.js" as Fonts
@@ -24,8 +23,8 @@ Grid {
     property real uiFont: 13
     property string lang: "de"
     property var replacements: []
-    // Welche Tafeln gezeigt werden. Leer heisst alle. `Grid` laesst
-    // unsichtbare Kinder aus, es bleibt also keine Luecke stehen.
+    // Which panels to show. Empty means all. `Grid` skips invisible children,
+    // so no gap is left.
     property var panels: []
 
     function zeigt(id) {
@@ -42,18 +41,18 @@ Grid {
     rowSpacing: uiFont * 1.2
 
     readonly property real panelWidth: (width - (columns - 1) * columnSpacing) / columns
-    // Die beiden unteren Tafeln sind gleich hoch -- unterschiedlich hohe
-    // Nachbarn wirken wie ein Versehen. Die Hoehe richtet sich nach der
-    // volleren von beiden, damit nichts abgeschnitten wird.
+    // The two bottom panels have the same height; neighbors of different
+    // heights look like a mistake. The height follows the fuller of the two
+    // so nothing gets clipped.
     readonly property real lowerHeight: Math.max(uiFont * 19,
                                                  rbfCol.implicitHeight + uiFont * 3.4)
     readonly property var fees: (feed && feed.snap.fees) || ({})
     readonly property var diff: feed ? feed.difficulty : ({})
     readonly property var stats: (feed && feed.snap.stats) || ({})
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // This matters: "1.234" means either one thousand two hundred thirty-four
+    // or one point two three four depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -92,12 +91,11 @@ Grid {
         onTriggered: root.reload()
     }
 
-    // Ein Rahmen fuer alle Tafeln
+    // One frame for all panels
     component Panel: Rectangle {
         property alias title: head.text
-        // Wo der Inhalt anfangen darf. Wer mittig stehen will, mittet
-        // **darunter** -- sonst rechnet er die Ueberschrift mit und sitzt
-        // sichtbar zu tief.
+        // Where content may start. Content that wants to be centered centers
+        // below this, otherwise it includes the heading and sits visibly too low.
         readonly property real contentTop: head.y + head.height + root.uiFont * 0.6
 
         width: root.panelWidth
@@ -118,7 +116,7 @@ Grid {
         }
     }
 
-    // ------------------------------------------------ Gebuehrenstufen
+    // ------------------------------------------------ Fee levels
     Panel {
         height: root.uiFont * 8.4
         visible: root.zeigt("fees")
@@ -128,7 +126,7 @@ Grid {
             id: feeRow
 
             anchors.horizontalCenter: parent.horizontalCenter
-            // Mittig im Raum **unter** der Ueberschrift
+            // Centered in the space below the heading
             y: parent.contentTop + (parent.height - parent.contentTop - height) / 2
             spacing: root.uiFont * 1.6
 
@@ -152,9 +150,8 @@ Grid {
                         width: root.uiFont * 7.6
                         height: root.uiFont * 1.5
                         radius: root.uiFont * 0.25
-                        // Von gedaempft nach kraeftig -- hoehere Prioritaet,
-                        // kraeftigeres Gruen. Dieselbe Logik wie bei den
-                        // geplanten Bloecken.
+                        // From muted to strong: higher priority, stronger green. Same logic as
+                        // the projected blocks.
                         color: Qt.hsva(root.goodColor.hsvHue,
                                        0.4 + 0.12 * tier.index,
                                        0.34 + 0.13 * tier.index, 1)
@@ -191,7 +188,7 @@ Grid {
         }
     }
 
-    // ------------------------------------------ Schwierigkeitsanpassung
+    // ------------------------------------------ Difficulty adjustment
     Panel {
         height: root.uiFont * 8.4
         visible: root.zeigt("difficulty")
@@ -288,7 +285,7 @@ Grid {
         }
     }
 
-    // ----------------------------------------------- Zustand des Mempools
+    // ----------------------------------------------- Mempool state
     Panel {
         height: root.lowerHeight
         visible: root.zeigt("mempool")
@@ -339,19 +336,15 @@ Grid {
                 }
             }
 
-            // **Keine Ueberschrift ueber einer Flaeche, die leer bleibt.** Am
-            // 18.09.2026 am Galaxy gesehen: "Eingehende Transaktionen" stand
-            // ueber nichts, und zwar dauerhaft. Die Kurve zeichnet
-            // `stats.inflow`, und das schreibt allein der Dienst mit
-            // (`sample_stats`). Ohne Dienst ist die Reihe nicht zu haben: der
-            // Direktbezug muesste sie aus der laufenden Nummer rechnen, und
-            // die steht still, weil mempool.space ueber den Draht immer
-            // wieder dieselben sechs Transaktionen schickt -- gemessen ueber
-            // 200 s, `seq` blieb bei 10.
+            // No heading above an area that stays empty. The chart draws
+            // `stats.inflow`, which only the daemon records (`sample_stats`). Without
+            // the daemon the series is not available: a direct connection would have
+            // to derive it from the sequence number, and that stands still because
+            // mempool.space keeps sending the same six transactions over the socket.
             //
-            // Statt der Ueberschrift steht dort deshalb ein Satz, der sagt,
-            // warum nichts kommt -- wie bei den Liquidationen, wo der
-            // Leertext auch die Ursache nennt und nicht nur die Leere.
+            // So instead of the heading there is a sentence explaining why nothing
+            // arrives, like the liquidations panel, whose empty text also names the
+            // cause and not just the emptiness.
             readonly property bool hatZulauf: (root.stats.inflow || []).length >= 2
 
             Text {
@@ -376,7 +369,7 @@ Grid {
                 visible: parent.hatZulauf
 
                 width: parent.width
-                // Nimmt, was die Tafel uebrig laesst
+                // Takes whatever space the panel leaves
                 height: root.lowerHeight - root.uiFont * 8.6
 
                 Connections {
@@ -395,16 +388,14 @@ Grid {
                     var peak = Math.max.apply(null, s);
                     if (peak <= 0)
                         return;
-                    // **Luft nach oben.** Ohne sie beruehrt die hoechste Spitze
-                    // die Oberkante und wird durch die Strichstaerke
-                    // angeschnitten; die oberste Beschriftung haette dort auch
-                    // keinen Platz.
+                    // Headroom. Without it the highest peak touches the top edge and gets
+                    // cut by the line width; the top label would have no room there either.
                     var hi = peak * 1.12;
                     var padB = root.uiFont * 1.1, padL = root.uiFont * 2.4;
                     var padT = root.uiFont * 0.5;
                     var w = width - padL, h = height - padB - padT;
 
-                    // Waagerechte Hilfslinien mit Beschriftung
+                    // Horizontal grid lines with labels
                     ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.07);
                     ctx.fillStyle = root.dimColor;
                     ctx.font = (root.uiFont * 0.68) + "px " + Fonts.sansCss();
@@ -416,13 +407,12 @@ Grid {
                         ctx.moveTo(padL, gy);
                         ctx.lineTo(width, gy);
                         ctx.stroke();
-                        // Beschriftet wird der **echte** Hoechstwert, nicht der
-                        // um die Luft erhoehte
+                        // The label shows the real maximum, not the one raised by the headroom
                         ctx.fillText(Tr.fixed(peak * (1 - g / 2), 1, root.lang),
                                      padL - root.uiFont * 0.4, gy + root.uiFont * 0.25);
                     }
 
-                    // Die Kurve, eingefaerbt nach Hoehe: ruhig gruen, Spitzen rot
+                    // The curve, colored by height: calm green, peaks red
                     ctx.lineWidth = Math.max(1.4, root.uiFont * 0.13);
                     ctx.lineJoin = "round";
                     for (var i = 1; i < s.length; i++) {
@@ -438,7 +428,7 @@ Grid {
                         ctx.stroke();
                     }
 
-                    // Mittelwert als gestrichelte Linie
+                    // Average as a dashed line
                     var sum = 0;
                     for (i = 0; i < s.length; i++)
                         sum += s[i];
@@ -464,7 +454,7 @@ Grid {
         }
     }
 
-    // ------------------------------------------------ Ersetzungen (RBF)
+    // ------------------------------------------------ Replacements (RBF)
     Panel {
         height: root.lowerHeight
         visible: root.zeigt("rbf")

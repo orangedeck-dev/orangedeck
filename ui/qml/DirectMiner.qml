@@ -1,21 +1,18 @@
-// Miner direkt abfragen -- ohne Daemon.
+// Polls miners directly, without the daemon.
 //
-// **Warum es die Datei gibt.** Der Miner-Reiter fiel auf Android weg, und die
-// Begruendung dafuer stand im Kopf von `DirectFeed.qml`: *"das Geraet steht im
-// Heimnetz, da hilft kein Direktbezug."* Das stimmt fuer ein Handy im
-// Mobilfunknetz. **Im selben WLAN steht es sehr wohl erreichbar da** -- und
-// dort ist ein Handy neben dem Miner genau der Ort, an dem man auf seine
-// Hashrate sehen will.
+// On Android the Miner tab has no daemon behind it. A phone on mobile data
+// cannot reach a miner on the home network, but a phone on the same Wi-Fi can,
+// and standing next to the miner is exactly where you want to see its hashrate.
 //
-// Der Aufbau ist bewusst deckungsgleich mit `poll_miners` und `probe_axeos`
-// im Daemon: `FeedState` schiebt beides durch dieselbe Auswertung, und
-// `MinerView` merkt nicht, woher die Zahlen kommen.
+// The structure mirrors `poll_miners` and `probe_axeos` in the daemon:
+// `FeedState` runs both through the same evaluation, so `MinerView` does not
+// know where the numbers come from.
 //
-// Was hier **nicht** geht und beim Daemon bleibt:
-//   cgminer  -- ein roher TCP-Sockel auf Port 4028. QML hat keine Sockel;
-//               das braucht C++ (`QTcpSocket`) und ist ein eigener Schritt.
-//   Suchlauf -- `--discover-miners` geht das Subnetz ab, ebenfalls mit
-//               Sockeln. Die Adresse kommt hier aus den Einstellungen.
+// Left to the daemon:
+//   cgminer:   a raw TCP socket on port 4028. QML has no sockets; this
+//              needs C++ (`QTcpSocket`).
+//   discovery: `--discover-miners` scans the subnet, also over sockets.
+//              Here the address comes from the settings.
 import QtQuick
 
 Item {
@@ -24,33 +21,31 @@ Item {
     visible: false
 
     property bool active: true
-    // Die Adressen, wie sie in den Einstellungen stehen.
+    // Addresses as entered in the settings.
     property var hosts: []
 
-    // Dieselben Werte wie im Daemon (MINER_INTERVAL, MINER_HISTORY,
-    // DOMAIN_SMOOTH). Stehen sie hier anders, laufen die beiden Wege
-    // auseinander, und niemand sieht es.
+    // Same values as the daemon (MINER_INTERVAL, MINER_HISTORY, DOMAIN_SMOOTH).
+    // If they differ, the two paths drift apart without anyone noticing.
     property int intervalMs: 5000
     property int historyMax: 180
     property int domainSmooth: 12
     property int timeoutMs: 4000
 
-    // --- Ergebnis, in der Form, die `FeedState` erwartet ------------------
+    // --- Result, in the shape `FeedState` expects ---
     property var miners: []
     property var minerTotal: ({})
     property var minerHistory: ({})
 
-    // Verlauf und Domaenenpuffer je Geraet. Kein `property`, weil daran keine
-    // Bindung haengen soll -- die Anzeige liest `minerHistory`, und das wird
-    // erst am Ende eines Durchlaufs gesetzt.
+    // History and domain buffers per device. Not a `property` because nothing
+    // should bind to them: the view reads `minerHistory`, which is only set at
+    // the end of a poll round.
     property var __hist: ({})
     property var __dom: ({})
-    // Der Verlauf, den das Geraet selbst fuehrt, je Adresse -- siehe
-    // `holeStatistik`.
+    // History kept by the device itself, per address. See `holeStatistik`.
     property var __geraet: ({})
 
-    // '1.23M' -> 1230000. Die Geraete melden die Bestleistung als Text mit
-    // Einheit. Wortgleich zu `parse_diff` im Daemon.
+    // '1.23M' -> 1230000. Devices report best difficulty as text with a unit.
+    // Same as `parse_diff` in the daemon.
     function parseDiff(v) {
         if (typeof v === "number")
             return v;
@@ -66,21 +61,19 @@ Item {
         return f === undefined ? zahl : zahl * f;
     }
 
-    // AxeOS meldet GH/s -- hier wird ueberall in H/s gerechnet.
+    // AxeOS reports GH/s; everything here is in H/s.
     function gh(v) {
         return typeof v === "number" ? v * 1e9 : null;
     }
 
     function normalisiere(url, d) {
-        // Die Momentanrate schwankt um rund zehn Prozent. Fuer die Anzeige ist
-        // der Zehnminutenwert der ehrlichere -- die Momentanrate bleibt
-        // daneben stehen.
+        // The instantaneous rate swings by about ten percent. The ten-minute value
+        // is the more honest one to show; the instantaneous rate is kept alongside.
         var avg = root.gh(d.hashRate_10m) || root.gh(d.hashRate_1m)
                 || root.gh(d.hashRate);
 
-        // **Aus der Stratum-Adresse nur den Wirt.** Der Benutzername enthaelt
-        // beim Solomining die Auszahlungsadresse -- die hat in keinem
-        // Zustand, keiner Anzeige und keinem Protokoll etwas verloren.
+        // Keep only the host of the stratum URL. For solo mining the user name
+        // contains the payout address, which must not end up in state, UI or logs.
         var pool = null;
         if (d.stratumURL) {
             var teile = String(d.stratumURL).split("//");
@@ -111,16 +104,15 @@ Item {
             "rejected": d.sharesRejected,
             "uptime": d.uptimeSeconds,
             "paused": d.miningPaused,
-            // Sekunden zwischen zwei Eintraegen in der eigenen Aufzeichnung
-            // des Geraets; 0 heisst: es zeichnet nicht auf.
+            // Seconds between two entries in the device's own log; 0 means it does not log.
             "statsFrequency": d.statsFrequency || 0,
             "pool": pool,
             "domains": (asics[0] && asics[0].domains) || []
         };
     }
 
-    // **Nicht erreichbar ist kein Fehler, sondern ein Zustand** -- die Geraete
-    // sind oft schlicht aus. Derselbe Satz steht im Daemon.
+    // Unreachable is a state, not an error: devices are often simply switched
+    // off. The daemon handles it the same way.
     function unerreichbar(url, grund) {
         return {
             "type": "axeos",
@@ -142,33 +134,29 @@ Item {
         return root.basis(url) + "/api/system/info";
     }
 
-    // **Den Verlauf fuehrt das Geraet, wenn man es laesst.** AxeOS ab 2.x
-    // schreibt selbst mit, sobald `statsFrequency` gesetzt ist -- bis zu
-    // `statsLimit` Eintraege, auf dem Bitaxe am 10.09.2026 720.
+    // AxeOS 2.x keeps its own history once `statsFrequency` is set, up to
+    // `statsLimit` entries (720 on a Bitaxe).
     //
-    // **`statsFrequency` ist nicht der Takt, sondern die Zielspanne.** Am
-    // selben Tag auf 60 gesetzt, kamen die Eintraege trotzdem im
-    // Sekundentakt. ESP-Miner (main/tasks/statistics_task.c) misst immer
-    // jede Sekunde; ist der Puffer voll, duennt es aeltere Eintraege aus,
-    // bis die Spanne `statsLimit * statsFrequency` erreicht ist -- hier
-    // zwoelf Stunden, hinten dichter als vorn. Der Verlauf waechst also nach
-    // dem Einschalten ueber zwoelf Stunden an, und die Abstaende sind
-    // ungleich; MinerChart zeichnet deshalb nach den Zeitstempeln. Selbst mitgeschrieben hat sie nur, solange
-    // sie offen war: nach jedem Start drei Punkte und drei gerade Striche,
-    // am 10.09.2026 als "nicht aussagekraeftig" gemeldet.
+    // `statsFrequency` is not the sample rate but the target span. ESP-Miner
+    // (main/tasks/statistics_task.c) always samples every second; once the buffer
+    // is full it thins out older entries until the span reaches
+    // `statsLimit * statsFrequency` (twelve hours here), denser at the recent
+    // end. So after enabling it the history grows over twelve hours and the
+    // spacing is uneven, which is why MinerChart plots by timestamp. Our own
+    // recording only covers the time the app was open, which after each start
+    // gives just a few points.
     //
-    // Nur die vier Spalten, die der Graph braucht: `columns` grenzt die
-    // Antwort ein, der Zeitstempel kommt immer mit. Die Reihenfolge der
-    // Spalten bestimmt das Geraet, nicht die Anfrage -- also nach `labels`
-    // lesen.
+    // Only the four columns the chart needs: `columns` limits the response, the
+    // timestamp always comes along. The device decides the column order, not the
+    // request, so read it from `labels`.
     //
-    // Der Zeitstempel zaehlt Millisekunden seit dem Start des Geraets, und
-    // `currentTimestamp` ist dieselbe Uhr jetzt. Die Differenz ist das Alter
-    // des Eintrags; eine Weltzeit kennt der Miner dafuer nicht.
+    // The timestamp counts milliseconds since device boot and `currentTimestamp`
+    // is the same clock now. The difference is the entry's age; the miner has no
+    // wall clock for this.
     function holeStatistik(url, jetzt) {
         var g = root.__geraet[url] || { "geholt": 0, "laeuft": 0 };
         root.__geraet[url] = g;
-        // Eine Anfrage, die nie zurueckkam, sperrt nicht fuer immer.
+        // A request that never returned must not block forever.
         if (g.laeuft && jetzt - g.laeuft < 30)
             return;
         g.laeuft = jetzt;
@@ -207,8 +195,7 @@ Item {
                 }
                 g.reihe = r;
             } catch (e) {
-                // Keine Statistik ist kein Fehler: dann bleibt es beim
-                // eigenen Mitschreiben.
+                // No statistics is not an error: fall back to our own recording.
             }
         };
         try {
@@ -220,9 +207,9 @@ Item {
         }
     }
 
-    // Ein Durchlauf ueber alle Adressen. Die Antworten kommen einzeln; erst
-    // wenn alle da sind (oder abgelaufen), wird das Ergebnis gesetzt -- sonst
-    // flackerte die Anzeige bei jedem Geraet einmal.
+    // One round over all addresses. Replies arrive one by one; the result is only
+    // set once all are in (or timed out), otherwise the view would flicker once
+    // per device.
     function lauf() {
         var liste = root.hosts || [];
         if (!root.active || liste.length === 0) {
@@ -245,12 +232,9 @@ Item {
             var fertig = false;
             var frist = null;
             function ab(satz) {
-                // **Die Frist muss auf beiden Wegen weg.** Sie wurde nur im
-                // Zeitablauf-Zweig zerstoert; nach einer Antwort lief sie
-                // weiter und feuerte spaeter ins Leere. Aufgefallen am
-                // 08.09.2026 am doppelten Protokoll -- zu jeder Meldung stand
-                // eine zweite, obwohl `ab()` nur die erste annimmt. Bei fuenf
-                // Sekunden Takt bleiben so 720 Objekte je Stunde liegen.
+                // Destroy the timeout on both paths. If it only goes away in the timeout
+                // branch, it keeps running after a reply and fires into nothing later. At a
+                // five-second interval that leaves 720 objects per hour behind.
                 if (frist) {
                     frist.stop();
                     frist.destroy();
@@ -277,10 +261,9 @@ Item {
                     ab(root.unerreichbar(url, String(e)));
                 }
             };
-            // Eigene Frist: `XMLHttpRequest` in QML kennt kein `timeout`, das
-            // sich verlaesslich melden wuerde. Ohne sie bliebe ein Durchlauf
-            // haengen, sobald ein Geraet nicht antwortet -- und `offen` ginge
-            // nie auf null.
+            // Own timeout: `XMLHttpRequest` in QML has no `timeout` that reports
+            // reliably. Without it a round would hang as soon as one device does not
+            // answer, and `offen` would never reach zero.
             frist = Qt.createQmlObject(
                 'import QtQuick; Timer { }', root, "DirectMiner.frist");
             frist.interval = root.timeoutMs;
@@ -312,9 +295,8 @@ Item {
                 live.push(m);
         }
 
-        // Den Verlauf des Geraets auffrischen, so oft es neue Eintraege
-        // haben kann -- hoechstens jede Minute. Die Antwort kommt erst im
-        // naechsten Durchlauf zum Tragen.
+        // Refresh the device history as often as it can have new entries, at most
+        // once a minute. The reply only takes effect in the next round.
         for (i = 0; i < gefunden.length; i++) {
             m = gefunden[i];
             if (!m || !m.online || !(m.statsFrequency > 0))
@@ -324,8 +306,8 @@ Item {
                 root.holeStatistik(m.id, jetzt);
         }
 
-        // Verlauf fortschreiben. Gerundet abgelegt, wie im Daemon -- der
-        // Zustand wird oft geschrieben, da zaehlt jede Stelle.
+        // Append to the history. Rounded like in the daemon: state is written often,
+        // every digit counts.
         var hist = root.__hist;
         for (i = 0; i < gefunden.length; i++) {
             m = gefunden[i];
@@ -352,8 +334,8 @@ Item {
             }
         }
 
-        // Hash-Domaenen glaetten -- dieselbe Begruendung wie im Daemon: die
-        // Einzelmessung schwankt zu stark, um daraus ein Bild zu machen.
+        // Smooth the hash domains, same reason as in the daemon: a single reading
+        // swings too much to draw anything from it.
         var dom = root.__dom;
         for (i = 0; i < gefunden.length; i++) {
             m = gefunden[i];
@@ -381,7 +363,7 @@ Item {
             m.domainSamples = buf.length;
         }
 
-        // Verlaeufe verschwundener Geraete nicht ewig mitschleppen.
+        // Drop histories of devices that disappeared.
         var bekannt = {};
         for (i = 0; i < gefunden.length; i++)
             if (gefunden[i])
@@ -413,28 +395,22 @@ Item {
             "hashRate": summeHr,
             "bestDiff": beste
         };
-        // **Auch die Arrays kopieren, nicht nur die Abbildung.** QML
-        // vergleicht Arrays nach Kennung, nicht nach Inhalt -- und
-        // `MinerChart` zeichnet neu bei `onHrChanged`:
+        // Copy the arrays too, not just the map. QML compares arrays by identity,
+        // not content, and `MinerChart` repaints on `onHrChanged`:
         //
         //     readonly property var hr: (hist && hist.hr) || []
         //     onHrChanged: canvas.requestPaint()
         //
-        // Wer in dasselbe Array hineinschiebt, aendert dessen Kennung nicht.
-        // Damit feuerte `onHrChanged` nie, die Leinwand zeichnete nie, und
-        // der Graph blieb **leer** -- am 08.09.2026 auf einem Galaxy A55
-        // gemeldet ("kerzengerade").
+        // Pushing into the same array keeps its identity, so `onHrChanged` never
+        // fires and the chart stays empty. The daemon path does not have this
+        // problem because every poll returns a fresh JSON object.
         //
-        // Der Daemon-Weg fiel nicht auf, weil dort jede Abfrage ein frisches
-        // JSON-Objekt liefert: neue Arrays, neue Kennung, Neuzeichnen.
+        // Copying five arrays of at most 180 numbers every five seconds costs nothing
+        // measurable.
         //
-        // Fuenf Arrays von hoechstens 180 Zahlen alle fuenf Sekunden zu
-        // kopieren kostet nichts, was messbar waere.
-        //
-        // Fuehrt das Geraet einen Verlauf, ist er die Grundlage, und die
-        // eigenen Punkte kommen nur fuer die Zeit nach seinem letzten
-        // Eintrag dazu: dort liegt der aktuelle Stand, den es noch nicht
-        // aufgeschrieben hat.
+        // If the device keeps a history, it is the base, and our own points are only
+        // added for the time after its last entry: that is the current state it has
+        // not written down yet.
         var kopie = ({});
         var felderKopie = ["t", "hr", "hrNow", "temp", "err"];
         schluessel = Object.keys(hist);
@@ -459,23 +435,14 @@ Item {
         root.minerHistory = kopie;
     }
 
-    // **Auf den Inhalt sehen, nicht auf die Kennung.** `minerHosts` wird aus
-    // `minerHostsRaw` gerechnet und gibt bei jeder Auswertung ein **neues**
-    // Array zurueck. QML vergleicht Arrays nach Kennung, nicht nach Inhalt --
-    // also feuerte `onHostsChanged` bei jeder Neuauswertung der Bindung, und
-    // jedes Mal lief ein Durchlauf an.
+    // Compare content, not identity. `minerHosts` is computed from
+    // `minerHostsRaw` and returns a new array on every evaluation. QML compares
+    // arrays by identity, so `onHostsChanged` fires on every re-evaluation of the
+    // binding. Reacting to each of those would poll several times per second
+    // (flat chart, far too many requests to the miner) and wipe the history.
     //
-    // Gemessen am 08.09.2026: die Zeitachse des Verlaufs sagte "60 Min" nach
-    // zweieinhalb Minuten Laufzeit -- also rund fuenf Abfragen je Sekunde
-    // statt einer alle fuenf. **Die Kurve war dadurch kerzengerade**, denn die
-    // Werte lagen Millisekunden auseinander. Dazu fragte es den Miner
-    // fuenfundzwanzigmal so oft ab wie gemeint.
-    //
-    // Der Verlauf wird nur geleert, wenn sich die Liste wirklich geaendert
-    // hat; sonst waere er bei jeder Neuauswertung weg.
-    // Die Liste als **Zeichenkette**. Alles, was sonst an `hosts` haengen
-    // wuerde, haengt daran: Zeichenketten vergleicht QML nach Inhalt, Arrays
-    // nach Kennung.
+    // The history is only cleared when the list really changed. `hostsKey` holds
+    // the list as a string, and strings are compared by content.
     property string hostsKey: ""
 
     onHostsChanged: {
@@ -491,18 +458,10 @@ Item {
 
     Timer {
         interval: root.intervalMs
-        // **Nicht `root.hosts` in dieser Bedingung.** Das Array ist bei jeder
-        // Auswertung ein neues Objekt, `running` wurde also neu zugewiesen --
-        // und eine neu gestartete Uhr mit `triggeredOnStart` feuert sofort.
-        // Damit loeste jede Neuauswertung eine Abfrage aus.
-        //
-        // Am 08.09.2026 gemessen: die Zeitachse des Verlaufs sagte "60 Min"
-        // nach zweieinhalb Minuten Laufzeit, also rund fuenf Abfragen je
-        // Sekunde statt einer alle fuenf. **Die Kurve war dadurch
-        // kerzengerade** -- die Werte lagen Millisekunden auseinander -- und
-        // der Miner wurde fuenfundzwanzigmal so oft gefragt wie gemeint.
-        //
-        // `hostsKey` ist eine Zeichenkette und wird nach Inhalt verglichen.
+        // Do not use `root.hosts` here. The array is a new object on every
+        // evaluation, so `running` would be reassigned, and a restarted timer with
+        // `triggeredOnStart` fires at once: every re-evaluation would trigger a poll.
+        // `hostsKey` is a string and is compared by content.
         running: root.active && root.hostsKey.length > 0
         repeat: true
         triggeredOnStart: true

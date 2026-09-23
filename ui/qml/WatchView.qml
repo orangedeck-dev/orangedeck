@@ -1,16 +1,14 @@
-// Beobachtete Wallets -- **ausschliesslich betrachtend**.
+// Watched wallets, strictly read-only.
 //
-// Der verbindliche Grundsatz des Projekts (ZIELBILD.md, 01.09.2026): die
-// Anwendung bekommt nie etwas in die Hand, mit dem sich Geld bewegen liesse.
-// Hier steht deshalb nur ein erweiterter **oeffentlicher** Schluessel; die
-// Adressen werden im Daemon aus reiner Punktarithmetik abgeleitet. Es gibt im
-// ganzen Programm keine Zeile, die signieren koennte.
+// Core rule of the project (ZIELBILD.md): the app never gets hold of
+// anything that could move money. So only an extended public key is used
+// here; the daemon derives the addresses with plain point arithmetic.
+// There is no line anywhere in the program that could sign.
 //
-// Eingetragen wird ueber die Kommandozeile, nicht hier: der Dienst nimmt
-// nichts entgegen, er antwortet nur. Ein Schreibweg waere die erste
-// Angriffsflaeche.
+// Wallets are added on the command line, not here: the daemon accepts
+// nothing, it only answers. A write path would be the first attack surface.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "money.js" as Money
 import "strings.js" as Tr
@@ -22,13 +20,13 @@ pragma ComponentBehavior: Bound
 Item {
     id: root
 
-    // Tastatur: Bild auf/ab, Pos1, Ende (roll.js; aus Main.qml ueber FeedTabs)
+    // Keyboard: Page Up/Down, Home, End (roll.js, forwarded from Main.qml via FeedTabs)
     function rollen(wie) {
         return Roll.rollen(flick, wie);
     }
 
     property var feed: null
-    // Sieht jemand hin? Sonst wird nicht nachgefragt.
+    // Is anyone looking? Otherwise nothing is requested.
     property bool live: true
     property color textColor: "#f2eef8"
     property color dimColor: "#9a94a6"
@@ -38,12 +36,12 @@ Item {
     property real scaleUnit: Math.max(10, Math.min(width / 26, height / 16))
     readonly property real uiFont: Math.max(11, Math.min(14, scaleUnit * 0.62))
 
-    // Transaktion oder Adresse im Explorer oeffnen
+    // Open a transaction or address in the explorer
     signal txPicked(string txid)
     signal addressPicked(string address)
 
-    // In die Zwischenablage -- wie im Explorer ueber ein unsichtbares Textfeld,
-    // QtQuick hat dafuer nichts Eigenes.
+    // Copy to clipboard: like in the explorer via an invisible text field,
+    // QtQuick has nothing built in for this.
     TextEdit {
         id: clipboard
 
@@ -72,7 +70,7 @@ Item {
     property var wallets: []
     property bool busy: false
     property string error: ""
-    property int shown: 0            // welche Wallet, wenn es mehrere gibt
+    property int shown: 0            // which wallet, if there are several
     property string tab: "txs"       // txs | addr
     property bool __pending: false
 
@@ -81,9 +79,9 @@ Item {
     property string lang: "de"
     property string btcZeichen: "\u20BF"
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // This matters: "1.234" means either one thousand two hundred thirty-four
+    // or one point two three four depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -147,9 +145,8 @@ Item {
 
     Component.onCompleted: refresh()
 
-    // Fuenf Sekunden reichen: der Daemon tastet alle fuenf Minuten ab und
-    // ausserdem nach jedem Blockfund. Haeufiger zu fragen wuerde nichts
-    // Neues bringen.
+    // Five seconds is enough: the daemon scans every five minutes and after
+    // every new block. Asking more often would bring nothing new.
     Timer {
         interval: 5000
         repeat: true
@@ -172,7 +169,7 @@ Item {
             width: flick.width
             spacing: root.uiFont
 
-            // ------------------------------------- noch nichts eingetragen
+            // ------------------------------------- nothing configured yet
             Column {
                 width: parent.width
                 spacing: root.uiFont * 0.6
@@ -236,7 +233,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------ Wallet-Wahl
+            // ------------------------------------------------ Wallet selection
             Row {
                 spacing: root.uiFont * 0.6
                 visible: root.wallets.length > 1
@@ -277,7 +274,7 @@ Item {
                 }
             }
 
-            // ---------------------------------------------------- Kopfteil
+            // ---------------------------------------------------- Header
             Column {
                 width: parent.width
                 spacing: root.uiFont * 0.25
@@ -341,7 +338,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------------- Kennzahlen
+            // ------------------------------------------------- Stats
             Flow {
                 width: parent.width
                 spacing: root.uiFont * 1.8
@@ -383,7 +380,7 @@ Item {
                 }
             }
 
-            // ---------------------------------- naechste Empfangsadresse
+            // ---------------------------------- next receive address
             Column {
                 width: parent.width
                 spacing: root.uiFont * 0.2
@@ -425,7 +422,7 @@ Item {
                 }
             }
 
-            // ----------------------------------------------------- Umschalter
+            // ----------------------------------------------------- Toggle
             Row {
                 spacing: root.uiFont * 1.2
                 visible: root.one !== null
@@ -479,7 +476,7 @@ Item {
                 }
             }
 
-            // ------------------------------------------ Transaktionsliste
+            // ------------------------------------------ Transaction list
             Column {
                 width: parent.width
                 spacing: root.uiFont * 0.25
@@ -519,8 +516,7 @@ Item {
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: root.uiFont * 9
-                                // Das Vorzeichen ist die Aussage: was die
-                                // Wallet gewonnen oder verloren hat.
+                                // The sign is the point: what the wallet gained or lost.
                                 text: (zeile.modelData.d > 0 ? "+" : "")
                                       + root.btcZeichen + " " + root.btc(zeile.modelData.d)
                                 color: zeile.modelData.d > 0 ? root.goodColor
@@ -560,7 +556,7 @@ Item {
                 }
             }
 
-            // ----------------------------------------------- Adressliste
+            // ----------------------------------------------- Address list
             Column {
                 width: parent.width
                 spacing: root.uiFont * 0.25
@@ -590,8 +586,8 @@ Item {
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: root.uiFont * 4
-                                // Wechselgeld gehoert der Wallet selbst -- das
-                                // sieht man den Adressen sonst nicht an.
+                                // Change belongs to the wallet itself, which the addresses alone do
+                                // not reveal.
                                 text: Tr.t(adrZeile.modelData.c === 1 ? "wallet.changeN"
                                                                       : "wallet.recvN",
                                            root.lang, adrZeile.modelData.i)
@@ -638,7 +634,7 @@ Item {
                 }
             }
 
-            // -------------------------------------------------- Fussnote
+            // -------------------------------------------------- Footnote
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap

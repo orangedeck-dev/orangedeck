@@ -4,24 +4,22 @@ import qs.Widgets
 import qs.Modules.Plugins
 import "strings.js" as Tr
 
-// Einstellungen des Plugins in DMS.
+// Plugin settings in DMS.
 //
-// **Der grosse Teil steht nicht hier**, sondern auf der Seite "Einstellungen"
-// im Dashboard-Tab und im Fenster -- dort ist er nach Ansichten geordnet und
-// in allen Sprachen. Hier bleibt, was DMS selbst betrifft: die Ansicht eines
-// Desktop-Widgets und dessen Aussehen.
+// Most settings are not here but on the "Settings" page in the dashboard
+// tab and the window, grouped by view and translated into all languages.
+// This page only holds what concerns DMS itself: the view of a desktop
+// widget and its appearance.
 //
-// DMS legt jede Desktop-Widget-Instanz getrennt ab. Wer den Feed dreimal aufs
-// Desktop legt, kann jedem Fenster eine andere Ansicht geben.
+// DMS stores each desktop widget instance separately. With the feed on
+// the desktop three times, each window can show a different view.
 PluginSettings {
     id: seite
 
     pluginId: "orangedeck"
 
-    // **Dieselbe Sprache wie die Ansichten.** Bis zum 18.09.2026 stand diese
-    // Seite als einzige nur auf Deutsch da, waehrend nebenan dreizehn
-    // Sprachen liefen. Der Wert liegt in derselben Ablage wie alle anderen
-    // Einstellungen des Plugins; leer heisst "die von DMS", genau wie in
+    // Same language as the views. The value lives in the same storage as all
+    // other plugin settings; empty means "the DMS language", as in
     // `OrangeDeckWidget.qml`.
     readonly property string lang: (seite.pluginService
         ? String(seite.pluginService.loadPluginData("orangedeck", "lang", "") || "")
@@ -82,11 +80,10 @@ PluginSettings {
         defaultValue: true
     }
 
-    // Gleicher Schluessel wie "Weichzeichnung hinter der Schrift" auf der
-    // Einstellungsseite der Ansicht: aus heisst, die Kaestchen hinter Kopf,
-    // Blockangaben und Legende fallen ganz weg. Das Desktop-Widget hat keine
-    // Reiterzeile und damit keine eigene Einstellungsseite, darum steht er
-    // auch hier.
+    // Same key as "Blur behind text" on the view's settings page: off means
+    // the boxes behind header, block info and legend are dropped entirely.
+    // The desktop widget has no tab bar and so no settings page of its own,
+    // which is why the option is repeated here.
     ToggleSetting {
         settingKey: "frosted"
         label: seite.t("set.blur")

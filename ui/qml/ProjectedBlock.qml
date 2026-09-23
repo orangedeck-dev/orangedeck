@@ -1,18 +1,18 @@
-// Der geplante Block, lebendig: die Kachelgrafik dessen, was gerade als
-// naechstes in einen Block passen wuerde -- und was sich daran aendert.
+// The projected block, live: the tile graphic of what would fit into the
+// next block right now, and what changes in it.
 //
-// Zwei Quellen, beide ueber den Daemon:
+// Two sources, both through the daemon:
 //
-//   die Kennzahlen  aus dem Zustand (`feed.projected`). Sie kommen ueber den
-//                   WebSocket herein und stehen damit ohne eigene Abfrage
-//                   bereit, im Takt des Zustands.
-//   die Kacheln     ueber `/lookup/projectedtiles/<rang>`. Erst die Abfrage
-//                   laesst den Daemon `track-mempool-block` abonnieren; hoert
-//                   sie auf, meldet er sich nach zwanzig Sekunden von selbst
-//                   wieder ab. Deshalb wird **nur gefragt, solange jemand
-//                   hinsieht** -- der Strom kostet 7,8 kB/s.
+//   the figures  from the state (`feed.projected`). They arrive over the
+//                WebSocket, so they need no request of their own and update
+//                at the pace of the state.
+//   the tiles    from `/lookup/projectedtiles/<rank>`. Only this request makes
+//                the daemon subscribe to `track-mempool-block`; once requests
+//                stop, it unsubscribes by itself after twenty seconds. So it
+//                only asks while someone is looking, because the stream costs
+//                7.8 kB/s.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 
@@ -23,14 +23,14 @@ Column {
 
     property var feed: null
     property int rank: 0
-    // Sieht jemand hin? Ohne das laeuft die Abfrage im Verborgenen weiter --
-    // genau der Fehler, der den Dashboard-Tab 7,4 % CPU gekostet hat.
+    // Is anyone looking? Without this the polling keeps running while hidden,
+    // which cost the dashboard tab 7.4 % CPU.
     property bool live: true
     property int refreshMs: 2000
     property bool showHeader: true
     property real tileHeight: 0
-    // Kachelfarbe: "fee" oder "type" (Mempool-Goggles). Wird von aussen
-    // gehalten, damit die Wahl beim Blaettern durch den Explorer bleibt.
+    // Tile color: "fee" or "type" (mempool goggles). Held by the parent so the
+    // choice survives paging through the explorer.
     property string colorMode: "fee"
 
     property color textColor: "#f2eef8"
@@ -43,16 +43,16 @@ Column {
     signal txPicked(string txid)
     signal colorModeRequested(string mode)
 
-    // Die Kennzahlen kommen aus dem Zustand und aendern sich damit laufend.
+    // The figures come from the state and change continuously.
     readonly property var info: (feed && feed.projected && feed.projected.length > rank)
         ? feed.projected[rank] : null
-    // Der letzte geplante Block ist ein Sammelposten: dort steckt der ganze
-    // Rest des Mempools, oft ein Vielfaches einer Blockgroesse.
+    // The last projected block is a catch-all: it holds the whole rest of the
+    // mempool, often several block sizes.
     readonly property bool sammelposten: info && info.blockVSize > 1.05e6
 
     property var tiles: null
-    // Der Stand, auf den sich die naechste Abfrage bezieht. Der Daemon
-    // schickt dann nur die Aenderungen seitdem.
+    // The revision the next request refers to. The daemon then sends only the
+    // changes since then.
     property int seq: 0
     property string error: ""
     property bool busy: false
@@ -61,9 +61,9 @@ Column {
 
     spacing: uiFont * 0.5
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator in the notation of the language: German uses a dot,
+    // English a comma. This is not cosmetic, "1.234" means either one thousand
+    // two hundred thirty-four or one point two, depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -75,7 +75,7 @@ Column {
         if (root.tiles === null)
             root.busy = true;
         var r = root.rank;
-        // Beim ersten Mal die Vollform, danach nur noch die Aenderungen.
+        // Full snapshot the first time, deltas after that.
         var frage = String(r) + ((root.tiles && root.seq > 0) ? "-" + root.seq : "");
         root.feed.lookup("projectedtiles", frage, function (d, err) {
             root.__pending = false;
@@ -93,15 +93,14 @@ Column {
                 root.tiles = d;
                 return;
             }
-            // Nichts passiert -- dann auch nichts neu rechnen und nichts neu
-            // zeichnen.
+            // Nothing changed, so skip recomputing and repainting.
             if (!(d.txs && d.txs.length) && !(d.removed && d.removed.length)) {
                 root.unveraendert = true;
                 return;
             }
             root.unveraendert = false;
-            // Schlaegt das Einarbeiten fehl (etwa weil noch keine Packung
-            // steht), beim naechsten Mal die Vollform holen.
+            // If applying the delta fails (e.g. no packing exists yet), fetch the full
+            // snapshot next time.
             if (!tileView.applyDelta(d))
                 root.seq = 0;
         });
@@ -128,7 +127,7 @@ Column {
         onTriggered: root.refresh()
     }
 
-    // ----------------------------------------------------------- Kopfzeile
+    // ----------------------------------------------------------- Header
     Item {
         width: parent.width
         height: root.showHeader ? headRow.height : 0
@@ -147,10 +146,9 @@ Column {
                 font.pixelSize: root.uiFont * 1.05
             }
 
-            // Der Punkt zeigt, dass mitgehoert wird. Bewusst **ohne**
-            // Pulsschlag: eine endlose Animation haelt die Bildwiederholung
-            // bei sechzig Bildern je Sekunde -- nachgemessen 5 % CPU fuer
-            // einen Punkt von sechs Pixeln Kantenlaenge.
+            // The dot shows the feed is live. Deliberately without a pulse: an endless
+            // animation keeps rendering at sixty frames per second, which measured 5 %
+            // CPU for a six pixel dot.
             Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: root.uiFont * 0.45
@@ -182,7 +180,7 @@ Column {
         font.pixelSize: root.uiFont * 0.8
     }
 
-    // Was sich seit der letzten Abfrage getan hat
+    // What changed since the last request
     Text {
         width: parent.width
         text: {

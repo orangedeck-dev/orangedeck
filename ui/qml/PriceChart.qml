@@ -1,12 +1,12 @@
-// Der Kursverlauf: eine Linie mit Zeitraumwahl und Ablesen am Zeiger.
+// Price history: a single line with a span picker and a readout under the pointer.
 //
-// Die Daten kommen ausgeduennt herein -- hoechstens 360 Punkte, egal ob der
-// Zeitraum ein Tag oder sechzehn Jahre ist. Ausgeduennt wird im Dienst
-// (`price_series`) oder im Direktbezug (`DirectFeed.__preisReihe`), nie hier:
-// eine Kurve von 800 Punkten Breite hat von 33.299 Punkten nichts, und das
-// `JSON.parse` der Vollform kostete gemessen 6 % CPU.
+// The data arrives already thinned to at most 360 points, whether the span is
+// one day or sixteen years. Thinning happens in the service (`price_series`)
+// or in the direct feed (`DirectFeed.__preisReihe`), never here: a curve
+// 800 px wide gains nothing from 33,299 points, and running `JSON.parse` on
+// the full series cost about 6 % CPU.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only `import QtQuick`, so this also runs on Android.
 import QtQuick
 import "money.js" as Money
 import "strings.js" as Tr
@@ -18,10 +18,10 @@ Item {
     property var feed: null
     property string lang: "de"
     property string currency: "eur"
-    // 24h | 7d | 30d | 90d | 1y | max -- der Wirt haelt ihn, damit er ueber
-    // Sitzungen bleibt
+    // 24h | 7d | 30d | 90d | 1y | max. The host owns it so it survives
+    // across sessions.
     property string span: "30d"
-    // Sieht niemand hin, wird auch nichts geholt
+    // Nothing is fetched while nobody is looking
     property bool live: true
 
     property color textColor: "#e6e0e9"
@@ -29,7 +29,7 @@ Item {
     property color accentColor: "#f7931a"
     property color lineColor: "#2a2a38"
     property real baseFont: 12
-    // Mindesthoehe der Tippflaeche der Zeitraum-Knoepfe, 0 = wie gezeichnet
+    // Minimum tap height of the span buttons, 0 = as drawn
     property real minTap: 0
 
     signal spanRequested(string s)
@@ -61,7 +61,7 @@ Item {
             m = Math.max(m, root.punkte[i][1]);
         return m === -Infinity ? 0 : m;
     }
-    // Veraenderung ueber den Zeitraum, in Prozent
+    // Change over the span, in percent
     readonly property real wandel: {
         if (root.punkte.length < 2)
             return 0;
@@ -69,11 +69,11 @@ Item {
         return a ? (b - a) / a * 100 : 0;
     }
 
-    // **Nur die letzte Anfrage zaehlt.** Beim Start fragt der Graph mit der
-    // Vorgabe "30d", bevor die Einstellungen geladen sind, und gleich danach
-    // mit dem gespeicherten Zeitraum. Im Direktbezug laedt jede der beiden
-    // den ganzen Datensatz (1,5 MB), und welche zuletzt ankommt, gewann: am
-    // 10.09.2026 stand auf dem Telefon "90 T" gewaehlt ueber dreissig Tagen.
+    // Only the latest request counts. On startup the chart asks with the
+    // default "30d" before settings are loaded, and right after that with the
+    // saved span. In the direct feed each request loads the whole data set
+    // (1.5 MB), and whichever arrived last would win, so the picker could
+    // show "90d" over a thirty-day curve.
     property int __anfrage: 0
 
     function holen() {
@@ -101,8 +101,8 @@ Item {
     onLiveChanged: if (root.live) root.holen()
     Component.onCompleted: root.holen()
 
-    // Der obere Rand wandert; unten aendert sich nichts mehr. Fuenf Minuten
-    // reichen -- der Dienst holt selbst nur stuendlich nach.
+    // Only the recent end changes; older data is fixed. Five minutes is
+    // plenty, the service itself only refreshes hourly.
     Timer {
         interval: 300000
         repeat: true
@@ -110,11 +110,10 @@ Item {
         onTriggered: root.holen()
     }
 
-    // ------------------------------------------------------- Zeitraumwahl
-    // **Passen Kopf und Knoepfe nicht nebeneinander, kommen die Knoepfe in
-    // eine eigene Zeile darunter.** Seit sie am Telefon fuer den Finger
-    // groesser sind (10.09.2026), lagen sie hochkant ueber dem Kurs: "24 Std"
-    // stand quer auf "77.219 $".
+    // ------------------------------------------------------- span picker
+    // If the header and the buttons do not fit side by side, the buttons move
+    // to their own row below. With finger-sized buttons on a phone they
+    // otherwise overlapped the price.
     readonly property bool gestapelt: kopf.width + wahl.schalterBreite + root.baseFont > root.width
 
     TileGoggles {
@@ -127,7 +126,7 @@ Item {
         alignRight: true
         modes: root.spans
         mode: root.span
-        // Die Zeitraeume brauchen keine Beschriftung -- "24 Std" sagt genug
+        // The spans need no label, "24h" says enough
         labelKey: ""
         counts: []
         total: 0
@@ -142,11 +141,11 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------ Kopfzeile
+    // ------------------------------------------------------------ header
     //
-    // **Flach wird nebeneinander.** Gestapelt kostet der Kopf zwei Zeilen, und
-    // die fehlen der Kurve: im Dashboard-Tab blieben ihr davon noch vierzig
-    // Punkte, Hoechst- und Tiefstwert lagen uebereinander.
+    // When the chart is short, price and change sit side by side. Stacked,
+    // the header takes two rows away from the curve, and in the dashboard
+    // tab the max and min labels ended up on top of each other.
     readonly property bool flach: root.height < 200
 
     Grid {
@@ -170,8 +169,8 @@ Item {
 
         Text {
             visible: root.punkte.length > 1
-            // Zwei Nachkommastellen an einer fuenfstelligen Prozentzahl sind
-            // Rauschen -- ueber hundert Prozent werden sie weggelassen.
+            // Two decimals on a five-digit percentage are noise, so they
+            // are dropped above one hundred percent.
             text: (root.wandel >= 0 ? "+" : "−")
                   + Tr.fixed(Math.abs(root.wandel),
                              Math.abs(root.wandel) >= 100 ? 0 : 2, root.lang) + " %"
@@ -180,7 +179,7 @@ Item {
         }
     }
 
-    // --------------------------------------------------------------- Kurve
+    // --------------------------------------------------------------- curve
     Canvas {
         id: leinwand
 
@@ -188,17 +187,17 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        // Kopfzeile links und Zeitraumwahl rechts stehen nebeneinander und
-        // sind verschieden hoch. Ohne das Maximum schob sich der Hoechstwert
-        // der Kurve unter die Prozentangabe.
+        // Header on the left and span picker on the right sit side by side
+        // at different heights. Without the max, the curve's top value slid
+        // under the percentage.
         anchors.topMargin: (root.gestapelt ? kopf.height + root.baseFont * 0.5 + wahl.height
                                            : Math.max(kopf.height, wahl.height))
                            + root.baseFont * 0.6
         antialiasing: true
 
-        // Breit genug fuer die laengste Beschriftung, gemessen statt geraten:
-        // "69.660 €" ist bei grosser Schrift dreimal so breit wie eine feste
-        // Zahl von Zeichen vermuten laesst, und die Kurve lief darunter durch.
+        // Wide enough for the longest label, measured rather than guessed:
+        // with a large font "69.660 €" is far wider than a fixed character
+        // count suggests, and the curve ran underneath it.
         readonly property real padL: mass.implicitWidth + 6
         readonly property real padR: 2
         readonly property real padT: root.baseFont * 0.8
@@ -225,14 +224,12 @@ Item {
             if (n < 2)
                 return;
 
-            // **Feine Linien auf runden Betraegen, zur Orientierung.**
-            // Gewuenscht am 10.09.2026: "alle 5000 $ eine feine Linie". Die
-            // Schrittweite ist gerechnet, nicht fest -- fest 5000 gaebe im
-            // Tagesverlauf keine einzige Linie und bei "Max" zwei Dutzend.
-            // Genommen wird die kleinste runde Weite (1, 2, 2,5 oder 5 mal
-            // einer Zehnerpotenz) fuer hoechstens rund fuenf Linien; bei
-            // 62.553 bis 81.476 $ sind das genau 5000. Blasser als die
-            // Grundlinien, damit die Kurve nicht in einem Gitter untergeht.
+            // Faint lines at round amounts, for orientation. The step is
+            // computed, not fixed: a fixed 5000 would give no line at all
+            // for one day and two dozen for "max". It takes the smallest
+            // round step (1, 2, 2.5 or 5 times a power of ten) that gives at
+            // most about five lines; for 62,553 to 81,476 $ that is 5000.
+            // Fainter than the base lines so the curve does not drown in a grid.
             var schritt = root.rasterSchritt(root.minWert, root.maxWert);
             if (schritt > 0) {
                 ctx.strokeStyle = Qt.rgba(root.dimColor.r, root.dimColor.g,
@@ -242,7 +239,7 @@ Item {
                 for (var v = Math.ceil(root.minWert / schritt) * schritt;
                      v < root.maxWert; v += schritt) {
                     var ry = Math.round(yBei(v)) + 0.5;
-                    // Nicht auf die Grundlinien oben und unten legen
+                    // Skip lines that would sit on the top or bottom base line
                     if (ry - padT < 4 || height - padB - ry < 4)
                         continue;
                     ctx.moveTo(padL, ry);
@@ -250,10 +247,10 @@ Item {
                 }
                 ctx.stroke();
 
-                // Beschriftet, links wie Hoechst- und Tiefstwert, aber
-                // leichter als diese: sie sind Orientierung, keine Aussage.
-                // Liegt eine zu nah an den Grenzwerten, bleibt sie ohne
-                // Zahl -- zwei Beschriftungen uebereinander liest niemand.
+                // Labelled on the left like max and min, but lighter, since
+                // they are orientation, not data. A line too close to the
+                // max or min gets no number, two overlapping labels are
+                // unreadable.
                 ctx.fillStyle = Qt.rgba(root.dimColor.r, root.dimColor.g,
                                         root.dimColor.b, 0.5);
                 ctx.font = (root.baseFont - 3) + "px " + Fonts.sansCss();
@@ -268,7 +265,7 @@ Item {
                 }
             }
 
-            // Grundlinien oben und unten: Hoechst- und Tiefstwert.
+            // Base lines at top and bottom: max and min.
             ctx.strokeStyle = root.lineColor;
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -278,7 +275,7 @@ Item {
             ctx.lineTo(width - padR, height - padB - 0.5);
             ctx.stroke();
 
-            // Flaeche unter der Kurve, nach unten auslaufend
+            // Filled area under the curve, fading downwards
             var g = ctx.createLinearGradient(0, padT, 0, height - padB);
             g.addColorStop(0, Qt.rgba(root.accentColor.r, root.accentColor.g,
                                       root.accentColor.b, 0.28));
@@ -305,14 +302,14 @@ Item {
             }
             ctx.stroke();
 
-            // Hoechst- und Tiefstwert an den linken Rand
+            // Max and min on the left edge
             ctx.fillStyle = root.dimColor;
             ctx.font = (root.baseFont - 2) + "px " + Fonts.sansCss();
             ctx.textAlign = "left";
             ctx.fillText(Tr.price1(root.maxWert, root.zeichen, root.lang), 0, padT + root.baseFont * 0.7);
             ctx.fillText(Tr.price1(root.minWert, root.zeichen, root.lang), 0, height - padB - 2);
 
-            // Anfang und Ende der Zeitachse
+            // Start and end of the time axis
             ctx.textAlign = "left";
             ctx.fillText(root.datum(root.punkte[0][0]), padL, height - 2);
             ctx.textAlign = "right";
@@ -320,28 +317,27 @@ Item {
         }
     }
 
-    // Nur zum Messen: dieselbe Schrift, derselbe Text wie die Beschriftung am
-    // linken Rand der Kurve.
+    // Measurement only: same font and text as the labels on the left edge
+    // of the curve.
     Text {
         id: mass
 
         visible: false
         text: Tr.price1(root.maxWert || 88888, root.zeichen, root.lang)
-        // Dieselbe Schrift wie auf der Leinwand -- siehe MarketView.qml:
-        // gemessen mit der Standardschrift, gezeichnet mit `Fonts.sansCss()`,
-        // und unter Ubuntu und Fedora ist das nicht dieselbe.
+        // Same font as on the canvas, see MarketView.qml: measuring with the
+        // default font and drawing with `Fonts.sansCss()` gives different
+        // widths on Ubuntu and Fedora.
         font.family: Fonts.sans()
         font.pixelSize: root.baseFont - 2
     }
 
-    // Runde Schrittweite fuer die feinen Linien, siehe onPaint
+    // Round step for the faint lines, see onPaint
     function rasterSchritt(lo, hi) {
         var spanne = hi - lo;
         if (!(spanne > 0))
             return 0;
-        // Hoechstens rund fuenf Linien. Mit vier waren es bei neunzig Tagen
-        // (58.348 bis 81.272 $) nur 10.000er-Schritte und eine einzige
-        // beschriftete Linie; gewuenscht war "alle 5000 $".
+        // At most about five lines. With four, ninety days
+        // (58,348 to 81,272 $) gave 10,000 steps and only one labelled line.
         var roh = spanne / 5;
         var zehner = Math.pow(10, Math.floor(Math.log(roh) / Math.LN10));
         var stufen = [1, 2, 2.5, 5, 10];
@@ -354,11 +350,11 @@ Item {
 
     function datum(ts) {
         var d = new Date(ts * 1000);
-        // Im Tagesverlauf sagt ein Datum nichts -- dort zaehlt die Uhrzeit
+        // For a single day the date says nothing, the time does
         return Qt.formatDateTime(d, root.span === "24h" ? "HH:mm" : Tr.datum(root.lang));
     }
 
-    // ------------------------------------------------- Ablesen am Zeiger
+    // ------------------------------------------------- pointer readout
     property int zeigerIndex: -1
 
     MouseArea {
@@ -424,7 +420,7 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------ Hinweise
+    // ------------------------------------------------------------ notices
     Text {
         anchors.centerIn: parent
         visible: root.laden && !root.punkte.length
@@ -444,9 +440,9 @@ Item {
         font.pixelSize: root.baseFont - 1
     }
 
-    // Die fuenf Waehrungen ausser EUR und USD stehen nicht im Datensatz --
-    // sie entstehen aus dem Dollarwert mit dem **heutigen** Wechselkurs. Ueber
-    // Jahre ist das eine Umrechnung, keine Wahrheit; also steht es dabei.
+    // The five currencies other than EUR and USD are not in the data set.
+    // They are derived from the dollar value at today's exchange rate. Over
+    // years that is a conversion, not the real price, so the chart says so.
     Text {
         anchors.left: parent.left
         anchors.bottom: parent.bottom

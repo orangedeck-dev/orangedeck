@@ -1,20 +1,20 @@
-// Das Netz ueber einen Zeitraum: die Hashrate als Flaeche, die Schwierigkeit
-// als Treppe darueber -- auf **derselben** Achse.
+// The network over a time span: hashrate as an area, difficulty as a step
+// line above it, both on the same axis.
 //
-// Die Schwierigkeit D setzt eine Rechenleistung voraus: ein Block braucht im
-// Mittel D * 2^32 Versuche und soll alle 600 Sekunden kommen, also
-// D * 2^32 / 600 H/s. In diese Einheit umgerechnet liegen beide Groessen auf
-// einer Achse, und man sieht, was die Anpassung tut: die Treppe laeuft der
-// Flaeche hinterher. mempool.space zeigt zwei Achsen; das laedt dazu ein, zwei
-// Kurven zu vergleichen, deren Lage zueinander nur von der Skalierung abhaengt.
+// Difficulty D implies a hashrate: a block needs D * 2^32 attempts on
+// average and should arrive every 600 seconds, so D * 2^32 / 600 H/s.
+// Converted to that unit both values share one axis, and you can see what
+// the adjustment does: the steps trail the area. mempool.space uses two
+// axes, which invites comparing two curves whose relative position depends
+// only on the scaling.
 //
-// Links steht die Hashrate (orange), rechts dieselbe Hoehe als Schwierigkeit
-// (hell) -- die Beschriftung traegt die Farbe ihrer Linie, wie in
+// The left axis shows hashrate (orange), the right axis the same height as
+// difficulty (light). Each label uses the color of its line, as in
 // `MinerChart`.
 //
-// Die Daten holt `NetworkView`; hier wird nur gezeichnet und gewaehlt.
+// `NetworkView` fetches the data; this file only draws and handles the span.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "strings.js" as Tr
 import "fonts.js" as Fonts
@@ -23,11 +23,11 @@ Item {
     id: root
 
     property string lang: "de"
-    // 30d | 90d | 1y | 3y | max -- der Wirt haelt ihn
+    // 30d | 90d | 1y | 3y | max, kept by the host
     property string span: "1y"
-    // [[Zeit, H/s], ...], aufsteigend
+    // [[time, H/s], ...], ascending
     property var reihe: []
-    // [[Zeit, Schwierigkeit, Hoehe, Faktor], ...] -- jede Anpassung im Zeitraum
+    // [[time, difficulty, height, factor], ...], every adjustment in the span
     property var stufen: []
     property bool laden: false
     property string fehler: ""
@@ -42,11 +42,11 @@ Item {
 
     signal spanRequested(string s)
 
-    // H/s je Einheit Schwierigkeit
+    // H/s per unit of difficulty
     readonly property real faktor: 4294967296 / 600
 
-    // Dieselben Knoepfe wie am Kursverlauf, soweit es sie hier gibt. 24
-    // Stunden und sieben Tage fehlen: die Reihe hat einen Punkt am Tag.
+    // Same buttons as on the price chart where they apply. 24 hours and
+    // seven days are missing because the series has one point per day.
     readonly property var spans: [
         { "k": "30d", "l": Tr.t("price.30d", root.lang) },
         { "k": "90d", "l": Tr.t("price.90d", root.lang) },
@@ -55,18 +55,17 @@ Item {
         { "k": "max", "l": Tr.t("price.max", root.lang) }
     ]
 
-    // **Das Mittel ueber sieben Tage ist die Linie, die Tageswerte sind nur
-    // Beiwerk.** Die Hashrate eines Tages ist eine Schaetzung aus rund 144
-    // Bloecken, und deren Zahl schwankt zufaellig: im ersten Bild vom
-    // 11.09.2026 war das Jahr ein Band aus Zacken zwischen 0,85 und
-    // 1,31 Tausend EH/s, der Gang darin nicht zu sehen. Gezeichnet wird deshalb
-    // wie im Miner-Graphen: der Rohwert duenn und blass, das Mittel kraeftig.
+    // The seven-day average is the main line, daily values are secondary.
+    // A day's hashrate is an estimate from about 144 blocks, and that count
+    // varies randomly, so over a year the raw values form a jagged band that
+    // hides the trend. Drawn like the miner chart: raw values thin and faint,
+    // the average bold.
     //
-    // Mittig gemittelt, nicht nachlaufend: ein nachlaufendes Mittel kaeme
-    // selbst dreieinhalb Tage zu spaet und verfaelschte genau das, was der
-    // Graph zeigen soll -- wie die Schwierigkeit der Hashrate folgt. Ist die
-    // Reihe ausgeduennt (drei Jahre, alles), liegt schon ein Mittel in jedem
-    // Punkt, und das Fenster umfasst nur noch ihn selbst.
+    // Centered average, not trailing: a trailing average would itself lag by
+    // three and a half days and distort exactly what the chart should show,
+    // how difficulty follows hashrate. If the series is already thinned out
+    // (three years, max), each point is already an average and the window
+    // covers only that point.
     readonly property real fenster: 3.5 * 86400
     readonly property var mittel: {
         var r = root.reihe, out = [];
@@ -84,18 +83,17 @@ Item {
         }
         return out;
     }
-    // Liegt mehr als ein Tag zwischen zwei Punkten, ist schon gemittelt;
-    // dann gibt es keine Tageswerte, die man duenn darunter zeigen koennte.
+    // More than a day between two points means the data is already averaged,
+    // so there are no daily values to draw underneath.
     readonly property bool mitTageswerten: {
         var r = root.reihe;
         return r.length > 2 && (r[r.length - 1][0] - r[0][0]) / (r.length - 1) < 1.5 * 86400;
     }
 
-    // Die Treppe als Punkte [Zeit, H/s]: am linken Rand der Wert, der dort
-    // galt, dann je Anpassung ein Sprung. Der Wert **vor** der ersten
-    // Anpassung im Zeitraum steckt in ihrem Faktor -- ohne ihn begaenne die
-    // Treppe erst bei der ersten Stufe, bei dreissig Tagen oft erst in der
-    // Mitte.
+    // The step line as points [time, H/s]: at the left edge the value that
+    // was valid there, then one jump per adjustment. The value before the
+    // first adjustment in the span comes from its factor; without it the line
+    // would start at the first step, which for thirty days is often midway.
     readonly property var treppe: {
         var r = root.reihe, s = root.stufen;
         if (r.length < 2 || !s.length)
@@ -115,9 +113,9 @@ Item {
         return out;
     }
 
-    // Die Zeitachse reicht bis zum letzten Wert **beider** Reihen: die
-    // Tagesmittel der Hashrate liegen nach dem Ausduennen ein paar Tage vor
-    // heute, eine Anpassung von gestern soll trotzdem zu sehen sein.
+    // The time axis runs to the last value of both series: after thinning,
+    // the daily hashrate averages end a few days before today, but an
+    // adjustment from yesterday should still be visible.
     readonly property real tAnfang: root.reihe.length ? root.reihe[0][0] : 0
     readonly property real tEnde: {
         var t = root.reihe.length ? root.reihe[root.reihe.length - 1][0] : 0;
@@ -144,15 +142,15 @@ Item {
         return m === -Infinity ? 0 : m;
     }
 
-    // **Ueber die ganze Geschichte logarithmisch.** Von 7 kH/s im Januar 2009
-    // bis 900 EH/s heute sind siebzehn Zehnerpotenzen; linear waeren die
-    // ersten elf Jahre ein Strich auf der Grundlinie. Ab drei Zehnerpotenzen
-    // Spanne wird umgeschaltet -- in drei Jahren sind es keine zwei.
+    // Logarithmic over the full history. From 7 kH/s in January 2009 to
+    // 900 EH/s today is seventeen orders of magnitude; on a linear scale the
+    // first eleven years would be a line on the baseline. Switches at a span
+    // of three orders of magnitude; three years is less than two.
     readonly property bool logAchse: root.minWert > 0 && root.maxWert / root.minWert > 1000
 
-    // Veraenderung ueber den Zeitraum. Ueber alles waere es eine Zahl mit
-    // achtzehn Stellen, dort bleibt sie weg.
-    // Aus dem Mittel: zwei einzelne Tage an den Raendern waeren Zufall.
+    // Change over the span. For "max" it would be an eighteen-digit number,
+    // so it is left out there.
+    // Taken from the average: two single days at the edges would be noise.
     readonly property real wandel: {
         var r = root.mittel;
         if (r.length < 2 || root.logAchse)
@@ -164,9 +162,9 @@ Item {
     onReiheChanged: leinwand.requestPaint()
     onStufenChanged: leinwand.requestPaint()
 
-    // ------------------------------------------------------- Zeitraumwahl
-    // Wie am Kursverlauf: passen Kopf und Knoepfe nicht nebeneinander, kommen
-    // die Knoepfe in eine eigene Zeile darunter.
+    // ------------------------------------------------------- Span selection
+    // As on the price chart: if header and buttons do not fit side by side,
+    // the buttons move to their own row below.
     readonly property bool gestapelt: kopf.width + wahl.schalterBreite + root.baseFont > root.width
 
     TileGoggles {
@@ -193,8 +191,8 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------ Kopfzeile
-    // Welche Linie was ist, in ihrer Farbe -- eine Legende in einer Zeile.
+    // ------------------------------------------------------------ Header
+    // Which line is which, in its color: a one-line legend.
     Row {
         id: kopf
 
@@ -229,7 +227,7 @@ Item {
         }
     }
 
-    // --------------------------------------------------------------- Kurve
+    // --------------------------------------------------------------- Chart
     Canvas {
         id: leinwand
 
@@ -242,8 +240,8 @@ Item {
                            + root.baseFont * 0.6
         antialiasing: true
 
-        // Links die Hashrate, rechts die Schwierigkeit -- beide gemessen,
-        // nicht geraten (siehe PriceChart).
+        // Hashrate on the left, difficulty on the right, both measured rather
+        // than estimated (see PriceChart).
         readonly property real padL: massL.implicitWidth + 6
         readonly property real padR: massR.implicitWidth + 6
         readonly property real padT: root.baseFont * 0.8
@@ -278,9 +276,8 @@ Item {
                 return;
             var unten = height - padB;
 
-            // Feine Linien: linear auf runden Betraegen (wie am Kursverlauf),
-            // logarithmisch auf jeder Tausenderstufe -- genau dort wechselt
-            // der Vorsatz, 1 PH/s, 1 EH/s.
+            // Grid lines: linear on round values (as on the price chart), logarithmic
+            // on every factor of 1000, which is where the prefix changes (1 PH/s, 1 EH/s).
             var linien = root.logAchse ? root.stufenLog(root.minWert, root.maxWert)
                                        : root.stufenLinear(root.minWert, root.maxWert);
             ctx.strokeStyle = Qt.rgba(root.dimColor.r, root.dimColor.g, root.dimColor.b, 0.14);
@@ -293,9 +290,8 @@ Item {
                     continue;
                 ctx.moveTo(padL, ry);
                 ctx.lineTo(width - padR, ry);
-                // Zu nah an Hoechst- oder Tiefstwert bleibt die Linie ohne
-                // Zahl: am Telefon standen "1.306" und "1.200 EH/s" sonst
-                // ineinander.
+                // Too close to the max or min value the line gets no number, otherwise
+                // labels like "1,306" and "1,200 EH/s" overlap on the phone.
                 if (ry - padT >= root.baseFont * 1.5 && unten - ry >= root.baseFont * 1.5)
                     beschriftet.push([linien[g], ry]);
             }
@@ -307,7 +303,7 @@ Item {
                 ctx.fillText(root.achsText(beschriftet[b][0]), 0,
                              beschriftet[b][1] + (root.baseFont - 3) * 0.35);
 
-            // Grundlinien oben und unten
+            // Baselines at top and bottom
             ctx.strokeStyle = root.lineColor;
             ctx.beginPath();
             ctx.moveTo(padL, padT + 0.5);
@@ -316,7 +312,7 @@ Item {
             ctx.lineTo(width - padR, unten - 0.5);
             ctx.stroke();
 
-            // Die Tageswerte duenn und blass -- nur, wo es welche gibt
+            // Daily values thin and faint, only where there are any
             if (root.mitTageswerten) {
                 ctx.strokeStyle = Qt.rgba(root.accentColor.r, root.accentColor.g,
                                           root.accentColor.b, 0.3);
@@ -332,7 +328,7 @@ Item {
                 ctx.stroke();
             }
 
-            // Ab hier das Mittel: Flaeche darunter, nach unten auslaufend
+            // From here on the average: area below it, fading out downwards
             r = root.mittel;
             n = r.length;
             var verlauf = ctx.createLinearGradient(0, padT, 0, unten);
@@ -361,8 +357,8 @@ Item {
             }
             ctx.stroke();
 
-            // Die Treppe: waagerecht bis zur naechsten Anpassung, dann
-            // senkrecht auf den neuen Wert, bis an den rechten Rand.
+            // Step line: horizontal until the next adjustment, then vertical to the
+            // new value, up to the right edge.
             var tr = root.treppe;
             if (tr.length) {
                 ctx.strokeStyle = Qt.rgba(root.diffColor.r, root.diffColor.g,
@@ -379,8 +375,8 @@ Item {
                 ctx.stroke();
             }
 
-            // Hoechst- und Tiefstwert: links als Hashrate, rechts als
-            // Schwierigkeit -- dieselbe Hoehe, zwei Lesarten.
+            // Max and min: left as hashrate, right as difficulty. Same height, two
+            // readings.
             ctx.font = (root.baseFont - 2) + "px " + Fonts.sansCss();
             ctx.fillStyle = root.accentColor;
             ctx.textAlign = "left";
@@ -394,7 +390,7 @@ Item {
                 ctx.fillText(Tr.big(root.minWert / root.faktor, root.lang), width, unten - 2);
             }
 
-            // Anfang und Ende der Zeitachse
+            // Start and end of the time axis
             ctx.fillStyle = root.dimColor;
             ctx.textAlign = "left";
             ctx.fillText(root.datum(root.tAnfang), padL, height - 2);
@@ -403,13 +399,13 @@ Item {
         }
     }
 
-    // Nur zum Messen: die breitesten Beschriftungen links und rechts
+    // Measuring only: the widest labels on the left and right
     Text {
         id: massL
 
         visible: false
         text: Tr.big(root.maxWert || 888e18, root.lang, "H/s")
-        // Dieselbe Schrift wie auf der Leinwand, siehe MarketView.qml.
+        // Same font as on the canvas, see MarketView.qml.
         font.family: Fonts.sans()
         font.pixelSize: root.baseFont - 2
     }
@@ -423,7 +419,7 @@ Item {
         font.pixelSize: root.baseFont - 2
     }
 
-    // Runde Schrittweite, hoechstens rund fuenf Linien (wie am Kursverlauf)
+    // Round step size, at most about five lines (as on the price chart)
     function stufenLinear(lo, hi) {
         var spanne = hi - lo;
         if (!(spanne > 0))
@@ -444,7 +440,7 @@ Item {
         return out;
     }
 
-    // Jede Tausenderstufe; sind es mehr als sechs, nur jede zweite
+    // Every factor of 1000; if there are more than six, only every other one
     function stufenLog(lo, hi) {
         var out = [];
         for (var e = Math.ceil(Math.log(lo) / Math.LN10 / 3) * 3;
@@ -457,8 +453,8 @@ Item {
         return out;
     }
 
-    // Die feinen Linien liegen logarithmisch genau auf 1 kH/s, 1 MH/s, ...:
-    // dort "1 EH/s" statt "1,00 EH/s".
+    // On a log scale the grid lines sit exactly on 1 kH/s, 1 MH/s, ...,
+    // so show "1 EH/s" instead of "1.00 EH/s".
     function achsText(v) {
         if (root.logAchse) {
             var u = ["", "k", "M", "G", "T", "P", "E"];
@@ -473,7 +469,7 @@ Item {
         return ts ? Qt.formatDateTime(new Date(ts * 1000), Tr.datum(root.lang)) : "";
     }
 
-    // Die Schwierigkeit, die zu einem Zeitpunkt galt
+    // The difficulty that was valid at a given time
     function schwierigkeitBei(t) {
         var tr = root.treppe;
         var wert = tr.length ? tr[0][1] : 0;
@@ -484,9 +480,9 @@ Item {
         return wert / root.faktor;
     }
 
-    // ------------------------------------------------- Ablesen am Zeiger
-    // Mit der Maus und mit dem Finger: am Telefon gibt es kein Schweben,
-    // dort zeigt das Antippen und Ziehen den Wert.
+    // ------------------------------------------------- Pointer readout
+    // Works with mouse and finger: phones have no hover, so tapping and
+    // dragging shows the value there.
     property int zeigerIndex: -1
 
     MouseArea {
@@ -518,7 +514,7 @@ Item {
         onReleased: if (!containsMouse) root.zeigerIndex = -1
     }
 
-    // Der Punkt sitzt auf der kraeftigen Linie, also auf dem Mittel
+    // The dot sits on the bold line, i.e. on the average
     readonly property var zeigerPunkt: (root.zeigerIndex >= 0 && root.zeigerIndex < root.mittel.length)
         ? root.mittel[root.zeigerIndex] : null
 
@@ -574,7 +570,7 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------ Hinweise
+    // ------------------------------------------------------------ Notices
     Text {
         anchors.centerIn: parent
         visible: root.laden && root.reihe.length < 2

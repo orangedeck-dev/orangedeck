@@ -1,25 +1,24 @@
-// Uhr: gross, ruhig, ohne Bedienung. Gedacht fuer ein Tablet an der
-// Wand oder den Vollbildmodus am Rechner.
+// Clock view: large, calm, no controls. Meant for a wall-mounted tablet
+// or full-screen mode on the desktop.
 //
-// Vorbild ist der unveroeffentlichte Zweig `display-mode` aus dem Fork
-// (upstream/bitfeed, 03.04.2023): ein Schalter, der die Oberflaeche dauerhaft
-// in eine reduzierte, bedienungsfreie Ansicht zwingt.
+// Modeled on the unreleased `display-mode` branch of upstream bitfeed:
+// a switch that locks the UI into a reduced view without controls.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "money.js" as Money
 import "strings.js" as Tr
 import "roll.js" as Roll
 
-// Der Repeater unten greift auf `root` zu. Ohne diese Zeile warnt qmllint,
-// dass IDs aus dem umgebenden Bauteil in geschachtelten Bauteilen nicht
-// gebunden sind -- mit ihr sind sie es ausdruecklich.
+// The Repeater below refers to `root`. Without this pragma qmllint warns
+// that ids from the enclosing component are not bound inside nested
+// components; with it they are bound explicitly.
 pragma ComponentBehavior: Bound
 
 Item {
     id: root
 
-    // Tastatur: Bild auf/ab, Pos1, Ende (roll.js; aus Main.qml ueber FeedTabs)
+    // Keyboard: Page Up/Down, Home, End (roll.js, forwarded from Main.qml via FeedTabs)
     function rollen(wie) {
         return Roll.rollen(flick, wie);
     }
@@ -29,36 +28,35 @@ Item {
     property color dimColor: "#9a94a6"
     property color accentColor: "#f7931a"
     property real scaleUnit: Math.max(10, Math.min(width / 26, height / 16))
-    // Welche Kennzahlen erscheinen. Leere Liste heisst: alle. So bleibt eine
-    // spaeter hinzukommende sichtbar, statt stillschweigend zu fehlen.
+    // Which stats to show. An empty list means all of them, so a stat added
+    // later shows up instead of silently missing.
     property var fields: []
     property string currency: "eur"
     property bool showBars: true
     property bool showSpark: true
-    // Der Kursverlauf unter den Kennzahlen. Der Wirt haelt den Zeitraum,
-    // damit er ueber Sitzungen bleibt.
+    // Price chart below the stats. The host keeps the time span so it
+    // survives across sessions.
     property bool showPrice: true
     property string priceSpan: "30d"
-    // Bedienung mit dem Finger: groessere Knoepfe am Kursverlauf. Setzt der
-    // Wirt (Main.qml auf dem Telefon), nicht die Ansicht selbst.
+    // Touch mode: larger buttons on the price chart. Set by the host
+    // (Main.qml on the phone), not by the view itself.
     property bool finger: false
 
     signal priceSpanRequested(string s)
 
     property bool showTime: false
     property string lang: "de"
-    // Was gross in der Mitte steht. Mehrere Eintraege wechseln sich ab --
-    // fuer ein Tablet an der Wand ist das der eigentliche Reiz: dieselbe
-    // Flaeche zeigt nacheinander Hoehe, Kurs und Moscow Time.
+    // What is shown large in the center. Several entries rotate, so on a wall
+    // tablet the same area shows height, price and Moscow time in turn.
     property var bigFields: ["height"]
-    property int bigRotate: 0        // Sekunden, 0 = nicht wechseln
+    property int bigRotate: 0        // seconds, 0 = no rotation
     property int bigIndex: 0
 
     readonly property var bigList: (bigFields && bigFields.length) ? bigFields : ["height"]
     readonly property string bigNow: bigList[bigIndex % bigList.length]
 
-    // Beschriftung und Wert der grossen Anzeige. Eine Stelle, damit die
-    // Reihenfolge unten nicht auseinanderlaeuft.
+    // Label and value of the big display. Kept in one place so the order
+    // below stays consistent.
     function bigLabel(id) {
         if (id === "price")
             return Tr.t("price", root.lang);
@@ -91,7 +89,7 @@ Item {
         return root.grp(root.feed ? root.feed.tipHeight : 0);
     }
 
-    // Fuer die Uhrzeit als grosse Anzeige -- sonst bliebe sie stehen
+    // Needed when the time is the big display, otherwise it would freeze
     property date jetzt: new Date()
 
     Timer {
@@ -102,8 +100,8 @@ Item {
         onTriggered: root.jetzt = new Date()
     }
 
-    // Der Wechsel. Laeuft nur, wenn es etwas zu wechseln gibt und jemand
-    // hinsieht -- ein Zeitgeber im Verborgenen kostet nur Strom.
+    // Rotation timer. Runs only when there is something to rotate and the view
+    // is visible; a hidden timer only costs power.
     Timer {
         interval: Math.max(2, root.bigRotate) * 1000
         repeat: true
@@ -114,8 +112,8 @@ Item {
     readonly property real kurs: Money.rate(price, currency)
     readonly property string waehrung: Money.symbol(Money.actual(price, currency))
 
-    // Robust gegen alles, was kein Feld-Array ist: leer, undefiniert oder ein
-    // ungueltiger Wert aus der Ablage heissen "alles zeigen".
+    // Accept anything that is not a field array: empty, undefined or an
+    // invalid stored value all mean "show everything".
     function zeigt(id) {
         var f = root.fields;
         if (!f || !f.length || typeof f.indexOf !== "function")
@@ -129,16 +127,16 @@ Item {
     readonly property var diff: feed ? feed.difficulty : ({})
     readonly property var hr: feed ? feed.hashrate : ({})
 
-    // Halving: alle 210.000 Bloecke
+    // Halving every 210,000 blocks
     readonly property int halvingHeight: {
         var h = feed ? feed.tipHeight : 0;
         return h > 0 ? (Math.floor(h / 210000) + 1) * 210000 : 0;
     }
     readonly property int halvingLeft: halvingHeight > 0 ? halvingHeight - feed.tipHeight : 0
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // This matters: "1.234" means either one thousand two hundred thirty-four
+    // or one point two three four depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
@@ -149,7 +147,7 @@ Item {
         return Tr.fixed(v, digits === undefined ? 1 : digits, root.lang);
     }
 
-    // "noch 3 Tage 4 Std" -- ohne Sekunden, das flackert nur
+    // "3 days 4 h left", no seconds, they only flicker
     function span(ms) {
         if (!ms || ms < 0)
             return "–";
@@ -162,18 +160,12 @@ Item {
         return Tr.t("duration.min", root.lang, m);
     }
 
-    // **Die ganze Seite rollt gemeinsam.** Bis zum 10.09.2026 lag der
-    // Kursverlauf fest am unteren Rand, mit einer Hoehe aus der Fensterhoehe,
-    // und nur die Spalte darueber rollte in dem, was uebrig blieb. Am Telefon
-    // gab das hochkant ein grosses Loch zwischen Uhr und Kurve und quer eine
-    // auf einen Streifen gedrueckte Kurve, waehrend die Uhr allein rollte.
-    //
-    // Jetzt stehen beide untereinander in einer Flaeche. Die Kurve bekommt
-    // ihre Hoehe aus der Breite, nicht aus der Hoehe -- quer wird sie nicht
-    // mehr gestaucht. Passt beides, steht es als Gruppe mittig, und hochkant
-    // darf die Kurve in den freien Platz wachsen. Passt es nicht, fuellt die
-    // Uhr den ersten Bildschirm wie bisher, und die Kurve liegt darunter:
-    // an der Wand sieht man die Uhr, wer den Kurs sehen will, rollt.
+    // The whole page scrolls as one. Clock and price chart sit one below the
+    // other in the same Flickable. The chart takes its height from the width,
+    // not the height, so it is not squashed in landscape. If both fit, they are
+    // centered as a group and in portrait the chart may grow into the free
+    // space. If not, the clock fills the first screen and the chart sits below
+    // it: on the wall you see the clock, and whoever wants the price scrolls.
     readonly property real rand: root.scaleUnit * 0.4
     readonly property real luecke: root.scaleUnit * 0.8
     readonly property real kurveHoehe: {
@@ -188,8 +180,8 @@ Item {
     readonly property real bodyY: root.passtAlles
         ? (root.height - body.implicitHeight - root.luecke - root.kurveHoehe) / 2
         : Math.max(root.rand, (root.height - body.implicitHeight) / 2)
-    // Passt es nicht, beginnt die Kurve erst unter dem ersten Bildschirm --
-    // nicht angeschnitten am unteren Rand.
+    // If it does not fit, the chart starts below the first screen instead of
+    // being cut off at the bottom edge.
     readonly property real kurveY: root.passtAlles
         ? root.bodyY + body.implicitHeight + root.luecke
         : Math.max(root.bodyY + body.implicitHeight + root.luecke, root.height)
@@ -210,16 +202,15 @@ Item {
 
         width: parent.width * 0.86
         x: (flick.width - width) / 2
-        // **Die Kurve steht nicht in dieser Spalte, sondern unter ihr.** In der
-        // Spalte war sie ein Posten unter sieben und wurde jedes Mal als
-        // erster abgeschnitten. Die Lage beider rechnen `bodyY` und `kurveY`.
+        // The chart is not part of this column but placed below it. Inside the
+        // column it was one item of seven and always got clipped first.
+        // bodyY and kurveY position both.
         y: root.bodyY
         spacing: root.scaleUnit * (kurve.visible ? 0.35 : 0.5)
 
-        // -------------------------------------------------------- Uhrzeit
-        // Fuer ein Tablet an der Wand: dann ist es auch eine Uhr. Der
-        // Zeitgeber laeuft nur, wenn die Zeit auch gezeigt wird -- eine Anzeige
-        // im Minutentakt braucht keinen Sekundentakt.
+        // -------------------------------------------------------- Time
+        // On a wall tablet the view doubles as a clock. The timer runs only while
+        // the time is shown, and a minute display needs no per-second tick.
         Text {
             id: uhr
 
@@ -232,7 +223,7 @@ Item {
             text: Qt.formatDateTime(root.jetzt, "HH:mm")
         }
 
-        // ------------------------------------------------ Grosse Anzeige
+        // ------------------------------------------------ Big display
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.bigLabel(root.bigNow)
@@ -245,12 +236,10 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.bigValue(root.bigNow)
             color: root.accentColor
-            // **Die Kurve bekommt ihren Platz von hier.** Die Spalte fuellte
-            // die Flaeche vorher genau aus; kommt der Kursverlauf dazu, lief
-            // sie unten heraus und die Ansicht musste gerollt werden -- fuer
-            // eine Uhr an der Wand der falsche Weg. Der grosse Wert gibt
-            // stattdessen ein Viertel seiner Hoehe ab und bleibt auch dann
-            // die groesste Zahl im Bild.
+            // Room for the price chart comes from here. The column otherwise fills
+            // the area exactly, and with the chart added it would overflow and need
+            // scrolling, which is wrong for a wall clock. The big value gives up a
+            // quarter of its height and is still the largest number on screen.
             font.pixelSize: root.scaleUnit * (kurve.visible ? 2.3 : 3.4)
             font.bold: true
         }
@@ -260,18 +249,16 @@ Item {
             height: root.scaleUnit * 0.6
         }
 
-        // ------------------------------------------------------ Kennzahlen
+        // ------------------------------------------------------ Stats
         Row {
             id: kennzahlen
 
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: root.scaleUnit * 1.6
-            // **Die Reihe kann breiter werden als die Flaeche.** Sie ist nur
-            // mittig gesetzt, ihre Breite ist die Summe ihrer Kinder -- bei
-            // 1400 Punkten und fuenf Kennzahlen stand "914 EH/s" halb
-            // ausserhalb, links entsprechend die erste. Passt sie nicht, wird
-            // sie als Ganzes verkleinert; das faellt bei 0,95 nicht auf und
-            // ist allemal besser als eine abgeschnittene Zahl.
+            // The row can get wider than the area: it is only centered, and its width
+            // is the sum of its children. With 1400 px and five stats the outer values
+            // were cut off. If it does not fit, the whole row is scaled down; at 0.95
+            // nobody notices, and it beats a clipped number.
             scale: implicitWidth > parent.width && implicitWidth > 0
                    ? parent.width / implicitWidth : 1
             transformOrigin: Item.Center
@@ -290,10 +277,9 @@ Item {
                             "v": root.kurs ? root.grp(root.kurs) + " " + root.waehrung : "–"
                         },
                         {
-                            // Wie viele Satoshi es fuer eine Einheit der
-                            // Waehrung gibt. Die Zahl steigt, wenn der Kurs
-                            // faellt -- sie misst Bitcoin in Geld statt Geld
-                            // in Bitcoin, und genau darum geht es dabei.
+                            // Satoshis per unit of the currency. The number rises when the price
+                            // falls: it measures money in bitcoin instead of bitcoin in money,
+                            // which is the point of it.
                             "id": "moscow",
                             "k": Tr.t("clock.moscow", root.lang),
                             "v": root.kurs ? root.grp(1e8 / root.kurs) + " sat" : "–"
@@ -310,15 +296,15 @@ Item {
                         }
                     ];
                     return alle.filter(function (x) {
-                        // Was oben gross steht, hier weglassen -- zweimal
-                        // dieselbe Zahl liest sich wie ein Fehler.
+                        // Skip whatever is already shown large above; the same number twice
+                        // reads like a bug.
                         return root.zeigt(x.id) && x.id !== root.bigNow;
                     });
                 }
 
                 Column {
-                    // Mit `pragma ComponentBehavior: Bound` muss modelData
-                    // ausdruecklich angefordert werden.
+                    // With `pragma ComponentBehavior: Bound` modelData has to be
+                    // requested explicitly.
                     required property var modelData
 
                     spacing: root.scaleUnit * 0.12
@@ -345,7 +331,7 @@ Item {
             height: root.scaleUnit * 0.6
         }
 
-        // ------------------------------------ Schwierigkeit und Halving
+        // ------------------------------------ Difficulty and halving
         Column {
             width: parent.width
             spacing: root.scaleUnit * 0.25
@@ -410,18 +396,16 @@ Item {
             }
         }
 
-        // -------------------------------------------- Hashrate-Kurve
+        // -------------------------------------------- Hashrate chart
         Canvas {
             id: spark
 
             width: parent.width
             height: root.scaleUnit * 1.8
-            // **Nur eine Kurve in dieser Ansicht.** Ist der Kursverlauf da,
-            // tritt die Hashratekurve zurueck: zwei uebereinandergestapelte
-            // Linien sind in einer Uhr Rauschen, und der Platz reicht ohnehin
-            // nicht fuer beide. Die Hashrate steht ausserdem im Miner-Reiter,
-            // der Kurs nirgends sonst. Wer sie hier will, schaltet den
-            // Kursverlauf ab.
+            // Only one chart in this view. With the price chart shown, the hashrate
+            // chart steps back: two stacked lines are noise in a clock, and there is
+            // not enough room for both. Hashrate is also in the miner tab, price is
+            // nowhere else. Turn off the price chart to get hashrate here.
             visible: root.showSpark && !kurve.visible
                      && (root.hr.series || []).length > 1
 
@@ -455,15 +439,13 @@ Item {
         }
         }
 
-        // ----------------------------------------------- Kursverlauf
-        // Braucht Hoehe, sonst ist eine Kurve nicht zu lesen. In flachen
-        // Flaechen -- Leistenpopout, kleines Desktop-Widget -- bleibt sie
-        // deshalb weg, statt zu einem Strich zusammenzufallen.
+        // ----------------------------------------------- Price chart
+        // Needs height to be readable. In flat areas (bar popout, small desktop
+        // widget) it is hidden instead of collapsing into a line.
         //
-        // **Die Schwelle steht in Bildpunkten, nicht in `scaleUnit`.** Der
-        // waechst selbst mit der Hoehe (`height / 16`); `height >= scaleUnit * 22`
-        // heisst damit `height >= 1,375 * height` und ist nie erfuellt. Genau
-        // daran war die Kurve zuerst unsichtbar.
+        // The threshold is in pixels, not in `scaleUnit`. scaleUnit itself grows
+        // with the height (`height / 16`), so `height >= scaleUnit * 22` would mean
+        // `height >= 1.375 * height` and never be true.
     PriceChart {
         id: kurve
 
@@ -471,19 +453,18 @@ Item {
         y: root.kurveY
         width: root.width * 0.86
         height: root.kurveHoehe
-        // Gerollt wird jetzt, statt Platz abzuziehen; weg bleibt die Kurve
-        // nur noch in wirklich flachen Flaechen (Leistenpopout, schmales
-        // Desktop-Widget), wo sie auch gerollt keinen Sinn haette.
+        // The page scrolls instead of taking space away; the chart is hidden only
+        // in really flat areas (bar popout, narrow desktop widget) where scrolling
+        // would not help either.
         visible: root.showPrice && root.height >= 250
         live: root.visible
         feed: root.feed
         lang: root.lang
         currency: root.currency
         span: root.priceSpan
-        // Kleiner als die Kennzahlen darueber: die Beschriftung einer
-        // Kurve ist Beiwerk, keine Aussage. **Aber nicht unter 13 Punkte
-        // am Telefon:** hochkant waren es 7, und die Zeitraum-Knoepfe waren
-        // fuer einen Finger kaum zu treffen.
+        // Smaller than the stats above: a chart label is secondary. But not below
+        // 13 px on the phone, otherwise the span buttons are too small to hit
+        // with a finger.
         baseFont: root.finger ? Math.max(13, root.scaleUnit * 0.5) : root.scaleUnit * 0.5
         minTap: root.finger ? 40 : 0
         textColor: root.textColor
@@ -496,7 +477,7 @@ Item {
     }
     }
 
-    // Bei fehlender Verbindung nicht luegen, sondern es sagen
+    // Say so when there is no connection instead of showing stale data
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

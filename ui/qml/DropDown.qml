@@ -1,10 +1,10 @@
-// Ein Auswahlfeld. Zugeklappt eine Zeile, aufgeklappt eine Liste darunter.
+// A select box. Collapsed it is one row, expanded it shows a list below.
 //
-// Selbst gebaut, weil das Projekt **kein Qt Quick Controls** benutzt: die
-// geteilten Bausteine haengen an nichts ausser Qt Quick, sonst liefen sie
-// weder unter Quickshell noch auf Android. Aus demselben Grund gibt es hier
-// kein `Popup` -- die Liste ist ein gewoehnliches Element mit hohem `z`, und
-// der Wirt darf sie nicht beschneiden (`clip`).
+// Hand-made because the project does not use Qt Quick Controls: the shared
+// components depend on nothing but Qt Quick, otherwise they would run
+// neither under Quickshell nor on Android. For the same reason there is no
+// `Popup`: the list is a plain item with a high `z`, and the host must not
+// clip it (`clip`).
 import QtQuick
 
 pragma ComponentBehavior: Bound
@@ -12,22 +12,20 @@ pragma ComponentBehavior: Bound
 Item {
     id: root
 
-    // [{ "k": <schluessel>, "l": <beschriftung> }, ...]
+    // [{ "k": <key>, "l": <label> }, ...]
     property var model: []
     property string current: ""
-    // Was im geschlossenen Feld steht, wenn es nicht die Beschriftung aus
-    // dem Modell sein soll -- etwa kuerzer, wo der Platz fehlt. Die Liste
-    // behaelt ihre Beschriftungen.
+    // Text for the closed box when it should differ from the model label,
+    // e.g. shorter where space is tight. The list keeps its labels.
     property string anzeige: ""
     property bool offen: false
-    // Wie viele Zeilen die aufgeklappte Liste hoechstens zeigt
+    // Maximum number of rows the expanded list shows
     property int maxZeilen: 9
-    // **Der Rahmen, in dem die Liste bleiben muss.** In QML zeichnet ein Kind
-    // ungehindert ueber die Grenzen seines Elternteils hinaus -- im
-    // Dashboard-Tab stand die Liste dadurch neben der Flaeche, im
-    // durchsichtigen Rand des Popout-Fensters. Sie wird deshalb an diesem
-    // Element ausgerichtet: seitlich hineingeschoben, und nach oben
-    // aufgeklappt, wenn unten kein Platz mehr ist.
+    // The frame the list has to stay inside. In QML a child draws freely
+    // beyond its parent's bounds, so in the dashboard tab the list ended up
+    // in the transparent margin of the popout window. The list is aligned to
+    // this item instead: pushed in sideways, and opened upwards when there is
+    // no room below.
     property Item bounds: root.parent
 
     property color textColor: "#e6e0e9"
@@ -44,14 +42,13 @@ Item {
                                        * root.zeilenHoehe + 6
     readonly property real listeBreite: Math.max(feld.width,
                                                  inhalt.breiteste + root.uiFont * 2)
-    // Lage des Feldes im Bezugsrahmen.
+    // Position of the box within the frame.
     //
-    // **Nicht als Bindung.** `mapToItem` liest die Lage einmal aus und meldet
-    // sich nie wieder -- eine Bindung darauf rechnet mit dem Stand vom
-    // Erzeugen, als die Anker noch nicht aufgeloest waren. Ein Feld unten in
-    // der Flaeche hielt sich dadurch fuer eines oben und legte seine Liste an
-    // die falsche Stelle. Gemessen wird deshalb beim Aufklappen -- dann, wenn
-    // es darauf ankommt, und nur dann.
+    // Not a binding. `mapToItem` reads the position once and never notifies
+    // again, so a binding would use the state at creation time, before the
+    // anchors were resolved. A box at the bottom would then think it is at the
+    // top and put its list in the wrong place. So it is measured when the list
+    // opens, which is the only time it matters.
     property point lage: Qt.point(0, 0)
 
     function lageMessen() {
@@ -63,7 +60,7 @@ Item {
     onWidthChanged: if (root.offen) root.lageMessen()
     onHeightChanged: if (root.offen) root.lageMessen()
     Component.onCompleted: root.lageMessen()
-    // Unten kein Platz, oben schon -> nach oben aufklappen
+    // No room below but room above: open upwards
     readonly property bool nachOben: root.bounds
         && root.lage.y + feld.height + root.listeHoehe + 3 > root.bounds.height
         && root.lage.y - root.listeHoehe - 3 >= 0
@@ -102,8 +99,8 @@ Item {
             font.pixelSize: root.uiFont
         }
 
-        // Ein gezeichnetes Dreieck statt eines Zeichens -- ein Schriftzeichen
-        // haette je nach Schrift eine andere Groesse und Lage.
+        // A drawn triangle instead of a glyph; a glyph would change size and
+        // position with the font.
         Canvas {
             id: pfeil
 
@@ -136,18 +133,16 @@ Item {
         }
     }
 
-    // Fangflaeche: ein Klick daneben klappt wieder zu. Sie liegt **unter** der
-    // Liste, aber ueber allem anderen.
+    // Catch area: a click outside closes the list. It sits below the list
+    // but above everything else.
     //
-    // **Nicht an `root.parent`.** Das Auswahlfeld steht in einer `Row`, und
-    // die ist ein Positionierer: ein Kind darin wird mitgereiht. Beim
-    // Aufklappen kam die Fangflaeche also als weiteres Element in die Reihe,
-    // `anchors.fill` blies sie auf deren Breite auf, die Reihe wurde dadurch
-    // breiter, die Fangflaeche wieder -- und weil die Reihe rechtsbuendig
-    // haengt, wanderten Feld und Umschalter nach links aus dem Bild. Sie
-    // verschwanden beim Klick vollstaendig.
+    // Not attached to `root.parent`. The select box sits in a `Row`, which is
+    // a positioner and lays out every child. The catch area would become
+    // another item in the row, `anchors.fill` would stretch it to the row's
+    // width, the row would grow, and so on; since the row is right-aligned,
+    // box and toggle were pushed off screen to the left.
     //
-    // Der Bezugsrahmen ist ein gewoehnliches Element und reiht nichts.
+    // The frame is a plain item and lays out nothing.
     MouseArea {
         parent: root.bounds ? root.bounds : root
         anchors.fill: parent
@@ -159,15 +154,13 @@ Item {
     Rectangle {
         id: liste
 
-        // **Im selben Elternteil wie die Fangflaeche.** `z` ordnet nur unter
-        // Geschwistern: lag die Liste in der Reihe und die Fangflaeche daneben
-        // im Rahmen, so lag die Fangflaeche ueber der ganzen Reihe -- jeder
-        // Klick auf einen Eintrag traf sie und klappte bloss zu. Die Auswahl
-        // liess sich dadurch gar nicht umstellen.
+        // Same parent as the catch area. `z` only orders siblings: with the list
+        // in the row and the catch area in the frame, the catch area covered the
+        // whole row and every click on an entry just closed the list.
         parent: root.bounds ? root.bounds : root
 
-        // Rechtsbuendig unter dem Feld -- aber nur, solange das im Rahmen
-        // bleibt. Sonst wird sie hineingeschoben.
+        // Right-aligned below the box, as long as that stays inside the frame.
+        // Otherwise it is pushed in.
         x: {
             var wunsch = feld.width - root.listeBreite;
             if (!root.bounds)
@@ -196,10 +189,9 @@ Item {
             anchors.fill: parent
             anchors.margins: 3
 
-            // **Gemessen, nicht gerechnet** -- und declarativ: ein verstecktes
-            // Textelement je Eintrag. Der Umweg ueber eine Funktion, die einen
-            // gemeinsamen Messtext umsetzt, ist ein Seiteneffekt in einer
-            // Bindung: er rechnet einmal richtig und danach nicht mehr.
+            // Measured, not computed, and declaratively: one hidden Text per entry.
+            // A function that sets a shared measuring text would be a side effect in
+            // a binding: it computes correctly once and then never updates.
             property real breiteste: {
                 var w = 0;
                 for (var i = 0; i < masse.count; i++) {
@@ -251,7 +243,7 @@ Item {
         }
     }
 
-    // Unsichtbarer Massstab fuer die Breite der Liste
+    // Invisible ruler for the list width
     Item {
         visible: false
 

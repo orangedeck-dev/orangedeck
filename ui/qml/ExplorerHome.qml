@@ -1,8 +1,8 @@
-// Startseite des Explorers: Kennzahlen, die geplanten Bloecke aus dem Mempool,
-// die Kette der bestaetigten Bloecke und die zuletzt gesehenen Transaktionen.
-// Von hier fuehrt jeder Klick weiter hinein.
+// Explorer home page: stats, projected blocks from the mempool, the chain
+// of confirmed blocks and recently seen transactions. Every click leads
+// further in from here.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
+// Only imports QtQuick, so it also runs on Android.
 import QtQuick
 import "money.js" as Money
 import "strings.js" as Tr
@@ -14,12 +14,12 @@ Column {
     id: root
 
     property var feed: null
-    // Sieht jemand auf die Startseite? Nur dann wird der geplante Block
-    // mitverfolgt -- er kostet 7,8 kB/s, solange er laeuft.
+    // Is anyone looking at the home page? Only then is the projected block
+    // tracked; it costs 7.8 kB/s while running.
     property bool live: true
     property string colorMode: "fee"
     property string currency: "eur"
-    // Welche Abschnitte die Startseite zeigt. Leer heisst alle.
+    // Which sections the home page shows. Empty means all.
     property var parts: []
     property var panelIds: []
 
@@ -44,14 +44,14 @@ Column {
 
     spacing: uiFont * 1.4
 
-    // Tausendertrennung in der Schreibweise der Sprache -- Deutsch nimmt den
-    // Punkt, Englisch das Komma. Das ist keine Kosmetik: "1.234" heisst je
-    // nach Sprache tausendzweihundert oder eins Komma zwei.
+    // Thousands separator per language: German uses a period, English a comma.
+    // This matters: "1.234" means either one thousand two hundred thirty-four
+    // or one point two three four depending on the language.
     function grp(n) {
         return Tr.group(n, root.lang);
     }
 
-    // ------------------------------------------------------- Kennzahlen
+    // ------------------------------------------------------- Stats
     Flow {
         width: parent.width
         visible: root.zeigt("stats")
@@ -96,7 +96,7 @@ Column {
         }
     }
 
-    // Geplante und bestaetigte Bloecke in einer Leiste
+    // Projected and confirmed blocks in one strip
     BlockChain {
         width: parent.width
         visible: root.zeigt("chain")
@@ -114,7 +114,7 @@ Column {
         }
     }
 
-    // Weiter zurueck als die Leiste reicht
+    // Further back than the strip reaches
     Text {
         id: historieLink
 
@@ -134,7 +134,7 @@ Column {
         }
     }
 
-    // ------------------------- der naechste Block, laufend mitgefuehrt
+    // ------------------------- the next block, tracked live
     ProjectedBlock {
         width: parent.width
         btcZeichen: root.btcZeichen
@@ -155,7 +155,7 @@ Column {
         }
     }
 
-    // ------------------------------------------------------- Tafeln
+    // ------------------------------------------------------- Panels
     MainPanels {
         width: parent.width
         visible: root.zeigt("panels")
@@ -171,7 +171,7 @@ Column {
         }
     }
 
-    // -------------------------------------- zuletzt gesehene Transaktionen
+    // -------------------------------------- recently seen transactions
     Column {
         width: parent.width
         spacing: root.uiFont * 0.25
@@ -225,7 +225,7 @@ Column {
                     }
 
                     Text {
-                        // `a` ist der Betrag in sat, `v` die virtuelle Groesse
+                        // `a` is the amount in sat, `v` the virtual size
                         text: trow.modelData.a !== undefined
                             ? root.btcZeichen + " " + Tr.fixed(trow.modelData.a / 1e8, 8, root.lang) : ""
                         color: root.dimColor

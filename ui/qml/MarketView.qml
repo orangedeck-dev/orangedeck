@@ -1,20 +1,19 @@
-// Der Markt: Kerzen aus den Trades mehrerer Boersen, Volumen darunter.
+// Market view: candles built from trades on several exchanges, volume below.
 //
-// Vorbild ist aggr.trade. Uebernommen ist davon der **Gedanke**, kein Code --
-// aggr steht unter GPL-3.0, dieses Repo unter MIT. Die Schnittstellen der
-// Boersen gehoeren niemandem.
+// Inspired by aggr.trade. Only the idea is taken from it, no code: aggr is
+// GPL-3.0, this repo is MIT. The exchange APIs belong to nobody.
 //
-// Verdichtet wird im Dienst: er haelt Sekundenfaecher und fasst sie beim
-// Abfragen zum gewuenschten Raster zusammen. Hier kommen hoechstens 400
-// fertige Kerzen an, nie einzelne Trades -- ein reger Markt schickt hunderte
-// je Sekunde, und das ist genau die Groessenordnung, an der in diesem Programm
-// schon zweimal die CPU-Zeit hochgegangen ist.
+// Aggregation happens in the service: it keeps one-second buckets and merges
+// them into the requested interval on each query. At most 400 finished
+// candles arrive here, never single trades. A busy market sends hundreds per
+// second, which is exactly the scale where CPU time has blown up in this
+// program before.
 //
-// Nur `import QtQuick` -- laeuft damit auch unter Android.
-// **Bound** (15.09.2026): die Delegates und `EigenFeld` greifen auf `root`
-// zu. Ohne das Pragma ist nicht zugesichert, dass Ids aus der umgebenden
-// Komponente dort sichtbar sind -- qmllint meldete das 55-mal. Die Delegates
-// deklarieren `modelData` ohnehin als `required`.
+// Only `import QtQuick`, so this also runs on Android.
+// Bound: the delegates and `EigenFeld` access `root`. Without the pragma,
+// ids from the enclosing component are not guaranteed to be visible there
+// (qmllint warns about it). The delegates declare `modelData` as `required`
+// anyway.
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -28,19 +27,19 @@ Item {
     property var feed: null
     property string lang: "de"
     property string currency: "usd"
-    // Zeitraum: 1h | 12h | 24h | 7d | 30d | 1y | all | custom -- der Wirt haelt
-    // ihn, ebenso die Darstellung und den selbst gewaehlten Zeitraum.
+    // Range: 1h | 12h | 24h | 7d | 30d | 1y | all | custom. The host owns it,
+    // as well as the chart kind and the custom range.
     property string range: "24h"
     property string kind: "candles"      // candles | line
-    // Was unter dem Kurs steht: die Volumenbalken oder der CVD.
+    // What sits below the price: volume bars or the CVD.
     property string lower: "volume"      // volume | cvd
-    // Welcher Unterreiter offen ist. **Liquidationen fragen nach dem Preis,
-    // nicht nach der Zeit** -- ein Balken quer auf Kurshoehe passt in kein
-    // Feld, das von links nach rechts laeuft. Deshalb eine eigene Flaeche
-    // statt einer weiteren Spur unter dem Kurs.
+    // Which sub-tab is open. Liquidations are organised by price, not by
+    // time: a horizontal bar at a price level fits no panel that runs left
+    // to right. So they get their own area instead of another lane below
+    // the price.
     property string sub: "price"         // price | liq | heat
-    property int customSecs: 259200      // drei Tage als Vorgabe
-    // Fadenkreuz und laufendes Band -- beides einschaltbar
+    property int customSecs: 259200      // three days by default
+    // Crosshair and running tape, both optional
     property bool crosshair: true
     property bool showTape: true
     property bool live: true
@@ -61,8 +60,8 @@ Item {
     signal customSecsRequested(int secs)
     signal lowerRequested(string l)
     signal subRequested(string t)
-    // Von und Bis gehen als Paar zurueck -- einzeln waeren sie zwischendurch
-    // widerspruechlich (ein Von ohne Bis ist kein Fenster).
+    // From and to are sent back as a pair. Separately they would be
+    // inconsistent in between (a from without a to is no window).
     signal vonBisRequested(int von, int bis)
 
     readonly property var zeitraeume: [
@@ -88,15 +87,15 @@ Item {
 
     property var kerzen: []
     property var quellen: []
-    // Liquidationen und Positionierung -- siehe MarketLiq.qml
+    // Liquidations and positioning, see MarketLiq.qml
     property var liqHist: []
     property var ratio: []
     property int liqSeit: 0
-    // Je Quelle {id, name, online, since} -- `since` nur im Direktbezug
+    // Per source {id, name, online, since}; `since` only in the direct feed
     property var liqQuellen: []
-    // Die Heatmap kommt ueber einen eigenen Weg und **nicht im Sekundentakt**:
-    // sie ist gerechnet, nicht beobachtet, und aendert sich nur mit dem
-    // offenen Interesse -- das schreibt Binance alle fuenf Minuten fort.
+    // The heatmap has its own path and is not polled every second: it is
+    // computed, not observed, and only changes with open interest, which
+    // Binance updates every five minutes.
     property var heat: ({})
 
     function heatHolen() {
@@ -107,8 +106,8 @@ Item {
                  + "&cur=" + root.currency;
         root.feed.getJson(pfad, function (d, err) {
             if (err || !d) {
-                // Nicht erst in einer Minute: beim Oeffnen stuende so lange
-                // nichts da (15.09.2026, Binance Futures zu langsam).
+                // Retry soon rather than in a minute, otherwise the view
+                // stays empty on open when Binance Futures is slow.
                 heatNochmal.restart();
                 return;
             }
@@ -134,74 +133,70 @@ Item {
 
     onSubChanged: if (root.sub === "heat") root.heatHolen()
     property int tradeZahl: 0
-    // Wahr, wenn die Kerzen aus Dollar umgerechnet sind -- ueber Jahre ist
-    // das eine Umrechnung zum heutigen Kurs, keine Wahrheit.
+    // True when the candles are converted from dollars. Over years that is
+    // a conversion at today's rate, not the real price.
     property bool umgerechnet: false
     property string fehler: ""
-    // Das Band: nur was seit `bandNr` dazukam wird geholt und angehaengt.
+    // The tape: only what came after `bandNr` is fetched and appended.
     property var band: []
     property int bandNr: 0
-    // Juengster Trade oben. Einmal gedreht statt in jeder Zeile gerechnet.
+    // Newest trade on top. Reversed once instead of computed per row.
     readonly property var bandUmgekehrt: root.band.slice().reverse()
-    // Welche Kerze unter dem Zeiger liegt, und wo er steht
+    // Which candle is under the pointer, and where the pointer is
     property int zeiger: -1
     property real zeigerY: 0
 
-    // ---------------------------------------------------------------- Zoom
-    // **Sofort zeichnen, spaeter holen.** Jede Radrastung loeste vorher eine
-    // Abfrage aus: der Dienst suchte ein neues Raster, holte womoeglich bei
-    // der Boerse nach, und das Bild kam versetzt zur Bewegung zurueck -- es
-    // ruckelte, und man traf nichts. Jetzt zoomt die Ansicht augenblicklich
-    // in die Kerzen, die sie schon hat, und fragt erst nach, wenn die Hand
-    // stillhaelt. Dann kommt das passende Raster und `zoomSekunden` faellt
-    // wieder weg.
+    // ---------------------------------------------------------------- zoom
+    // Draw immediately, fetch later. Querying on every wheel step made the
+    // service pick a new interval and maybe fetch from the exchange, and the
+    // image came back out of step with the movement, so it stuttered. The
+    // view now zooms instantly into the candles it already has and only
+    // asks again once the hand stops. Then the matching interval arrives and
+    // `zoomSekunden` is cleared.
     property int zoomSekunden: 0
     property bool zoomAusstehend: false
 
-    // ------------------------------------------------- Fenster in der Zeit
-    // **0 heisst: bis jetzt.** Das ist der Regelfall und bleibt es; alles
-    // andere ist ein Fenster in der Vergangenheit. Beim Ziehen und am
-    // Schieber wandert es, die Laenge bleibt.
+    // ------------------------------------------------- window in time
+    // 0 means "up to now". That is the normal case; anything else is a
+    // window in the past. Dragging and the slider move it, the length stays.
     property int fensterEnde: 0
-    // Ausdrueckliches Fenster von ... bis. Ist es gesetzt, gilt weder
-    // Zeitraum noch Fensterende.
+    // Explicit from..to window. When set, neither range nor window end apply.
     //
-    // **Der Wirt haelt es**, wie Zeitraum und Darstellung -- ein getipptes
-    // "01.01.2021..31.03.2021" ist eine Absicht und soll einen Neustart
-    // ueberleben. Hier steht es deshalb nur zu lesen: geaendert wird es ueber
-    // `vonBisRequested`, und es kommt vom Wirt zurueck. Das Fensterende aus
-    // Schieber und Ziehen bleibt fluechtig -- wer neu startet, will in die
-    // Gegenwart sehen.
+    // The host owns it, like range and chart kind: a typed
+    // "01.01.2021..31.03.2021" is intentional and should survive a restart.
+    // So it is read-only here: it changes through `vonBisRequested` and comes
+    // back from the host. The window end from slider and drag stays
+    // transient, after a restart people want to see the present.
     property int vonZeit: 0
     property int bisZeit: 0
-    // Waehrend des Ziehens: um wie viele Bildpunkte das Bild verschoben ist
+    // While dragging: how many pixels the image is shifted
     property real ziehVersatz: 0
 
-    // ------------------------------------------------------- Uebersicht
-    // **Die ganze Geschichte als Tageskerzen, einmal geholt.** Der Grund ist
-    // gemessen: ein frisches Fenster kostet 1,1 bis 1,5 Sekunden, weil der
-    // Dienst dafuer bei Binance nachfragt (gepuffert 4 ms). Am Schieber sind
-    // zehn Bildpunkte schnell hundert Tage -- beim Ziehen waere jede Stelle
-    // ein eigenes Fenster und das Bild stuende still.
+    // ------------------------------------------------------- overview
+    // The whole history as daily candles, fetched once. Measured reason: a
+    // fresh window costs 1.1 to 1.5 seconds because the service asks
+    // Binance for it (4 ms when cached). On the slider ten pixels are
+    // quickly a hundred days, so while dragging every position would be a
+    // new window and the image would stand still.
     //
-    // Also wird waehrend des Ziehens aus diesen 3.300 Kerzen gezeichnet:
-    // grob, aber sofort und an jeder Stelle seit 2017. Das genaue Fenster
-    // kommt, wenn die Hand loslaesst.
+    // So while dragging, the image is drawn from these ~3,300 candles:
+    // coarse, but instant and available anywhere since 2017. The exact
+    // window arrives when the hand lets go.
     property var uebersicht: []
     property bool vorschau: false
-    // Ein Tag traegt kein Fenster von 24 Stunden. Reicht der Zeitraum nicht
-    // fuer ein Bild, zeigt die Vorschau die Umgebung -- lieber die Gegend als
-    // eine leere Flaeche. Ab zwei Monaten Fensterbreite faellt das weg, dort
-    // deckt sich die Vorschau mit dem, was danach kommt.
+    // A single day cannot fill a 24-hour window. If the range is too short
+    // for a picture, the preview shows the surroundings, better the area
+    // than an empty panel. From a two-month window upwards this is not
+    // needed, the preview matches what comes afterwards.
     readonly property int vorschauMindest: 60 * 86400
 
-    // Binance hat BTCUSDT am 31.07.2017 aufgenommen -- frueher gibt es nichts.
+    // Binance listed BTCUSDT on 2017-07-31, there is nothing earlier.
     readonly property int beginn: 1501459200
     readonly property int jetzt: Math.round(Date.now() / 1000)
     readonly property int endeEffektiv: root.fensterEnde > 0 ? root.fensterEnde : root.jetzt
     readonly property bool inVergangenheit: root.fensterEnde > 0 || root.bisZeit > 0
 
-    // Der Wert allein, ohne Nebenwirkung -- **0 heisst weiterhin: bis jetzt**.
+    // The value alone, no side effects. 0 still means "up to now".
     function fensterWert(ende) {
         var min = root.beginn + root.sichtSekunden;
         var max = root.jetzt;
@@ -215,16 +210,16 @@ Item {
         nachfassen.restart();
     }
 
-    // Waehrend am Schieber gezogen wird: nur die Stelle merken, **nicht**
-    // nachladen. Das Bild kommt so lange aus der Uebersicht und folgt der
-    // Hand ohne Verzoegerung.
+    // While the slider is dragged: only remember the position, do not
+    // reload. The image comes from the overview meanwhile and follows the
+    // hand without delay.
     function fensterSchieben(ende) {
         root.fensterEnde = root.fensterWert(ende);
     }
 
-    // Nicht selbst nullen: das Fenster gehoert dem Wirt. Setzte es die Ansicht
-    // selbst, stuende hier gleich ein anderer Wert als in den Einstellungen --
-    // und der naechste Blick von dort holte das geloeschte Fenster zurueck.
+    // Do not reset it here: the window belongs to the host. If the view
+    // cleared it itself, it would hold a different value than the settings,
+    // and the next read from there would bring the cleared window back.
     function vonBisLoeschen() {
         if (root.vonZeit || root.bisZeit)
             root.vonBisRequested(0, 0);
@@ -233,7 +228,7 @@ Item {
     function zurueckZurGegenwart() {
         root.fensterEnde = 0;
         if (root.vonZeit || root.bisZeit) {
-            // Kommt ueber den Wirt zurueck; die Aenderung holt dann selbst.
+            // Comes back through the host; the change then triggers a fetch.
             root.vonBisRequested(0, 0);
             return;
         }
@@ -244,9 +239,7 @@ Item {
         ? root.zoomSekunden
         : (root.range === "custom" ? root.customSecs : root.sekundenVon(root.range))
 
-    // Die Kerzen, die gezeichnet werden. Beim Zoomen ein Ausschnitt der
-    // geholten, sonst alle.
-    // Der Ausschnitt der Tagesuebersicht, der zum gezogenen Ziel passt.
+    // The overview slice that matches the dragged target.
     readonly property var vorschauKerzen: {
         var u = root.uebersicht;
         if (!u.length)
@@ -262,21 +255,20 @@ Item {
         return aus.length >= 3 ? aus : root.kerzen;
     }
 
-    // **Seit dem 13.09.2026 immer ein Ausschnitt** der geholten Kerzen, das
-    // Fenster (Ende - Spanne, Ende]. `holen()` bestellt einen Vorrat daneben
-    // mit: beim Ziehen ruecken daraus echte Kerzen nach, statt dass eine leere
-    // Flaeche entsteht, und nach dem Loslassen steht das neue Fenster sofort
-    // da, statt bis zur Antwort auf den alten Stand zurueckzuspringen. Am Galaxy
-    // "hakte" genau das. `ab` ist der Beginn des Fensters in `kerzen`, -1 heisst
-    // ohne Vorrat.
+    // Always a slice of the fetched candles, the window (end - span, end].
+    // `holen()` also requests a reserve next to it: while dragging, real
+    // candles move in from it instead of an empty area appearing, and after
+    // release the new window is there immediately instead of jumping back to
+    // the old state until the response arrives. `ab` is the start of the
+    // window in `kerzen`, -1 means no reserve.
     readonly property var sichtInfo: {
-        // Am Schieber gezogen: aus der Uebersicht, ohne eine einzige Abfrage.
+        // Dragging the slider: from the overview, without a single request.
         if (root.vorschau)
             return root.gebuendelt(-1, root.vorschauKerzen);
         var k = root.kerzen;
         if (!k.length)
             return root.gebuendelt(-1, k);
-        // Ein getipptes Von-Bis ist genau das, was geholt wurde
+        // A typed from..to is exactly what was fetched
         if (root.vonZeit && root.bisZeit && root.zoomSekunden <= 0)
             return root.gebuendelt(0, k);
         var letzte = k[k.length - 1][0];
@@ -291,36 +283,34 @@ Item {
                 aus.push(k[i]);
             }
         }
-        // Unter drei Kerzen ist nichts mehr zu sehen -- dann lieber alles,
-        // bis das passende Raster da ist.
+        // Below three candles nothing is visible, so show everything
+        // until the matching interval arrives.
         return aus.length >= 3 ? root.gebuendelt(ab, aus) : root.gebuendelt(0, k);
     }
     readonly property var sicht: root.sichtInfo.liste
     readonly property int sichtAb: root.sichtInfo.ab
-    // Woraus beim Ziehen die Nachbarn kommen -- dieselbe Buendelung wie `sicht`
+    // Where neighbours come from while dragging, bundled like `sicht`
     readonly property var sichtQuelle: root.sichtInfo.quelle
 
-    // **Zu schmale Kerzen werden zusammengefasst, nicht zur Kurve.** Bis zum
-    // 13.09.2026 wurde unter 2,5 Punkten je Kerze die Kurve gezeichnet, auch
-    // wenn Kerzen eingestellt waren. Das Raster waehlt aber der Dienst, nach
-    // der Laenge der Abfrage -- und seit dem Vorrat fragt die Gegenwart das
-    // 1,5-Fache an, die Vergangenheit bis zum Doppelten. Am Galaxy wechselte
-    // das Bild deshalb beim Verschieben zwischen Kerzen und Kurve (5 Tage:
-    // 1,3 gegen 2,6 Punkte). Auf 310 Punkten sind 400 Kerzen ohnehin zu fein.
+    // Candles that are too narrow get merged, not turned into a line. The
+    // service picks the interval from the query length, and with the reserve
+    // the present asks for 1.5 times the span and the past up to double. So
+    // switching to a line below a width threshold made the chart flip
+    // between candles and line while panning. On 310 px, 400 candles are too
+    // fine anyway.
     //
-    // Jetzt werden je `g` Kerzen zu einer: Eroeffnung der ersten, Schluss der
-    // letzten, Hoch und Tief ueber alle, Volumen summiert -- bis jede
-    // mindestens drei Punkte breit ist. Die Gruppen enden am rechten Rand des
-    // Fensters, damit die juengste Kerze live weiterlaeuft, und der Vorrat
-    // wird mit denselben Grenzen gebuendelt, damit beim Ziehen nichts
-    // springt. Die Kurve bleibt ungebuendelt, dort zaehlt jeder Punkt.
+    // Every `g` candles become one: open of the first, close of the last,
+    // high and low over all, volume summed, until each is at least three
+    // pixels wide. Groups end at the right edge of the window so the newest
+    // candle keeps updating live, and the reserve is bundled with the same
+    // boundaries so nothing jumps while dragging. The line stays unbundled,
+    // every point counts there.
     function gebuendelt(ab, liste) {
         var n = liste.length;
         var roh = ab >= 0 ? root.kerzen : liste;
-        // **Nicht `feldBreite`**: die zieht `padR` ab, und das misst den
-        // hoechsten Preis der gezeigten Kerzen -- ein Kreis ueber `sicht`.
-        // Die Leinwand ohne Achsenrand ist fuer die Frage "wie viele passen"
-        // genau genug.
+        // Not `feldBreite`: it subtracts `padR`, which measures the highest
+        // price of the visible candles, a cycle through `sicht`. The canvas
+        // minus an axis margin is accurate enough for "how many fit".
         var platz = Math.max(1, leinwand.width - root.baseFont * 4);
         var g = root.kind === "candles" && n >= 3
                 ? Math.max(1, Math.ceil(n * 3 / platz)) : 1;
@@ -330,7 +320,7 @@ Item {
             var nur = root.buendeln(liste, g, n % g);
             return { "ab": -1, "liste": nur, "quelle": nur };
         }
-        var ende = ab + n;                  // hinter dem Fenster, in `kerzen`
+        var ende = ab + n;                  // past the window, in `kerzen`
         var rest = ende % g;
         var alle = root.buendeln(root.kerzen, g, rest);
         var erste = rest > 0 ? rest : g;
@@ -340,7 +330,7 @@ Item {
         return { "ab": start, "liste": alle.slice(start, gruppeEnde + 1), "quelle": alle };
     }
 
-    // Je `g` Kerzen zu einer; die erste Gruppe nimmt `rest` (0 heisst voll)
+    // Merge every `g` candles into one; the first group takes `rest` (0 means full)
     function buendeln(liste, g, rest) {
         var aus = [];
         var i = 0;
@@ -370,8 +360,8 @@ Item {
         root.zoomAuf(root.sichtSekunden * faktor);
     }
 
-    // Die Spanne absolut -- zwei Finger rechnen vom Stand beim Aufsetzen aus,
-    // nicht Schritt fuer Schritt, sonst liefe jede Rundung mit.
+    // Absolute span. Pinch zoom computes from the state at touch-down, not
+    // step by step, otherwise every rounding error would accumulate.
     function zoomAuf(sekunden) {
         root.zoomSekunden = Math.round(Math.max(300, Math.min(400000000, sekunden)));
         root.zoomAusstehend = true;
@@ -407,8 +397,8 @@ Item {
             m = Math.min(m, root.sicht[i][3]);
         return m === Infinity ? 0 : m;
     }
-    // Die Kerzen der Boerse tragen **ein** Volumen, die Live-Faecher des
-    // Dienstes zwei (Kauf und Verkauf getrennt). Beide Formen kommen hier an.
+    // Exchange candles carry one volume, the service's live buckets carry two
+    // (buy and sell separately). Both shapes arrive here.
     function volumen(k) {
         return k.length > 6 ? k[5] + k[6] : (k[5] || 0);
     }
@@ -423,14 +413,14 @@ Item {
                                          ? root.sicht[root.sicht.length - 1][4] : 0
 
     // ------------------------------------------------------------- CVD
-    // Kauf minus Verkauf, aufsummiert. Er beantwortet die Frage, die eine
-    // Kerze offen laesst: **wer hat den Kurs bewegt**. Steigt der Kurs und
-    // faellt der CVD, kauft niemand -- es wird nur nicht mehr verkauft.
+    // Buys minus sells, cumulated. It answers the question a candle leaves
+    // open: who moved the price. If the price rises while the CVD falls,
+    // nobody is buying, there is just less selling.
     //
-    // Aufsummiert wird ueber das **gezeigte Fenster**, beginnend bei null.
-    // Ein absoluter Stand haette keine Bedeutung: die Reihe beginnt dort, wo
-    // die Boerse ihre Kerzen beginnt, und niemand liest einen Wert von 2017
-    // ab. Verglichen wird immer innerhalb des Bildes.
+    // Cumulated over the visible window, starting at zero. An absolute level
+    // would mean nothing: the series starts where the exchange's candles
+    // start, and nobody reads a value from 2017. Comparisons are always
+    // within the picture.
     readonly property var cvd: {
         var aus = [];
         var summe = 0;
@@ -442,8 +432,8 @@ Item {
         return aus;
     }
 
-    // Die Null gehoert immer ins Bild -- ohne sie sieht eine fallende Reihe
-    // im oberen Drittel wie ein Ueberschuss aus.
+    // Zero always stays in view. Without it a falling series in the upper
+    // third looks like a surplus.
     readonly property real cvdTief: {
         var m = 0;
         for (var i = 0; i < root.cvd.length; i++)
@@ -457,52 +447,49 @@ Item {
         return m;
     }
 
-    // ------------------------------------------------------------ Geometrie
-    // **Einmal gerechnet, dreifach benutzt**: von der Leinwand, vom Fadenkreuz
-    // und vom Ablesen am Zeiger. Lag die Rechnung im Zeichenblock, rechnete
-    // das Fadenkreuz zwangslaeufig ein zweites Mal -- und irgendwann anders.
+    // ------------------------------------------------------------ geometry
+    // Computed once, used three times: by the canvas, the crosshair and the
+    // pointer readout. Inside the paint block the crosshair would have to
+    // compute it a second time, and sooner or later differently.
     readonly property real padR: mass.implicitWidth + 10
     readonly property real padB: root.baseFont * 1.4
-    // **Kein Band, solange das Bild in der Vergangenheit steht.** Das Band ist
-    // live; neben Kerzen von vor einem halben Jahr stuenden dort Preise von
-    // heute, und die Kopfzeile zeigte den einen Wert, das Band den anderen.
-    // Zwei Wahrheiten nebeneinander sind schlimmer als eine fehlende.
-    // Alles, was zum Kursbild gehoert, faellt im Liquidationsreiter weg --
-    // Band, Schieber, Fadenkreuz. Sie beziehen sich auf eine Zeitachse, die
-    // dort nicht steht.
+    // No tape while the chart shows the past. The tape is live; next to
+    // candles from half a year ago it would show today's prices, with the
+    // header showing one value and the tape another. Two conflicting values
+    // are worse than a missing one.
+    // Everything tied to the price chart disappears in the liquidation tab:
+    // tape, slider, crosshair. They refer to a time axis that is not there.
     readonly property bool bandDa: root.showTape && !root.inVergangenheit
                                    && root.sub === "price"
     readonly property real bandHoehe: root.bandDa
                                       ? Math.min(root.height * 0.28, root.baseFont * 11)
                                       : 0
-    // Der Schieber unter der Zeitachse. In sehr flachen Flaechen faellt er
-    // weg -- dort ist die Kurve selbst schon knapp.
+    // The slider below the time axis. Dropped in very short panels, where
+    // the curve itself is already cramped.
     readonly property bool schieberDa: root.height >= 260 && root.sub === "price"
 
-    // ----------------------------------------------------- Platz im Kopf
-    // **Der Unterreiter hat die Kopfzeile nach rechts geschoben**, und im
-    // Popout liefen die Bedienelemente hinein: "31.801 $" lag ueber
-    // "10.203 Trades" lag ueber "Binance". Die Zeile wird nicht schmaler,
-    // also muss etwas weichen -- und zwar in der Reihenfolge, in der es
-    // entbehrlich ist.
+    // ----------------------------------------------------- header space
+    // The sub-tabs push the header to the right, and in the popout the
+    // controls overlapped: price over trade count over "Binance". The row
+    // cannot get narrower, so something has to give, in order of how
+    // dispensable it is.
     //
-    // Der Kurs bleibt immer. Danach fallen die Boersenpunkte, dann die
-    // Trade-Zahl, dann die beiden Umschalter der Darstellung -- der
-    // Zeitraum bleibt, ohne ihn ist der Reiter nicht mehr bedienbar.
+    // The price always stays. Then the exchange dots go, then the trade
+    // count, then the two chart toggles. The range picker stays, without it
+    // the tab is no longer usable.
     readonly property bool platzQuellen: root.width > root.baseFont * 66
     readonly property bool platzTrades: root.width > root.baseFont * 56
-    // **Am Telefon passt die Kopfzeile nicht in eine Reihe.** Am 13.09.2026 am
-    // Galaxy A55 gesehen: zwischen Unterreitern und Zeitraum blieb vom Preis
-    // "77.1" -- der `clip` unten hat das Uebereinander verhindert, aber nicht
-    // das Abschneiden. Passen Reiter, Preis und Wahl nicht nebeneinander,
-    // rutscht die Preiszeile unter die Reiter.
-    // Ohne Platz fuer die Umschalter bricht der Kurs immer um: rechts neben
-    // dem Preis stehen dann die beiden Kurzknoepfe (`kurzwahl`).
+    // On a phone the header does not fit on one row, and the price got cut
+    // off between sub-tabs and range picker (the `clip` below prevents
+    // overlap, not truncation). If tabs, price and picker do not fit side by
+    // side, the price row moves below the tabs.
+    // Without room for the toggles the price always wraps; the two short
+    // buttons (`kurzwahl`) then sit to the right of the price.
     readonly property bool kopfUmbruch: (root.sub === "price" && !root.platzUmschalter)
                                         || unterreiter.width + root.baseFont * 2.0
                                         + preisText.implicitWidth + wahl.width > root.width
-    // Wo der Inhalt unter der Kopfzeile beginnt -- an einer Stelle gerechnet,
-    // weil vier Flaechen darauf stehen.
+    // Where content below the header starts. Computed in one place because
+    // four panels depend on it.
     readonly property real kopfHoehe: root.kopfUmbruch
                                       ? Math.max(unterreiter.height, wahl.height)
                                         + Math.max(kopf.height, kurzwahl.visible ? kurzwahl.height : 0)
@@ -518,10 +505,10 @@ Item {
         var d = root.hoch - root.tief;
         return d > 0 ? d : Math.max(1, root.hoch * 0.0002);
     }
-    // **Was wirklich im Bild steht**, nicht was gewaehlt ist. In der Vorschau
-    // sind das zwei Monate, obwohl das Fenster auf 24 Stunden steht -- und
-    // die Zeitachse muss sich danach richten, sonst stehen Uhrzeiten unter
-    // einem Bild von zwei Monaten.
+    // What is actually in the picture, not what is selected. In the preview
+    // that is two months even though the window is set to 24 hours, and the
+    // time axis has to follow it, otherwise clock times end up under a
+    // two-month picture.
     readonly property real gezeigteSekunden: root.sicht.length > 1
         ? Math.max(1, root.sicht[root.sicht.length - 1][0] - root.sicht[0][0])
         : root.sichtSekunden
@@ -544,10 +531,9 @@ Item {
         return Math.max(0, Math.min(root.sicht.length - 1, i));
     }
 
-    // Einmal je Waehrung. Der erste Abruf kostet den Dienst rund sechs
-    // Sekunden (vier Seiten bei Binance), danach sind es Millisekunden -- er
-    // haelt sie eine halbe Stunde. Bis sie da ist, verhaelt sich der Schieber
-    // wie vorher.
+    // Once per currency. The first fetch costs the service about six
+    // seconds (four pages at Binance), after that milliseconds, it caches
+    // for half an hour. Until it arrives the slider behaves as without it.
     property string uebersichtFuer: ""
 
     function uebersichtHolen() {
@@ -559,7 +545,7 @@ Item {
         root.uebersichtFuer = fuer;
         root.feed.getJson("/market/overview?cur=" + fuer, function (d, err) {
             if (err || !d || !(d.candles || []).length) {
-                // Nicht gemerkt lassen -- beim naechsten Anlauf neu versuchen
+                // Do not keep it marked, try again next time
                 if (root.uebersichtFuer === fuer)
                     root.uebersichtFuer = "";
                 return;
@@ -568,13 +554,13 @@ Item {
         });
     }
 
-    // **Mit Vorrat.** Live ein halbes Fenster links dazu, in der Vergangenheit
-    // auch rechts bis zu einem halben. Als `range=custom&secs=`, **ohne**
-    // laufendes `to=jetzt`: die Abfrage geht jede Sekunde raus, und ein Wert,
-    // der sich jede Sekunde aendert, waere jede Sekunde ein neuer Abruf bei
-    // der Boerse. Das 1,5-Fache liegt fuer 1h bis 30d im selben Raster wie das
-    // Fenster selbst. Ohne Vorrat bleiben "all", alles ab 200 Tagen (dort
-    // wuerde das Raster groeber) und ein getipptes Von-Bis.
+    // With reserve. Live, half a window extra on the left; in the past also
+    // up to half a window on the right. Sent as `range=custom&secs=` without
+    // a moving `to=now`: the request goes out every second, and a value that
+    // changes every second would be a new fetch at the exchange each time.
+    // For 1h to 30d, 1.5 times the span stays in the same interval as the
+    // window itself. No reserve for "all", anything from 200 days up (the
+    // interval would get coarser there) and a typed from..to.
     function holen() {
         if (!root.feed || !root.live)
             return;
@@ -606,9 +592,9 @@ Item {
             }
             root.fehler = "";
             root.kerzen = d.candles || [];
-            // Die geholten Kerzen sind jetzt genau der gewuenschte Ausschnitt
-            // -- weiter zuzuschneiden waere doppelt. Nur waehrend einer noch
-            // laufenden Geste bleibt der oertliche Zoom stehen.
+            // The fetched candles are now exactly the requested slice,
+            // cropping further would be redundant. Only during an ongoing
+            // gesture does the local zoom stay.
             if (!root.zoomAusstehend)
                 root.zoomSekunden = 0;
             root.quellen = d.sources || [];
@@ -618,8 +604,8 @@ Item {
             root.liqQuellen = d.liqSources || [];
             root.tradeZahl = d.trades || 0;
             root.umgerechnet = d.converted === true;
-            // Nur das Neue anhaengen und vorne abschneiden -- der Dienst
-            // schickt seit `bandNr` ohnehin nur das, was dazukam.
+            // Only append what is new and trim the front. Since `bandNr`
+            // the service only sends what was added anyway.
             if ((d.tape || []).length) {
                 var neu = root.band.concat(d.tape);
                 root.band = neu.slice(-60);
@@ -631,20 +617,20 @@ Item {
 
     onRangeChanged: root.holen()
     onCurrencyChanged: {
-        // Die Preise im Band sind in der alten Waehrung -- sie stehen sonst
-        // neben den neuen Kerzen und niemand sieht, dass sie nicht passen.
+        // Tape prices are in the old currency. Left in place they would
+        // sit next to the new candles and nobody would notice the mismatch.
         root.band = [];
         root.bandNr = 0;
-        // Die Uebersicht traegt ebenfalls Preise: in einer anderen Waehrung
-        // ist sie eine andere Reihe und wird neu geholt.
+        // The overview carries prices too: in another currency it is a
+        // different series and gets fetched again.
         root.uebersichtFuer = "";
         root.holen();
         root.uebersichtHolen();
     }
     onCustomSecsChanged: if (root.range === "custom") root.holen()
-    // Von und Bis kommen als zwei Zuweisungen beim Wirt zurueck. `nachfassen`
-    // fasst sie zu einer Abfrage zusammen -- sonst ginge zwischendurch eine
-    // mit halbem Fenster raus.
+    // From and to come back from the host as two assignments. `nachfassen`
+    // merges them into one request, otherwise one with half a window would
+    // go out in between.
     onVonZeitChanged: nachfassen.restart()
     onBisZeitChanged: nachfassen.restart()
     onLiveChanged: {
@@ -658,23 +644,22 @@ Item {
         root.uebersichtHolen();
     }
 
-    // Jede Abfrage haelt die Boersenstroeme im Dienst am Leben -- bleibt sie
-    // zwei Minuten aus, trennt er sie von selbst. Sieht niemand hin, fragt
-    // hier auch niemand.
+    // Every request keeps the exchange streams in the service alive; after
+    // two minutes without one it disconnects them. Nobody looking means no
+    // requests from here either.
     Timer {
         interval: 1000
         repeat: true
-        // Ein Fenster in der Vergangenheit aendert sich nicht mehr -- es
-        // jede Sekunde neu zu holen waere Unfug. Das Band laeuft dann auch
-        // nicht weiter; es zeigt die Gegenwart, das Bild die Vergangenheit.
+        // A window in the past no longer changes, fetching it every second
+        // would be pointless. The tape stops too; it shows the present, the
+        // chart the past.
         running: root.live && root.visible && !root.inVergangenheit
         onTriggered: root.holen()
     }
 
-    // ------------------------------------------------------------ Kopfzeile
-    // Der Umschalter steht **vor** dem Kurs, wo Reiter hingehoeren, und
-    // kostet keine eigene Zeile -- im Popout sind 409 Punkte Hoehe alles,
-    // was es gibt.
+    // ------------------------------------------------------------ header
+    // The sub-tab switch sits before the price, where tabs belong, and costs
+    // no extra row: in the popout 409 px of height is all there is.
     ViewTabs {
         id: unterreiter
 
@@ -699,10 +684,9 @@ Item {
 
         anchors.left: root.kopfUmbruch ? parent.left : unterreiter.right
         anchors.leftMargin: root.kopfUmbruch ? 0 : root.baseFont * 1.4
-        // **Ein rechter Anker mit `clip`** als letzte Sicherung: was trotz
-        // aller Stufen nicht passt, wird abgeschnitten statt uebereinander
-        // gezeichnet. Ein halber Text ist unschoen, zwei uebereinander sind
-        // unlesbar.
+        // A right anchor with `clip` as the last safeguard: whatever still
+        // does not fit gets cut off instead of drawn on top of something.
+        // Half a text is ugly, two overlapping texts are unreadable.
         anchors.right: root.kopfUmbruch ? (kurzwahl.visible ? kurzwahl.left : parent.right) : wahl.left
         anchors.rightMargin: root.kopfUmbruch && !kurzwahl.visible ? 0 : root.baseFont * 0.6
         anchors.top: parent.top
@@ -721,9 +705,9 @@ Item {
             font.weight: Font.DemiBold
         }
 
-        // Am Zeiger die Kerze, sonst wie viel durchgelaufen ist. **Nicht unten
-        // rechts** -- dort stand es genau auf der Uhrzeit der Zeitachse
-        // ("14:19:5553 Trades").
+        // Under the pointer the candle, otherwise how many trades came
+        // through. Not bottom right: there it collided with the time axis
+        // label ("14:19:5553 Trades").
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.platzTrades && !root.zeigerDa && root.tradeZahl > 0
@@ -734,8 +718,8 @@ Item {
 
 
 
-        // Steht das Fenster in der Vergangenheit, fuehrt ein Klick zurueck.
-        // Ohne den kaeme man vom Schieben nur muehsam wieder heim.
+        // When the window is in the past, a click goes back to now.
+        // Without it, getting back after panning would be tedious.
         Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.inVergangenheit
@@ -765,10 +749,10 @@ Item {
             }
         }
 
-        // Steht die Kurve in einer anderen Waehrung als der der Boerse, sagt
-        // sie es -- gerechnet wird mit dem heutigen Kurs, auch fuer Kerzen von
-        // 2017. **Nicht unten links**: dort steht der Anfang der Zeitachse,
-        // und der Hinweis lag genau darauf.
+        // If the curve is in a currency other than the exchange's, it says
+        // so: conversion uses today's rate, even for candles from 2017. Not
+        // bottom left: the start of the time axis is there and the note sat
+        // right on it.
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.umgerechnet && root.sicht.length > 0
@@ -778,8 +762,8 @@ Item {
             opacity: 0.8
         }
 
-        // Welche Boerse gerade haengt -- ohne das sieht man einer flachen
-        // Kurve nicht an, ob der Markt ruhig ist oder die Verbindung weg.
+        // Which exchange is stalled. Without this a flat curve does not
+        // tell whether the market is calm or the connection is gone.
         Repeater {
             model: root.platzQuellen ? root.quellen : []
 
@@ -815,9 +799,9 @@ Item {
         spacing: root.baseFont * 0.5
         z: 50
 
-        // Kerze oder Kurve. **Nur hier** -- der Kursverlauf in der Uhr
-        // kann keine Kerzen zeigen: die Reihe von mempool.space kennt nur
-        // Schlusskurse, kein Hoch und Tief.
+        // Candles or line. Only here: the price chart in the clock cannot
+        // show candles, the mempool.space series only has closing prices, no
+        // high and low.
         TileGoggles {
             visible: root.sub === "price" && root.platzUmschalter
             anchors.verticalCenter: parent.verticalCenter
@@ -838,10 +822,9 @@ Item {
             }
         }
 
-        // Was unter dem Kurs steht. Ein eigener Umschalter statt beides
-        // uebereinander: die Balken zaehlen von null nach oben, der CVD hat
-        // eine Null in der Mitte. Zwei Massstaebe in einer Flaeche liest
-        // niemand.
+        // What sits below the price. A separate toggle instead of both
+        // stacked: bars count up from zero, the CVD has zero in the middle.
+        // Two scales in one panel are unreadable.
         TileGoggles {
             visible: root.sub === "price" && root.platzUmschalter
             anchors.verticalCenter: parent.verticalCenter
@@ -862,9 +845,9 @@ Item {
             }
         }
 
-        // Eigener Zeitraum -- hier oben nur, wenn Platz ist. Am Telefon lief
-        // die Reihe mit dem Feld nach links in die Unterreiter und lag auf
-        // "Heatmap" (13.09.2026); dort steht es in der zweiten Zeile.
+        // Custom range, up here only when there is room. On a phone the row
+        // with the field ran left into the sub-tabs, so there it goes into
+        // the second row.
         EigenFeld {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.range === "custom" && root.platzUmschalter
@@ -872,18 +855,16 @@ Item {
 
         DropDown {
             anchors.verticalCenter: parent.verticalCenter
-            // **Der Rahmen ist die Ansicht, nicht die Reihe.** Ohne das haelt
-            // sich die Liste an die Reihe, in der sie steht, und zeichnet
-            // ungehindert darueber hinaus -- im Dashboard-Tab landete sie
-            // dadurch neben der Flaeche.
+            // The bounds are the view, not the row. Otherwise the list
+            // sticks to its row and draws past it unchecked; in the
+            // dashboard tab it ended up beside the panel.
             bounds: root
             flaecheColor: root.panelColor
             model: root.zeitraeume
             current: root.range
-            // **Am Telefon der Wert statt "Eigener Zeitraum".** Der lange
-            // Text machte die Auswahl so breit, dass sie in jedem Unterreiter
-            // auf "Heatmap" lag (Galaxy, 13.09.2026). "3d" sagt mehr und
-            // braucht keine neue Uebersetzung.
+            // On a phone, the value instead of "Custom range". The long text
+            // made the picker so wide that it covered "Heatmap" in every
+            // sub-tab. "3d" says more and needs no new translation.
             anzeige: (root.range === "custom" && !root.platzUmschalter)
                      ? ((root.vonZeit && root.bisZeit)
                         ? Qt.formatDateTime(new Date(root.vonZeit * 1000), Tr.datumOhneJahr(root.lang))
@@ -896,19 +877,18 @@ Item {
             accentColor: root.accentColor
             lineColor: root.lineColor
             onPicked: function (k) {
-                // Ein ausdrueckliches Fenster schlaegt den Zeitraum: bliebe es
-                // stehen, sieht die Wahl hier folgenlos aus.
+                // An explicit window overrides the range: if it stayed,
+                // picking here would seem to do nothing.
                 root.vonBisLoeschen();
                 root.rangeRequested(k);
             }
         }
     }
 
-    // Eigener Zeitraum: eine Zahl mit Einheit, etwa "72h" oder "90d".
-    // Ein Kalender mit Von und Bis waere ein eigenes Bauteil; hierfuer
-    // genuegt, was man ohnehin tippen wuerde. Ein Bauteil, weil es an zwei
-    // Stellen stehen kann: oben neben der Auswahl oder am Telefon in der
-    // zweiten Zeile.
+    // Custom range: a number with a unit, e.g. "72h" or "90d". A calendar
+    // with from and to would be a component of its own; typing is enough
+    // here. A component because it can sit in two places: up next to the
+    // picker, or on a phone in the second row.
     component EigenFeld: Rectangle {
         id: feld
 
@@ -938,9 +918,9 @@ Item {
                     + ".." + Qt.formatDateTime(new Date(root.bisZeit * 1000), Tr.datum(root.lang))
                   : root.eigenText(root.customSecs)
             onAccepted: {
-                // Zwei Punkte trennen ein ausdrueckliches Fenster:
-                // "01.01.2021..31.03.2021". Ohne sie ist es eine Laenge,
-                // die bis jetzt reicht.
+                // Two dots separate an explicit window:
+                // "01.01.2021..31.03.2021". Without them it is a length
+                // ending now.
                 if (text.indexOf("..") >= 0) {
                     var teile = text.split("..");
                     var a = root.datumSekunden(teile[0]);
@@ -960,8 +940,8 @@ Item {
         }
     }
 
-    // "72h" -> 259200. Einheiten: m Minuten, h Stunden, d Tage, w Wochen,
-    // y Jahre. Ohne Einheit gelten Tage.
+    // "72h" -> 259200. Units: m minutes, h hours, d days, w weeks,
+    // y years. Without a unit, days.
     function eigenSekunden(text) {
         var m = String(text).trim().toLowerCase().match(/^([0-9]+(?:[.,][0-9]+)?)\s*([mhdwy]?)$/);
         if (!m)
@@ -971,8 +951,8 @@ Item {
         return Math.round(zahl * (faktor[m[2]] || 86400));
     }
 
-    // "31.03.2021" oder "2021-03-31" -> Sekunden. Ohne Uhrzeit gilt der
-    // Tagesbeginn in der Zeitzone des Rechners.
+    // "31.03.2021" or "2021-03-31" -> seconds. Without a time, start of day
+    // in the local time zone.
     function datumSekunden(text) {
         var t = String(text).trim();
         var m = t.match(/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/);
@@ -986,25 +966,21 @@ Item {
         return 0;
     }
 
-    // Was im Feld steht, muss man lesen koennen.
+    // The field content has to be readable.
     //
-    // Vorher entschied die **Teilbarkeit** ueber die Einheit: nur was glatt
-    // durch ein Jahr, eine Woche, einen Tag oder eine Stunde ging, bekam die
-    // passende: alles andere fiel auf Minuten durch. Beim Zoomen ist keine
-    // Zahl glatt, und dann stand dort "12215m" -- richtig, und trotzdem
-    // unbrauchbar; niemand rechnet das in achteinhalb Tage um.
+    // The unit is picked by magnitude, not divisibility: the largest unit
+    // that still leaves a whole number. When zooming no number is even, and
+    // divisibility would give something like "12215m", correct but useless;
+    // nobody converts that to eight and a half days. 36 hours reads better
+    // than 1.5 days.
     //
-    // Jetzt entscheidet die **Groesse**: die groesste Einheit, in der noch
-    // etwas Ganzes uebrigbleibt. 36 Stunden liest sich besser als 1,5 Tage.
+    // Weeks are never used for output even though the field accepts them:
+    // the view's ranges are 1h, 12h, 24h, 7d, 30d and 1y, there are no weeks
+    // in that vocabulary, and "26w" next to "30d" would be two units for
+    // the same scale. A typed "12w" is accepted and shown as "84d".
     //
-    // **Wochen kommen nicht vor**, obwohl das Feld sie als Eingabe annimmt:
-    // die Zeitraeume der Ansicht heissen 1h, 12h, 24h, 7d, 30d und 1y -- in
-    // dieser Sprache gibt es keine Wochen, und "26w" neben "30d" waeren zwei
-    // Masseinheiten fuer dieselbe Groessenordnung. Getipptes "12w" wird
-    // angenommen und als "84d" zurueckgegeben.
-    //
-    // Die erste Schwelle liegt knapp unter der Stunde, nicht auf ihr: sonst
-    // rundet eine Spanne von 3599 Sekunden auf "60m" statt auf "1h".
+    // The first threshold is just below an hour, not on it: otherwise a
+    // span of 3599 seconds rounds to "60m" instead of "1h".
     function eigenText(sek) {
         if (sek < 3570)
             return root.rundText(sek / 60) + "m";
@@ -1015,19 +991,19 @@ Item {
         return root.rundText(sek / 31536000) + "y";
     }
 
-    // Grob gerundet, damit es sauber aussieht: ab zehn ganzzahlig, darunter
-    // eine Nachkommastelle -- und die faellt weg, wenn sie eine Null waere.
-    // **Gerundet wird nur die Anzeige**, der Wert dahinter bleibt genau.
+    // Rounded coarsely so it looks clean: integer from ten up, one decimal
+    // below that, dropped if it would be zero. Only the display is rounded,
+    // the underlying value stays exact.
     function rundText(wert) {
         if (wert >= 10 || Math.abs(wert - Math.round(wert)) < 0.05)
             return Tr.group(Math.round(wert), root.lang);
         return Tr.fixed(wert, 1, root.lang);
     }
 
-    // **Am Telefon ein Knopf je Umschalter.** Die beiden Reihen oben brauchen
-    // `platzUmschalter`; darunter fehlten sie bis zum 13.09.2026 ganz, und am
-    // Galaxy liessen sich weder Kerze/Kurve noch Volumen/CVD waehlen. Jeder
-    // Knopf zeigt die aktuelle Wahl und schaltet beim Antippen weiter.
+    // On a phone, one button per toggle. The two rows at the top need
+    // `platzUmschalter`; without these buttons neither candles/line nor
+    // volume/CVD could be picked on a phone. Each button shows the current
+    // choice and cycles on tap.
     Row {
         id: kurzwahl
 
@@ -1037,15 +1013,13 @@ Item {
         spacing: root.baseFont * 0.5
         z: 50
 
-        // Das Feld fuer den eigenen Zeitraum, wenn oben kein Platz ist.
-        // Hoechstens ein Drittel der Breite -- ein getipptes Von-Bis ist
-        // sonst 210 Punkte breit, und bei 45 % stand der Preis schon
-        // abgeschnitten da. Der Text laesst sich im Feld verschieben.
+        // The custom range field when there is no room at the top. At most a
+        // third of the width, otherwise a typed from..to is 210 px wide and
+        // the price gets cut off. The text can be scrolled inside the field.
         //
-        // **Nicht in der Vergangenheit.** Dort steht neben dem Preis "Jetzt",
-        // und fuer Feld und Knopf zusammen reicht die Zeile nicht -- vom Knopf
-        // blieb ein halber Rand. "Jetzt" fuehrt zurueck und ist wichtiger; die
-        // Auswahl oben nennt den Zeitraum ohnehin.
+        // Hidden in the past. There "Now" sits next to the price, and the row
+        // is too short for field and button together. "Now" leads back and
+        // matters more; the picker at the top shows the range anyway.
         EigenFeld {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.range === "custom" && !root.inVergangenheit
@@ -1092,7 +1066,7 @@ Item {
                     font.pixelSize: root.baseFont * 0.8
                 }
 
-                // Die Tippflaeche nach oben und unten auf Fingergroesse
+                // Extend the tap area up and down to finger size
                 MouseArea {
                     anchors.fill: parent
                     anchors.topMargin: -Math.max(0, (40 - kurzknopf.height) / 2)
@@ -1111,7 +1085,7 @@ Item {
         }
     }
 
-    // --------------------------------------------------------------- Kerzen
+    // --------------------------------------------------------------- candles
     Canvas {
         id: leinwand
 
@@ -1120,8 +1094,8 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        // Der Platz der Ablesezeile bleibt frei, auch wenn sie leer ist --
-        // sonst huepft der Graph bei jedem Ueberfahren um eine Zeilenhoehe.
+        // The readout row keeps its space even when empty, otherwise the
+        // chart jumps by one row height on every hover.
         anchors.topMargin: root.kopfHoehe
                            + root.baseFont * 0.25 + ablesen.implicitHeight
                            + root.baseFont * 0.35
@@ -1147,7 +1121,7 @@ Item {
                 return root.yPreis(v);
             }
 
-            // Waagerechte Hilfslinien und die Preisachse rechts
+            // Horizontal grid lines and the price axis on the right
             ctx.strokeStyle = root.lineColor;
             ctx.fillStyle = root.dimColor;
             ctx.font = (root.baseFont - 2) + "px " + Fonts.sansCss();
@@ -1165,14 +1139,13 @@ Item {
 
             var i, k, x, farbe, steigt;
 
-            // Waehrend des Ziehens wandern **nur die Daten** mit; daneben
-            // ruecken Kerzen aus dem Vorrat nach (siehe `sichtInfo`). Was auch
-            // dort fehlt, ist noch nicht geholt und bleibt leer, statt
-            // erfunden zu werden. Bis zum 13.09.2026 stand das `translate`
-            // vor dem Gitter: Preisskala, Linien und Zeitachse rutschten mit,
-            // und am Telefon sah jedes Wischen aus wie ein Bildwechsel, der
-            // nicht stattfindet. Beschnitten wird an der Skala, damit die
-            // Kerzen nicht ueber ihre Beschriftung laufen.
+            // While dragging only the data moves; neighbouring candles come
+            // in from the reserve (see `sichtInfo`). What is missing there
+            // has not been fetched yet and stays empty instead of being made
+            // up. The `translate` comes after the grid: if price scale, lines
+            // and time axis moved along, every swipe on a phone would look
+            // like a picture change that does not happen. Clipping is at the
+            // scale so candles do not run over their labels.
             ctx.save();
             ctx.beginPath();
             ctx.rect(0, 0, breiteGesamt, height - padB);
@@ -1180,33 +1153,31 @@ Item {
             if (root.ziehVersatz !== 0)
                 ctx.translate(root.ziehVersatz, 0);
 
-            // ---- Kurve statt Kerzen ---------------------------------------
-            // Bei neun Jahren in einem Bild ist eine Kerze ein Strich; dann
-            // sagt die Linie mehr. Bei einer Stunde ist es umgekehrt.
+            // ---- line instead of candles ----------------------------------
+            // With nine years in one picture a candle is a stroke and the
+            // line says more. With one hour it is the other way round.
             //
-            // **Nicht die Vorschau entscheidet das, sondern die Breite.**
-            // Vorher fiel jede Vorschau auf die Linie zurueck: wer den
-            // Schieber zog, sah waehrend der ganzen Geste eine Kurve, obwohl
-            // Kerzen eingestellt waren, und beim Loslassen sprang das Bild
-            // in eine andere Darstellungsart zurueck. Der Sprung sagte nichts
-            // ueber die Daten, er war eine Nebenwirkung.
+            // Width decides this, not whether it is a preview. If every
+            // preview fell back to the line, dragging the slider would show a
+            // line for the whole gesture even with candles selected, and the
+            // picture would jump to another chart type on release. That jump
+            // says nothing about the data.
             //
-            // Was die Vorschau wirklich unterscheidet, ist die Aufloesung:
-            // sie zeichnet Tageskerzen. Ueber sechzig Tage sind das sechzig
-            // Kerzen und ein gewoehnliches Bild; ueber neun Jahre sind es
-            // dreitausend, und dann ist jede schmaler als ein Bildpunkt. Genau
-            // das misst die Schwelle -- und sie gilt fuer das feste Bild
-            // ebenso, denn eine Kerze, die keine zweieinhalb Bildpunkte breit
-            // ist, zeigt weder Docht noch Koerper.
+            // What really sets the preview apart is resolution: it draws daily
+            // candles. Over sixty days that is sixty candles and a normal
+            // picture; over nine years it is three thousand, each narrower
+            // than a pixel. That is what the threshold measures, and it
+            // applies to the settled picture too, since a candle less than
+            // two and a half pixels wide shows neither wick nor body.
             //
-            // Dass es eine Vorschau ist, sagt weiterhin die Daempfung.
+            // The dimming still marks it as a preview.
             var alsLinie = root.kind === "line" || kerzeBreite < 2.5;
             if (root.vorschau)
                 ctx.globalAlpha = 0.55;
 
-            // Beim Ziehen ruecken Nachbarn aus dem Vorrat ins Bild, gezaehlt
-            // vom Beginn des Fensters in `kerzen`. Ohne Versatz ist es genau
-            // das Fenster, wie vorher.
+            // While dragging, neighbours from the reserve move into view,
+            // counted from the window start in `kerzen`. Without an offset
+            // it is exactly the window.
             var quelle = root.sichtAb >= 0 ? root.sichtQuelle : root.sicht;
             var basis0 = root.sichtAb >= 0 ? root.sichtAb : 0;
             var extraL = root.ziehVersatz > 0 ? Math.ceil(root.ziehVersatz / kerzeBreite) + 1 : 0;
@@ -1245,7 +1216,7 @@ Item {
                 ctx.stroke();
             }
 
-            // ---- Kerzen ----------------------------------------------------
+            // ---- candles ---------------------------------------------------
             for (j = jVon; j <= jBis; j++) {
                 k = quelle[j];
                 i = j - basis0;
@@ -1256,7 +1227,7 @@ Item {
                 if (!alsLinie) {
                     var mitte = i * kerzeBreite + kerzeBreite / 2;
 
-                    // Docht
+                    // Wick
                     ctx.strokeStyle = farbe;
                     ctx.lineWidth = 1;
                     ctx.beginPath();
@@ -1264,21 +1235,21 @@ Item {
                     ctx.lineTo(Math.round(mitte) + 0.5, yPreis(k[3]));
                     ctx.stroke();
 
-                    // Koerper -- mindestens ein Bildpunkt, sonst verschwindet
-                    // eine Kerze ohne Bewegung ganz
+                    // Body, at least one pixel, otherwise a candle without
+                    // movement disappears entirely
                     var yO = yPreis(Math.max(k[1], k[4]));
                     var yC = yPreis(Math.min(k[1], k[4]));
                     ctx.fillStyle = farbe;
                     ctx.fillRect(x, yO, koerper, Math.max(1, yC - yO));
                 }
 
-                // ---- Volumen darunter -------------------------------------
+                // ---- volume below ---------------------------------------
                 if (root.lower === "volume" && root.maxVol > 0) {
                     var basis = height - padB;
                     if (k.length > 6) {
-                        // Live-Faecher: Kauf und Verkauf gestapelt
-                        // Begrenzt: die Skala gilt fuer das Fenster, eine
-                        // Nachbarkerze aus dem Vorrat kann groesser sein
+                        // Live buckets: buy and sell stacked
+                        // Clamped: the scale applies to the window, a
+                        // neighbouring candle from the reserve can be larger
                         var hKauf = Math.min(volHoehe, volHoehe * (k[5] / root.maxVol));
                         var hVerk = Math.min(volHoehe - hKauf, volHoehe * (k[6] / root.maxVol));
                         ctx.fillStyle = root.upColor;
@@ -1286,7 +1257,7 @@ Item {
                         ctx.fillStyle = root.downColor;
                         ctx.fillRect(x, basis - hKauf - hVerk, koerper, hVerk);
                     } else {
-                        // Boersenkerze: ein Volumen, eingefaerbt nach Richtung
+                        // Exchange candle: one volume, coloured by direction
                         var hVol = Math.min(volHoehe, volHoehe * (root.volumen(k) / root.maxVol));
                         ctx.fillStyle = farbe;
                         ctx.fillRect(x, basis - hVol, koerper, hVol);
@@ -1294,9 +1265,9 @@ Item {
                 }
             }
 
-            // ---- CVD statt der Balken --------------------------------------
-            // **Nach der Schleife**: eine Linie ist keine Folge von Balken,
-            // sie braucht alle Punkte auf einmal.
+            // ---- CVD instead of the bars -----------------------------------
+            // After the loop: a line is not a sequence of bars, it needs all
+            // points at once.
             if (root.lower === "cvd") {
                 var cBasis = height - padB;
                 var cLo = root.cvdTief, cHi = root.cvdHoch;
@@ -1306,8 +1277,8 @@ Item {
                     return cBasis - volHoehe * (v - cLo) / cSpanne;
                 }
 
-                // Die Nulllinie zuerst -- an ihr wird abgelesen, ob die
-                // Kaeufer oder die Verkaeufer vorn liegen.
+                // Zero line first, it shows whether buyers or sellers
+                // are ahead.
                 var yNull = yCvd(0);
                 ctx.strokeStyle = root.lineColor;
                 ctx.lineWidth = 1;
@@ -1319,8 +1290,8 @@ Item {
                 var letzterCvd = root.cvd.length ? root.cvd[root.cvd.length - 1] : 0;
                 var cvdFarbe = letzterCvd >= 0 ? root.upColor : root.downColor;
 
-                // Flaeche zwischen Linie und Null, damit man die Richtung
-                // auch aus dem Augenwinkel sieht
+                // Area between line and zero, so the direction is visible
+                // at a glance
                 ctx.beginPath();
                 ctx.moveTo(kerzeBreite / 2, yNull);
                 for (i = 0; i < n; i++)
@@ -1344,10 +1315,10 @@ Item {
                 ctx.stroke();
             }
 
-            // Verschiebung, Beschnitt und die Daempfung der Vorschau enden hier
+            // Offset, clipping and preview dimming end here
             ctx.restore();
 
-            // Zeitachse: Anfang und Ende
+            // Time axis: start and end
             ctx.fillStyle = root.dimColor;
             ctx.textAlign = "left";
             ctx.fillText(root.uhrzeit(root.sicht[0][0]), 0, height - 2);
@@ -1356,10 +1327,9 @@ Item {
         }
     }
 
-    // Bei einem Tag sagt ein Datum nichts, bei neun Jahren eine Uhrzeit nichts.
-    // **Aber die Jahreszahl gehoert dazu**, sobald ueberhaupt ein Datum steht:
-    // "31.10." allein ist bei einem Zeitraum, der Jahre umfassen kann, keine
-    // Angabe, sondern ein Raten.
+    // For one day a date says nothing, for nine years a clock time says
+    // nothing. But once a date is shown it includes the year: "31.10." alone
+    // is a guess, not information, for a range that can span years.
     function uhrzeit(ts) {
         var sek = root.gezeigteSekunden;
         if (sek <= 86400 * 2)
@@ -1369,17 +1339,16 @@ Item {
         return Qt.formatDateTime(new Date(ts * 1000), Tr.monatJahr(root.lang));
     }
 
-    // In der Ablesezeile ist Platz -- dort steht das volle Datum mit Uhrzeit.
+    // The readout row has room, so it shows the full date with time.
     function zeitpunkt(ts) {
         return Qt.formatDateTime(new Date(ts * 1000),
                                  root.gezeigteSekunden <= 86400 * 2
                                  ? Tr.datum(root.lang) + "  HH:mm" : Tr.datum(root.lang));
     }
 
-    // **Das Ablesen steht in einer eigenen Zeile.** In der Kopfzeile wuchs es
-    // mit jedem Wert und schob sich unter die Boersenpunkte und die Knoepfe --
-    // vier Zahlen mit Beschriftung sind schlicht breiter als der Platz neben
-    // dem Preis.
+    // The readout has its own row. In the header it grew with every value
+    // and slid under the exchange dots and buttons; four labelled numbers
+    // are simply wider than the space next to the price.
     Text {
         id: ablesen
 
@@ -1391,25 +1360,25 @@ Item {
         visible: root.zeigerDa || root.vorschau
         elide: Text.ElideRight
         text: {
-            // Beim Ziehen steht hier, **wo** man ist und dass das Bild grob
-            // ist. Der Platz war ohnehin freigehalten.
+            // While dragging this shows where you are and that the picture
+            // is coarse. The space is reserved anyway.
             if (root.vorschau)
                 return Tr.t("market.preview", root.lang) + "    "
                      + root.zeitpunkt(root.endeEffektiv);
             if (!root.zeigerDa)
                 return "";
             var k = root.sicht[root.zeiger];
-            // Aendert sich `sicht` mitten in einer Geste (Kneifen, Ziehen),
-            // kann der Zeiger fuer einen Durchlauf auf nichts zeigen. Am
-            // Galaxy am 15.09.2026 als TypeError im Protokoll.
+            // If `sicht` changes in the middle of a gesture (pinch, drag),
+            // the pointer can point at nothing for one pass, which would
+            // otherwise throw a TypeError.
             if (!k)
                 return "";
             var zeile = root.zeitpunkt(k[0]) + "    O " + Tr.group(k[1], root.lang)
                       + "   H " + Tr.group(k[2], root.lang)
                       + "   L " + Tr.group(k[3], root.lang)
                       + "   C " + Tr.group(k[4], root.lang);
-            // Steht der CVD unten, gehoert sein Wert an dieser Stelle dazu --
-            // sonst liest man eine Linie ohne Achse ab.
+            // With the CVD below, its value belongs here too, otherwise the
+            // line is read without an axis.
             if (root.lower === "cvd" && root.zeiger < root.cvd.length) {
                 var v = root.cvd[root.zeiger];
                 zeile += "   CVD " + (v >= 0 ? "+" : "\u2212")
@@ -1422,7 +1391,7 @@ Item {
         font.family: Fonts.mono()
     }
 
-    // ------------------------------------------- Zoom, Zeiger, Fadenkreuz
+    // ------------------------------------------- zoom, pointer, crosshair
     MouseArea {
         id: zeigerFeld
 
@@ -1430,9 +1399,9 @@ Item {
         anchors.fill: leinwand
         anchors.rightMargin: root.padR
         hoverEnabled: true
-        // Ziehen verschiebt das Fenster in der Zeit. Die Ansicht folgt dabei
-        // sofort -- verschoben wird das gezeichnete Bild --, geholt wird erst,
-        // wenn die Hand loslaesst.
+        // Dragging moves the window in time. The view follows immediately
+        // (the drawn picture is shifted), fetching happens only when the
+        // hand lets go.
         acceptedButtons: Qt.LeftButton
         cursorShape: druck ? Qt.ClosedHandCursor : Qt.ArrowCursor
 
@@ -1449,7 +1418,7 @@ Item {
                 return;
             zeigerFeld.druck = false;
             if (Math.abs(root.ziehVersatz) >= 2) {
-                // Nach rechts gezogen heisst: zurueck in die Vergangenheit.
+                // Dragging to the right means going back into the past.
                 var proPunkt = root.sichtSekunden / Math.max(1, root.feldBreite);
                 root.fensterSetzen(root.endeEffektiv - root.ziehVersatz * proPunkt);
             }
@@ -1475,24 +1444,24 @@ Item {
         }
         onExited: root.zeiger = -1
 
-        // **Das Rad bedient den eigenen Zeitraum.** Hineindrehen verkuerzt
-        // ihn, herausdrehen verlaengert ihn -- und weil der Dienst das Raster
-        // zum Zeitraum sucht, kommen immer rund zweihundert Kerzen heraus,
-        // egal wie tief man hineingeht. Ein fester Zeitraum wird beim ersten
-        // Dreh zum eigenen: alles andere waere ein Umschalter, der sich beim
-        // Zoomen selbst widerspricht.
+        // The wheel drives the custom range. Scrolling in shortens it,
+        // scrolling out lengthens it, and because the service picks the
+        // interval for the range, there are always about two hundred candles,
+        // however deep you go. A fixed range becomes custom on the first
+        // turn: anything else would be a toggle contradicting itself while
+        // zooming.
         //
-        // **Ein `WheelHandler`, kein `onWheel` an der MouseArea.** Die steht
-        // hier auf `acceptedButtons: Qt.NoButton`, weil sie nur ueberfahren
-        // und nicht geklickt werden soll -- ob sie damit noch Raddrehungen
-        // bekommt, ist genau die Art Zusicherung, die man nicht pruefen kann,
-        // ohne ein Rad zu drehen. Der Handler ist dafuer gebaut.
+        // A `WheelHandler`, not `onWheel` on the MouseArea. That one is set
+        // to `acceptedButtons: Qt.NoButton` because it should only be
+        // hovered, not clicked, and whether it still receives wheel events
+        // then is the kind of guarantee you cannot check without turning a
+        // wheel. The handler is built for this.
         WheelHandler {
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
             onWheel: function (rad) {
-                // Ein Rasterschritt sind 120 Achtelgrad; ein Rollfeld meldet
-                // feinere Schritte. Beides ueber denselben Faktor, damit sich
-                // Maus und Rollfeld gleich anfuehlen.
+                // One wheel notch is 120 eighths of a degree; a touchpad
+                // reports finer steps. Both go through the same factor so
+                // mouse and touchpad feel the same.
                 var schritte = rad.angleDelta.y / 120;
                 if (!schritte)
                     return;
@@ -1500,16 +1469,15 @@ Item {
             }
         }
 
-        // **Zwei Finger** tun dasselbe wie das Rad. Bis zum 13.09.2026 gab es
-        // hier nur den WheelHandler, und der nimmt keinen Touchscreen -- am
-        // Galaxy tat Kneifen nichts.
+        // Pinch does the same as the wheel. `WheelHandler` does not take
+        // touchscreen input, so without this pinching did nothing on a phone.
         //
-        // **Die Stelle zwischen den Fingern bleibt stehen**, nicht der rechte
-        // Rand (15.09.2026). Wer auf eine Kerze in der Mitte zieht, will sie
-        // groesser sehen, nicht die juengste. Gerechnet wird vom Stand beim
-        // Aufsetzen: die Zeit unter der Mitte, und ihr Anteil der Breite von
-        // links. In der Gegenwart heisst Hineinzoomen damit, in die
-        // Vergangenheit zu ruecken; ganz rechts angesetzt bleibt es live.
+        // The point between the fingers stays put, not the right edge.
+        // Pinching on a candle in the middle means wanting to see that one
+        // larger, not the newest. Computed from the state at touch-down: the
+        // time under the centre and its fraction of the width from the left.
+        // In the present, zooming in therefore moves into the past; started at
+        // the far right it stays live.
         PinchHandler {
             id: kneifen
 
@@ -1521,8 +1489,8 @@ Item {
 
             onActiveChanged: {
                 if (!kneifen.active) {
-                    // Wie nach dem Ziehen: das neue Fenster gilt, und geholt
-                    // wird einmal, nach der Geste.
+                    // As after dragging: the new window applies, and one
+                    // fetch happens after the gesture.
                     if (kneifen.anteil < 1)
                         root.fensterSetzen(root.endeEffektiv);
                     return;
@@ -1530,8 +1498,8 @@ Item {
                 kneifen.startSekunden = root.sichtSekunden;
                 kneifen.startEnde = root.endeEffektiv;
                 kneifen.anteil = Math.max(0, Math.min(1, kneifen.centroid.position.x / Math.max(1, root.feldBreite)));
-                // Der erste Finger hat schon als Ziehen angefangen. Ohne das
-                // verschoebe das Loslassen das Fenster zusaetzlich.
+                // The first finger already started as a drag. Without this,
+                // releasing would also shift the window.
                 zeigerFeld.druck = false;
                 root.ziehVersatz = 0;
                 root.zeiger = -1;
@@ -1550,7 +1518,7 @@ Item {
         }
     }
 
-    // Wie lang ein benannter Zeitraum ist -- fuer den ersten Dreh am Rad
+    // Length of a named range, for the first wheel turn
     function sekundenVon(r) {
         switch (r) {
         case "1h":
@@ -1566,7 +1534,7 @@ Item {
         case "1y":
             return 31536000;
         case "all":
-            // Binance beginnt am 31.07.2017
+            // Binance starts on 2017-07-31
             return Math.round(Date.now() / 1000) - 1501459200;
         }
         return root.customSecs;
@@ -1575,7 +1543,7 @@ Item {
     readonly property bool zeigerDa: root.sub === "price" && root.zeiger >= 0
                                      && root.zeiger < root.sicht.length
 
-    // Senkrechte durch die Kerze unter dem Zeiger
+    // Vertical line through the candle under the pointer
     Rectangle {
         visible: root.crosshair && root.zeigerDa
         x: leinwand.x + (root.zeiger + 0.5) * root.kerzeBreite
@@ -1586,7 +1554,7 @@ Item {
         opacity: 0.7
     }
 
-    // Waagerechte auf Hoehe des Zeigers
+    // Horizontal line at pointer height
     Rectangle {
         visible: root.crosshair && root.zeigerDa
         x: leinwand.x
@@ -1597,7 +1565,7 @@ Item {
         opacity: 0.7
     }
 
-    // Der Preis an der Waagerechten, rechts auf der Achse
+    // Price at the horizontal line, on the axis to the right
     Rectangle {
         visible: root.crosshair && root.zeigerDa
         x: leinwand.x + root.feldBreite + 2
@@ -1664,17 +1632,16 @@ Item {
         baseFont: root.baseFont
     }
 
-    // Nur zum Messen der Preisachse.
+    // Only for measuring the price axis.
     //
-    // **Es muss dieselbe Schrift sein wie die, die zeichnet.** Die Achse wird
-    // auf der Leinwand mit `Fonts.sansCss()` geschrieben, gemessen wurde hier
-    // mit der Standardschrift von Qt -- unter Linux loest fontconfig
-    // "sans-serif" auf die eingestellte Schrift auf, und das muss nicht
-    // dieselbe sein. Auf diesem Rechner passte es, unter Ubuntu und Fedora
-    // fehlte die letzte Ziffer ("81.95" statt "81.951", 18.09.2026): der Text
-    // stand an `breiteGesamt + 6`, und `padR` war fuer die breitere Schrift
-    // zu knapp. Gezeichnet wird ab `+6`, der Abstand hier ist `+10` -- vier
-    // Bildpunkte Luft, damit eine Rundung im Kantenglaetten nichts abschneidet.
+    // It has to be the same font that draws. The axis is written on the
+    // canvas with `Fonts.sansCss()`; measuring with Qt's default font is not
+    // enough, because on Linux fontconfig resolves "sans-serif" to the
+    // configured font, which need not be the same. On Ubuntu and Fedora the
+    // last digit was cut off ("81.95" instead of "81.951"): the text starts
+    // at `breiteGesamt + 6` and `padR` was too small for the wider font.
+    // Drawing starts at `+6`, the margin here is `+10`, four pixels of slack
+    // so antialiasing rounding cuts nothing off.
     Text {
         id: mass
 
@@ -1691,11 +1658,11 @@ Item {
         }
     }
 
-    // ------------------------------------------------ Schieber der Zeit
-    // Die ganze Breite ist die ganze Geschichte -- vom ersten Handelstag bei
-    // Binance bis jetzt. Der Griff ist das gezeigte Fenster: er sagt zugleich,
-    // **wo** man ist und **wie viel** man sieht. Ziehen verschiebt, ein Klick
-    // daneben springt.
+    // ------------------------------------------------ time slider
+    // The full width is the full history, from the first trading day on
+    // Binance until now. The handle is the visible window: it shows both
+    // where you are and how much you see. Dragging moves it, a click beside
+    // it jumps.
     Item {
         id: schieber
 
@@ -1715,7 +1682,7 @@ Item {
             return Math.max(0, Math.min(width - schieber.griffBreite, t * width));
         }
 
-        // Ein Zeitpunkt aus einer Stelle auf der Leiste
+        // Time for a position on the bar
         function zeitBei(x) {
             return root.beginn + schieber.gesamt * Math.max(0, Math.min(1, x / width));
         }
@@ -1729,19 +1696,17 @@ Item {
             color: root.lineColor
         }
 
-        // **Diese Flaeche gehoert VOR den Griff.** Sie lag danach, und in QML
-        // bekommt das spaetere Geschwister die Ereignisse zuerst -- sie hat
-        // damit jeden Druck auf den Griff geschluckt. Der Griff liess sich
-        // deshalb **nie ziehen**: jede Geste wurde zu einem Klick an der
-        // Loslass-Stelle, samt Sprung. Am 04.09.2026 mit einem echten
-        // Zeiger gefunden, nachdem es im Standbild monatelang richtig aussah.
+        // This area must come before the handle. In QML the later sibling
+        // gets events first; placed after the handle it swallowed every
+        // press on it, so the handle could never be dragged and every
+        // gesture became a click at the release point, with a jump.
         //
-        // Dieselbe Familie wie die Falle vom 03.09.: `z` und die Reihenfolge
-        // ordnen nur unter Geschwistern, und wer oben liegt, bekommt zuerst.
+        // `z` and declaration order only rank among siblings, and whoever
+        // is on top receives events first.
         MouseArea {
             anchors.fill: parent
-            // Neben den Griff geklickt: dorthin springen, Fenstermitte auf
-            // die angeklickte Stelle.
+            // Clicked beside the handle: jump there, window centre on the
+            // clicked spot.
             onClicked: function (m) {
                 root.fensterSetzen(schieber.zeitBei(m.x) + root.sichtSekunden / 2);
             }
@@ -1750,11 +1715,10 @@ Item {
         Rectangle {
             id: griff
 
-            // **Ziehen zerreisst die Bindung.** `drag.target` schreibt `x`
-            // unmittelbar, und damit folgt der Griff danach nicht mehr dem
-            // Fenster -- ein Klick neben den Griff verschob bisher das Bild,
-            // aber nicht den Griff. Nach jeder Geste wird sie deshalb neu
-            // geknuepft.
+            // Dragging breaks the binding. `drag.target` writes `x`
+            // directly, after which the handle no longer follows the window
+            // (a click beside it moved the picture but not the handle). So
+            // the binding is restored after every gesture.
             function bindungZurueck() {
                 griff.x = Qt.binding(function () {
                     return schieber.griffX;
@@ -1782,16 +1746,15 @@ Item {
                 drag.maximumX: schieber.width - griff.width
                 drag.threshold: 0
 
-                // Solange gezogen wird, zeichnet die Ansicht aus der
-                // Uebersicht. Geholt wird erst beim Loslassen -- ein frisches
-                // Fenster kostet ueber eine Sekunde, und am Schieber waere
-                // jede Handbewegung eines.
+                // While dragging, the view draws from the overview. The
+                // fetch happens on release: a fresh window costs over a
+                // second, and on the slider every hand movement would be one.
                 onPressed: root.vorschau = true
 
                 onPositionChanged: {
                     if (!drag.active)
                         return;
-                    // Der Griff steht fuer den **Anfang** des Fensters
+                    // The handle stands for the start of the window
                     root.fensterSchieben(schieber.zeitBei(griff.x) + root.sichtSekunden);
                 }
 
@@ -1810,10 +1773,10 @@ Item {
 
     }
 
-    // -------------------------------------------------- Laufendes Band
-    // Die Trades, wie sie hereinkommen -- juengster oben. Der Dienst hebt nur
-    // auf, was ueber tausend Dollar liegt, und schickt je Abfrage nur das
-    // Neue; hier stehen die letzten, so viele wie Platz ist.
+    // -------------------------------------------------- running tape
+    // Trades as they come in, newest on top. The service only keeps trades
+    // over a thousand dollars and sends only new ones per request; this
+    // shows the latest, as many as fit.
     ListView {
         id: bandFeld
 
@@ -1825,9 +1788,9 @@ Item {
         clip: true
         spacing: 0
         boundsBehavior: Flickable.StopAtBounds
-        // Der juengste Trade steht oben. Wer zurueckblaettert, soll dabei
-        // nicht von jedem neuen Trade wieder nach oben gerissen werden --
-        // deshalb kein Nachfuehren der Lage.
+        // The newest trade is on top. Someone scrolling back should not be
+        // yanked to the top by every new trade, so the position is not
+        // tracked.
         model: root.bandUmgekehrt
 
         delegate: Item {
@@ -1838,10 +1801,9 @@ Item {
             width: bandFeld.width
             height: Math.round(root.baseFont * 1.35)
 
-            // Wie stark eine Zeile heraussticht, entscheidet ihr Betrag.
-            // Unter zehntausend bleibt sie ein Strich am Rand, darueber
-            // faerbt sie sich durch -- so sieht man Grosses, ohne dass
-            // Kleines verschwindet.
+            // How much a row stands out depends on its amount. Below ten
+            // thousand it stays a stripe at the edge, above it the row is
+            // filled, so large trades stand out and small ones stay visible.
             readonly property real wucht: Math.max(0, Math.min(1,
                 (zeile.modelData[3] - 1000) / 99000))
 
@@ -1894,7 +1856,7 @@ Item {
         }
     }
 
-    // ------------------------------------------------------------ Hinweise
+    // ------------------------------------------------------------ notices
     Text {
         anchors.centerIn: parent
         width: parent.width * 0.8

@@ -1,14 +1,13 @@
-// Rollen mit der Tastatur: Bild auf/ab, Pos1, Ende.
+// Keyboard scrolling: Page Up/Down, Home, End.
 //
-// **Warum es das gibt.** Mining, Explorer, Uhr und Einstellungen sind
-// laenger als ein kleines Fenster, und gerollt wurde bis zum 16.09.2026 nur
-// mit Maus oder Finger. In der Pruef-VM (kein Rad) blieb der untere Teil der
-// Seiten deshalb ungeprueft, und am Rechner ohne Maus unerreichbar -- am
-// selben Tag lag die RBF-Tafel des Explorers in Xvfb unter der Fensterkante.
+// Mining, Explorer, Clock and Settings are taller than a small window.
+// Without this, the lower part of those pages is out of reach on a machine
+// without a mouse wheel.
 .pragma library
 
-// `wie`: "ab", "auf", "anfang", "ende". Eine Seite ist 90 % der Hoehe, damit
-// eine Zeile vom vorigen Bild stehen bleibt und man nicht den Faden verliert.
+// `wie`: "ab" (down), "auf" (up), "anfang" (top), "ende" (bottom).
+// A page step is 90 % of the height, so one line of the previous view stays
+// visible and the reader keeps their place.
 function rollen(f, wie) {
     if (!f)
         return false;

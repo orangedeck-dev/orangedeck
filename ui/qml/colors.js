@@ -1,7 +1,7 @@
-// Farbmodell aus bitfeed (client/src/utils/color.js + models/BitcoinTx.js).
-// Die Farben sind dort in HCL angegeben und werden ueber d3-color nach sRGB
-// gewandelt: hcl(h * 360, 78.225, l * 150). Das ist hier nachgebaut, damit die
-// Toene exakt dieselben sind.
+// Color model from bitfeed (client/src/utils/color.js + models/BitcoinTx.js,
+// MIT, mononaut). Colors there are given in HCL and converted to sRGB via
+// d3-color: hcl(h * 360, 78.225, l * 150). This is rebuilt here so the
+// tones match exactly.
 
 .pragma library
 
@@ -10,14 +10,14 @@ var BLUE = { h: 0.5, l: 0.55 };
 var TEAL = { h: 0.475, l: 0.55 };
 var PURPLE = { h: 0.95, l: 0.35 };
 
-// bluegreen aus color.js -- damit hebt bitfeed die Transaktion unter dem
-// Zeiger hervor (BitcoinTx.hoverOn)
+// bluegreen from color.js; bitfeed uses it to highlight the transaction
+// under the pointer (BitcoinTx.hoverOn)
 var BLUEGREEN = { h: 0.45, l: 0.4 };
 
 var CHROMA = 78.225;
-var AGE_MS = 60000;          // nach 60 s ist eine Transaktion "alt"
+var AGE_MS = 60000;          // after 60 s a transaction counts as "old"
 
-// --- Lab/LCh -> sRGB, wie in d3-color (Weisspunkt D50) --------------------
+// --- Lab/LCh -> sRGB, as in d3-color (white point D50) --------------------
 var Xn = 0.96422, Yn = 1, Zn = 0.82521;
 var t0 = 4 / 29, t1 = 6 / 29, t2 = 3 * t1 * t1, t3 = t1 * t1 * t1;
 
@@ -62,7 +62,7 @@ function mix(from, to, min, max, value) {
     };
 }
 
-// --- vorberechnete Paletten (HCL-Umrechnung ist zu teuer fuer jedes Bild) --
+// --- precomputed palettes (HCL conversion is too expensive per frame) ----
 var AGE_STEPS = 48;
 var agePalette = null;
 var feePalette = null;
@@ -84,8 +84,8 @@ function ageColor(ageMs) {
     return p[i];
 }
 
-// Gebuehrenfarbe: teal -> purple ueber log2(sat/vB) von 1 bis log2(128).
-// Coinbase und Transaktionen ohne Gebuehr sind orange.
+// Fee color: teal -> purple over log2(sat/vB) from 1 to log2(128).
+// Coinbase and zero-fee transactions are orange.
 function feeColorForRate(rate) {
     if (rate === null || rate === undefined || rate <= 0)
         return hclToCss(ORANGE.h, ORANGE.l);
@@ -93,13 +93,13 @@ function feeColorForRate(rate) {
     return hclToCss(c.h, c.l);
 }
 
-// Repraesentative Rate je Gebuehrenklasse aus block.json
+// Representative rate per fee bucket from block.json
 var BUCKET_RATES = [0.3, 0.7, 1.5, 2.5, 4, 6.5, 11, 22, 55, 150];
 
-// Die Grenzen zwischen den Klassen. **Muss mit FEE_BUCKETS in daemon/orangedeck
-// uebereinstimmen** -- sonst faerbt derselbe Block je nach Datenquelle anders.
-// Zehn Klassen, neun Grenzen; BUCKET_RATES oben nennt zu jeder einen
-// stellvertretenden Satz fuer die Farbe.
+// Bucket boundaries. Must match FEE_BUCKETS in daemon/orangedeck,
+// otherwise the same block is colored differently depending on the data
+// source. Ten buckets, nine boundaries; BUCKET_RATES above gives a
+// representative rate for each one's color.
 var FEE_EDGES = [0.5, 1, 2, 3, 5, 8, 15, 30, 80];
 
 function feeBucket(rate) {
@@ -129,8 +129,8 @@ function blockAgeColor() {
     return hclToCss(ORANGE.h, ORANGE.l);
 }
 
-// ice() aus TxBlockScene.js: beim Blockfund werden die Kacheln auf Helligkeit 1
-// gezogen -- das ist das Weiss, mit dem die geminten Transaktionen aufleuchten.
+// ice() from TxBlockScene.js: when a block is found the tiles are pulled
+// to lightness 1, the white the mined transactions flash in.
 var ICE = null;
 var ICE_MID = null;
 
@@ -146,7 +146,7 @@ function iceWhite() {
     return ICE;
 }
 
-// Uebergang Weiss -> Blockfarbe, wie beim Zusammensetzen des Blocks
+// Transition white -> block color, as when the block is assembled
 var ICE_RAMP = null;
 
 function iceRamp() {
@@ -176,9 +176,9 @@ function iceMid() {
     return ICE_MID;
 }
 
-// Zwei Farben mischen, t = 0 gibt a, t = 1 gibt b. Bewusst im sRGB-Raum: das
-// ist hier kein Farbverlauf zwischen weit auseinanderliegenden Toenen (dafuer
-// waere HCL richtig, siehe DOKUMENTATION), sondern ein Ausblenden nach Weiss.
+// Mix two colors, t = 0 gives a, t = 1 gives b. Deliberately in sRGB: this
+// is not a gradient between distant tones (HCL would be right for that,
+// see DOKUMENTATION) but a fade to white.
 function blendHex(a, b, t) {
     var f = Math.max(0, Math.min(1, t));
     var ar = parseInt(a.substr(1, 2), 16), ag = parseInt(a.substr(3, 2), 16), ab = parseInt(a.substr(5, 2), 16);
