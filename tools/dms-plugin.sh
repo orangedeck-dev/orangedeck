@@ -136,9 +136,9 @@ git -C "$REPOZIEL" add -A
 if git -C "$REPOZIEL" diff --cached --quiet; then
   echo "$REPOZIEL: unveraendert"
 else
-  git -C "$REPOZIEL" commit -q -m "OrangeDeck $fassung fuer DankMaterialShell
+  git -C "$REPOZIEL" commit -q -m "OrangeDeck $fassung for DankMaterialShell
 
-Erzeugt aus orangedeck@$quelle mit tools/dms-plugin.sh."
+Built from orangedeck@$quelle with tools/dms-plugin.sh."
   echo "$REPOZIEL: committet ($(git -C "$REPOZIEL" rev-parse --short HEAD))"
 fi
 

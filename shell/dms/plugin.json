@@ -1,11 +1,11 @@
 {
     "id": "orangedeck",
     "name": "OrangeDeck",
-    "description": "Live view of the Bitcoin mempool: the latest block in the middle, the mempool as a pile below, new transactions raining in from above. Feed, clock, miner, market and explorer views. Data from mempool.space -- no node and no extra service required.",
+    "description": "Live view of the Bitcoin mempool: the latest block in the middle, the mempool as a pile below, new transactions raining in from above. Feed, clock, miner, market and explorer views. Data comes from mempool.space, no node and no extra service needed.",
     "version": "1.0.0",
     "author": "Satoshoe",
     "type": "composite",
-    "capabilities": ["daemon", "dankbar-widget", "desktop-widget"],
+    "capabilities": ["daemon", "dankbar-widget", "control-center", "desktop-widget"],
     "icon": "currency_bitcoin",
     "components": {
         "daemon": "./OrangeDeckDaemon.qml",
