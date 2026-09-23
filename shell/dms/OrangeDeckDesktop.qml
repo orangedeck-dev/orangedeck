@@ -13,6 +13,7 @@
 // Miner ohne Kurve und Tafel, der Explorer ohne Startseite.
 import QtQuick
 import qs.Common
+import "strings.js" as Tr
 
 Item {
     id: root
@@ -174,6 +175,8 @@ Item {
 
     FeedTabs {
         anchors.fill: parent
+        // Ohne eigene Wahl im Plugin: die Sprache von DMS
+        defaultLang: Tr.systemLang(SessionData.locale)
         anchors.margins: Theme.spacingM
         // Eine Ansicht, keine Reiterzeile
         tabsVisible: false

@@ -97,7 +97,7 @@ Item {
     property string sizeMode: SettingsData.getPluginSetting(pid, "sizeMode", "value")
     property string dataSource: SettingsData.getPluginSetting(pid, "dataSource", "daemon")
     property string currency: SettingsData.getPluginSetting(pid, "currency", "usd")
-    property string lang: SettingsData.getPluginSetting(pid, "lang", Tr.systemLang())
+    property string lang: SettingsData.getPluginSetting(pid, "lang", "") || Tr.systemLang(SessionData.locale)
     // Die Wallet-Ansicht bleibt aus, bis sie ausdruecklich eingeschaltet wird
     // -- hier gilt derselbe Schalter wie im Fenster.
     property bool walletEnabled: SettingsData.getPluginSetting(pid, "walletEnabled", false)

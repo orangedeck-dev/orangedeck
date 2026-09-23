@@ -93,8 +93,11 @@ Item {
         return root.opts[key] === undefined ? def : root.opts[key];
     }
 
-    // Nichts gewaehlt (fehlt oder leer): die Sprache des Systems.
-    readonly property string lang: root.o("lang", "") || Tr.systemLang()
+    // Nichts gewaehlt (fehlt oder leer): die Vorgabe von aussen, sonst die
+    // Sprache des Systems. Das DMS-Plugin setzt die Vorgabe auf die Sprache
+    // von DMS.
+    property string defaultLang: ""
+    readonly property string lang: root.o("lang", "") || root.defaultLang || Tr.systemLang()
 
     // **Das Bitcoin-Zeichen, wenn die Schrift es fuehrt -- sonst "BTC".**
     // Am 08.09.2026 auf einem Galaxy A55 stand ueberall ein leeres Kaestchen

@@ -33,8 +33,12 @@ var LANGS = ["de", "en", "es", "fr", "it", "pt-pt", "nl", "ru", "ja", "zh",
 //
 // `Qt.locale().name` ist "de_AT", "pt_BR", "zh_CN" -- Portugiesisch gibt es
 // zweimal, Brasilien fuer sich, alle anderen europaeisch.
-function systemLang() {
-    var name = (typeof Qt !== "undefined" && Qt.locale) ? String(Qt.locale().name) : "";
+//
+// Mit `name` gilt diese Sprache statt der des Systems: das DMS-Plugin gibt die
+// Sprache von DMS hinein, damit es der Shell folgt und nicht `LANG`.
+function systemLang(name) {
+    if (!name)
+        name = (typeof Qt !== "undefined" && Qt.locale) ? String(Qt.locale().name) : "";
     var teile = name.toLowerCase().replace("-", "_").split("_");
     var sprache = teile[0], land = teile.length > 1 ? teile[1] : "";
     if (sprache === "pt")

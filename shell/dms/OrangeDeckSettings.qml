@@ -21,11 +21,11 @@ PluginSettings {
     // **Dieselbe Sprache wie die Ansichten.** Bis zum 18.09.2026 stand diese
     // Seite als einzige nur auf Deutsch da, waehrend nebenan dreizehn
     // Sprachen liefen. Der Wert liegt in derselben Ablage wie alle anderen
-    // Einstellungen des Plugins; leer heisst "die des Systems", genau wie in
-    // `FeedTabs.qml`.
+    // Einstellungen des Plugins; leer heisst "die von DMS", genau wie in
+    // `OrangeDeckWidget.qml`.
     readonly property string lang: (seite.pluginService
         ? String(seite.pluginService.loadPluginData("orangedeck", "lang", "") || "")
-        : "") || Tr.systemLang()
+        : "") || Tr.systemLang(SessionData.locale)
 
     function t(schluessel) {
         return Tr.t(schluessel, seite.lang);

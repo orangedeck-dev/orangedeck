@@ -17,8 +17,9 @@ import "strings.js" as Tr
 PluginComponent {
     id: root
 
-    // Dieselbe Sprache wie die Ansichten darin; leer heisst die des Systems.
-    readonly property string lang: String(root.get("lang", "") || "") || Tr.systemLang()
+    // Dieselbe Sprache wie die Ansichten darin; leer heisst die von DMS.
+    readonly property string dmsLang: Tr.systemLang(SessionData.locale)
+    readonly property string lang: String(root.get("lang", "") || "") || root.dmsLang
 
     function t(schluessel, a0, a1) {
         return Tr.t(schluessel, root.lang, a0, a1);
@@ -210,6 +211,7 @@ PluginComponent {
                 anchors.margins: Theme.spacingM
                 feed: feedState
                 opts: root.opts
+                defaultLang: root.dmsLang
                 view: root.view
                 gap: Theme.spacingS
                 tabFont: Theme.fontSizeSmall
@@ -314,6 +316,7 @@ PluginComponent {
                     anchors.fill: parent
                     feed: feedState
                     opts: root.opts
+                    defaultLang: root.dmsLang
                     view: root.view
                     gap: Theme.spacingM
                     tabFont: Theme.fontSizeSmall
