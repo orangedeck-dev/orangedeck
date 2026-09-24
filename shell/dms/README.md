@@ -13,6 +13,17 @@ It runs in three places at once:
 - a control center tile with the same views,
 - a desktop widget, one instance per view, freely placed and sized.
 
+## Screenshots
+
+| | |
+|---|---|
+| ![Block clock](assets/clock.png) | ![Miner view](assets/mining.png) |
+| Block clock: height, fees, price, difficulty and the next halving | Miner view: hashrate, best share and the chance of finding a block |
+| ![Block explorer](assets/explorer.png) | ![Market view](assets/market.png) |
+| Explorer: projected and confirmed blocks, search by height, hash, TxID or address | Market: price chart with volume, liquidations, heatmap and live trades |
+| ![Control center tile](assets/control-center.png) | ![Desktop widget](assets/desktop-widget.png) |
+| The control center tile opened on the feed | The feed as a desktop widget |
+
 ## Requirements
 
 - DankMaterialShell 1.5.0 or newer
