@@ -15,6 +15,36 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 24.09.2026 -- Bilder und Veroeffentlichung erledigt
+
+Die Punkte 1 bis 3 unten und die F-Droid-Bilder aus Punkt 4 sind erledigt:
+
+- **DMS-Plugin veroeffentlicht.** Repo `orangedeck-dev/dms-plugin`, ein
+  Commit, Tag `v1.0.0`. Eintrag im DMS-Verzeichnis als PR #937 in
+  AvengeMedia/dms-plugin-registry, `validate` und `preview` gruen, Merge offen.
+- **Bilder.** Titelbild auf das Popout zugeschnitten, im README eine Galerie
+  aus sechs Bildern (Clock, Mining, Explorer, Market, Kachel, Desktop-Widget),
+  alle aus dem Probestand. Rohbilder unter
+  `~/.local/share/orangedeck/pruefbilder/dms-2026-09-24/`.
+- **F-Droid.** Fuenf Handybilder in
+  `packaging/fdroid/metadata/dev.orangedeck.OrangeDeck/en-US/phoneScreenshots/`,
+  aufgenommen im Emulator `orangedeck` mit dem Release-APK 0.2.12,
+  Statusleiste im Vorfuehrmodus. Das Repo auf fdroid.orangedeck.dev ist damit
+  neu gebaut und online.
+- Haupt-Repo gepusht.
+
+Zwei Kniffe fuer die Aufnahmen, beide ohne den Bildschirm des Anwenders:
+
+- Das Fenster des Probestands darf auf einem leeren Workspace liegen, es
+  zeichnet dort weiter, nur mit etwa einem Bild je Sekunde. Nach jedem
+  Schritt also 15 bis 20 s warten. `zeiger` rechnet in der Probe mit den
+  Massen des Wirtsbildschirms: Koordinaten verdoppeln.
+- Vor `tools/dms-plugin.sh --repo` darf in `shell/dms/assets/` nichts
+  anderes liegen, der Ordner wird ganz kopiert.
+
+Weiter offen bleibt Punkt 4 (Fedora-Lauf) und alles unter "Was sonst noch
+offen ist" ab Punkt 3.
+
 ## TAGESABSCHLUSS 20.09.2026 -- wo das Projekt steht
 
 > Einstieg fuer den naechsten Tag. Alles Aeltere liegt im Journal unter
