@@ -15,6 +15,25 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 25.09.2026 -- 0.2.13 als Entwurf
+
+- Fassung 0.2.13 (`a762ace`, Tag `v0.2.13`), Pin `1773ee1`, Freigabetext in
+  `packaging/github/RELEASE-TEXT.md`, Release als **Entwurf** mit ZIP, APK und
+  Flatpak. Pruefsummen in `PRUEFSUMMEN.txt` der Auslieferung.
+- Gemessen: Galaxy A55 (Anwender, signiertes APK ueber 0.2.12), Windows 11
+  VM (ZIP aus dem Pin-Lauf: Feed, Tooltip-Rechnung, Preisachse), Ubuntu 24.04
+  und Fedora 44 KDE (CI-Buendel: Feed, Tooltip, Markt, Symbol). **Nicht**
+  wiederholt: Mining, Explorer-Klick, Widgets mit Win+D, Defender, das
+  Zahnrad ueber `,`. Der Text nennt nur, was gesehen wurde.
+- Ubuntu-Dock zeigte ein Zahnrad statt des Symbols: flatpak wurde in die
+  laufende Live-Sitzung nachinstalliert, `XDG_DATA_DIRS` kennt den
+  Exportpfad erst nach einer Anmeldung. Kein Fehler der App.
+- Im Emulator `orangedeck` liegt jetzt eine Debug-signierte 0.2.13; das
+  release-signierte 0.2.12 der F-Droid-Bilder ist deinstalliert.
+- **Offen, alles nach dem OK des Anwenders:** Release freigeben
+  (`gh release edit v0.2.13 -R orangedeck-dev/orangedeck --draft=false --latest`),
+  F-Droid-Repo pushen (lokal fertig, Commit `2b01c30`), Seite neu bauen.
+
 ## NACHTRAG 24.09.2026 -- Bilder und Veroeffentlichung erledigt
 
 Die Punkte 1 bis 3 unten und die F-Droid-Bilder aus Punkt 4 sind erledigt:
