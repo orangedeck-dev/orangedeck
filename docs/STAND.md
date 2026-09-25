@@ -30,9 +30,11 @@
   Exportpfad erst nach einer Anmeldung. Kein Fehler der App.
 - Im Emulator `orangedeck` liegt jetzt eine Debug-signierte 0.2.13; das
   release-signierte 0.2.12 der F-Droid-Bilder ist deinstalliert.
-- **Offen, alles nach dem OK des Anwenders:** Release freigeben
-  (`gh release edit v0.2.13 -R orangedeck-dev/orangedeck --draft=false --latest`),
-  F-Droid-Repo pushen (lokal fertig, Commit `2b01c30`), Seite neu bauen.
+- **Veroeffentlicht 25.09.2026, 18:15 UTC** (vom Anwender freigegeben, "Latest").
+  Seite neu gebaut und gepusht (`7e1aef3`), alle drei Download-Links 200.
+  **Offen:** F-Droid-Repo pushen, lokal fertig (`2b01c30`); den Force-Push
+  laesst die Rechtepruefung nur den Anwender selbst ausfuehren:
+  `git -C ~/.local/share/orangedeck/fdroid-pages push --force origin main`
 
 ## NACHTRAG 24.09.2026 -- Bilder und Veroeffentlichung erledigt
 
