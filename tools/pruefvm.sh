@@ -46,9 +46,17 @@ bauen() {
     echo "== Anwendung buendeln =="
     local bau="$VM/bau"
     rm -rf "$bau" "$VM/repo"
+    # **Der Bauplan zum Ausliefern baut den festgenagelten Commit**, nicht das
+    # Arbeitsverzeichnis. Am 25.09.2026 lief so ein Fedora-Test fuer einen
+    # Fix, der erst nach 0.2.12 kam, gegen 0.2.12 -- und meldete den Fehler
+    # als noch vorhanden. Wer ungepushte oder unveroeffentlichte Aenderungen
+    # pruefen will, setzt ORANGEDECK_VM_BAUPLAN=dev.
+    local plan="dev.orangedeck.OrangeDeck.yml"
+    [ "${ORANGEDECK_VM_BAUPLAN:-}" = "dev" ] && plan="dev.orangedeck.OrangeDeck.dev.yml"
+    echo "   Bauplan: $plan"
     flatpak-builder --user --repo="$VM/repo" --force-clean --disable-cache \
         --state-dir="$VM/state" "$bau" \
-        "$REPO/packaging/flatpak/dev.orangedeck.OrangeDeck.yml"
+        "$REPO/packaging/flatpak/$plan"
     flatpak build-bundle "$VM/repo" "$VM/daten/orangedeck.flatpak" \
         dev.orangedeck.OrangeDeck \
         --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
