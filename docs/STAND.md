@@ -189,9 +189,15 @@ darueber.
 3. **Der Tooltip-Untergrund** kostet Rechenzeit in der Weichzeichnung selbst,
    nicht im Nachziehen (18.09. gemessen, Riegel verworfen). Wer sparen will,
    muss an das abgenommene Aussehen.
-4. **Punkt 9 unter Fedora bestaetigen.** Das Fenstersymbol ist gesetzt und im
-   Xvfb nachgewiesen; ob es die Leiste dort zeigt -- und ob die Sitzung auf
-   X11 lief --, sagt erst der VM-Lauf.
+4. ~~**Punkt 9 unter Fedora bestaetigen.**~~ **Bestaetigt am 25.09.2026**
+   (Fedora 44 KDE Live, Flatpak). Die Sitzung lief unter **Wayland**, nicht
+   X11; Fedora 44 KDE bringt keine X11-Sitzung mehr mit. Mit 0.2.12 stand
+   das Fenster auch dort ohne Symbol, in Titelleiste und Leiste. Mit dem
+   Stand `c34f3a7` (Bauplan `...dev.yml`) zeigen beide das Zeichen. Bilder
+   unter `~/.local/share/orangedeck/pruefbilder/fedora-2026-09-25/`.
+   **Falle dabei:** `tools/pruefvm.sh bauen` nahm den Bauplan zum
+   Ausliefern und damit den festgenagelten Commit von 0.2.12; der erste
+   Lauf pruefte deshalb die alte Fassung. Jetzt `ORANGEDECK_VM_BAUPLAN=dev`.
 5. **Laeden.** Flathub vorerst nicht (KI-Regeln), IzzyOnDroid gar nicht. Das
    eigene F-Droid-Repo laeuft; jedes Release geht mit `tools/fdroid-repo.sh
    <v>` und einem Push hinein. Offen: **Google Play** entscheidet der Anwender
