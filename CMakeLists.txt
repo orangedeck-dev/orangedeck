@@ -14,7 +14,7 @@
 #
 # Gebaut wird also aus der Wurzel:  cmake -S . -B build
 cmake_minimum_required(VERSION 3.21)
-project(orangedeck-app VERSION 0.2.12 LANGUAGES CXX)
+project(orangedeck-app VERSION 0.2.13 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

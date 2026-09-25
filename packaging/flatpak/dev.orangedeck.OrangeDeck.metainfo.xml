@@ -207,6 +207,36 @@
        das Repo umgezogen ist, gehoert nicht hierher: es aendert nichts an der
        Anwendung. Das Datum ist vorlaeufig (19.09.2026). -->
   <releases>
+    <release version="0.2.13" date="2026-09-25">
+      <description>
+        <p>
+          Numbers and dates follow the language of the interface. The English
+          interface no longer shows German forms such as "0,01" or
+          "19.09.2026"; dates there are written as 2026-09-25.
+        </p>
+        <p xml:lang="de">
+          Zahlen und Datum folgen der Sprache der Oberflaeche. In der
+          englischen Oberflaeche stehen keine deutschen Schreibweisen wie
+          "0,01" oder "19.09.2026" mehr; das Datum steht dort als 2026-09-25.
+        </p>
+        <p>
+          The fee rate in the transaction tooltip now matches the size and fee
+          shown above it. If the effective rate from mempool.space differs,
+          for example because of a parent transaction, it has its own line.
+          The price axis in the market view is no longer cut off at the right
+          edge. On Linux the window shows its icon in the title bar and the
+          taskbar.
+        </p>
+        <p xml:lang="de">
+          Die Gebuehrenrate im Tooltip einer Transaktion passt jetzt zu Groesse
+          und Gebuehr darueber. Weicht die wirksame Rate von mempool.space ab,
+          etwa wegen einer Vorgaenger-Transaktion, steht sie in einer eigenen
+          Zeile. Die Preisachse im Markt wird am rechten Rand nicht mehr
+          abgeschnitten. Unter Linux zeigt das Fenster sein Symbol in der
+          Titelleiste und in der Leiste.
+        </p>
+      </description>
+    </release>
     <release version="0.2.12" date="2026-09-19">
       <description>
         <p>
