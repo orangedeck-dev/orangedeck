@@ -1,6 +1,5 @@
-<!-- Der Text unten ist der Entwurf fuer 0.2.12 (19.09.2026). "Tested on" und
-     die Pruefsummen sind Platzhalter, bis Punkt 2 bis 8 erledigt sind. Die
-     Texte von 0.2.8 bis 0.2.11 stehen in der Geschichte dieser Datei.
+<!-- Der Text unten ist der Entwurf fuer 0.2.13 (25.09.2026). Die Texte von
+     0.2.8 bis 0.2.12 stehen in der Geschichte dieser Datei.
 
      **Die Pruefliste gilt fuer jede Nummer, nicht nur fuer die, bei der sie
      entstand.** Am 14.09.2026 nannte sie fuer 0.2.9 nur Windows und das
@@ -41,23 +40,18 @@
      10. Release als Entwurf; veroeffentlicht wird nur mit ausdruecklichem OK
          des Anwenders. -->
 
-
 A Bitcoin dashboard with the mempool as a live tile mosaic, a block height clock, mining figures for the whole network and your own Bitaxe, a block explorer and the BTC market. MIT licensed, no account needed.
 
-This release keeps the Android widgets useful when the network is gone and makes the Android package much smaller.
+This release fixes four things that looked wrong outside of the German interface or outside of the system it was built on.
 
-## What's new since 0.2.11
+## What's new since 0.2.12
 
-- Android widgets keep their numbers when a fetch fails. Until now they showed "not reachable right now" and nothing else, even when the price from a minute ago was known. Now they show the last values they had, and the title turns into the time those values were fetched, for example "as of 08:16". When the network is back they update and show their name again. This starts after a widget's first successful fetch with this version, because the values stored by 0.2.11 carry no time.
-- On Android, a tap on a tile in the mempool mosaic shows its details and leaves them on screen. In 0.2.11 they disappeared as soon as the finger left the tile, and the tap itself did nothing. A tap on empty space hides them, and a second tap on the same tile opens the transaction in the explorer. Double tap resets the zoom, which had not worked on phones either.
-- On the desktop, clicking a tile in the mempool mosaic opens the transaction in the explorer. The details showed on hover, but the click did nothing. A double click resets the zoom, so a single click waits a moment before it opens the explorer.
-- The Android package is 24 MB instead of 57 MB. The native libraries are now compressed inside the APK. Android unpacks them during installation, so the app takes a little more space on the phone afterwards.
-- Error messages on screen are short reasons in every language, such as "not found" or "too many requests", instead of technical text from the network library. The technical version goes to the log.
-- On Linux, the service notices when the live feed from mempool.space goes silent without closing the connection. It reconnects after a minute and fills the gap from the regular interface in the meantime. Before, the desktop widgets could stand still while everything looked connected.
-- The settings of the Dank Material Shell plugin speak the same thirteen languages as the app.
-- The project moved to [github.com/orangedeck-dev/orangedeck](https://github.com/orangedeck-dev/orangedeck). Old links redirect.
+- Numbers and dates follow the language of the interface. The English interface showed German forms next to English text, such as "0,01" in the legend, "78.324 transactions" and "19.09.2026". Now it writes 0.01 and 78,324, and dates in English are written as 2026-09-25, so day and month cannot be mixed up.
+- The fee rate in the details of a mempool tile matches the size and fee shown above it. It came from mempool.space, which includes parent transactions and sigops, so it could differ from fee divided by size in the same box. The tooltip now shows its own calculation. If the effective rate differs, it has a line of its own, and the tile keeps its color by the effective rate, because that is the one miners choose by.
+- The price axis in the market view is no longer cut off at the right edge. On Ubuntu and Fedora the last digit was missing, because the labels were measured in a different font than the one they were drawn in.
+- On Linux the window shows its icon in the title bar and the taskbar. It had none on Fedora with KDE. The window now carries the icon itself, and the desktop file names the window class for X11.
 
-## Windows: `orangedeck-0.2.12-windows-x86_64.zip`
+## Windows: `orangedeck-0.2.13-windows-x86_64.zip`
 
 Unzip anywhere and run `orangedeck-app.exe`. Requires Windows 10 or 11, 64-bit.
 
@@ -69,13 +63,13 @@ To start a widget, for example the block clock in the top right corner:
 
 Click a widget and press Q to close it. Details are in `packaging/widgets/README.md`.
 
-## Android: `orangedeck-0.2.12-arm64-v8a.apk`
+## Android: `orangedeck-0.2.13-arm64-v8a.apk`
 
-For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.11.
+For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.12.
 
 Please check the signature before installing:
 
-    apksigner verify --print-certs orangedeck-0.2.12-arm64-v8a.apk
+    apksigner verify --print-certs orangedeck-0.2.13-arm64-v8a.apk
 
 The SHA-256 fingerprint of the signing certificate must be:
 
@@ -85,9 +79,9 @@ The same APK is also in the OrangeDeck F-Droid repository, which keeps it up to 
 
     https://fdroid.orangedeck.dev/repo?fingerprint=06E62F144A293077C333DE18FA6076364FE7FB0718F1F3D6E8897E7291DC4C59
 
-## Linux: `orangedeck-0.2.12.flatpak`
+## Linux: `orangedeck-0.2.13.flatpak`
 
-    flatpak install --user orangedeck-0.2.12.flatpak
+    flatpak install --user orangedeck-0.2.13.flatpak
 
 This pulls the KDE runtime 6.9 from Flathub. All six views are included on Linux. To serve the wallet to other Linux computers on your network:
 
@@ -97,35 +91,29 @@ This pulls the KDE runtime 6.9 from Flathub. All six views are included on Linux
 
 ## Tested on
 
-- Samsung Galaxy A55 with Android 16, this signed APK installed over earlier builds of 0.2.12, the first of which went over 0.2.11: all tabs with live data, and in the feed a tap shows the details of a tile and keeps them, a tap on empty space hides them, a second tap opens the explorer and a double tap resets the zoom. Widgets keeping their numbers without network, with "Stand 08:16" in the title and back to normal once the network returned, were seen on a test build from the same day with the same widget code, not on this file.
-- Windows 11 25H2 in a VM, this ZIP: feed, clock, mining, explorer and market (heatmap) with data, hovering a tile shows its details and a click opens that transaction in the explorer, the digits switch tabs, the comma key opens the settings. A widget stays on the desktop with Win+D and shows data, Q closes widget and window. No new detection from Defender.
-- This Flatpak bundle, freshly installed in live sessions of Ubuntu 24.04 with GNOME and Fedora 44 with KDE: feed, clock and market with live data, hovering a tile shows its details, a click opens that transaction in the explorer, and a double click after zooming in resets the view without opening it. The settings open with the comma key. Mining, liquidations and the heatmap were seen on an earlier build of this release the same day.
+- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.12 with its settings kept: the tabs with live data, German numbers and dates, and the full price axis in the market view.
+- Windows 11 in a VM with a German system, this ZIP: feed and market with live data, the fee rate in the details of a tile matches fee divided by size, and the price axis shows every digit.
+- This Flatpak bundle, freshly installed in live sessions of Ubuntu 24.04 with GNOME and Fedora 44 with KDE, both in English: feed and market with live data, English numbers and dates, the fee rate in the tile details matches its own numbers, and the price axis shows every digit. On Fedora the icon shows in the title bar and the taskbar. On Ubuntu the dock showed a generic icon, because flatpak was installed into the running live session and the session did not know its path yet; on an installed system that is set at login.
 - Not tested yet: macOS, real tablets, and display scaling above 100% on Windows. If something looks wrong, please open an issue.
 
 ## Checksums (SHA-256)
 
-    4177c15e5f27340f0295c984aa57fac0cd3ccbfe97fc3b250a8d004b9d454d12  orangedeck-0.2.12-windows-x86_64.zip
-    640d5ac554ed9b6881f15a6a1ecd83f44e573b3be6f2d085ca9ccefd92932372  orangedeck-0.2.12-arm64-v8a.apk
-    527d11e4f17a8430845850f76ecfbbd4da12e4cc4c29f9a86f662b296bb9635b  orangedeck-0.2.12.flatpak
+    8999e5f5536606e462ecc7838ca52b8836fee08b12d993806357638c72c81c2c  orangedeck-0.2.13-windows-x86_64.zip
+    ef54af3ef4e7dcaec78bbb81be18ddf87c9708160c80187c8e8219928ef85e07  orangedeck-0.2.13-arm64-v8a.apk
+    85872cb477a8f495f37e79e379e27a4fe09644c7819110a493cd719caa625542  orangedeck-0.2.13.flatpak
 
 ---
 
 ## Deutsch
 
-0.2.12 hält die Android-Widgets brauchbar, wenn das Netz weg ist, und macht das Android-Paket deutlich kleiner.
+0.2.13 behebt vier Dinge, die außerhalb der deutschen Oberfläche oder außerhalb des Systems, auf dem gebaut wurde, falsch aussahen.
 
-Android-Widgets behalten ihre Zahlen, wenn ein Abruf scheitert. Bisher stand dann nur "gerade nicht erreichbar" da, auch wenn der Kurs von vor einer Minute bekannt war. Jetzt zeigen sie den letzten Stand, und die Überschrift wird zur Uhrzeit, zu der er geholt wurde, etwa "Stand 08:16". Ist das Netz wieder da, holen sie nach und tragen wieder ihren Namen. Das beginnt nach dem ersten erfolgreichen Abruf mit dieser Fassung, weil die von 0.2.11 gemerkten Werte keine Uhrzeit haben.
+Zahlen und Datum folgen der Sprache der Oberfläche. In der englischen Oberfläche standen deutsche Schreibweisen neben englischem Text, etwa "0,01" in der Legende, "78.324 transactions" und "19.09.2026". Jetzt steht dort 0.01 und 78,324, und das Datum steht auf Englisch als 2026-09-25, damit Tag und Monat nicht zu verwechseln sind.
 
-Unter Android zeigt ein Tipp auf eine Kachel im Mempool-Feld ihre Angaben und lässt sie stehen. In 0.2.11 verschwanden sie, sobald der Finger die Kachel verließ, und der Tipp selbst bewirkte nichts. Ein Tipp auf leere Fläche räumt sie weg, ein zweiter Tipp auf dieselbe Kachel öffnet die Transaktion im Explorer. Doppeltippen setzt die Vergrößerung zurück, auch das ging am Telefon bisher nicht.
+Die Gebührenrate in den Angaben einer Mempool-Kachel passt zu Größe und Gebühr darüber. Sie kam von mempool.space und rechnet Vorgänger-Transaktionen und Sigops mit, deshalb konnte sie von Gebühr geteilt durch Größe im selben Kasten abweichen. Der Tooltip zeigt jetzt die eigene Rechnung. Weicht die wirksame Rate ab, steht sie in einer eigenen Zeile, und die Kachel behält ihre Farbe nach der wirksamen Rate, weil Miner nach ihr auswählen.
 
-Am Rechner öffnet ein Klick auf eine Kachel die Transaktion im Explorer. Die Angaben erschienen beim Überfahren, der Klick bewirkte nichts. Ein Doppelklick setzt die Vergrößerung zurück, deshalb wartet ein einfacher Klick einen Augenblick, bevor er den Explorer öffnet.
+Die Preisachse im Markt wird am rechten Rand nicht mehr abgeschnitten. Unter Ubuntu und Fedora fehlte die letzte Ziffer, weil die Beschriftung in einer anderen Schrift gemessen wurde, als in der sie gezeichnet wird.
 
-Das Android-Paket ist 24 statt 57 MB groß. Die Bibliotheken liegen jetzt gepackt im APK. Android entpackt sie bei der Installation, die App belegt danach etwas mehr Platz auf dem Telefon.
+Unter Linux zeigt das Fenster sein Symbol in der Titelleiste und in der Leiste. Unter Fedora mit KDE hatte es keines. Das Fenster trägt das Symbol jetzt selbst, und die Desktop-Datei nennt die Fensterklasse für X11.
 
-Fehlermeldungen auf dem Bildschirm sind kurze Gründe in jeder Sprache, etwa "nicht gefunden" oder "zu viele Abfragen", statt technischer Texte aus der Netzwerkbibliothek. Die technische Fassung steht im Protokoll.
-
-Unter Linux merkt der Dienst, wenn der Live-Datenstrom von mempool.space verstummt, ohne die Verbindung zu schließen. Er verbindet sich nach einer Minute neu und holt die Lücke solange über die normale Schnittstelle nach. Vorher konnten die Desktop-Widgets stillstehen, während alles verbunden aussah. Die Einstellungen des Plugins für die Dank Material Shell sprechen dieselben dreizehn Sprachen wie die App.
-
-Das Projekt ist nach [github.com/orangedeck-dev/orangedeck](https://github.com/orangedeck-dev/orangedeck) umgezogen, alte Links leiten weiter. Das APK gibt es auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android.
-
-Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
+Das APK installiert sich über 0.2.12 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
