@@ -1,31 +1,30 @@
 // Uebernommen aus ui/qml/mondrian.js durch tools/website.py.
 // Nicht hier bearbeiten -- die Quelle liegt in der Anwendung.
-// Packung der Transaktionsquadrate, nach dem Vorbild von bitfeed
+// Packing of the transaction squares, modeled on bitfeed
 // (client/src/models/TxMondrianPoolScene.js, MIT, mononaut).
 //
-// Die Anordnung ist dieselbe: das Raster ist "width" Einheiten breit, waechst
-// nach oben, und jede Transaktion kommt an die erste freie Stelle von unten
-// links, an die ihr r x r grosses Quadrat passt. Genau daraus entsteht das
-// typische Bild -- grosse Quadrate verstreut zwischen dicht gepackten kleinen.
+// The layout is the same: the grid is "width" units wide and grows upwards,
+// and each transaction goes to the first free spot from the bottom left
+// where its r x r square fits. That produces the typical picture: large
+// squares scattered between densely packed small ones.
 //
-// Die Buchhaltung darunter ist bewusst anders geloest. Das Original fuehrt eine
-// Liste freier "Slots" {x, y, r}. Das ist schnell, gibt beim Entfernen einer
-// Kachel aber nicht die ganze Flaeche zurueck: nachgemessen sinkt die Dichte
-// bei staendigem Umschichten von 96 % auf 90 % und die Loecher wachsen
-// unaufhaltsam. Bitfeed stoert das nicht, weil es Kacheln fast nie entfernt --
-// diese Ansicht schichtet dagegen laufend um. Hier steht deshalb eine exakte
-// Belegungskarte: eine Zelle ist belegt oder frei, mehr nicht.
+// The bookkeeping underneath is different. The original keeps a list of
+// free "slots" {x, y, r}. That is fast, but removing a tile does not give
+// back its whole area: under constant reshuffling the density drops from
+// 96 % to 90 % and the holes keep growing. Bitfeed hardly ever removes
+// tiles, this view reshuffles all the time. So this uses an exact
+// occupancy map instead: a cell is either taken or free.
 
 
 function MondrianLayout(width) {
     this.width = width;
-    this.rows = [];          // je Zeile ein Array, 1 = belegt
-    this.rowFree = [];       // Anzahl freier Zellen je Zeile
-    this.lowestFree = 0;     // ab dieser Zeile lohnt das Suchen
-    // Die unterste Zeile faellt aus dem Bild, wenn die Halde zu hoch wird.
-    // Damit die Kacheln darueber ihre Koordinate behalten, zaehlt rowOffset
-    // mit, wie viele Zeilen schon unten herausgefallen sind. Alle y-Werte sind
-    // absolut, der Zugriff auf rows[] geht ueber y - rowOffset.
+    this.rows = [];          // one array per row, 1 = taken
+    this.rowFree = [];       // number of free cells per row
+    this.lowestFree = 0;     // search starts at this row
+    // The bottom row drops out of view when the pile gets too high. So that
+    // the tiles above keep their coordinates, rowOffset counts how many rows
+    // have already dropped out. All y values are absolute; rows[] is accessed
+    // via y - rowOffset.
     this.rowOffset = 0;
 }
 
@@ -49,9 +48,9 @@ MondrianLayout.prototype.fits = function (x, y, r) {
         return false;
     for (var yy = this.idx(y); yy < this.idx(y) + r; yy++) {
         if (yy < 0)
-            return false;                // schon herausgefallen
+            return false;                // already dropped out
         if (yy >= this.rows.length)
-            continue;                    // noch nicht angelegte Zeilen sind frei
+            continue;                    // rows not created yet are free
         var row = this.rows[yy];
         for (var xx = x; xx < x + r; xx++) {
             if (row[xx])
@@ -76,8 +75,8 @@ MondrianLayout.prototype.mark = function (x, y, r, value) {
     }
 };
 
-// Setzt ein Quadrat der Kantenlaenge "size" an die erste passende Stelle von
-// unten links und liefert {x, y, r}.
+// Places a square of edge length "size" at the first fitting spot from
+// the bottom left and returns {x, y, r}.
 MondrianLayout.prototype.place = function (size) {
     var y = Math.max(this.lowestFree, this.rowOffset);
     for (;;) {
@@ -105,26 +104,24 @@ MondrianLayout.prototype.remove = function (square) {
         this.lowestFree = square.y;
 };
 
-// **Schwerkraft: Kacheln ruecken in die Luecken nach.** Nach dem Vorbild von
-// mempool.space (`BlockLayout.applyGravity` in
-// frontend/src/app/components/block-overview-graph/block-scene.ts): jede
-// Kachel, unter der die ganze Zeile davor frei ist, wird herausgenommen und
-// an der ersten passenden Stelle neu gesetzt. Ihre eigene Stelle ist dabei
-// wieder frei, sie landet also nie schlechter als vorher.
+// Gravity: tiles move down into gaps. Modeled on mempool.space
+// (`BlockLayout.applyGravity` in
+// frontend/src/app/components/block-overview-graph/block-scene.ts): every
+// tile with the whole row below it free is taken out and placed again at
+// the first fitting spot. Its own spot is free again during that, so it
+// never ends up worse than before.
 //
-// Gebraucht wird das beim Nachfuehren eines geplanten Blocks: Abgaenge geben
-// ihre Flaeche zurueck, Zugaenge fuellen die Luecken von vorn -- aber nur,
-// wenn sie hineinpassen. Was nicht passt, blieb bis zum 10.09.2026 als Loch
-// stehen, auf dem Telefon wie am Schreibtisch. In einer Simulation mit
-// 150 Runden Umschichtung (`node tools/packung-sim.js`) sank die Zahl der
-// eingeschlossenen freien Zellen damit von 525 auf 139, bei rund 25
-// bewegten Kacheln je Runde. Eine strengere Fassung (jede Kachel neu setzen)
-// kam auf 106, bewegte aber sechsmal so viele -- das Bild waere unruhig
-// geworden fuer wenig mehr. Mehrere Durchgaenge je Runde brachten nichts:
-// in der Reihenfolge von vorn nach hinten erfasst einer schon die Ketten.
+// Used while updating a projected block: removed transactions free their
+// area, new ones fill gaps from the front, but only where they fit, so
+// the rest would stay as holes. In a simulation with 150 rounds of
+// reshuffling (`node tools/packung-sim.js`) this cut the enclosed free
+// cells from 525 to 139, moving about 25 tiles per round. A stricter
+// version (re-place every tile) got to 106 but moved six times as many
+// tiles, a much busier picture for little gain. Several passes per round
+// did not help: going front to back, one pass already catches the chains.
 //
-// `entries` sind Objekte mit `sq` = {x, y, r}; `sq` wird ersetzt, wenn die
-// Kachel faellt. Rueckgabe: wie viele gefallen sind.
+// `entries` are objects with `sq` = {x, y, r}; `sq` is replaced when the
+// tile falls. Returns how many tiles fell.
 MondrianLayout.prototype.gravity = function (entries) {
     var order = entries.slice().sort(function (a, b) {
         return a.sq.y - b.sq.y || a.sq.x - b.sq.x;
@@ -153,9 +150,9 @@ MondrianLayout.prototype.gravity = function (entries) {
     return moved;
 };
 
-// Freie Zellen, unter denen in derselben Spalte noch eine Kachel liegt --
-// die Loecher, die man sieht. Der ausgefranste Rand ganz hinten gehoert zu
-// jeder Packung und zaehlt nicht mit.
+// Free cells with a tile below them in the same column: the holes you can
+// see. The ragged edge at the very back is part of any packing and does
+// not count.
 MondrianLayout.prototype.enclosedHoles = function () {
     var h = this.height(), n = 0;
     for (var x = 0; x < this.width; x++) {
@@ -172,25 +169,18 @@ MondrianLayout.prototype.enclosedHoles = function () {
     return n;
 };
 
-// **Stabil neu packen: dieselbe Reihenfolge, keine Loecher.** Die Schwerkraft
-// allein reicht nicht. Am 10.09.2026 sieben Minuten lang am echten Strom
-// gemessen, zwei Instanzen am selben Daemon, eingeschlossene Zellen je
-// Minute in einem Block von 110 x 110:
+// Stable repack: same order, no holes. Gravity alone is not enough.
+// Measured on the live feed it cuts the holes to about a third but does
+// not prevent them: a hole with a wider tile above it stays open.
+// mempool.space accepts that until the next block is found.
 //
-//     ohne Schwerkraft    0  10  308  799  933  818  629
-//     mit Schwerkraft     0   7  113  247  387  312  219
-//
-// Sie drittelt die Loecher, verhindert sie aber nicht: ein Loch, ueber dem
-// eine breitere Kachel liegt, bleibt offen. mempool.space lebt damit bis zum
-// naechsten Blockfund; hier wurde es als Fehler gemeldet.
-//
-// Also werden die Kacheln, sobald die Loecher ueberhand nehmen, in ihrer
-// jetzigen Reihenfolge (von vorn nach hinten, Zeile fuer Zeile) in eine
-// frische Packung gesetzt. Wer vor dem ersten Loch liegt, bleibt, wo er ist;
-// dahinter ruecken die Kacheln auf. In der Simulation (`node
-// tools/packung-sim.js`) wechselten dabei 7 bis 11 % der Kacheln den Platz --
-// nicht die 99,7 % eines Neupackens nach Gebuehr, das den Block in Flimmern
-// aufloeste. Liefert die neue Packung; `sq` der Eintraege wird ersetzt.
+// So once there are too many holes, the tiles are put into a fresh packing
+// in their current order (front to back, row by row). Tiles before the
+// first hole stay where they are; the ones behind move up. In the
+// simulation (`node tools/packung-sim.js`) 7 to 11 % of the tiles changed
+// place, not the 99.7 % of a full repack sorted by fee, which dissolved
+// the block into flicker. Returns the new packing; `sq` of the entries is
+// replaced.
 function repackStable(width, entries) {
     var lay = new MondrianLayout(width);
     var order = entries.slice().sort(function (a, b) {
@@ -201,8 +191,8 @@ function repackStable(width, entries) {
     return lay;
 }
 
-// Oberste belegte Zeile
-// Hoehe der Halde in sichtbaren Zeilen
+// Topmost occupied row
+// Height of the pile in visible rows
 MondrianLayout.prototype.height = function () {
     for (var y = this.rows.length - 1; y >= 0; y--) {
         if (this.rowFree[y] < this.width)
@@ -211,8 +201,8 @@ MondrianLayout.prototype.height = function () {
     return 0;
 };
 
-// Unterste Zeile aus dem Bild schieben. Sie muss vorher leer sein -- die
-// Kacheln darin fallen sichtbar nach unten heraus.
+// Push the bottom row out of view. It must be empty first; its tiles
+// visibly fall out at the bottom.
 MondrianLayout.prototype.dropBottomRow = function () {
     if (this.rows.length === 0)
         return;
@@ -223,7 +213,7 @@ MondrianLayout.prototype.dropBottomRow = function () {
         this.lowestFree = this.rowOffset;
 };
 
-// Groesse einer Transaktion in Rastereinheiten -- exakt wie logTxSize() im Original
+// Size of a transaction in grid units, same as logTxSize() in the original
 function txSize(valueSats, max) {
     var v = Math.max(1, valueSats || 1);
     var scale = Math.ceil(Math.log(v) / Math.LN10) - 5;
