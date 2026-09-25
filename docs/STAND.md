@@ -32,7 +32,7 @@
   release-signierte 0.2.12 der F-Droid-Bilder ist deinstalliert.
 - **Veroeffentlicht 25.09.2026, 18:15 UTC** (vom Anwender freigegeben, "Latest").
   Seite neu gebaut und gepusht (`7e1aef3`), alle drei Download-Links 200.
-  **Offen:** F-Droid-Repo pushen, lokal fertig (`2b01c30`); den Force-Push
+  F-Droid-Repo am 25.09. vom Anwender gepusht (`2b01c30`). Den Force-Push
   laesst die Rechtepruefung nur den Anwender selbst ausfuehren:
   `git -C ~/.local/share/orangedeck/fdroid-pages push --force origin main`
 
