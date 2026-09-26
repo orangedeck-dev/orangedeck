@@ -15,6 +15,37 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 26.09.2026 -- 0.2.14 veroeffentlicht, Seite neu
+
+- **0.2.14 ist draussen** (Tag `v0.2.14` auf `7c93a4d`, Pin `bca8208`,
+  Release 26.09.2026 19:50 UTC, "Latest", F-Droid-Repo mit 0.2.14 und 0.2.13).
+  Inhalt: Feld **Mempool-Instanz** (`mempoolHost`) unter Einstellungen >
+  Allgemein, gilt im Direktbezug, fuer Kacheldetails und Explorer, in den
+  Android-Widgets (`DeckWidget.api`) und im Dienst (`POST /config`, nur
+  127.0.0.1, nur JSON, kein Origin; schreibt `sources.json`, verbindet neu).
+  Oeffentliche Instanzen mit voller API: mempool.emzy.de, mempool.ninja.
+- Gemessen: Galaxy A55 (signiertes APK ueber 0.2.13, erfundene Adresse gibt
+  "keine Verbindung", emzy gibt Daten), Windows-11-VM (ZIP, dieselben drei
+  Faelle, Feld unter Allgemein), Flatpak-Buendel kurz auf dem Wirt unter
+  Xvfb (dieselben drei Faelle; danach deinstalliert, `~/.var/app` aus der
+  Sicherung zurueck), Dienst per curl (Origin, text/plain, Unsinn, Netz
+  abgewiesen). **Nicht** gemessen: Ubuntu/Fedora-Live, Widgets nach dem
+  Wechsel, die Uebergabe aus dem Feld an den Dienst durch echte Eingabe.
+- **DMS-Plugin 1.1.0** gepusht und getaggt (`orangedeck-dev/dms-plugin`).
+- **orangedeck.dev** am 26.09. umgebaut: 13 Sprachen, Unterseiten bitaxe/,
+  wall-display/, dankmaterialshell/, changelog/ (`website/aenderungen.json`
+  nach jedem Release oben ergaenzen), Abschnitt "Einstellbar", Hero-Kopf als
+  Nachbau der App-Fenster mit echten Daten (`website/live.js`), Inhalts-
+  kennung `?v=` an CSS, JS und Bildern, IndexNow (`tools/indexnow.py` nach
+  jedem Veroeffentlichen). Seite erst **nach** der Freigabe neu bauen: die
+  Download-Links nehmen die Fassung aus project().
+- Kleinigkeit fuer die naechste Fassung: der Hilfetext des Feldes nennt "den
+  Dienst auf diesem Rechner" auch unter Windows und Android, wo es keinen gibt.
+- Falle am Galaxy: dort ist `tabRotate` an, und `,` schaltet die
+  Einstellungen um; Zurueck bei offener Tastatur schliesst erst sie, ein
+  zweites Zurueck verlaesst die App. Vor jedem Tippen per adb pruefen, dass
+  OrangeDeck vorn ist (`dumpsys activity activities | grep topResumedActivity`).
+
 ## NACHTRAG 25.09.2026 -- 0.2.13 als Entwurf
 
 - Fassung 0.2.13 (`a762ace`, Tag `v0.2.13`), Pin `1773ee1`, Freigabetext in
