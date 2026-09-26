@@ -40,15 +40,15 @@
   "badges": [
     "Licença MIT",
     "Sem conta, sem telemetria",
-    "Só observação, sem chaves",
-    "Seis visualizações, cinco ambientes"
+    "Sem chaves, sem assinatura",
+    "Cinco visualizações, cinco ambientes"
   ],
   "was_titel": "O que é",
   "was": [
     "O OrangeDeck é um visualizador do mempool de Bitcoin. Ele desenha o mempool do jeito que ele realmente se comporta: cada transação em espera é um quadrado. Ela se acumula, é minerada, é substituída, e você vê isso acontecer em vez de ler um número.",
-    "Em volta ficam mais cinco visualizações: um relógio de altura de bloco para um tablet na parede, dados de mineração do seu próprio Bitaxe e da rede, um explorador de blocos, uma aba de mercado com velas, delta de volume acumulado e liquidações, e endereços só de observação."
+    "Em volta ficam mais quatro visualizações: um relógio de altura de bloco para um tablet na parede, dados de mineração do seu próprio Bitaxe e da rede, um explorador de blocos e uma aba de mercado com velas, delta de volume acumulado e liquidações."
   ],
-  "ansichten_titel": "Seis visualizações",
+  "ansichten_titel": "Cinco visualizações",
   "ansichten": [
     [
       "Feed",
@@ -69,10 +69,6 @@
     [
       "Mercado",
       "Preço em velas ou em linha, volume, delta de volume acumulado e liquidações, agregados de várias corretoras."
-    ],
-    [
-      "Carteira",
-      "Seus próprios endereços ou uma xpub, só de observação. Suas transações ficam destacadas enquanto estão no monte. No Linux, com o serviço OrangeDeck."
     ]
   ],
   "wo_titel": "Onde roda",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "Um ZIP: é só extrair e executar. As mesmas visualizações, exceto a carteira, que precisa do serviço no Linux."
+      "Um ZIP: é só extrair e executar. As mesmas visualizações que no Linux."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "Serve para ver, e só",
-      "Não conhece nenhuma chave privada, não consegue assinar e não traz nenhuma biblioteca que consiga. Só observação quer dizer só observação."
+      "Não conhece nenhuma chave privada, não consegue assinar e não traz nenhuma biblioteca que consiga. Só mostra."
     ],
     [
       "Nenhum servidor nosso",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "Ele precisa das minhas chaves?",
-      "Não. Ele não consegue assinar nada. Os endereços observados são informados como endereços ou como uma xpub e nunca saem do seu computador, a não ser como consulta de saldo."
+      "Não. Ele não guarda chaves, não consegue assinar nada e não pede nenhum dos seus endereços."
     ],
     [
       "Dá para esconder as abas que eu não uso?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Organização dos quadrados e modelo de cores portados do bitfeed (MIT, mononaut).",
   "fuss_lizenz": "O OrangeDeck tem licença MIT.",
   "sprache_waehlen": "Idioma",
-  "seo_kurz": "O OrangeDeck é um aplicativo gratuito para desktop e Android que desenha o mempool de Bitcoin como um mosaico vivo. Ele reúne seis visualizações em uma janela: feed do mempool, relógio de altura de bloco, dados de mineração, explorador de blocos, dados de mercado e endereços só de observação. Roda em Linux, Windows e Android e como plugin do DankMaterialShell, está disponível em treze idiomas, tem licença MIT e não exige conta.",
+  "seo_kurz": "O OrangeDeck é um aplicativo gratuito para desktop e Android que desenha o mempool de Bitcoin como um mosaico vivo. Ele reúne cinco visualizações em uma janela: feed do mempool, relógio de altura de bloco, dados de mineração, explorador de blocos e dados de mercado. Roda em Linux, Windows e Android e como plugin do DankMaterialShell, está disponível em treze idiomas, tem licença MIT e não exige conta.",
   "bilder_titel": "Capturas de tela",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "Seu próprio minerador",
       "A API local do dispositivo, AxeOS ou cgminer. A requisição não sai da sua rede de casa."
-    ],
-    [
-      "Endereços observados",
-      "Consultas de saldo à mesma instância do mempool. Sem chaves, e nada mais sai do dispositivo."
     ]
   ],
   "einsatz_titel": "Feito para",

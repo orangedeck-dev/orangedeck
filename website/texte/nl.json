@@ -40,15 +40,15 @@
   "badges": [
     "MIT-licentie",
     "Geen account, geen telemetrie",
-    "Alleen bekijken, geen sleutels",
-    "Zes weergaven, vijf omgevingen"
+    "Geen sleutels, kan niet ondertekenen",
+    "Vijf weergaven, vijf omgevingen"
   ],
   "was_titel": "Wat het is",
   "was": [
     "OrangeDeck is een mempoolvisualisatie voor Bitcoin. Het tekent de mempool zoals die zich echt gedraagt: elke wachtende transactie is een vierkantje. Ze stapelen zich op, worden gemined, worden vervangen, en je ziet het gebeuren in plaats van een getal te lezen.",
-    "Daaromheen zitten nog vijf weergaven: een blokhoogteklok voor een tablet aan de muur, miningcijfers van je eigen Bitaxe en van het netwerk, een blockexplorer, een markttabblad met candles, cumulatieve volumedelta en liquidaties, en adressen die je alleen bekijkt."
+    "Daaromheen zitten nog vier weergaven: een blokhoogteklok voor een tablet aan de muur, miningcijfers van je eigen Bitaxe en van het netwerk, een blockexplorer en een markttabblad met candles, cumulatieve volumedelta en liquidaties."
   ],
-  "ansichten_titel": "Zes weergaven",
+  "ansichten_titel": "Vijf weergaven",
   "ansichten": [
     [
       "Feed",
@@ -69,10 +69,6 @@
     [
       "Markt",
       "Koers als candles of als lijn, volume, cumulatieve volumedelta en liquidaties, samengevoegd over meerdere beurzen."
-    ],
-    [
-      "Wallet",
-      "Je eigen adressen of een xpub, alleen bekijken. Je eigen transacties zijn gemarkeerd zolang ze op de hoop liggen. Op Linux, met de OrangeDeck-dienst."
     ]
   ],
   "wo_titel": "Waar het draait",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "Een ZIP: uitpakken en starten. Dezelfde weergaven behalve de wallet, die de dienst op Linux nodig heeft."
+      "Een ZIP: uitpakken en starten. Dezelfde weergaven als op Linux."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "Het is een kijker, verder niets",
-      "Het kent geen privésleutel, kan niet ondertekenen en bevat geen bibliotheek die dat wel kan. Alleen bekijken betekent alleen bekijken."
+      "Het kent geen privésleutel, kan niet ondertekenen en bevat geen bibliotheek die dat wel kan. Het laat alleen zien."
     ],
     [
       "Geen server van ons",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "Heeft het mijn sleutels nodig?",
-      "Nee. Het kan niets ondertekenen. Gevolgde adressen voer je in als adressen of als xpub, en ze verlaten je computer alleen als saldo-opvraag."
+      "Nee. Het bewaart geen sleutels, kan niets ondertekenen en vraagt niet om je adressen."
     ],
     [
       "Kan ik tabbladen verbergen die ik niet gebruik?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Tegelindeling en kleurmodel overgenomen van bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck valt onder de MIT-licentie.",
   "sprache_waehlen": "Taal",
-  "seo_kurz": "OrangeDeck is een gratis desktop- en Android-applicatie die de Bitcoin-mempool tekent als een levend tegelmozaïek. Het bundelt zes weergaven in één venster: mempoolfeed, blokhoogteklok, miningcijfers, blockexplorer, marktgegevens en adressen die je alleen bekijkt. Het draait op Linux, Windows en Android en als DankMaterialShell-plugin, spreekt dertien talen, heeft een MIT-licentie en vraagt geen account.",
+  "seo_kurz": "OrangeDeck is een gratis desktop- en Android-applicatie die de Bitcoin-mempool tekent als een levend tegelmozaïek. Het bundelt vijf weergaven in één venster: mempoolfeed, blokhoogteklok, miningcijfers, blockexplorer en marktgegevens. Het draait op Linux, Windows en Android en als DankMaterialShell-plugin, spreekt dertien talen, heeft een MIT-licentie en vraagt geen account.",
   "bilder_titel": "Schermafbeeldingen",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "Je eigen miner",
       "De lokale API van het apparaat, AxeOS of cgminer. Het verzoek blijft in je thuisnetwerk."
-    ],
-    [
-      "Gevolgde adressen",
-      "Saldo-opvragen bij dezelfde mempool-instantie. Geen sleutels, en verder verlaat niets het apparaat."
     ]
   ],
   "einsatz_titel": "Gemaakt voor",

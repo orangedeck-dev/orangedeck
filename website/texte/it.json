@@ -40,15 +40,15 @@
   "badges": [
     "Licenza MIT",
     "Nessun account, nessuna telemetria",
-    "Sola lettura, nessuna chiave",
-    "Sei viste, cinque ambienti"
+    "Nessuna chiave, nessuna firma",
+    "Cinque viste, cinque ambienti"
   ],
   "was_titel": "Che cos’è",
   "was": [
     "OrangeDeck è un visualizzatore del mempool Bitcoin. Disegna il mempool come si comporta davvero: ogni transazione in attesa è un quadrato. Si accumula, viene minata, viene sostituita, e la si vede succedere invece di leggere un numero.",
-    "Intorno ci sono altre cinque viste: un orologio dell’altezza di blocco per un tablet appeso al muro, i dati di mining del proprio Bitaxe e della rete, un block explorer, una scheda di mercato con candele, delta del volume cumulativo e liquidazioni, e indirizzi in sola lettura."
+    "Intorno ci sono altre quattro viste: un orologio dell’altezza di blocco per un tablet appeso al muro, i dati di mining del proprio Bitaxe e della rete, un block explorer e una scheda di mercato con candele, delta del volume cumulativo e liquidazioni."
   ],
-  "ansichten_titel": "Sei viste",
+  "ansichten_titel": "Cinque viste",
   "ansichten": [
     [
       "Feed",
@@ -69,10 +69,6 @@
     [
       "Mercato",
       "Prezzo a candele o a linea, volume, delta del volume cumulativo e liquidazioni, aggregati da più exchange."
-    ],
-    [
-      "Portafoglio",
-      "I propri indirizzi o una xpub, in sola lettura. Le proprie transazioni restano evidenziate finché sono nel mucchio. Su Linux, con il servizio OrangeDeck."
     ]
   ],
   "wo_titel": "Dove funziona",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "Uno ZIP: si estrae e si avvia. Le stesse viste tranne il portafoglio, che richiede il servizio su Linux."
+      "Uno ZIP: si estrae e si avvia. Le stesse viste che su Linux."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "Serve a guardare, e basta",
-      "Non conosce alcuna chiave privata, non può firmare e non include librerie che potrebbero farlo. Sola lettura significa sola lettura."
+      "Non conosce alcuna chiave privata, non può firmare e non include librerie che potrebbero farlo. Si limita a mostrare."
     ],
     [
       "Nessun server nostro",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "Ha bisogno delle mie chiavi?",
-      "No. Non può firmare nulla. Gli indirizzi osservati si inseriscono come indirizzi o come xpub e lasciano il computer solo sotto forma di richiesta del saldo."
+      "No. Non conserva chiavi, non può firmare nulla e non chiede alcun indirizzo."
     ],
     [
       "Posso nascondere le schede che non uso?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Disposizione delle tessere e modello dei colori ripresi da bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck è rilasciato con licenza MIT.",
   "sprache_waehlen": "Lingua",
-  "seo_kurz": "OrangeDeck è un’applicazione gratuita per desktop e Android che disegna il mempool Bitcoin come un mosaico di tessere vivo. Riunisce sei viste in una sola finestra: feed del mempool, orologio dell’altezza di blocco, dati di mining, block explorer, dati di mercato e indirizzi in sola lettura. Funziona su Linux, Windows e Android e come plugin di DankMaterialShell, parla tredici lingue, ha licenza MIT e non richiede alcun account.",
+  "seo_kurz": "OrangeDeck è un’applicazione gratuita per desktop e Android che disegna il mempool Bitcoin come un mosaico di tessere vivo. Riunisce cinque viste in una sola finestra: feed del mempool, orologio dell’altezza di blocco, dati di mining, block explorer e dati di mercato. Funziona su Linux, Windows e Android e come plugin di DankMaterialShell, parla tredici lingue, ha licenza MIT e non richiede alcun account.",
   "bilder_titel": "Schermate",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "Il proprio miner",
       "L’API locale del dispositivo, AxeOS o cgminer. La richiesta resta nella rete di casa."
-    ],
-    [
-      "Indirizzi osservati",
-      "Richieste del saldo alla stessa istanza di mempool. Nessuna chiave, e nient’altro lascia il dispositivo."
     ]
   ],
   "einsatz_titel": "Pensato per",
