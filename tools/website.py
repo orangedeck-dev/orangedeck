@@ -725,6 +725,25 @@ def weiche(alle):
 """ % (codes, liste)
 
 
+def fassungen():
+    """Haengt an CSS und Skripte eine Kennung aus ihrem Inhalt: stil.css?v=1a2b3c4d.
+
+    **Cloudflare hielt live.js vier Stunden im Cache**, waehrend das HTML schon
+    neu war (26.09.2026). Neues HTML mit altem Skript passt nicht zusammen: das
+    alte Skript kannte das Datenformat nicht mehr. Mit der Kennung ist jede
+    geaenderte Datei eine neue Adresse, und kein Cache liefert die alte.
+    """
+    import hashlib
+    kennung = {}
+    for name in ("stil.css", "live.js", "mondrian.js", "colors.js"):
+        kennung[name] = hashlib.sha256((ZIEL / name).read_bytes()).hexdigest()[:10]
+    for f in ZIEL.rglob("*.html"):
+        h = f.read_text(encoding="utf-8")
+        for name, k in kennung.items():
+            h = re.sub(r'((?:href|src)="[^"]*?%s)"' % re.escape(name), r'\1?v=%s"' % k, h)
+        f.write_text(h, encoding="utf-8")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -762,6 +781,8 @@ def main():
         shutil.copytree(QUELLE / "bilder", ZIEL / "bilder")
         for name in ("mondrian.js", "colors.js"):
             geteilt(WURZEL / "ui" / "qml" / name, ZIEL / name)
+    if tun:
+        fassungen()
     print("  %s website/fertig/index.html (Sprachweiche)" % ("schreibe" if tun else "wuerde"))
     print("  %s stil.css, live.js, bilder/ und die zwei geteilten Bausteine"
           % ("kopiere" if tun else "wuerde kopieren"))
