@@ -1,5 +1,5 @@
-<!-- Der Text unten ist der Entwurf fuer 0.2.14 (26.09.2026). Die Texte von
-     0.2.8 bis 0.2.13 stehen in der Geschichte dieser Datei.
+<!-- Der Text unten ist der Entwurf fuer 0.2.15 (26.09.2026). Die Texte von
+     0.2.8 bis 0.2.14 stehen in der Geschichte dieser Datei.
 
      **Die Pruefliste gilt fuer jede Nummer, nicht nur fuer die, bei der sie
      entstand.** Am 14.09.2026 nannte sie fuer 0.2.9 nur Windows und das
@@ -42,16 +42,16 @@
 
 A Bitcoin dashboard with the mempool as a live tile mosaic, a block height clock, mining figures for the whole network and your own Bitaxe, a block explorer and the BTC market. MIT licensed, no account needed.
 
-This release lets you choose where the data comes from.
+This release removes the watch-only wallet.
 
-## What's new since 0.2.13
+## What's new since 0.2.14
 
-- A new field in the settings, Mempool instance, under General. Leave it empty for mempool.space, or enter another public instance such as mempool.emzy.de or mempool.ninja, or your own node, for example http://umbrel.local:3006. Without a scheme the address is taken as https, and an /api at the end does not matter.
-- The instance applies everywhere: the live feed and every view in direct mode, the details of a mempool tile, the explorer, the Android widgets, and the OrangeDeck service on Linux. When the field changes, the service on the same computer switches over, saves the address in sources.json and reconnects.
-- The service accepts that change only from the same computer, only as JSON and never with an Origin header. No other device on the network and no website in a browser can point it somewhere else. This matters because the service also asks the instance about the addresses you watch.
-- The data source choice now reads "Directly to the mempool instance" instead of naming mempool.space.
+- The watch-only wallet is gone, on every platform. Since 15 September it had only existed on Linux with the OrangeDeck service, and it was the one part of OrangeDeck that asked for anything about you: the mempool instance saw which addresses were queried. Now every platform shows the same five views: feed, clock, mining, explorer and market.
+- The service no longer derives addresses from an xpub. A watch list left in `~/.config/orangedeck/sources.json` is ignored and can be deleted; `--watch-add`, `--watch-list` and `--watch-remove` say that the wallet no longer exists.
+- If the wallet was your start view, the last view or part of your tab order, OrangeDeck opens the first view of your order instead. `--view 4` does the same.
+- The service writes `sources.json` with permissions 600 on every path, including the Mempool instance field from 0.2.14.
 
-## Windows: `orangedeck-0.2.14-windows-x86_64.zip`
+## Windows: `orangedeck-0.2.15-windows-x86_64.zip`
 
 Unzip anywhere and run `orangedeck-app.exe`. Requires Windows 10 or 11, 64-bit.
 
@@ -63,13 +63,13 @@ To start a widget, for example the block clock in the top right corner:
 
 Click a widget and press Q to close it. Details are in `packaging/widgets/README.md`.
 
-## Android: `orangedeck-0.2.14-arm64-v8a.apk`
+## Android: `orangedeck-0.2.15-arm64-v8a.apk`
 
-For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.13.
+For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.14.
 
 Please check the signature before installing:
 
-    apksigner verify --print-certs orangedeck-0.2.14-arm64-v8a.apk
+    apksigner verify --print-certs orangedeck-0.2.15-arm64-v8a.apk
 
 The SHA-256 fingerprint of the signing certificate must be:
 
@@ -79,40 +79,34 @@ The same APK is also in the OrangeDeck F-Droid repository, which keeps it up to 
 
     https://fdroid.orangedeck.dev/repo?fingerprint=06E62F144A293077C333DE18FA6076364FE7FB0718F1F3D6E8897E7291DC4C59
 
-## Linux: `orangedeck-0.2.14.flatpak`
+## Linux: `orangedeck-0.2.15.flatpak`
 
-    flatpak install --user orangedeck-0.2.14.flatpak
+    flatpak install --user orangedeck-0.2.15.flatpak
 
-This pulls the KDE runtime 6.9 from Flathub. All six views are included on Linux. To serve the wallet to other Linux computers on your network:
-
-    systemctl --user edit orangedeck.service
-    # [Service]
-    # Environment=ORANGEDECK_ADDR=0.0.0.0
+This pulls the KDE runtime 6.9 from Flathub.
 
 ## Tested on
 
-- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.13 with its settings kept: the field under General, the clock with live data from mempool.emzy.de, and "no connection" with an address that does not exist.
-- Windows 11 in a VM with a German system, this ZIP: the clock with live data with the field empty, "no connection" with an address that does not exist, and live data again with mempool.ninja. The field shows under General.
-- This Flatpak bundle on a Linux desktop, in English: the same three cases with the same results, and the field under General.
-- The service on Linux: switched to mempool.ninja and back through the field's request, with the address saved and the connection renewed; requests from the network, with an Origin header or not as JSON were refused.
+- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.14 with its settings kept: it opens with the five tabs Feed, Clock, Mining, Explorer and Market, and the miner view shows the Bitaxe as before.
+- Windows 11 in a VM with a German system, this ZIP: started with `--view 4`, it opens the feed with the five tabs Feed, Clock, Mining, Explorer and Market.
+- This Flatpak bundle on a Linux desktop, in English, with old settings that had the wallet as start view, last view and in the tab order: it opens the feed, and the tab bar ends with Market.
+- The service on Linux with a `sources.json` that still contains a watch list: it starts, `/wallets` answers 404, and the state carries no wallet fields.
 - Not tested in this release: the live sessions of Ubuntu and Fedora, macOS, real tablets, and display scaling above 100% on Windows. If something looks wrong, please open an issue.
 
 ## Checksums (SHA-256)
 
-    fb792156e52c5d705f3c5dd7328d009e487741a5dd954a65e89f85c48b7bcd74  orangedeck-0.2.14-windows-x86_64.zip
-    5765cb87c3e81409bb9faab209690f9a74cbd517d4974f11c98723dc6981b0eb  orangedeck-0.2.14-arm64-v8a.apk
-    e45c8b74ab0a336b823eb440988f64e200349f689dec0bb975806ca817bcaf9f  orangedeck-0.2.14.flatpak
+    5e390321ce3d45b926782cc561ab84911ebc29cbe610f43283c7706f193a25f3  orangedeck-0.2.15-windows-x86_64.zip
+    c18b03de28f735b2efb1531dae3694feee9df93b10f4061f4a3d79dde7134319  orangedeck-0.2.15-arm64-v8a.apk
+    522c30eadbe71ab3a815f00b1410ce80c0d5ed62ed758ef971df6fb794ee8265  orangedeck-0.2.15.flatpak
 
 ---
 
 ## Deutsch
 
-0.2.14 lässt wählen, woher die Daten kommen.
+0.2.15 entfernt die Wallet zum Beobachten.
 
-In den Einstellungen gibt es unter Allgemein ein neues Feld, Mempool-Instanz. Leer bleibt es bei mempool.space. Eingetragen werden kann eine andere öffentliche Instanz wie mempool.emzy.de oder mempool.ninja oder der eigene Node, etwa http://umbrel.local:3006. Ohne Schema gilt https, und ein /api am Ende stört nicht.
+Die Wallet ist weg, auf allen Plattformen. Seit dem 15. September gab es sie nur noch unter Linux mit dem OrangeDeck-Dienst, und sie war der einzige Teil von OrangeDeck, der etwas über Sie wissen wollte: Die Mempool-Instanz sah, welche Adressen abgefragt wurden. Jetzt zeigen alle Plattformen dieselben fünf Ansichten: Feed, Uhr, Mining, Explorer und Markt.
 
-Die Instanz gilt überall: im Live-Feed und in allen Ansichten im Direktbezug, in den Details einer Mempool-Kachel, im Explorer, in den Android-Widgets und im OrangeDeck-Dienst unter Linux. Ändert sich das Feld, stellt der Dienst auf demselben Rechner mit um, speichert die Adresse in sources.json und verbindet sich neu.
+Der Dienst leitet keine Adressen mehr aus einem xpub ab. Eine Beobachtungsliste in `~/.config/orangedeck/sources.json` wird übergangen und kann gelöscht werden. War die Wallet die Start- oder zuletzt benutzte Ansicht oder Teil der Reiterreihenfolge, öffnet OrangeDeck stattdessen die erste Ansicht dieser Reihenfolge.
 
-Der Dienst nimmt diese Änderung nur vom selben Rechner an, nur als JSON und nie mit einem Origin-Kopf. Kein anderes Gerät im Netz und keine Webseite im Browser kann ihn damit woandershin lenken. Das zählt, weil der Dienst die Instanz auch nach den beobachteten Adressen fragt.
-
-Das APK installiert sich über 0.2.13 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
+Das APK installiert sich über 0.2.14 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
