@@ -388,5 +388,10 @@
       "Sprache, Währung, Quelle",
       "Dreizehn Sprachen, sieben Währungen und jede Mempool-Instanz, auch der eigene Node."
     ]
-  ]
+  ],
+  "datenschutz_link": "Datenschutz",
+  "impressum_link": "Impressum",
+  "bild_zu": "Schließen",
+  "bild_vor": "Weiter",
+  "bild_zurueck": "Zurück"
 }

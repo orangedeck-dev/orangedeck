@@ -388,5 +388,10 @@
       "Język, waluta, źródło danych",
       "Trzynaście języków, siedem walut i dowolna instancja mempool, także twój własny węzeł."
     ]
-  ]
+  ],
+  "datenschutz_link": "Prywatność",
+  "impressum_link": "Nota prawna",
+  "bild_zu": "Zamknij",
+  "bild_vor": "Dalej",
+  "bild_zurueck": "Wstecz"
 }

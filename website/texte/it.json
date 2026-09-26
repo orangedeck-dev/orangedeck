@@ -388,5 +388,10 @@
       "Lingua, valuta, origine dei dati",
       "Tredici lingue, sette valute e qualsiasi istanza di mempool, compreso il proprio nodo."
     ]
-  ]
+  ],
+  "datenschutz_link": "Privacy",
+  "impressum_link": "Note legali",
+  "bild_zu": "Chiudi",
+  "bild_vor": "Successiva",
+  "bild_zurueck": "Precedente"
 }

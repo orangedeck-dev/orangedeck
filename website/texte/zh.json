@@ -388,5 +388,10 @@
       "语言、货币、数据来源",
       "支持 13 种语言、7 种货币和任意 mempool 实例，包括你自己的节点。"
     ]
-  ]
+  ],
+  "datenschutz_link": "隐私政策",
+  "impressum_link": "法律声明",
+  "bild_zu": "关闭",
+  "bild_vor": "下一张",
+  "bild_zurueck": "上一张"
 }

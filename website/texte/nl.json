@@ -388,5 +388,10 @@
       "Taal, valuta, gegevensbron",
       "Dertien talen, zeven valuta en elke mempool-instantie, ook je eigen node."
     ]
-  ]
+  ],
+  "datenschutz_link": "Privacy",
+  "impressum_link": "Juridische informatie",
+  "bild_zu": "Sluiten",
+  "bild_vor": "Volgende",
+  "bild_zurueck": "Vorige"
 }

@@ -233,3 +233,96 @@ footer .sprachen + p { margin-top: 1.4rem; }
 .sprachwahl li a { display: block; padding: 0.4rem 0.7rem; border-radius: 6px; color: var(--schrift); }
 .sprachwahl li a:hover { background: rgba(255, 255, 255, 0.05); text-decoration: none; }
 .sprachwahl li a[aria-current="true"] { color: var(--orange); text-decoration: none; }
+
+/* ---- Ansichten: Zeilen mit Bild im Wechsel (26.09.2026) ---------------- */
+.reihen { display: grid; gap: 3.2rem; }
+.reihe { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 2.2rem; align-items: center; }
+.reihe.umgekehrt .reihe-bild { order: 2; }
+.reihe-bild { display: block; border-radius: 12px; overflow: hidden; border: 1px solid var(--linie); cursor: zoom-in; }
+.reihe-bild img { width: 100%; height: auto; display: block; transition: transform 0.35s ease; }
+.reihe-bild:hover img { transform: scale(1.02); }
+.reihe-text .nr { color: var(--orange); font-size: 0.85rem; letter-spacing: 0.12em; font-variant-numeric: tabular-nums; }
+.reihe-text h3 { font-size: 1.45rem; margin: 0.3rem 0 0.6rem; }
+.reihe-text p { color: var(--gedaempft); margin: 0; }
+@media (max-width: 46rem) {
+  .reihe { grid-template-columns: 1fr; gap: 1rem; }
+  .reihe.umgekehrt .reihe-bild { order: 0; }
+}
+
+/* ---- Einstellbar: Liste mit Haken ------------------------------------- */
+.klein-fuehrend { font-size: 1.02rem; margin-bottom: 1.6rem; }
+.haken { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem 2.4rem; }
+.haken li { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.7rem; align-items: start; }
+.haken-zeichen { width: 1.6rem; height: 1.6rem; color: var(--orange); background: rgba(247, 147, 26, 0.12); border-radius: 50%; padding: 0.22rem; }
+.haken b { display: block; margin-bottom: 0.2rem; }
+.haken span { color: var(--gedaempft); font-size: 0.95rem; }
+@media (max-width: 46rem) { .haken { grid-template-columns: 1fr; } }
+
+/* ---- Plattformen und Downloads: Zeilen mit Systemsymbol ---------------- */
+.anker { display: block; position: relative; top: -70px; }
+.plattformen { display: grid; }
+.plattform { display: grid; grid-template-columns: 3.4rem minmax(0, 1.2fr) minmax(0, 1fr); gap: 1.4rem; padding: 1.5rem 0; border-top: 1px solid var(--linie); align-items: start; }
+.plattform:last-child { border-bottom: 1px solid var(--linie); }
+.p-symbol { width: 3.4rem; height: 3.4rem; border-radius: 14px; background: var(--grund-hell); border: 1px solid var(--linie); display: grid; place-items: center; }
+.p-symbol .symbol { width: 1.7rem; height: 1.7rem; color: var(--schrift); }
+.p-text h3 { margin: 0.15rem 0 0.4rem; font-size: 1.12rem; }
+.p-text p { color: var(--gedaempft); margin: 0 0 0.4rem; font-size: 0.95rem; }
+.p-text b { color: var(--schrift); font-weight: 600; }
+.p-laden .knopfreihe { gap: 0.5rem; margin-bottom: 0.6rem; }
+.p-laden .tat { padding: 0.5rem 1rem; font-size: 0.92rem; }
+.p-hinweis { color: var(--gedaempft); font-size: 0.82rem; margin: 0 0 0.35rem; overflow-wrap: anywhere; }
+.p-mehr { color: var(--gedaempft); font-size: 0.92rem; margin-top: 1.2rem; }
+@media (max-width: 46rem) {
+  .plattform { grid-template-columns: 3rem minmax(0, 1fr); }
+  .p-laden { grid-column: 2; }
+}
+
+/* ---- Datenquellen: Tabelle --------------------------------------------- */
+.tabelle { margin: 0; max-width: 52rem; }
+.tabelle div { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 1.4rem; padding: 0.9rem 0; border-bottom: 1px solid var(--linie); }
+.tabelle dt { font-weight: 600; }
+.tabelle dd { margin: 0; color: var(--gedaempft); }
+@media (max-width: 46rem) { .tabelle div { grid-template-columns: 1fr; gap: 0.2rem; } }
+
+/* ---- Gruende: grosse Ziffern, keine Kaesten ---------------------------- */
+.gruende { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 3rem; }
+.gruende .nr { display: block; font-size: 2.6rem; font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1.5px var(--orange); margin-bottom: 0.5rem; }
+.gruende h3 { margin: 0 0 0.35rem; font-size: 1.1rem; }
+.gruende p { color: var(--gedaempft); margin: 0; }
+@media (max-width: 46rem) { .gruende { grid-template-columns: 1fr; } }
+
+/* ---- Bildansicht -------------------------------------------------------- */
+.lichtbox { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 96vh; overflow: visible; }
+.lichtbox::backdrop { background: rgba(8, 7, 12, 0.88); backdrop-filter: blur(4px); }
+.lichtbox img { display: block; max-width: 92vw; max-height: 82vh; width: auto; height: auto; border-radius: 10px; border: 1px solid var(--linie); }
+.lb-text { color: var(--schrift); text-align: center; margin: 0.8rem auto 0; max-width: 60rem; font-size: 0.95rem; }
+.lb-knopf { position: fixed; background: rgba(27, 24, 34, 0.9); color: var(--schrift); border: 1px solid var(--linie); border-radius: 50%; width: 2.8rem; height: 2.8rem; font-size: 1.6rem; line-height: 1; cursor: pointer; }
+.lb-knopf:hover, .lb-knopf:focus-visible { border-color: var(--orange); outline: none; }
+.lb-zurueck { left: 1rem; top: 50%; }
+.lb-vor { right: 1rem; top: 50%; }
+.lb-zu { right: 1rem; top: 1rem; }
+
+/* ---- Fuss --------------------------------------------------------------- */
+.fuss-oben { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.6rem; }
+.fuss-oben .fuss-tat { margin: 0; }
+.profile { display: flex; gap: 0.8rem; }
+.profile a { width: 2.4rem; height: 2.4rem; border-radius: 50%; border: 1px solid var(--linie); display: grid; place-items: center; color: var(--gedaempft); }
+.profile a:hover { color: var(--orange); border-color: var(--orange); }
+.profile .symbol { width: 1.15rem; height: 1.15rem; }
+.fuss-spalten { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 2rem; margin-bottom: 1.2rem; }
+.fuss-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.2rem; }
+.fuss-recht { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; font-size: 0.88rem; }
+.fuss-recht a { color: var(--gedaempft); }
+.fuss-recht a:hover { color: var(--schrift); }
+.sprachwahl.oben summary { color: var(--schrift); border: 1px solid var(--linie); border-radius: 8px; padding: 0.4rem 0.8rem; display: inline-flex; margin-top: 0.4rem; }
+.sprachwahl.oben ul { top: auto; bottom: calc(100% + 0.5rem); left: 0; right: auto; }
+@media (max-width: 46rem) { .fuss-spalten { grid-template-columns: 1fr; } }
+
+/* ---- Rechtstexte -------------------------------------------------------- */
+.recht { max-width: 46rem; }
+.recht h2 { font-size: 1.15rem; margin: 2rem 0 0.6rem; }
+.recht p, .recht li { color: var(--gedaempft); }
+.recht .stand { font-size: 0.88rem; }
+.reihe.umgekehrt { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+#holen .p-laden .knopfreihe { display: flex; flex-wrap: wrap; }
+@media (max-width: 46rem) { .reihe.umgekehrt { grid-template-columns: 1fr; } }

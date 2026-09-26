@@ -388,5 +388,10 @@
       "Language, currency, source",
       "Thirteen languages, seven currencies and any mempool instance, your own node included."
     ]
-  ]
+  ],
+  "datenschutz_link": "Privacy",
+  "impressum_link": "Legal notice",
+  "bild_zu": "Close",
+  "bild_vor": "Next",
+  "bild_zurueck": "Previous"
 }

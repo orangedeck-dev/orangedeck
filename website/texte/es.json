@@ -388,5 +388,10 @@
       "Idioma, moneda, fuente de datos",
       "Trece idiomas, siete monedas y cualquier instancia de mempool, incluido tu propio nodo."
     ]
-  ]
+  ],
+  "datenschutz_link": "Privacidad",
+  "impressum_link": "Aviso legal",
+  "bild_zu": "Cerrar",
+  "bild_vor": "Siguiente",
+  "bild_zurueck": "Anterior"
 }

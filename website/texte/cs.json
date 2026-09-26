@@ -388,5 +388,10 @@
       "Jazyk, měna, zdroj dat",
       "Třináct jazyků, sedm měn a libovolná instance mempool, včetně vašeho vlastního uzlu."
     ]
-  ]
+  ],
+  "datenschutz_link": "Ochrana soukromí",
+  "impressum_link": "Právní informace",
+  "bild_zu": "Zavřít",
+  "bild_vor": "Další",
+  "bild_zurueck": "Předchozí"
 }

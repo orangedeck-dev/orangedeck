@@ -388,5 +388,10 @@
       "Langue, devise, source des données",
       "Treize langues, sept devises et n’importe quelle instance mempool, y compris votre propre nœud."
     ]
-  ]
+  ],
+  "datenschutz_link": "Confidentialité",
+  "impressum_link": "Mentions légales",
+  "bild_zu": "Fermer",
+  "bild_vor": "Suivant",
+  "bild_zurueck": "Précédent"
 }
