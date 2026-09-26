@@ -361,6 +361,7 @@
   // Legende, in der Mitte der letzte Block als Kacheln, unten die Halde.
   // Zelle 6 px: Kachel 4 px, Fuge je 1 px, wie `zelleDev` in FeedCanvas.qml.
   var HALDE_Y = 678, HALDE_UNTEN = 760, ZELLE = 6, HALDE_X = 14;
+  var FALL_G = (HALDE_UNTEN - 80) * 1.1;
   var SPALTEN = Math.floor((B - 2 * HALDE_X) / ZELLE), ZEILEN = Math.floor((HALDE_UNTEN - HALDE_Y) / ZELLE);
   function Feed() {
     this.halde = [];
@@ -486,9 +487,23 @@
     }
     return lage;
   };
+  // **Regen statt Schauer.** mempool.space liefert neue Transaktionen als
+  // Paket, alle ein bis zwei Sekunden. Wie `drainQueue()` in FeedCanvas.qml
+  // fallen sie einzeln, verteilt über den Abstand bis zum nächsten Paket.
+  // Gemessen wird dieser Abstand hier, statt ihn anzunehmen.
   Feed.prototype.zulauf = function (txs) {
-    for (var i = 0; i < txs.length && this.schlange.length < 400; i++)
-      this.schlange.push({ r: window.txSize(txs[i].value, 5), t: Date.now() });
+    var jetzt = Date.now();
+    if (this.zuletzt) {
+      var d = Math.min(5000, Math.max(300, jetzt - this.zuletzt));
+      this.abstand = this.abstand ? this.abstand * 0.7 + d * 0.3 : d;
+    }
+    this.zuletzt = jetzt;
+    // Was niemand sieht, wird nicht gesammelt; sonst fiele beim Zurückkehren
+    // alles auf einmal. Und höchstens zwei Pakete Rückstand, wie `queueMax`.
+    if (!this.lauf) return;
+    for (var i = 0; i < txs.length; i++)
+      this.schlange.push({ r: window.txSize(txs[i].value, 5), t: jetzt });
+    if (this.schlange.length > 40) this.schlange.splice(0, this.schlange.length - 40);
   };
   Feed.prototype.neuerBlock = function () {
     // Welche Transaktionen bestätigt wurden, nennt der Strom nicht mit. Die
@@ -504,13 +519,22 @@
   };
   Feed.prototype.verdeckt = Feed.prototype.anhalten = function () {
     if (this.lauf) { window.cancelAnimationFrame(this.lauf); this.lauf = 0; }
+    this.schlange.length = 0;
+    this.vorher = 0;
+    // Was gerade fällt, landet sofort; sonst hinge es unsichtbar in der Luft.
+    this.fallend.forEach(function (f) { f.s.faellt = false; });
+    this.fallend.length = 0;
   };
   Feed.prototype.bild = function () {
     var ich = this;
     this.lauf = window.requestAnimationFrame(function () { ich.bild(); });
     var c = vorbereiten(this.c, this.kopf.k), jetzt = Date.now(), z = ZELLE;
-    var n = Math.min(2, this.schlange.length);
-    while (n-- > 0) {
+    var dt = this.vorher ? Math.min(0.1, (jetzt - this.vorher) / 1000) : 0;
+    this.vorher = jetzt;
+    if (!this.schlange.length) this.guthaben = 0;
+    else this.guthaben = (this.guthaben || 0) + this.schlange.length / ((this.abstand || 1000) * 0.85 / 1000) * dt;
+    while (this.guthaben >= 1 && this.schlange.length) {
+      this.guthaben -= 1;
       var q = this.schlange.shift();
       var p = this.lage.place(q.r);
       if (p.y + q.r > ZEILEN) {
@@ -520,8 +544,9 @@
       }
       p.t = q.t; p.faellt = true;
       this.halde.push(p);
+      // Start über der Fläche, wie `fromY` in FeedCanvas.qml
       this.fallend.push({ x: HALDE_X + p.x * z, r: q.r * z, ziel: HALDE_UNTEN - (p.y + q.r) * z,
-                          py: 80 + Math.random() * 120, v: 0, t: q.t, s: p });
+                          py: 80 - q.r * z - Math.random() * 340, v: 0, t: q.t, s: p });
     }
     c.clearRect(0, 0, B, H);
     var bl = this.block;
@@ -541,8 +566,10 @@
     }
     for (var j = this.fallend.length - 1; j >= 0; j--) {
       var f = this.fallend[j];
-      f.v += 0.35; f.py += f.v;
+      // Schwerkraft `height * 1.1` pro s², wie `step()` in FeedCanvas.qml
+      f.v += FALL_G * dt; f.py += f.v * dt;
       if (f.py >= f.ziel) { f.py = f.ziel; f.s.faellt = false; this.fallend.splice(j, 1); }
+      if (f.py + f.r < 80) continue;
       c.fillStyle = window.ageColor(jetzt - f.t);
       c.fillRect(f.x + 1, f.py + 1, f.r - 2, f.r - 2);
     }
