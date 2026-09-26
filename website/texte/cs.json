@@ -72,7 +72,7 @@
     ],
     [
       "Peněženka",
-      "Vlastní adresy nebo xpub, jen ke sledování. Vaše transakce jsou zvýrazněné, dokud leží na hromadě. Potřebuje službu OrangeDeck na počítači s Linuxem; telefony a Windows se k ní připojí přes domácí síť."
+      "Vlastní adresy nebo xpub, jen ke sledování. Vaše transakce jsou zvýrazněné, dokud leží na hromadě. Na Linuxu, se službou OrangeDeck."
     ]
   ],
   "wo_titel": "Kde běží",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "ZIP: rozbalit a spustit. Stejná zobrazení; peněženku obsluhuje služba na počítači s Linuxem ve stejné síti."
+      "ZIP: rozbalit a spustit. Stejná zobrazení kromě peněženky, která potřebuje službu na Linuxu."
     ],
     [
       "macOS",

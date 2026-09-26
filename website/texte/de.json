@@ -72,7 +72,7 @@
     ],
     [
       "Wallet",
-      "Eigene Adressen oder ein xpub, nur beobachtet. Die eigenen Transaktionen stechen hervor, solange sie in der Halde liegen. Braucht den OrangeDeck-Dienst auf einem Linux-Rechner; Telefon und Windows erreichen ihn über das Heimnetz."
+      "Eigene Adressen oder ein xpub, nur beobachtet. Die eigenen Transaktionen stechen hervor, solange sie in der Halde liegen. Unter Linux, mit dem OrangeDeck-Dienst."
     ]
   ],
   "wo_titel": "Wo es läuft",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "Ein ZIP, entpacken und starten. Dieselben Ansichten; die Wallet kommt von einem Dienst auf einem Linux-Rechner im selben Netz."
+      "Ein ZIP, entpacken und starten. Dieselben Ansichten bis auf die Wallet, die den Dienst unter Linux braucht."
     ],
     [
       "macOS",

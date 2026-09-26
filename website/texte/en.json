@@ -72,7 +72,7 @@
     ],
     [
       "Wallet",
-      "Your own addresses or an xpub, watch-only. Your transactions are highlighted while they sit in the heap. Needs the OrangeDeck service on a Linux computer; phones and Windows reach it over the home network."
+      "Your own addresses or an xpub, watch-only. Your transactions are highlighted while they sit in the heap. On Linux, with the OrangeDeck service."
     ]
   ],
   "wo_titel": "Where it runs",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "A ZIP, unzip and run. The same views; the wallet comes from a service on a Linux computer in the same network."
+      "A ZIP, unzip and run. The same views apart from the wallet, which needs the service on Linux."
     ],
     [
       "macOS",

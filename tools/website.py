@@ -252,10 +252,7 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
 %(inhalt)s
 
   <footer>
-    <div class="fuss-oben">
-      <p class="fuss-tat"><a class="tat" href="%(start)s#holen">%(fuss_cta)s</a></p>
-      <nav class="profile">%(profile)s</nav>
-    </div>
+    <p class="fuss-tat"><a class="tat" href="%(start)s#holen">%(fuss_cta)s</a></p>
     <div class="fuss-spalten">
       <div>
         <p class="klein">%(mehr_titel)s</p>
@@ -267,7 +264,10 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
       </div>
     </div>
     <p>%(fuss_lizenz)s %(fuss_herkunft)s</p>
-    <nav class="fuss-recht">%(recht)s<a href="%(repo)s">GitHub</a></nav>
+    <div class="fuss-unten">
+      <nav class="fuss-recht">%(recht)s</nav>
+      <nav class="profile">%(profile)s</nav>
+    </div>
   </footer>
 </div>
 <script>
@@ -296,7 +296,10 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
        "wahl_lang": wahl_lang, "mehr": mehr, "mehr_titel": e(d["mehr_titel"]),
        "profile": profile, "recht": recht, "wahl_fuss": wahl_fuss,
        "inhalt": inhalt, "fuss_cta": e(d["fuss_cta"]), "fuss_lizenz": e(d["fuss_lizenz"]),
-       "fuss_herkunft": e(d["fuss_herkunft"]), "repo": e(d["repo"]),
+       "fuss_herkunft": e(d["fuss_herkunft"])
+           .replace("bitfeed", '<a href="https://github.com/bitfeed-project/bitfeed">bitfeed</a>', 1)
+           .replace("mononaut", '<a href="https://github.com/mononaut">mononaut</a>', 1),
+       "repo": e(d["repo"]),
        "sprache_waehlen": e(d["sprache_waehlen"]),
        "ld": json.dumps(ld, ensure_ascii=False, separators=(",", ":")),
        "skripte": "" if pfad else (

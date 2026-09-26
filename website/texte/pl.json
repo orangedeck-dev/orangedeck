@@ -72,7 +72,7 @@
     ],
     [
       "Portfel",
-      "Własne adresy lub xpub, tylko do obserwacji. Twoje transakcje są wyróżnione, dopóki leżą na stosie. Wymaga usługi OrangeDeck na komputerze z systemem Linux; telefony i Windows łączą się z nią przez sieć domową."
+      "Własne adresy lub xpub, tylko do obserwacji. Twoje transakcje są wyróżnione, dopóki leżą na stosie. Na Linuksie, z usługą OrangeDeck."
     ]
   ],
   "wo_titel": "Gdzie działa",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "Plik ZIP: rozpakuj i uruchom. Te same widoki; portfel pobiera dane z usługi na komputerze z systemem Linux w tej samej sieci."
+      "Plik ZIP: rozpakuj i uruchom. Te same widoki poza portfelem, który wymaga usługi na Linuksie."
     ],
     [
       "macOS",

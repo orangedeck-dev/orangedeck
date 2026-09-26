@@ -72,7 +72,7 @@
     ],
     [
       "Portafoglio",
-      "I propri indirizzi o una xpub, in sola lettura. Le proprie transazioni restano evidenziate finché sono nel mucchio. Serve il servizio OrangeDeck su un computer Linux; telefoni e Windows lo raggiungono attraverso la rete di casa."
+      "I propri indirizzi o una xpub, in sola lettura. Le proprie transazioni restano evidenziate finché sono nel mucchio. Su Linux, con il servizio OrangeDeck."
     ]
   ],
   "wo_titel": "Dove funziona",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "Uno ZIP: si estrae e si avvia. Le stesse viste; il portafoglio arriva da un servizio su un computer Linux nella stessa rete."
+      "Uno ZIP: si estrae e si avvia. Le stesse viste tranne il portafoglio, che richiede il servizio su Linux."
     ],
     [
       "macOS",

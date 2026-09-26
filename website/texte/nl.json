@@ -72,7 +72,7 @@
     ],
     [
       "Wallet",
-      "Je eigen adressen of een xpub, alleen bekijken. Je eigen transacties zijn gemarkeerd zolang ze op de hoop liggen. Vereist de OrangeDeck-dienst op een Linux-computer; telefoons en Windows bereiken die via het thuisnetwerk."
+      "Je eigen adressen of een xpub, alleen bekijken. Je eigen transacties zijn gemarkeerd zolang ze op de hoop liggen. Op Linux, met de OrangeDeck-dienst."
     ]
   ],
   "wo_titel": "Waar het draait",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "Een ZIP: uitpakken en starten. Dezelfde weergaven; de wallet komt van een dienst op een Linux-computer in hetzelfde netwerk."
+      "Een ZIP: uitpakken en starten. Dezelfde weergaven behalve de wallet, die de dienst op Linux nodig heeft."
     ],
     [
       "macOS",

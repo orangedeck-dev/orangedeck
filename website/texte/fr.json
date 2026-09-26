@@ -72,7 +72,7 @@
     ],
     [
       "Portefeuille",
-      "Vos propres adresses ou une xpub, en lecture seule. Vos transactions sont mises en évidence tant qu’elles attendent dans le tas. Nécessite le service OrangeDeck sur un ordinateur Linux ; téléphones et Windows y accèdent par le réseau domestique."
+      "Vos propres adresses ou une xpub, en lecture seule. Vos transactions sont mises en évidence tant qu’elles attendent dans le tas. Sous Linux, avec le service OrangeDeck."
     ]
   ],
   "wo_titel": "Où ça tourne",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "Un ZIP à décompresser, puis on lance. Les mêmes vues ; le portefeuille vient d’un service sur un ordinateur Linux du même réseau."
+      "Un ZIP à décompresser, puis on lance. Les mêmes vues sauf le portefeuille, qui a besoin du service sous Linux."
     ],
     [
       "macOS",

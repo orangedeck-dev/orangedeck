@@ -72,7 +72,7 @@
     ],
     [
       "Carteira",
-      "Os seus próprios endereços ou uma xpub, só de observação. As suas transações ficam destacadas enquanto estão no monte. Precisa do serviço OrangeDeck num computador com Linux; telemóveis e Windows chegam a ele pela rede doméstica."
+      "Os seus próprios endereços ou uma xpub, só de observação. As suas transações ficam destacadas enquanto estão no monte. Em Linux, com o serviço OrangeDeck."
     ]
   ],
   "wo_titel": "Onde funciona",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "Um ZIP: extrair e executar. As mesmas vistas; a carteira vem de um serviço num computador com Linux na mesma rede."
+      "Um ZIP: extrair e executar. As mesmas vistas, exceto a carteira, que precisa do serviço em Linux."
     ],
     [
       "macOS",

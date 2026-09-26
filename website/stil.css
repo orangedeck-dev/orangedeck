@@ -326,3 +326,6 @@ footer .sprachen + p { margin-top: 1.4rem; }
 .reihe.umgekehrt { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
 #holen .p-laden .knopfreihe { display: flex; flex-wrap: wrap; }
 @media (max-width: 46rem) { .reihe.umgekehrt { grid-template-columns: 1fr; } }
+
+.fuss-unten { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; border-top: 1px solid var(--linie); padding-top: 1rem; margin-top: 1rem; }
+.fuss-unten .fuss-recht { margin: 0; }

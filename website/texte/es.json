@@ -72,7 +72,7 @@
     ],
     [
       "Cartera",
-      "Tus propias direcciones o una xpub, en modo solo observación. Tus transacciones se resaltan mientras están en el montón. Necesita el servicio de OrangeDeck en un ordenador con Linux; los móviles y Windows acceden a él por la red de casa."
+      "Tus propias direcciones o una xpub, en modo solo observación. Tus transacciones se resaltan mientras están en el montón. En Linux, con el servicio de OrangeDeck."
     ]
   ],
   "wo_titel": "Dónde funciona",
@@ -91,7 +91,7 @@
     ],
     [
       "Windows",
-      "Un ZIP: se descomprime y se ejecuta. Las mismas vistas; la cartera viene de un servicio en un ordenador con Linux de la misma red."
+      "Un ZIP: se descomprime y se ejecuta. Las mismas vistas salvo la cartera, que necesita el servicio en Linux."
     ],
     [
       "macOS",
