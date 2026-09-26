@@ -1,4 +1,4 @@
-Der Bitcoin-Mempool als lebendige Kachelgrafik: wartende Transaktionen fallen auf die Halde, bestätigte fliegen in den Block. Dazu eine Blockuhr, Kennzahlen zum Schürfen, ein Blockforscher zum Durchblättern und eine Beobachtung eigener Adressen ohne Schlüssel.
+Der Bitcoin-Mempool als lebendige Kachelgrafik: wartende Transaktionen fallen auf die Halde, bestätigte fliegen in den Block. Dazu eine Blockuhr, Kennzahlen zum Schürfen, ein Blockforscher zum Durchblättern und der Markt.
 
 Die Daten kommen von mempool.space, von einer anderen öffentlichen Mempool-Instanz oder vom eigenen Node, ein Feld in den Einstellungen.
 

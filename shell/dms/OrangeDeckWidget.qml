@@ -122,7 +122,6 @@ PluginComponent {
             "tabRotate": root.get("tabRotate", 0),
             "tabRotateViews": root.getList("tabRotateViewsRaw", ""),
             "explorerPanels": root.getList("explorerPanelsRaw", ""),
-            "walletEnabled": root.get("walletEnabled", false),
             "tabOrder": root.getList("tabOrderRaw", "")
         });
     }

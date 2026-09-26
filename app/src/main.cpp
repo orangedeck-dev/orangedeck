@@ -264,7 +264,7 @@ int main(int argc, char *argv[])
     // stillschweigend unbekannt.
     const QCommandLineOption oAnsicht(QStringLiteral("view"),
         QStringLiteral("Ansicht: 0 Feed, 1 Uhr, 2 Miner, 3 Explorer, "
-                       "4 Wallet, 5 Einstellungen, 6 Markt. "
+                       "5 Einstellungen, 6 Markt. "
                        "Ohne Angabe die zuletzt benutzte."),
         QStringLiteral("nr"));
     const QCommandLineOption oLayer(QStringLiteral("layer"),

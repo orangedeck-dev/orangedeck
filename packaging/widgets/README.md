@@ -42,7 +42,7 @@ Auf X11 gibt es keine Layer-Shell; dort bleibt das gewoehnliche Fenster.
 | `--width` / `--height` | gewuenschte Groesse; an gedehnten Kanten entscheidet der Compositor |
 | `--margin` | eine Zahl, oder `oben,rechts,unten,links` |
 | `--exclusive` | Platz, den andere Fenster freilassen. `0` keiner, `-1` sich ueberlappen lassen |
-| `--view` | `0` Feed, `1` Uhr, `2` Miner, `3` Explorer, `4` Wallet, `5` Einstellungen |
+| `--view` | `0` Feed, `1` Uhr, `2` Miner, `3` Explorer, `5` Einstellungen, `6` Markt (`4` war bis 0.2.14 die Wallet und zeigt jetzt die erste Ansicht) |
 | `--bare` | ohne Reiter, Kopf- und Fusszeile -- die Ansicht allein |
 | `--id` | eigener Einstellungsspeicher (`~/.config/orangedeck/orangedeck-<name>.conf`) |
 
@@ -110,7 +110,7 @@ Unterschiede zu Wayland:
 | `--exclusive` | haelt Platz frei | wirkt nicht (Warnung) |
 | `--keyboard` | Tasten nur auf Wunsch | Tasten immer -- **anklicken, dann Q schliesst** |
 | `--id` | `~/.config/orangedeck/orangedeck-<name>.conf` | Registry: `HKCU\Software\orangedeck\orangedeck-<name>` |
-| Daten | vom Dienst | Direktbezug (keine Wallet) |
+| Daten | vom Dienst | Direktbezug |
 
 **Beim Anmelden mitstarten:** `Win+R`, `shell:startup`, dort eine Verknuepfung
 auf `orangedeck-app.exe` anlegen und die Schalter hinten an das Ziel haengen.

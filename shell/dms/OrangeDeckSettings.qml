@@ -37,8 +37,7 @@ PluginSettings {
             {label: seite.t("tab.feed"), value: "feed"},
             {label: seite.t("tab.clock"), value: "clock"},
             {label: seite.t("tab.miner"), value: "miner"},
-            {label: seite.t("tab.explorer"), value: "explorer"},
-            {label: seite.t("tab.wallet"), value: "wallet"}
+            {label: seite.t("tab.explorer"), value: "explorer"}
         ]
         defaultValue: "feed"
     }

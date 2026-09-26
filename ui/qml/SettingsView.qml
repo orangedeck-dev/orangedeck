@@ -35,19 +35,16 @@ Item {
     // the list does not end up with its own opacity on top of the settings.
     property color lineColor: "#2a2a38"
     property color panelColor: "#16161f"
-    // Views that currently cannot show anything: the miner without a Bitaxe,
-    // wallet and market in direct mode. They stay in the tab order anyway,
+    // Views that currently cannot show anything, such as the market without
+    // QtWebSockets. They stay in the tab order anyway,
     // otherwise their position could not be set while they are unavailable;
     // the page only notes that they are not shown right now.
     property var nichtVerfuegbar: []
 
-    // Hide pages for views that do not exist on this platform. On Android
-    // market and wallet do not run (both need the daemon), so their switches
-    // must not appear. Unlike `nichtVerfuegbar` this is not about what the user
-    // turned off but about what is technically possible: the wallet page is the
-    // only place where the wallet can be turned on.
+    // Hide pages for views that do not exist on this platform, so their
+    // switches do not appear. Unlike `nichtVerfuegbar` this is not about what
+    // the user turned off but about what is technically possible.
     property bool kannMarkt: true
-    property bool kannWallet: true
     property real uiFont: 13
     property string lang: "de"
     // Opacity and start view belong to the window. In the dashboard tab the
@@ -233,7 +230,7 @@ Item {
         }
     }
 
-    // Text input row. What needs text (wallets, the miner address) otherwise
+    // Text input row. What needs text (the miner address) otherwise
     // only works via the command line or a file, and neither exists on a
     // phone.
     //
@@ -501,8 +498,6 @@ Item {
         var l = ["allgemein", "darstellung", "feed", "clock", "miner", "explorer"];
         if (root.kannMarkt)
             l.push("markt");
-        if (root.kannWallet)
-            l.push("wallet");
         return l;
     }
 
@@ -534,8 +529,7 @@ Item {
             labels: {
                 var n = { "allgemein": "set.general", "darstellung": "set.display",
                           "feed": "tab.feed", "clock": "tab.clock", "miner": "tab.miner",
-                          "explorer": "tab.explorer", "markt": "tab.market",
-                          "wallet": "tab.wallet" };
+                          "explorer": "tab.explorer", "markt": "tab.market" };
                 var l = [];
                 for (var i = 0; i < root.seiten.length; i++)
                     l.push(Tr.t(n[root.seiten[i]], root.lang));
@@ -601,8 +595,7 @@ Item {
 
                 // Address of the daemon on another device. Empty means the daemon on
                 // the same machine; filled in, it is one on the local network, which
-                // gives tablets and phones market and wallet, otherwise missing outside
-                // Linux.
+                // gives tablets and phones the daemon's data.
                 //
                 // Only shown in daemon mode: in direct mode nothing uses it, and a field
                 // without effect is a trap.
@@ -867,10 +860,7 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: feld.verticalCenter
-                            // Settings and wallet have no switch: settings always
-                            // stays, and the wallet depends on the switch with the
-                            // warning on its page. A second one here would only
-                            // raise the question which one applies.
+                            // Settings have no switch: they always stay.
                             visible: platz.schluessel.length > 0
                             an: root.val(platz.schluessel, true)
                             onUmgelegt: root.changed(platz.schluessel,
@@ -1290,105 +1280,6 @@ Item {
                         an: root.val("marketTape", true)
                         onUmgelegt: root.changed("marketTape", !root.val("marketTape", true))
                     }
-                }
-            }
-
-            // ---------------------------------------------------- Wallet
-            Column {
-                width: parent.width
-                spacing: root.uiFont * 0.7
-                visible: root.tab === "wallet"
-
-                Text {
-                    width: parent.width
-                    wrapMode: Text.WordWrap
-                    text: Tr.t("set.walletTitle", root.lang)
-                    color: root.textColor
-                    font.pixelSize: root.uiFont * 1.15
-                }
-
-                // The tab only appears after this has been read and confirmed.
-                // Not because of the funds, which watch-only keeps fully safe,
-                // but because of linkability: this is the only part of the
-                // program where the user reveals something about themselves.
-                Rectangle {
-                    width: parent.width
-                    height: warnung.height + root.uiFont * 1.6
-                    radius: root.uiFont * 0.4
-                    color: Qt.rgba(0.85, 0.55, 0.1, 0.10)
-                    border.width: 1
-                    border.color: Qt.rgba(0.85, 0.55, 0.1, 0.45)
-
-                    Column {
-                        id: warnung
-
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.margins: root.uiFont * 0.8
-                        spacing: root.uiFont * 0.5
-
-                        Text {
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                            text: Tr.t("set.walletWarnTitle", root.lang)
-                            color: root.accentColor
-                            font.pixelSize: root.uiFont
-                            font.bold: true
-                        }
-
-                        Text {
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                            text: Tr.t("set.walletWarn", root.lang)
-                            color: root.textColor
-                            font.pixelSize: root.uiFont * 0.85
-                        }
-                    }
-                }
-
-                Row {
-                    spacing: root.uiFont * 0.6
-
-                    Rectangle {
-                        width: zusage.width + root.uiFont * 1.6
-                        height: zusage.height + root.uiFont * 0.8
-                        radius: height / 2
-                        color: root.val("walletEnabled", false)
-                            ? Qt.rgba(1, 1, 1, 0.08)
-                            : Qt.rgba(0.34, 0.72, 0.58, 0.9)
-                        border.width: 1
-                        border.color: Qt.rgba(1, 1, 1, 0.18)
-
-                        Text {
-                            id: zusage
-
-                            anchors.centerIn: parent
-                            text: Tr.t(root.val("walletEnabled", false)
-                                       ? "set.walletDisable" : "set.walletEnable", root.lang)
-                            color: root.val("walletEnabled", false) ? root.dimColor : "#0b0b12"
-                            font.pixelSize: root.uiFont * 0.9
-                            font.bold: !root.val("walletEnabled", false)
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.changed("walletEnabled",
-                                                    !root.val("walletEnabled", false))
-                        }
-                    }
-                }
-
-                Text {
-                    width: parent.width
-                    wrapMode: Text.WordWrap
-                    visible: root.val("walletEnabled", false)
-                    text: Tr.t("set.walletCli", root.lang)
-                          + "\n    orangedeck --watch-add <xpub|ypub|zpub> \"Name\""
-                    color: root.dimColor
-                    font.pixelSize: root.uiFont * 0.85
-                    font.family: Fonts.mono()
                 }
             }
         }

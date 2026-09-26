@@ -63,10 +63,8 @@ or your own node, for example `http://umbrel.local:3006`. It applies in direct
 mode and is passed on to the OrangeDeck service on the same computer.
 
 The service is optional. It is worth having when several windows or widgets
-are open, because it keeps one connection instead of one per view, and it is
-the only way to get the wallet view: deriving addresses from an xpub stays
-in the service, so that tab is hidden without it. The miner view works either
-way once the device address is entered.
+are open, because it keeps one connection instead of one per view. The miner
+view works either way once the device address is entered.
 
 ## Settings
 

@@ -15,8 +15,6 @@
 // fails and the daemon keeps working.
 //
 // Not handled here:
-//   Wallets:  deriving from the xpub is point arithmetic on secp256k1 and
-//             should not be rebuilt in QML. Stays in the daemon.
 //   Miner:    polled by `DirectMiner` in its own file.
 import QtQuick
 import QtWebSockets
@@ -826,13 +824,11 @@ Item {
             "recent": root.__recent,
             "difficulty": root.__difficulty,
             "hashrate": root.__hashrate,
-            // This feed provides no miner or wallet data. Empty rather than missing, so the
+            // This feed provides no miner data. Empty rather than missing, so the
             // views show "not set up" instead of running into undefined.
             "miners": [],
             "minerHistory": {},
-            "minerTotal": {},
-            "wallets": [],
-            "walletBusy": false
+            "minerTotal": {}
         };
     }
 

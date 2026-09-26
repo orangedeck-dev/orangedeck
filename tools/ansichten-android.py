@@ -166,7 +166,7 @@ def unterreiter_suchen(text):
     return None
 
 
-for i, text in enumerate(("Layout", "Feed", "Clock", "Mining", "Explorer", "Market", "Wallet")):
+for i, text in enumerate(("Layout", "Feed", "Clock", "Mining", "Explorer", "Market")):
     treffer = unterreiter_suchen(text)
     if not treffer:
         protokoll.append(f"Unterreiter fehlt: {text}")

@@ -60,7 +60,8 @@ Item {
     // window is on screen, which differs per instance and from the dashboard.
     property int bgOpacity: root.get("desktopOpacity", 70)
     property int tileDensity: root.get("tileDensity", 100)
-    // Which view this widget shows: feed | clock | miner | explorer | wallet
+    // Which view this widget shows: feed | clock | miner | explorer.
+    // A stored "wallet" (removed on 26.09.2026) falls back to the feed.
     property string widgetView: root.get("widgetView", "feed")
 
     readonly property int viewIndex: {
@@ -71,8 +72,6 @@ Item {
             return 2;
         case "explorer":
             return 3;
-        case "wallet":
-            return 4;
         default:
             return 0;
         }
@@ -135,7 +134,6 @@ Item {
             "tabRotate": root.get("tabRotate", 0),
             "tabRotateViews": root.getList("tabRotateViewsRaw", ""),
             "explorerPanels": root.getList("explorerPanelsRaw", ""),
-            "walletEnabled": root.get("walletEnabled", false),
             "tabOrder": root.getList("tabOrderRaw", "")
         });
     }

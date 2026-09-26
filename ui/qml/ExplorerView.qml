@@ -262,10 +262,6 @@ Item {
             root.fail(Tr.t("search.invalid", root.lang));
             return;
         }
-        if (m.kind === "xpub") {
-            root.fail(Tr.t("search.xpub", root.lang));
-            return;
-        }
         var k = m.kind === "input" || m.kind === "output" ? "tx" : m.kind;
         root.go(k, m.arg);
     }

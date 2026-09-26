@@ -79,18 +79,16 @@ ShellRoot {
         property string lang: Tr.systemLang()
         property var bigFields: ["height"]
         property int bigRotate: 0
-        // Aus, bis sie in den Einstellungen ausdruecklich eingeschaltet wird
-        property bool walletEnabled: false
-        // 0 Feed, 1 Uhr, 2 Miner, 3 Explorer, 4 Wallet, 5 Einstellungen
+        // 0 Feed, 1 Uhr, 2 Miner, 3 Explorer, 5 Einstellungen, 6 Markt
+        // (4 war bis 26.09.2026 die Wallet und bleibt frei)
         property int view: 0
 
         // Welche Reiter es gibt, rechnet `FeedTabs` -- samt Rueckfall auf den
         // Feed, wenn die gemerkte Ansicht gerade keinen Reiter hat. Hier stand
         // dieselbe Rechnung vorher ein zweites Mal.
         //
-        // Drei fallen im Direktbezug weg, und zwar nicht aus Bequemlichkeit:
-        // der Miner steht im Heimnetz, die Wallet-Ableitung ist Rechenarbeit
-        // des Dienstes, und die Boersentrades werden dort zu Kerzen
+        // Zwei fallen im Direktbezug weg, und zwar nicht aus Bequemlichkeit:
+        // der Miner steht im Heimnetz, und die Boersentrades werden dort zu Kerzen
         // verdichtet. Ein Reiter, hinter dem nichts sein kann, ist schlimmer
         // als keiner.
 
@@ -148,7 +146,6 @@ ShellRoot {
             "lang": lang,
             "bigFields": bigFields,
             "bigRotate": bigRotate,
-            "walletEnabled": walletEnabled,
             "tabOrder": tabOrder
         })
 
@@ -261,11 +258,6 @@ ShellRoot {
                 bigFields = value;
             else if (key === "bigRotate")
                 bigRotate = value;
-            else if (key === "walletEnabled") {
-                walletEnabled = value;
-                if (!value && view === 4)
-                    view = 5;
-            }
             save();
         }
 
@@ -325,7 +317,6 @@ ShellRoot {
                 "lang": lang,
                 "bigFields": bigFields,
                 "bigRotate": bigRotate,
-                "walletEnabled": walletEnabled,
                 "tabOrder": tabOrder
             }));
             hint.flash();
@@ -371,7 +362,7 @@ ShellRoot {
                         win.density = Math.max(0.6, Math.min(2, v.density));
                     // **Und hier dieselbe Klemme ein zweites Mal.** `min(3, ...)`
                     // stammt aus der Zeit, als die Startansicht Feed, Uhr,
-                    // Miner und Explorer kannte. Wer Markt oder Wallet
+                    // Miner und Explorer kannte. Wer den Markt
                     // einstellte, bekam beim naechsten Start den Explorer --
                     // geschrieben wurde der echte Wert, gelesen der gestutzte.
                     // Eine Ansicht, die es nicht gibt, faengt der Rueckfall ab.
@@ -467,11 +458,9 @@ ShellRoot {
                         win.bigFields = v.bigFields;
                     if (typeof v.bigRotate === "number")
                         win.bigRotate = v.bigRotate;
-                    if (typeof v.walletEnabled === "boolean")
-                        win.walletEnabled = v.walletEnabled;
-                    if (win.view === 4 && !win.walletEnabled)
-                        win.view = 0;
-                    // **Und jede andere Ansicht, die es gerade nicht gibt.**
+                    // **Jede Ansicht, die es gerade nicht gibt**, auch eine
+                    // gemerkte 4 (bis 26.09.2026 die Wallet); ein altes
+                    // `walletEnabled` in view.json wird uebergangen.
                     // Dieselbe Pruefung wie in `app/qml/Main.qml`, an
                     // derselben Art Stelle: einmal, gleich nachdem der Wert
                     // gesetzt wurde. **Kein `onViewChanged` daneben** -- das

@@ -15,8 +15,7 @@
 # veroeffentlichte App, und pruefen laesst sich so ein Paket kaum. Hier wird
 # stattdessen der offizielle Quelltext geladen, die Pruefsumme gegen die
 # Angabe des Projekts gehalten und mit dem NDK uebersetzt, das ohnehin da ist.
-# Das passt zu dem, was fuer die Wallet-Ansicht gilt: nichts mittragen, was
-# man nicht nachvollziehen kann.
+# Nichts mittragen, was man nicht nachvollziehen kann.
 #
 # Das Ergebnis liegt unter `build-openssl-android/<abi>/` und wird von
 # `app/CMakeLists.txt` aufgegriffen, wenn es da ist. Es gehoert **nicht** ins

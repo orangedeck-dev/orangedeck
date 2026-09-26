@@ -57,9 +57,6 @@ function matchQuery(query) {
     if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(q)) {
         return { "kind": "address", "label": "address", "value": q, "arg": q };
     }
-    if (/^(xpub|ypub|zpub|vpub|upub)[a-km-zA-HJ-NP-Z1-9]{50,}$/.test(q)) {
-        return { "kind": "xpub", "label": "search.kind.xpub", "value": q, "arg": q };
-    }
 
     return null;
 }

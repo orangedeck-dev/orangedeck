@@ -99,9 +99,6 @@ Item {
     property string mempoolHost: SettingsData.getPluginSetting(pid, "mempoolHost", "")
     property string currency: SettingsData.getPluginSetting(pid, "currency", "usd")
     property string lang: SettingsData.getPluginSetting(pid, "lang", "") || Tr.systemLang(SessionData.locale)
-    // Die Wallet-Ansicht bleibt aus, bis sie ausdruecklich eingeschaltet wird
-    // -- hier gilt derselbe Schalter wie im Fenster.
-    property bool walletEnabled: SettingsData.getPluginSetting(pid, "walletEnabled", false)
     property bool showHeader: SettingsData.getPluginSetting(pid, "showHeader", true)
     property bool showFooter: SettingsData.getPluginSetting(pid, "showFooter", true)
     property bool showBlock: SettingsData.getPluginSetting(pid, "showBlock", true)
@@ -159,8 +156,9 @@ Item {
     readonly property var tabRotateViews: tabRotateViewsRaw.length ? tabRotateViewsRaw.split("|") : []
     readonly property var explorerPanels: explorerPanelsRaw.length ? explorerPanelsRaw.split("|") : []
     readonly property var tabOrder: tabOrderRaw.length ? tabOrderRaw.split("|") : []
-    // 0 = Feed, 1 = Uhr, 2 = Miner, 3 = Explorer, 4 = Wallet,
-    // 5 = Einstellungen -- gemerkt wie die uebrigen Einstellungen
+    // 0 = Feed, 1 = Uhr, 2 = Miner, 3 = Explorer, 5 = Einstellungen,
+    // 6 = Markt -- gemerkt wie die uebrigen Einstellungen. 4 war bis
+    // 26.09.2026 die Wallet; eine gemerkte 4 faengt `FeedTabs` ab.
     property int view: SettingsData.getPluginSetting(pid, "view", 0)
 
     readonly property var opts: ({
@@ -215,7 +213,6 @@ Item {
         "tabRotate": tabRotate,
         "tabRotateViews": tabRotateViews,
         "explorerPanels": explorerPanels,
-        "walletEnabled": walletEnabled,
         "tabOrder": tabOrder
     })
 
@@ -235,8 +232,6 @@ Item {
             return;
         }
         root.put(key, value);
-        if (key === "walletEnabled" && !value && root.view === 4)
-            root.put("view", 5);
     }
 
     property bool desktopOn: {

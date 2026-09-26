@@ -22,8 +22,6 @@ Item {
 
     property var feed: null
     property bool paused: false
-    // Outline color for transactions of a watched wallet
-    property color ownColor: "#ffffff"
     property bool showBlock: true
     property real density: 1.0
     property string colorMode: "age"        // "age" | "fee"
@@ -1527,17 +1525,12 @@ Item {
 
             // Batch by color, which saves thousands of state changes
             var groups = {};
-            // Transactions of a watched wallet. The daemon sets the field `m`; here it
-            // only checks whether it is present.
-            var eigene = [];
             var i, e, key;
             for (i = 0; i < root.poolTx.length; i++) {
                 e = root.poolTx[i];
                 if (e.fly < 1)
                     continue;
                 e.pending = false;
-                if (e.tx && e.tx.m)
-                    eigene.push(e);
                 if (ageOn) {
                     var idx = Math.floor((now - e.t0) / 60000 * (steps - 1));
                     key = idx < 0 ? 0 : (idx >= steps ? steps - 1 : idx);
@@ -1562,28 +1555,6 @@ Item {
                     // top edge, and the tile ends up one pixel taller or shorter than wide.
                     ctx.fillRect(root.snap(root.targetX(t.sq)),
                                  root.snap(root.targetY(t.sq)), side, side);
-                }
-            }
-
-            // Own transactions get a light outline. Deliberately only an outline and no
-            // color of their own: the fill should keep showing fee or age. At four
-            // pixels side length a two pixel core remains, which is enough to find them.
-            if (eigene.length) {
-                ctx.strokeStyle = String(root.ownColor);
-                // One device pixel wide, not one logical point; otherwise on a dense
-                // screen the outline is almost three pixels thick and covers the tile core.
-                ctx.lineWidth = 1 / root.dpr;
-                for (i = 0; i < eigene.length; i++) {
-                    var m = eigene[i];
-                    var ms = m.sq.r * root.gridSize - root.unitPad * 2;
-                    if (ms < 1)
-                        ms = 1;
-                    // On half pixels: a 1 px line would otherwise sit half on each neighboring
-                    // pixel and turn gray. Half device pixels, for the same reason as `snap`.
-                    var hp = 0.5 / (root.zoom * root.dpr);
-                    ctx.strokeRect(root.snap(root.targetX(m.sq)) + hp,
-                                   root.snap(root.targetY(m.sq)) + hp,
-                                   ms - hp * 2, ms - hp * 2);
                 }
             }
 

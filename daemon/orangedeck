@@ -37,7 +37,6 @@ import base64
 import collections
 import fcntl
 import hashlib
-import hmac
 import json
 import math
 import os
@@ -122,7 +121,7 @@ RECENT_KEEP = 120         # wie viele frische TX im Zustand liegen bleiben
 # Haelfte des Zustands aus und werden deshalb nur mitgeschickt, wenn sich
 # wirklich etwas geaendert hat -- siehe Feed.snapshot().
 SLOW_FIELDS = ("stats", "minerHistory", "miners", "minerTotal",
-               "difficulty", "hashrate", "wallets")
+               "difficulty", "hashrate")
 MAX_TILES = 8000          # Obergrenze an Kacheln pro Block
 # Wie viele geplante Bloecke im Zustand mitgefuehrt werden. Acht, weil
 # `projectedtiles` genau diese Raenge kennt.
@@ -199,16 +198,8 @@ def load_sources():
             seen.add(key)
             out.append(m)
     cfg["miners"] = out
-
-    # Beobachtete Wallets. Jede ist {"name": "...", "xpub": "..."}; eine
-    # blosse Zeichenkette gilt als xpub ohne Namen.
-    wallets = []
-    for w in (cfg.get("watch") or []):
-        if isinstance(w, str):
-            w = {"xpub": w}
-        if isinstance(w, dict) and w.get("xpub"):
-            wallets.append({"name": w.get("name") or "", "xpub": w["xpub"]})
-    cfg["watch"] = wallets
+    # Ein Eintrag "watch" aus der Zeit der Wallet (bis 26.09.2026) bleibt
+    # unbeachtet in der Datei stehen.
     return cfg
 
 
@@ -220,6 +211,22 @@ apply_host(SOURCES.get("host") or os.environ.get("ORANGEDECK_HOST"),
 
 # Der laufende WebSocket, damit ein Wechsel der Instanz ihn schliessen kann.
 WS_AKTUELL = [None]
+
+
+def sources_schreiben(cfg):
+    """sources.json schreiben: erst daneben, dann umbenennen, Rechte 600.
+
+    Die Datei kann bei aelteren Installationen noch eine Beobachtungsliste
+    mit xpubs enthalten (die Wallet fiel am 26.09.2026 weg, der Eintrag wird
+    nur uebergangen, nicht geloescht). Deshalb bleibt sie fuer andere Nutzer
+    unlesbar, egal welcher Weg sie schreibt."""
+    os.makedirs(os.path.dirname(SOURCES_FILE), exist_ok=True)
+    tmp = SOURCES_FILE + ".neu"
+    with open(tmp, "w") as f:
+        json.dump(cfg, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    os.chmod(tmp, 0o600)
+    os.replace(tmp, SOURCES_FILE)
 
 
 def mempool_zerlegen(eingabe):
@@ -266,12 +273,7 @@ def mempool_umstellen(feed, eingabe):
         if os.environ.get("ORANGEDECK_HOST"):
             ziel = (os.environ["ORANGEDECK_HOST"],
                     os.environ.get("ORANGEDECK_SCHEME") or "https")
-    os.makedirs(os.path.dirname(SOURCES_FILE), exist_ok=True)
-    tmp = SOURCES_FILE + ".neu"
-    with open(tmp, "w") as f:
-        json.dump(roh, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-    os.replace(tmp, SOURCES_FILE)
+    sources_schreiben(roh)
     if (HOST, SCHEME) == ziel:
         return True
     apply_host(*ziel)
@@ -292,21 +294,6 @@ def mempool_umstellen(feed, eingabe):
 # aendern sich im Stunden- bis Tagestakt -- alle fuenf Minuten ist reichlich.
 SLOW_INTERVAL = 300
 MINER_INTERVAL = 5
-# Beobachtete Wallets (watch-only, siehe ZIELBILD.md).
-#
-# WATCH_GAP ist die uebliche Luecke aus BIP44: nach zwanzig unbenutzten
-# Adressen in Folge gilt die Kette als zu Ende.
-#
-# WATCH_SPACING setzt Luft zwischen die Abfragen. Nicht aus Ruecksicht auf den
-# Server, sondern aus Ruecksicht auf den Benutzer: hundert Adressen im Stakkato
-# von derselben Herkunft zeigen dem Betreiber unmissverstaendlich, dass sie
-# zusammengehoeren. Ganz loesen laesst sich das nur mit eigenem electrs.
-WATCH_GAP = 20
-WATCH_INTERVAL = 300
-WATCH_SPACING = 0.35
-WATCH_MAX_ADDR = 400      # Notbremse, falls eine Kette nicht enden will
-WATCH_TX_REQUESTS = 15    # so viele Adressen werden nach Transaktionen gefragt
-WATCH_TX_KEEP = 30
 # Verlauf je Geraet. 180 Punkte im Fuenfsekundentakt sind eine Viertelstunde.
 #
 # Warum selbst mitschreiben, statt den des Geraets zu holen: AxeOS zeichnet nur
@@ -380,243 +367,6 @@ def tx_kind(flags, coinbase=False):
         return 2
     return 0
 UA = "orangedeck/1.0 (+https://mempool.space)"
-
-
-# --------------------------------------------------------------------------
-# Adressen aus einem xpub -- **nur oeffentliche Rechnung**
-# --------------------------------------------------------------------------
-# Verbindlicher Grundsatz des Projekts (ZIELBILD.md, 01.09.2026): die Anwendung
-# ist ein Betrachter. Hier steht deshalb ausschliesslich Punktarithmetik auf
-# secp256k1 -- es gibt in diesem Programm keinen privaten Schluessel, keine
-# Signatur und nichts, was eine erzeugen koennte. Gehaertete Ableitung ist
-# bewusst nicht moeglich; sie braeuchte den privaten Schluessel.
-#
-# Der xpub verlaesst das Geraet nie: die Adressen werden hier abgeleitet und
-# einzeln abgefragt. Wer den xpub an einen Dienst gibt, zeigt ihm die ganze
-# Wallet -- jede vergangene und jede kuenftige Adresse.
-#
-# Gegengeprueft am 02.09.2026: die Testvektoren aus SLIP-0132 (xpub/ypub/zpub,
-# je erste Adresse) und BIP-0084 (zwei Empfangs-, eine Wechseladresse und der
-# oeffentliche Schluessel) stimmen alle; dazu 101 echte Ausgaenge aus der Kette
-# in fuenf Skriptformen gegen `scriptpubkey_address` von mempool.space, ohne
-# eine einzige Abweichung.
-
-# --------------------------------------------------------------------------
-# secp256k1 -- nur so viel, wie die oeffentliche Ableitung braucht
-# --------------------------------------------------------------------------
-_P = 2 ** 256 - 2 ** 32 - 977
-_N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
-_G = (0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
-      0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8)
-
-
-def _add(p, q):
-    """Punktaddition auf y^2 = x^3 + 7. None ist der unendlich ferne Punkt."""
-    if p is None:
-        return q
-    if q is None:
-        return p
-    if p[0] == q[0]:
-        if (p[1] + q[1]) % _P == 0:
-            return None
-        m = (3 * p[0] * p[0]) * pow(2 * p[1], _P - 2, _P) % _P
-    else:
-        m = (q[1] - p[1]) * pow(q[0] - p[0], _P - 2, _P) % _P
-    x = (m * m - p[0] - q[0]) % _P
-    return (x, (m * (p[0] - x) - p[1]) % _P)
-
-
-def _mul(k, p):
-    """Verdoppeln und Addieren."""
-    r = None
-    while k:
-        if k & 1:
-            r = _add(r, p)
-        p = _add(p, p)
-        k >>= 1
-    return r
-
-
-def _decompress(sec):
-    """33 Byte Kurzform -> Punkt. y aus x^3 + 7, Vorzeichen aus dem ersten Byte."""
-    if len(sec) != 33 or sec[0] not in (2, 3):
-        raise ValueError("kein gueltiger Punkt")
-    x = int.from_bytes(sec[1:], "big")
-    y = pow((x * x * x + 7) % _P, (_P + 1) // 4, _P)
-    if y % 2 != sec[0] % 2:
-        y = _P - y
-    if (y * y - (x * x * x + 7)) % _P != 0:
-        raise ValueError("Punkt liegt nicht auf der Kurve")
-    return (x, y)
-
-
-def _compress(pt):
-    return bytes([2 + (pt[1] & 1)]) + pt[0].to_bytes(32, "big")
-
-
-# --------------------------------------------------------------------------
-# Base58Check und Bech32
-# --------------------------------------------------------------------------
-_B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-
-
-def b58_encode(raw):
-    n = int.from_bytes(raw, "big")
-    out = ""
-    while n:
-        n, r = divmod(n, 58)
-        out = _B58[r] + out
-    return "1" * (len(raw) - len(raw.lstrip(b"\x00"))) + out
-
-
-def b58_decode(s):
-    n = 0
-    for c in s:
-        i = _B58.find(c)
-        if i < 0:
-            raise ValueError("kein Base58")
-        n = n * 58 + i
-    raw = n.to_bytes((n.bit_length() + 7) // 8, "big")
-    return b"\x00" * (len(s) - len(s.lstrip("1"))) + raw
-
-
-def b58check_encode(payload):
-    chk = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[:4]
-    return b58_encode(payload + chk)
-
-
-def b58check_decode(s):
-    raw = b58_decode(s)
-    if len(raw) < 5:
-        raise ValueError("zu kurz")
-    body, chk = raw[:-4], raw[-4:]
-    if hashlib.sha256(hashlib.sha256(body).digest()).digest()[:4] != chk:
-        raise ValueError("Pruefsumme stimmt nicht")
-    return body
-
-
-_BECH32 = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
-
-
-def _polymod(values):
-    gen = [0x3B6A57B2, 0x26508E6D, 0x1EA119FA, 0x3D4233DD, 0x2A1462B3]
-    chk = 1
-    for v in values:
-        b = chk >> 25
-        chk = (chk & 0x1FFFFFF) << 5 ^ v
-        for i in range(5):
-            chk ^= gen[i] if (b >> i) & 1 else 0
-    return chk
-
-
-def _hrp_expand(hrp):
-    return [ord(c) >> 5 for c in hrp] + [0] + [ord(c) & 31 for c in hrp]
-
-
-def _convertbits(data, frm, to, pad=True):
-    acc, bits, out = 0, 0, []
-    maxv = (1 << to) - 1
-    for b in data:
-        acc = (acc << frm) | b
-        bits += frm
-        while bits >= to:
-            bits -= to
-            out.append((acc >> bits) & maxv)
-    if pad and bits:
-        out.append((acc << (to - bits)) & maxv)
-    return out
-
-
-def bech32_address(hrp, witver, program):
-    """BIP173 fuer Zeugnisfassung 0, BIP350 (bech32m) ab Fassung 1."""
-    data = [witver] + _convertbits(program, 8, 5)
-    const = 1 if witver == 0 else 0x2BC830A3
-    values = _hrp_expand(hrp) + data
-    poly = _polymod(values + [0, 0, 0, 0, 0, 0]) ^ const
-    chk = [(poly >> 5 * (5 - i)) & 31 for i in range(6)]
-    return hrp + "1" + "".join(_BECH32[d] for d in data + chk)
-
-
-def hash160(b):
-    return hashlib.new("ripemd160", hashlib.sha256(b).digest()).digest()
-
-
-# --------------------------------------------------------------------------
-# BIP32: eine Stufe oeffentlich ableiten
-# --------------------------------------------------------------------------
-# Version -> Adressform. Aus SLIP-0132.
-XPUB_KINDS = {
-    0x0488B21E: "p2pkh",         # xpub, BIP44
-    0x049D7CB2: "p2sh-p2wpkh",   # ypub, BIP49
-    0x04B24746: "p2wpkh",        # zpub, BIP84
-}
-
-
-def parse_xpub(text):
-    raw = b58check_decode(text.strip())
-    if len(raw) != 78:
-        raise ValueError("kein erweiterter Schluessel")
-    version = int.from_bytes(raw[0:4], "big")
-    kind = XPUB_KINDS.get(version)
-    if kind is None:
-        raise ValueError("unbekannte Fassung -- erwartet wird xpub, ypub oder zpub")
-    key = raw[45:78]
-    if key[0] not in (2, 3):
-        raise ValueError("das ist kein oeffentlicher Schluessel")
-    return {"kind": kind, "chain": raw[13:45], "key": key,
-            "depth": raw[4], "fingerprint": raw[5:9].hex()}
-
-
-def ckd_pub(key, chain, index):
-    """CKDpub aus BIP32. Nur nicht gehaertet -- gehaertet ginge oeffentlich
-    ohnehin nicht, und genau das ist hier erwuenscht."""
-    if index >= 0x80000000:
-        raise ValueError("gehaertete Ableitung geht ohne privaten Schluessel nicht")
-    data = key + index.to_bytes(4, "big")
-    I = hmac.new(chain, data, hashlib.sha512).digest()
-    left = int.from_bytes(I[:32], "big")
-    if left >= _N:
-        raise ValueError("ungueltiger Schritt")     # Wahrscheinlichkeit ~2^-127
-    point = _add(_mul(left, _G), _decompress(key))
-    if point is None:
-        raise ValueError("ungueltiger Schritt")
-    return _compress(point), I[32:]
-
-
-def address_for(kind, pubkey):
-    h = hash160(pubkey)
-    if kind == "p2pkh":
-        return b58check_encode(b"\x00" + h)
-    if kind == "p2sh-p2wpkh":
-        return b58check_encode(b"\x05" + hash160(b"\x00\x14" + h))
-    if kind == "p2wpkh":
-        return bech32_address("bc", 0, h)
-    raise ValueError("unbekannte Adressform")
-
-
-class Xpub:
-    """Ein erweiterter oeffentlicher Schluessel, bereit zum Ableiten.
-
-    Die Zwischenstufe m/<kette> wird einmal gerechnet und behalten -- ohne das
-    kostet jede Adresse zwei Punktmultiplikationen statt einer."""
-
-    def __init__(self, text):
-        info = parse_xpub(text)
-        self.kind = info["kind"]
-        self.fingerprint = info["fingerprint"]
-        self._ketten = {}
-        self._key = info["key"]
-        self._chain = info["chain"]
-
-    def _kette(self, nr):
-        if nr not in self._ketten:
-            self._ketten[nr] = ckd_pub(self._key, self._chain, nr)
-        return self._ketten[nr]
-
-    def address(self, kette, index):
-        key, cc = self._kette(kette)
-        k, _ = ckd_pub(key, cc, index)
-        return address_for(self.kind, k)
 
 
 # --------------------------------------------------------------------------
@@ -2064,13 +1814,6 @@ class Feed:
         self.miner_dom = {}       # Geraete-Kennung -> letzte Domaenenmessungen
         self.scoreboard = {}      # Geraete-Kennung -> Bestenliste
         self.scoreboard_at = 0.0
-        # Beobachtete Wallets (watch-only)
-        self.wallets = []
-        self.watch_txids = set()  # eigene TX -- werden in der Halde markiert
-        self.watch_at = 0.0
-        self.watch_now = True     # beim Start sofort abtasten
-        self.watch_busy = False
-        self.watch_stop = False
 
     # -- Einspeisung ------------------------------------------------------
     def add_txs(self, txs):
@@ -2104,11 +1847,6 @@ class Feed:
                     "a": int(t.get("value") or 0),
                     "f": int(t.get("fee") or 0),
                 }
-                # Gehoert sie zu einer beobachteten Wallet, wird sie in der
-                # Halde hervorgehoben. Ein Feld an der Kachel, keine zweite
-                # Grafik.
-                if txid and txid in self.watch_txids:
-                    eintrag["m"] = 1
                 self.recent.append(eintrag)
             except (TypeError, ValueError):
                 continue
@@ -2151,12 +1889,6 @@ class Feed:
         } for x in blocks[:PROJECTED_KEEP]]
         self.dirty = True
 
-    def watch_refresh(self):
-        """Nach einem Blockfund lohnt das Nachsehen -- vorher aendert sich an
-        einer bestaetigten Wallet nichts."""
-        if self.wallets:
-            self.watch_now = True
-
     def set_tip(self, b, is_new=False):
         if not b:
             return
@@ -2179,7 +1911,6 @@ class Feed:
         }
         if is_new:
             self.block_event = time.time()
-            self.watch_refresh()
         self.dirty = True
         self.request_summary()
 
@@ -2242,17 +1973,6 @@ class Feed:
             "miners": self.miners,
             "minerHistory": self.miner_hist,
             "minerTotal": self.miner_total,
-            # Nur die Kurzfassung -- die vollen Angaben stehen unter /wallets
-            "wallets": [{
-                "name": w.get("name", ""),
-                "kind": w.get("kind", ""),
-                "balance": w.get("balance", 0),
-                "pending": w.get("pending", 0),
-                "used": w.get("used", 0),
-                "txCount": w.get("txCount", 0),
-                "error": w.get("error", ""),
-            } for w in self.wallets],
-            "walletBusy": self.watch_busy,
         }
         if slow_rev == self.slow_rev:
             for k in SLOW_FIELDS:
@@ -2774,15 +2494,6 @@ class _Handler(BaseHTTPRequestHandler):
                         span = wert
                 self._send(json.dumps(network_series(span),
                                       separators=(",", ":")))
-            elif path == "/wallets":
-                # Absichtlich nicht im Zustand: die Wallet-Angaben sind rund
-                # 8 kB und aendern sich alle fuenf Minuten, der Zustand wird
-                # 2,5-mal je Sekunde geschrieben und ebenso oft geholt. Im
-                # Zustand steht nur die Kurzfassung.
-                self._send(json.dumps({"wallets": self.feed.wallets,
-                                       "busy": self.feed.watch_busy,
-                                       "ts": round(time.time(), 2)},
-                                      separators=(",", ":")))
             elif path == "/health":
                 self._send(json.dumps({
                     "ok": True,
@@ -3201,111 +2912,6 @@ def discover_miners(timeout=1.0, workers=64):
     return found
 
 
-# --------------------------------------------------------------------------
-# Wallets verwalten -- ueber die Kommandozeile, nicht ueber den Dienst
-# --------------------------------------------------------------------------
-# Bewusst so: die Loopback-Schnittstelle nimmt **nichts** entgegen (nur GET,
-# nur lesend). Ein Schreibweg dorthin waere die erste Angriffsflaeche des
-# ganzen Programms. Die Wallet-Ansicht zeigt deshalb nur an und nennt den
-# Befehl, wenn noch nichts eingetragen ist.
-def _lade_sources():
-    try:
-        with open(SOURCES_FILE) as f:
-            return json.load(f) or {}
-    except Exception:
-        return {}
-
-
-def _schreibe_sources(cfg):
-    os.makedirs(os.path.dirname(SOURCES_FILE), exist_ok=True)
-    tmp = SOURCES_FILE + ".tmp"
-    with open(tmp, "w") as f:
-        json.dump(cfg, f, indent=2)
-    # Der xpub ist kein Geheimnis im Sinne von Guthaben, aber er verraet die
-    # gesamte Wallet. Also niemandem sonst lesbar.
-    os.chmod(tmp, 0o600)
-    os.replace(tmp, SOURCES_FILE)
-
-
-def cmd_watch(argv):
-    """--watch-add <xpub> [Name] | --watch-list | --watch-remove <Nr|Name>"""
-    cfg = _lade_sources()
-    liste = list(cfg.get("watch") or [])
-
-    def zeige():
-        if not liste:
-            print("Keine Wallet eingetragen.")
-            return
-        for i, w in enumerate(liste, 1):
-            x = w if isinstance(w, str) else w.get("xpub", "")
-            name = "" if isinstance(w, str) else (w.get("name") or "")
-            try:
-                art = Xpub(x).kind
-            except Exception as e:
-                art = "unlesbar: %s" % e
-            print("%d. %-22s %-12s %s…%s" % (i, name or "(ohne Namen)", art,
-                                             x[:12], x[-6:]))
-
-    if "--watch-list" in argv:
-        zeige()
-        return 0
-
-    if "--watch-add" in argv:
-        rest = argv[argv.index("--watch-add") + 1:]
-        if not rest:
-            print("Aufruf: orangedeck --watch-add <xpub|ypub|zpub> [Name]",
-                  file=sys.stderr)
-            return 2
-        xpub = rest[0].strip()
-        name = " ".join(rest[1:]).strip()
-        # Zuerst pruefen, ob jemand versehentlich einen **privaten** Schluessel
-        # einwirft -- dann muss die Meldung darueber reden und nicht ueber eine
-        # unbekannte Fassung. Er wird nicht gespeichert und nicht angefasst.
-        if xpub[:4].lower() in ("xprv", "yprv", "zprv", "tprv", "uprv", "vprv"):
-            print("Das ist ein **privater** Schluessel. Diese Anwendung nimmt "
-                  "keine privaten Schluessel entgegen und koennte ohnehin "
-                  "nichts damit anfangen -- sie kann nicht signieren. Bitte "
-                  "den zugehoerigen xpub/ypub/zpub verwenden.", file=sys.stderr)
-            return 1
-        try:
-            xp = Xpub(xpub)
-        except Exception as e:
-            print("Das ist kein brauchbarer erweiterter oeffentlicher "
-                  "Schluessel: %s" % e, file=sys.stderr)
-            return 1
-        if any((w if isinstance(w, str) else w.get("xpub")) == xpub for w in liste):
-            print("Steht schon drin.", file=sys.stderr)
-            return 1
-        liste.append({"name": name, "xpub": xpub})
-        cfg["watch"] = liste
-        _schreibe_sources(cfg)
-        print("Eingetragen (%s, Fingerabdruck %s). Erste Empfangsadresse:\n  %s"
-              % (xp.kind, xp.fingerprint, xp.address(0, 0)))
-        print("\nUebernehmen mit:\n  systemctl --user restart orangedeck")
-        return 0
-
-    if "--watch-remove" in argv:
-        rest = argv[argv.index("--watch-remove") + 1:]
-        if not rest:
-            print("Aufruf: orangedeck --watch-remove <Nummer|Name>", file=sys.stderr)
-            return 2
-        wahl = rest[0]
-        vorher = len(liste)
-        if wahl.isdigit() and 1 <= int(wahl) <= len(liste):
-            del liste[int(wahl) - 1]
-        else:
-            liste = [w for w in liste
-                     if isinstance(w, str) or (w.get("name") or "") != wahl]
-        if len(liste) == vorher:
-            print("Nichts gefunden.", file=sys.stderr)
-            return 1
-        cfg["watch"] = liste
-        _schreibe_sources(cfg)
-        print("Entfernt. Uebernehmen mit:\n  systemctl --user restart orangedeck")
-        return 0
-    return 2
-
-
 def cmd_discover(write=False):
     nets = local_networks()
     if not nets:
@@ -3340,9 +2946,7 @@ def cmd_discover(write=False):
         except Exception:
             pass
         cfg["miners"] = specs
-        os.makedirs(os.path.dirname(SOURCES_FILE), exist_ok=True)
-        with open(SOURCES_FILE, "w") as f:
-            json.dump(cfg, f, indent=2)
+        sources_schreiben(cfg)
         print("\nIn %s eingetragen. Uebernehmen mit:\n"
               "  systemctl --user restart orangedeck" % SOURCES_FILE, file=sys.stderr)
     else:
@@ -3694,175 +3298,6 @@ def run_ws(feed, still_max=None):
         ws.close()
 
 
-# --------------------------------------------------------------------------
-# Beobachtete Wallets
-# --------------------------------------------------------------------------
-def _addr_stats(addr):
-    """Salden einer Adresse. Bestaetigt und im Mempool getrennt gezaehlt."""
-    d = http_json("/address/%s" % addr, timeout=20)
-    c = d.get("chain_stats") or {}
-    m = d.get("mempool_stats") or {}
-    ein = int(c.get("funded_txo_sum") or 0)
-    aus = int(c.get("spent_txo_sum") or 0)
-    mein = int(m.get("funded_txo_sum") or 0)
-    maus = int(m.get("spent_txo_sum") or 0)
-    return {
-        "n": int(c.get("tx_count") or 0) + int(m.get("tx_count") or 0),
-        "bal": ein - aus + mein - maus,
-        "in": ein + mein,
-        "out": aus + maus,
-        "pend": mein - maus,
-    }
-
-
-def _kette_abtasten(xp, kette, halt):
-    """Eine Kette bis zur Luecke abtasten. Gibt die benutzten Adressen und die
-    naechste unbenutzte zurueck."""
-    benutzt, leer, i, naechste = [], 0, 0, None
-    while leer < WATCH_GAP and i < WATCH_MAX_ADDR:
-        if halt():
-            break
-        adr = xp.address(kette, i)
-        st = _addr_stats(adr)
-        if st["n"] > 0:
-            benutzt.append(dict(st, a=adr, c=kette, i=i))
-            leer = 0
-        else:
-            if naechste is None:
-                naechste = adr
-            leer += 1
-        i += 1
-        time.sleep(WATCH_SPACING)
-    return benutzt, (naechste or xp.address(kette, i))
-
-
-def _wallet_txs(adressen, eigene):
-    """Die juengsten Transaktionen der Wallet, zusammengefuehrt ueber die
-    benutzten Adressen. Der Betrag ist die Aenderung **fuer die Wallet**: was
-    auf eigene Adressen zufliesst, minus was von eigenen abfliesst."""
-    gesehen, out = {}, []
-    for st in adressen[:WATCH_TX_REQUESTS]:
-        try:
-            txs = http_json("/address/%s/txs" % st["a"], timeout=25)
-        except Exception:
-            continue
-        for t in txs or []:
-            tid = t.get("txid")
-            if not tid or tid in gesehen:
-                continue
-            gesehen[tid] = True
-            zu = sum(int(o.get("value") or 0) for o in (t.get("vout") or [])
-                     if o.get("scriptpubkey_address") in eigene)
-            ab = sum(int((v.get("prevout") or {}).get("value") or 0)
-                     for v in (t.get("vin") or [])
-                     if ((v.get("prevout") or {}).get("scriptpubkey_address")) in eigene)
-            st_ = t.get("status") or {}
-            out.append({
-                "t": tid,
-                "d": zu - ab,
-                "h": int(st_.get("block_height") or 0),
-                "ts": int(st_.get("block_time") or 0),
-                "f": int(t.get("fee") or 0),
-                "ok": bool(st_.get("confirmed")),
-            })
-        time.sleep(WATCH_SPACING)
-    # Unbestaetigtes zuerst, danach nach Hoehe absteigend
-    out.sort(key=lambda x: (x["ok"], x["h"]), reverse=True)
-    return out[:WATCH_TX_KEEP]
-
-
-def scan_wallet(cfg, halt):
-    """Eine Wallet vollstaendig abtasten. Gibt den Eintrag fuer den Zustand
-    zurueck -- auch im Fehlerfall, dann mit `error`."""
-    name = cfg.get("name") or ""
-    try:
-        xp = Xpub(cfg["xpub"])
-    except Exception as e:
-        return {"name": name, "error": str(e), "kind": "", "addresses": [],
-                "txs": [], "balance": 0}
-
-    empfang, naechstEmpfang = _kette_abtasten(xp, 0, halt)
-    wechsel, naechstWechsel = _kette_abtasten(xp, 1, halt)
-    benutzt = empfang + wechsel
-    eigene = set(a["a"] for a in benutzt)
-    eigene.add(naechstEmpfang)
-    eigene.add(naechstWechsel)
-
-    # Nach Aktivitaet sortiert -- danach wird gefragt, wer etwas zu erzaehlen hat
-    nach_txs = sorted(benutzt, key=lambda a: -a["n"])
-    txs = [] if halt() else _wallet_txs(nach_txs, eigene)
-
-    return {
-        "name": name or ("Wallet " + xp.fingerprint),
-        "kind": xp.kind,
-        "fingerprint": xp.fingerprint,
-        "balance": sum(a["bal"] for a in benutzt),
-        "received": sum(a["in"] for a in benutzt),
-        "sent": sum(a["out"] for a in benutzt),
-        "pending": sum(a["pend"] for a in benutzt),
-        "txCount": sum(a["n"] for a in benutzt),
-        "used": len(benutzt),
-        "nextRecv": naechstEmpfang,
-        "nextChange": naechstWechsel,
-        # Nur benutzte Adressen -- unbenutzte gibt es unbegrenzt viele
-        "addresses": [{"a": a["a"], "c": a["c"], "i": a["i"],
-                       "bal": a["bal"], "n": a["n"]} for a in benutzt],
-        "txs": txs,
-        "scannedAt": round(time.time(), 2),
-        "error": "",
-    }
-
-
-def poll_watch(feed):
-    """Alle beobachteten Wallets abtasten, wenn es Zeit ist.
-
-    Laeuft nebenher und dauert je nach Groesse eine halbe Minute -- die
-    Abfragen sind bewusst auseinandergezogen."""
-    wallets = SOURCES.get("watch") or []
-    if not wallets:
-        if feed.wallets:
-            feed.slow_rev += 1
-            feed.wallets = []
-            feed.dirty = True
-        return
-    now = time.time()
-    if now < feed.watch_at and not feed.watch_now:
-        return
-    feed.watch_now = False
-    feed.watch_at = now + WATCH_INTERVAL
-    feed.watch_busy = True
-    try:
-        halt = lambda: feed.watch_stop
-        out = [scan_wallet(w, halt) for w in wallets]
-        feed.slow_rev += 1
-        feed.wallets = out
-        # Fuer die Halde: eigene Transaktionen werden hervorgehoben
-        ids = set()
-        for w in out:
-            for t in w.get("txs") or []:
-                ids.add(t["t"])
-        feed.watch_txids = ids
-        feed.dirty = True
-    finally:
-        feed.watch_busy = False
-
-
-def run_watch(feed):
-    """Die Wallets bekommen einen **eigenen** Faden.
-
-    Ein Abtastlauf dauert je nach Groesse eine halbe Minute und mehr -- die
-    Abfragen sind absichtlich auseinandergezogen. Im Faden der uebrigen
-    Nebenquellen wuerde er die Mempool-Kurve loechrig machen und die
-    Miner-Abfrage anhalten."""
-    while True:
-        try:
-            poll_watch(feed)
-        except Exception as e:
-            sys.stderr.write("Wallets: %s\n" % e)
-            feed.watch_busy = False
-        time.sleep(2)
-
-
 def run_extras(feed):
     """Die langsamen Quellen laufen **nebenher**. Im WebSocket-Faden haetten
     ihre HTTP-Abfragen den Feed bis zu 15 Sekunden angehalten -- die Schleife
@@ -3928,8 +3363,12 @@ def main():
     if "--discover-miners" in args:
         return cmd_discover(write="--write" in args)
 
+    # Die Wallet ist seit dem 26.09.2026 entfernt. Ohne diese Zeile startete
+    # ein alter Aufruf wie `--watch-list` stillschweigend den Dienst.
     if args & {"--watch-add", "--watch-list", "--watch-remove"}:
-        return cmd_watch(sys.argv[1:])
+        print("Die Wallet gibt es nicht mehr (entfernt am 26.09.2026).",
+              file=sys.stderr)
+        return 2
 
     for kind in ("waybar", "polybar", "genmon"):
         if "--" + kind in args:
@@ -3953,7 +3392,6 @@ def main():
     _feed_ref[0] = feed
     serve_local(feed)
     threading.Thread(target=run_extras, args=(feed,), daemon=True).start()
-    threading.Thread(target=run_watch, args=(feed,), daemon=True).start()
     # Ein Faden je Boerse. Sie schlafen, bis jemand den Markt-Reiter oeffnet.
     for _quelle in MARKETS:
         threading.Thread(target=run_market, args=(_quelle,), daemon=True).start()

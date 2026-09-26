@@ -182,7 +182,8 @@ for name, text in (("05b_liq", "Liquidations"), ("05c_heat", "Heatmap")):
 klicke_text("Price", ym - 14, ym + 14)
 time.sleep(1)
 # Die Einstellungen haben seit dem 13.09.2026 keinen Reiter mehr, sondern das
-# Zahnrad -- auf der Tastatur das Komma. Die Ziffer 6 waere die Wallet.
+# Zahnrad -- auf der Tastatur das Komma. Die Ziffer 6 hat keinen Reiter mehr
+# (bis 26.09.2026 die Wallet).
 xtest.klick(W - 5, H - 5)
 xtest.taste("Escape")
 time.sleep(0.3)
@@ -191,7 +192,7 @@ time.sleep(3)
 gerollt("06_einst")
 ys = zeile_von("General") or 47
 for i, text in enumerate(("Layout", "Feed", "Clock", "Mining", "Explorer",
-                          "Market", "Wallet")):
+                          "Market")):
     if klicke_text(text, ys - 14, ys + 14, nr=0):
         time.sleep(1.5)
         gerollt(f"06{chr(ord('b') + i)}_{text.lower()}")

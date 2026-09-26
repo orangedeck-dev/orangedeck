@@ -24,9 +24,9 @@ RestartSec=3
 
 # --- Fuer ein Tablett oder Telefon im eigenen Netz ---------------------------
 # **Standard ist 127.0.0.1: der Dienst ist von aussen nicht erreichbar.** Wer
-# ihm die Ansichten Markt und Wallet auf einem Geraet ohne Dienst geben will
-# -- Android, Windows, macOS --, traegt in der Anwendung unter Datenquelle die
-# Adresse dieses Rechners ein und oeffnet den Dienst hier:
+# seine Daten auf ein Geraet ohne Dienst holen will -- Android, Windows,
+# macOS --, traegt in der Anwendung unter Datenquelle die Adresse dieses
+# Rechners ein und oeffnet den Dienst hier:
 #
 #     systemctl --user edit orangedeck.service
 #
@@ -35,10 +35,9 @@ RestartSec=3
 #
 # **Und weiss dann, was er tut.** Der Dienst kennt keine Anmeldung und fragt
 # niemanden, wer da klopft: ab da liefert er jedem, der die Adresse erreicht,
-# alles, was er weiss -- einschliesslich der watch-only-Adressen aus
-# `sources.json`, also der Frage, wem welche Guthaben gehoeren. In einem
-# Heimnetz mit Gast-WLAN, Fernsehern und fremden Telefonen ist das eine
-# Entscheidung und kein Handgriff. Rueckgaengig macht sie
+# alles, was er weiss, auch die Miner aus `sources.json`. In einem Heimnetz
+# mit Gast-WLAN, Fernsehern und fremden Telefonen ist das eine Entscheidung
+# und kein Handgriff. Rueckgaengig macht sie
 # `systemctl --user revert orangedeck.service`.
 
 # --- Absicherung ------------------------------------------------------------

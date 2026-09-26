@@ -11,8 +11,8 @@
 
      **Es sind aber nur drei, und der Grund steckt in der Anwendung.** Auf
      Android laeuft der Direktbezug; einen Dienst gibt es dort nicht. Miner,
-     Wallet und **Markt** haengen an ihm und haben auf dem Geraet nie einen
-     Reiter. Eine Verknuepfung dorthin fuehrte im Emulator am 05.09.2026 auf
+     Wallet (bis 26.09.2026) und **Markt** haengen an ihm und haben auf dem
+     Geraet nie einen Reiter. Eine Verknuepfung dorthin fuehrte im Emulator am 05.09.2026 auf
      eine vollstaendig leere Seite. Uebrig bleiben Feed, Uhr und Explorer.
 
      **Je eine eigene `android:action`, keine Extras.** Ein statisches

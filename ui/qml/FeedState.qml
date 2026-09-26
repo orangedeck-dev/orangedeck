@@ -31,16 +31,15 @@ Item {
     // Where the data comes from:
     //
     //   "daemon"  the local service on 127.0.0.1. Default on the desktop: it
-    //             keeps one connection for all windows and widgets, can derive
-    //             wallets and poll the miner on the home network.
+    //             keeps one connection for all windows and widgets and polls
+    //             the miner on the home network.
     //   "direct"  the UI talks to mempool.space itself. Default on the phone:
     //             there is no service there, and a widget that only works while
     //             the home machine is on is no widget.
     //   "auto"    try the service first; if nothing answers within `autoMs`,
     //             go direct. Meant for the DMS plugin: installed from the DMS
     //             plugin directory it is just the folder, with no repo, no unit
-    //             and no orangedeck in PATH. With the service present it is used,
-    //             wallets included.
+    //             and no orangedeck in PATH. With the service present it is used.
     //
     // To the outside there is no difference: both sources go through the same
     // evaluation and all views read the same properties.
@@ -48,7 +47,7 @@ Item {
     property int autoMs: 4000
 
     // Decided once per session and then kept. Switching back and forth on every
-    // hiccup of the service would make the Wallet tab come and go, and
+    // hiccup of the service would make tabs come and go, and
     // `FeedTabs.reiterPruefen` resets a remembered view to the feed when that
     // happens. If the service starts later, the decision applies on the next
     // shell start.
@@ -76,11 +75,6 @@ Item {
     // itself. What can be missing is the address, not the path. The Miner tab
     // shows the network when there is no device, so it always has content.
     //
-    // `__suchtDienst` is part of the Wallet condition: during the search `direkt`
-    // is still false, but nobody knows yet whether a service exists. A Wallet tab
-    // that disappears after four seconds is worse than one that shows up four
-    // seconds later.
-    readonly property bool canWallet: !root.direkt && !root.__suchtDienst
     // The market also works in direct mode (`DirectMarket.qml`). Without
     // QtWebSockets that loader fails and the tab stays hidden.
     //
@@ -166,11 +160,6 @@ Item {
     readonly property var minerTotal: root.direkt
         ? (bergwerk.item ? bergwerk.item.minerTotal : ({}))
         : (snap.minerTotal || ({}))
-    // Summary of the watched wallets. The wallet view fetches full details via
-    // `/wallets`; they are too large for the state.
-    readonly property var wallets: snap.wallets || []
-    readonly property bool walletBusy: snap.walletBusy || false
-    readonly property bool walletConfigured: wallets.length > 0
     // History per device: recorded by the daemon, or by `DirectMiner` in direct
     // mode.
     readonly property var minerHistory: root.direkt
@@ -217,7 +206,7 @@ Item {
 
     // Arbitrary request against the daemon, returns JSON. Separate from `lookup`,
     // which is for outside paths; this is for the service's own paths
-    // (`/wallets`, `/market...`).
+    // (`/market...`).
     function getJson(path, done) {
         if (root.direkt) {
             // In direct mode the market computes this itself from the same responses.
@@ -225,8 +214,6 @@ Item {
                 markt.item.getJson(path, done);
                 return;
             }
-            // `/wallets`: deriving from the xpub is point arithmetic on secp256k1 and
-            // stays in the service.
             done(null, "im Direktbezug nicht verfuegbar");
             return;
         }

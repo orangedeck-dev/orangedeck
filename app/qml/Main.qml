@@ -68,9 +68,10 @@ Window {
     // Rechner eintragen, fuer Markt und Wallet. Der Markt kommt seit dem
     // 13.09. ohne Dienst; die Wallet ging dafuer unverschluesselt durchs
     // WLAN, liess sich nur am Rechner eintragen, und der Weg funktionierte
-    // nie (`daemonHost` fehlte in `setOpt`). Entschieden: Wallet und Dienst-
-    // Weg fallen dort weg. Ein gespeichertes "daemon" von frueher wird
-    // uebergangen, statt es umzuschreiben.
+    // nie (`daemonHost` fehlte in `setOpt`). Entschieden: der Dienst-Weg
+    // faellt dort weg (die Wallet ist seit dem 26.09.2026 ganz entfernt).
+    // Ein gespeichertes "daemon" von frueher wird uebergangen, statt es
+    // umzuschreiben.
     readonly property bool dienstMoeglich: Qt.platform.os === "linux"
     readonly property string effSource: !win.dienstMoeglich ? "direct"
                                         : (win.forcedSource.length ? win.forcedSource
@@ -129,8 +130,7 @@ Window {
     // Rechner, und das bleibt die Vorgabe.
     //
     // Eingetragen wird hier der Rechner im eigenen Netz. Damit bekommt ein
-    // Tablett oder ein Telefon die beiden Ansichten, die am Dienst haengen
-    // und ausserhalb von Linux sonst fehlen: Markt und Wallet. Der Weg war
+    // Tablett oder ein Telefon die Daten des Dienstes. Der Weg war
     // von Anfang an vorgesehen -- `FeedState.endpoint` und `ORANGEDECK_ADDR`
     // tragen beide seit dem 01.09.2026 den Satz "fuer ein Tablet im eigenen
     // Netz eine bewusste Entscheidung" --, nur fuehrte keine Einstellung
@@ -139,8 +139,7 @@ Window {
     // **Es ist eine Entscheidung mit Folgen**, und deshalb steht sie im
     // Hilfetext und nicht im Kleingedruckten: der Dienst muss dafuer im Netz
     // lauschen, und dann liefert er jedem, der ihn fragt, alles, was er
-    // weiss -- auch die watch-only-Adressen aus der Wallet. Ein Heimnetz ist
-    // kein Personenkreis.
+    // weiss. Ein Heimnetz ist kein Personenkreis.
     property string daemonHost: ""
     // The mempool instance for every mode: FeedState.mempoolHost. The Android
     // widgets read the same key from this settings file (DeckWidget.api).
@@ -160,12 +159,6 @@ Window {
         return h;
     }
 
-    // Die Wallet-Ansicht ist **abgeschaltet, bis sie ausdruecklich
-    // eingeschaltet wird**. Nicht wegen der Guthaben -- die sind watch-only
-    // vollstaendig geschuetzt --, sondern wegen der Verkettung: es ist der
-    // einzige Teil des Programms, bei dem der Benutzer etwas ueber sich
-    // preisgibt. Der Reiter erscheint erst nach der Warnung in den
-    // Einstellungen.
     property bool showHeader: true
     property bool showFooter: true
     property bool showBlock: true
@@ -240,7 +233,6 @@ Window {
     property string bigFieldsRaw: "height"
     readonly property var bigFields: bigFieldsRaw.length ? bigFieldsRaw.split("|") : ["height"]
     property int bigRotate: 0
-    property bool walletEnabled: false
     // Die Reihenfolge der Reiter, vom Anwender festgelegt. Leer heisst: die
     // Grundreihenfolge aus `views.js`. Als Zeichenkette abgelegt, getrennt
     // mit "|" -- aus denselben zwei Gruenden wie die uebrigen Listen: eine
@@ -248,7 +240,8 @@ Window {
     // INI-Zeichenkette gilt beim Lesen als Listentrenner.
     property string tabOrderRaw: ""
     readonly property var tabOrder: tabOrderRaw.length ? tabOrderRaw.split("|") : []
-    // 0 = Feed, 1 = Uhr, 2 = Miner, 3 = Explorer, 4 = Wallet. Wird
+    // 0 = Feed, 1 = Uhr, 2 = Miner, 3 = Explorer, 5 = Einstellungen,
+    // 6 = Markt (4 war bis 26.09.2026 die Wallet und bleibt frei). Wird
     // gemerkt, damit ein Tablet nach dem Einschalten gleich wieder als
     // Uhr hochkommt.
     property int view: 0
@@ -344,14 +337,12 @@ Window {
         property alias langWahl: win.langWahl
         property alias bigFieldsRaw: win.bigFieldsRaw
         property alias bigRotate: win.bigRotate
-        property alias walletEnabled: win.walletEnabled
         property alias tabOrderRaw: win.tabOrderRaw
         property alias vollbild: win.vollbild
     }
 
     // Beim Start in die gemerkte Ansicht -- fuer ein Tablet an der Wand ist
-    // das meist die Uhr. Der Reiter "Wallet" faellt weg, solange er
-    // nicht eingeschaltet ist.
+    // das meist die Uhr.
     Component.onCompleted: {
         if (win.vollbild)
             vollbildAnwenden();
@@ -367,12 +358,8 @@ Window {
         // darunter ab -- dafuer braucht es hier keine Zahl.
         else if (win.startView >= 0)
             win.view = win.startView;
-        // Ausgeschaltete Wallet-Ansicht darf nicht als leere Seite dastehen
-        if (win.view === 4 && !win.walletEnabled)
-            win.view = 0;
-
-        // **Und jede andere Ansicht, die es gerade nicht gibt, genauso.**
-        // Die Wallet war bisher der einzige geprüfte Fall; `--view 2` ohne
+        // **Jede Ansicht, die es gerade nicht gibt, faellt zurueck.** Bis
+        // dahin war die Wallet der einzige geprüfte Fall; `--view 2` ohne
         // Bitaxe und `--view 6` im Direktbezug landeten auf einer
         // vollstaendig leeren Seite, bei der nicht einmal ein Reiter
         // hervorgehoben war. Am 05.09.2026 im Android-Emulator aufgefallen,
@@ -383,7 +370,9 @@ Window {
         // Hier und nicht in `FeedTabs`: dort haengt der Rueckfall an
         // Signalen, und beim Start aendert sich nichts, worauf sie warten
         // koennten -- der Wert ist von Anfang an falsch. Diese Zeile laeuft
-        // genau einmal, gleich nachdem er gesetzt wurde.
+        // genau einmal, gleich nachdem er gesetzt wurde. Eine gemerkte 4
+        // (die Wallet bis 26.09.2026) steht in keinem Reiter mehr und landet
+        // ebenfalls hier.
         // Die Einstellungen haben hier keinen Reiter, sondern das Zahnrad --
         // gueltig sind sie trotzdem.
         if (tabs.tabViews.length > 0 && tabs.tabViews.indexOf(win.view) < 0 && win.view !== 5)
@@ -394,9 +383,8 @@ Window {
     // Feed, wenn die gemerkte Ansicht gerade keinen Reiter hat. Hier stand das
     // vorher ein zweites Mal.
     //
-    // Zwei fallen im Direktbezug weg, und zwar nicht aus Bequemlichkeit: der
-    // Miner steht im Heimnetz, die Wallet-Ableitung ist Rechenarbeit des
-    // Dienstes, und der Markt wird dort verdichtet. Ein Reiter, hinter dem
+    // Im Direktbezug fallen manche weg, und zwar nicht aus Bequemlichkeit:
+    // der Miner steht im Heimnetz, und der Markt wird dort verdichtet. Ein Reiter, hinter dem
     // nichts sein kann, ist schlimmer als keiner.
 
     // Eine Einstellung setzen. Alles laeuft hier durch, damit es nur eine
@@ -520,12 +508,6 @@ Window {
             win.bigRotate = value;
         else if (key === "tabOrder")
             win.tabOrderRaw = (value || []).join("|");
-        else if (key === "walletEnabled") {
-            win.walletEnabled = value;
-            // Ausgeschaltet, waehrend die Ansicht offen war -> zurueck
-            if (!value && win.view === 4)
-                win.view = 5;
-        }
     }
 
     readonly property var opts: ({
@@ -592,7 +574,6 @@ Window {
         "langWahl": win.langWahl,
         "bigFields": win.bigFields,
         "bigRotate": win.bigRotate,
-        "walletEnabled": win.walletEnabled,
         "tabOrder": win.tabOrder
     })
 
@@ -634,7 +615,7 @@ Window {
 
         // **Alle Ansichten stehen in `FeedTabs`** -- dasselbe Bauteil wie im
         // Dashboard, im Popout und auf dem Desktop. Vorher verdrahtete dieses
-        // Fenster sie selbst, und genau daran fehlte der Wallet-Ansicht ihre
+        // Fenster sie selbst, und genau daran fehlte einer Ansicht ihre
         // Sprache und der Uhr der Kursverlauf: was hier dazukam, kam
         // dort nicht an, und umgekehrt.
         FeedTabs {
@@ -742,8 +723,8 @@ Window {
             case Qt.Key_4:
             case Qt.Key_5:
             case Qt.Key_6:
-                // Die Ziffer zaehlt die **sichtbaren** Reiter ab -- ist die
-                // Wallet-Ansicht aus, ruecken die dahinter auf.
+                // Die Ziffer zaehlt die **sichtbaren** Reiter ab -- ist eine
+                // Ansicht aus, ruecken die dahinter auf.
                 var n = event.key - Qt.Key_1;
                 if (n < tabs.tabViews.length) {
                     win.view = tabs.tabViews[n];

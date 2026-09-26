@@ -791,15 +791,6 @@ Item {
                 font.family: Fonts.mono()
             }
 
-            // If the transaction belongs to a watched wallet, that is the most
-            // important detail about it, so it goes to the top.
-            Text {
-                visible: tip.tx && tip.tx.m === 1
-                text: Tr.t("feed.ownWallet", root.lang)
-                color: root.accentColor
-                font.pixelSize: root.baseFont - 2
-            }
-
             Text {
                 visible: root.inOutText.length > 0
                 text: root.inOutText

@@ -22,14 +22,14 @@
     <p>
       The Bitcoin mempool as a living tile mosaic: waiting transactions fall
       onto a heap, confirmed ones fly into the block. Alongside it a block
-      clock, mining figures, a block explorer to leaf through and a
-      watch-only view of your own addresses.
+      clock, mining figures, a block explorer to leaf through and the
+      market.
     </p>
     <p xml:lang="de">
       Der Bitcoin-Mempool als lebendige Kachelgrafik: wartende Transaktionen
       fallen auf die Halde, bestaetigte fliegen in den Block. Dazu eine
       Blockuhr, Kennzahlen zum Schuerfen, ein Blockforscher zum
-      Durchblaettern und eine Beobachtung eigener Adressen ohne Schluessel.
+      Durchblaettern und der Markt.
     </p>
     <p>
       The data comes from mempool.space, from another public mempool

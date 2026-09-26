@@ -1,5 +1,5 @@
 // The full set of views with the tab row above them: Feed, Clock, Miner,
-// Explorer, Wallet, Settings.
+// Explorer, Market, Settings.
 //
 // Built once, used in three places: the DMS dashboard tab, the bar pill
 // popout and the Control Center tile. All three get the same views and read
@@ -26,7 +26,8 @@ Item {
     // Nothing is computed while nobody is looking
     property bool live: true
     property var opts: ({})
-    // 0 Feed, 1 Clock, 2 Miner, 3 Explorer, 4 Wallet, 5 Settings, 6 Market
+    // 0 Feed, 1 Clock, 2 Miner, 3 Explorer, 5 Settings, 6 Market
+    // (4 was the wallet until 26.09.2026 and stays unused)
     property int view: 0
     // The settings page hides opacity and start view where the window does not
     // belong to the app.
@@ -80,8 +81,6 @@ Item {
             return miner.visible && miner.rollen(wie);
         if (root.view === 3)
             return explorer.visible && explorer.rollen(wie);
-        if (root.view === 4)
-            return wallet.visible && wallet.rollen(wie);
         if (root.view === 5)
             return einstellungen.visible && einstellungen.rollen(wie);
         return false;
@@ -135,16 +134,14 @@ Item {
         ? "\u2192" : "->"
 
     readonly property string currency: root.o("currency", "usd")
-    readonly property bool walletEnabled: root.o("walletEnabled", false)
     // An invisible item keeps its height. Without this check the bare widget
     // would show an empty strip the height of the tab row at the top.
     readonly property real tabSpace: root.tabsVisible ? tabs.height + root.gap : 0
 
-    // The wallet is dropped in direct mode, and not for convenience: key
-    // derivation is work done by the service. A tab that can never show
-    // anything is worse than no tab. The market is computed locally by
-    // `DirectMarket`; only a missing QtWebSockets removes it. (Without a device
-    // the miner tab shows the network.)
+    // A tab that can never show anything is worse than no tab. The market is
+    // computed locally by `DirectMarket` in direct mode; only a missing
+    // QtWebSockets removes it. (Without a device the miner tab shows the
+    // network.)
     readonly property bool canMarket: !!(root.feed && root.feed.canMarket)
 
     // Every tab can be turned off, and the user owns the order. Without a miner
@@ -160,8 +157,6 @@ Item {
         function (id) {
             // The miner tab is always possible: without a device of its own it
             // shows the network.
-            if (id === 4)
-                return root.walletEnabled && !!(root.feed && root.feed.canWallet);
             if (id === 6)
                 return root.canMarket;
             return true;
@@ -209,6 +204,16 @@ Item {
 
     onTabViewsChanged: root.reiterPruefen()
 
+    // A stored id that no longer exists at all (4, the wallet until
+    // 26.09.2026) is replaced once at start, also without a tab row. Only
+    // unknown ids: whether a known view is available right now depends on the
+    // feed, and `reiterPruefen` decides that once the feed is known.
+    Component.onCompleted: {
+        if (!Views.eintrag(root.view))
+            root.viewRequested(root.tabsVisible && root.tabViews.length
+                               ? root.tabViews[0] : 0);
+    }
+
     // ------------------------------------------------- Rotating tabs
     // For a block clock on the wall: every `tabRotate` seconds the next station.
     // Mining counts twice (device and network are two stations), otherwise the
@@ -217,8 +222,7 @@ Item {
     // Switching goes through the same paths as a tap (`viewRequested`,
     // `optRequested("minerPane")`); the host stores both as usual.
     //
-    // Not in the rotation: Wallet (does not belong on a wall) and Settings.
-    // While Settings is open the rotation pauses, otherwise it would pull the
+    // Not in the rotation: Settings. While Settings is open the rotation pauses, otherwise it would pull the
     // page away while the user is changing something.
     property bool rotationAllowed: true
     readonly property int rotateSec: root.o("tabRotate", 0)
@@ -522,31 +526,6 @@ Item {
         }
     }
 
-    WatchView {
-        id: wallet
-
-        visible: root.live && root.view === 4 && root.walletEnabled
-        // Only ask while the view is visible
-        live: visible
-        anchors.fill: parent
-        anchors.topMargin: root.tabSpace
-        feed: root.feed
-        lang: root.lang
-        btcZeichen: root.btcZeichen
-        currency: root.currency
-        textColor: root.textColor
-        dimColor: root.dimColor
-        accentColor: root.accentColor
-        onTxPicked: function (txid) {
-            root.viewRequested(3);
-            explorer.go("tx", txid);
-        }
-        onAddressPicked: function (adr) {
-            root.viewRequested(3);
-            explorer.go("address", adr);
-        }
-    }
-
     SettingsView {
         id: einstellungen
 
@@ -567,12 +546,9 @@ Item {
         // What the host technically cannot do gets no page in the settings
         // either (see there).
         kannMarkt: root.canMarket
-        kannWallet: !!(root.feed && root.feed.canWallet)
         einstellungenAlsReiter: root.settingsTab
         nichtVerfuegbar: {
             var aus = [];
-            if (!(root.walletEnabled && root.feed && root.feed.canWallet))
-                aus.push(4);
             if (!root.canMarket)
                 aus.push(6);
             return aus;

@@ -12,7 +12,6 @@ weitere Ansichten:
     Miner        AxeOS und cgminer im Heimnetz, Hashrate und Freigaben
     Explorer     Suche, Transaktionsfluss, Bloecke, geplante Bloecke
     Markt        Kerzen, laufendes Band, Long/Short, Liquidationen, Heatmap
-    Wallet       watch-only ueber xpub, ypub oder zpub
     Einstellungen
 
 Jede Ansicht laesst sich einzeln abschalten, und jede laeuft in fuenf
@@ -92,12 +91,12 @@ nicht auf stderr -- QML-Fehler bleiben dadurch unsichtbar. Mit
 Zwei Wege, umschaltbar in den Einstellungen unter "Allgemein":
 
 - **Eigener Dienst** (Vorgabe) -- `daemon/orangedeck` auf `127.0.0.1:21021`. Er
-  haelt **eine** Verbindung fuer alle Fenster und Widgets, leitet Wallets aus
-  dem xpub ab und fragt den Miner im Heimnetz.
+  haelt **eine** Verbindung fuer alle Fenster und Widgets, hoert den Markt
+  rund um die Uhr mit und fragt den Miner im Heimnetz.
 - **Direkt** -- die Oberflaeche redet selbst mit mempool.space oder der
   eingetragenen Instanz, ueber denselben WebSocket, den auch der Dienst benutzt. Kein Dienst noetig, kein systemd,
-  keine Einrichtung. Dafuer fallen Miner und Wallet weg: das eine steht im
-  Heimnetz, das andere ist Rechenarbeit des Dienstes.
+  keine Einrichtung. Den Miner erreicht auch der Direktbezug, sobald seine
+  Adresse eingetragen ist.
 
 Welche Mempool-Instanz beide Wege fragen, steht im Feld **Mempool-Instanz**
 darunter: leer fuer mempool.space, sonst etwa `mempool.emzy.de`,
@@ -107,9 +106,10 @@ Oberflaeche mit um (`POST /config`, nur von 127.0.0.1), und er merkt sich die
 Adresse in `~/.config/orangedeck/sources.json`.
 
 Auf dem Rechner ist der Dienst die bessere Wahl, auf dem Handy gibt es ihn
-nicht. **Unter Android und Windows gibt es nur den Direktbezug**, und damit
-keine Wallet: einen Dienst auf einem anderen Rechner kann man dort seit dem
-15.09.2026 nicht mehr eintragen. Auf der Befehlszeile: `orangedeck-app --source direct`. Der Direktbezug
+nicht. **Unter Android und Windows gibt es nur den Direktbezug**: einen Dienst auf
+einem anderen Rechner kann man dort seit dem 15.09.2026 nicht mehr eintragen.
+Die Watch-only-Wallet gibt es seit 0.2.15 (26.09.2026) nirgends mehr; ueberall
+laufen dieselben fuenf Ansichten. Auf der Befehlszeile: `orangedeck-app --source direct`. Der Direktbezug
 braucht `qt6-websockets`; fehlt das Paket, bleibt der Dienst.
 
 ## Als Flatpak

@@ -92,7 +92,6 @@ set(SHARED_QML
     ui/qml/BlockTiles.qml
     ui/qml/ProjectedBlock.qml
     ui/qml/TileGoggles.qml
-    ui/qml/WatchView.qml
     ui/qml/TxList.qml
     ui/qml/BlockHistory.qml
     ui/qml/SettingsView.qml

@@ -27,10 +27,9 @@ var ANSICHTEN = [
     { "id": 2, "name": "tab.miner",    "schalter": "showMiner"    },
     { "id": 3, "name": "tab.explorer", "schalter": "showExplorer" },
     { "id": 6, "name": "tab.market",   "schalter": "showMarket"   },
-    // The wallet does not use a tab switch but `walletEnabled`, the switch
-    // with the warning in front of it. A second switch next to it would only
-    // raise the question which one applies.
-    { "id": 4, "name": "tab.wallet",   "schalter": ""             },
+    // Id 4 was the watch-only wallet until 26.09.2026 and stays unused.
+    // `eintrag(4)` returns null, so a stored 4 (start view, order, rotation,
+    // `--view 4`) counts as unknown and is dropped.
     // Settings always stay. Otherwise turning off the last tab would leave
     // no way to reach any switch.
     { "id": 5, "name": "tab.settings", "schalter": ""             }
@@ -94,8 +93,8 @@ function ordnung(gespeichert) {
 //
 //   gespeichert  the user's order (may be empty)
 //   moeglich(id) can this view show anything at all? A technical check:
-//                the miner sits in the home network, wallet derivation and
-//                market candles are computed by the daemon. A tab that
+//                the miner sits in the home network, market candles
+//                are computed by the daemon. A tab that
 //                can never have content is worse than no tab.
 //   an(schluessel) did the user leave it on? The switch is applied on top
 //                and cannot force anything.
