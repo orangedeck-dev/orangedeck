@@ -30,7 +30,8 @@ It runs in three places at once:
 - `QtWebSockets` (Qt 6). Without it the market view hides itself; everything
   else keeps working.
 
-Nothing else. The plugin talks to `mempool.space` by itself.
+Nothing else. The plugin talks to `mempool.space` by itself, or to another
+mempool instance you set in its settings.
 
 ## Install
 
@@ -55,6 +56,11 @@ service, a small local daemon that is part of the full
 [OrangeDeck](https://orangedeck.dev) application. The setting "Data source"
 is on "Automatic": the plugin asks the service once, and if nothing answers
 within a few seconds it fetches everything itself.
+
+"Mempool instance" in the general settings chooses where the data comes from:
+empty for `mempool.space`, another public instance such as `mempool.emzy.de`,
+or your own node, for example `http://umbrel.local:3006`. It applies in direct
+mode and is passed on to the OrangeDeck service on the same computer.
 
 The service is optional. It is worth having when several windows or widgets
 are open, because it keeps one connection instead of one per view, and it is
