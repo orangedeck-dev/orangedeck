@@ -330,8 +330,8 @@ def seite(d, alle):
         '<article class="reihe%s">'
         '<a class="reihe-bild lb" href="../bilder/%s.webp" data-i="%d" aria-label="%s">'
         '<img src="../bilder/%s.webp" alt="%s" width="%d" height="%d" loading="lazy"></a>'
-        '<div class="reihe-text"><span class="nr">%02d</span><h3>%s</h3><p>%s</p></div></article>'
-        % (" umgekehrt" if i % 2 else "", b, i, e(n), b, e(t), BILD_B, BILD_H, i + 1, e(n), e(t))
+        '<div class="reihe-text"><h3>%s</h3><p>%s</p></div></article>'
+        % (" umgekehrt" if i % 2 else "", b, i, e(n), b, e(t), BILD_B, BILD_H, e(n), e(t))
         for i, ((n, t), b) in enumerate(zip(d["ansichten"], ANSICHT_BILDER)))
     haken = ('<svg class="haken-zeichen" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" '
              'fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
