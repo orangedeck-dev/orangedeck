@@ -358,3 +358,13 @@ body { position: relative; z-index: 0; }
 section[id], .anker { scroll-margin-top: 90px; }
 .anker { top: 0; }
 @media (max-width: 46rem) { .kopfleiste { top: 8px; margin-top: 8px; width: calc(100% - 16px); } }
+
+/* ---- Glas fuer Kennzeichen und durchsichtige Knoepfe -------------------- */
+/* Seit dem Roentgenblick scheint die Leiterplatte durch alles, was keinen
+   eigenen Grund hat. Diese Elemente bekommen denselben Glasgrund wie die
+   Kopfleiste, nur schwaecher. */
+.badge, .tat.zweit, .profile a {
+  background: rgba(27, 24, 34, 0.6);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.tat.zweit:hover { background: rgba(38, 34, 48, 0.75); }
