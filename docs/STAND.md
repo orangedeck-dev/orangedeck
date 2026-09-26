@@ -15,6 +15,27 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 26.09.2026 abends -- 0.2.15 ohne Wallet
+
+- **0.2.15 ist draussen** (Tag `v0.2.15` auf `6f24d30`, Release 22:13 UTC,
+  "Latest", F-Droid mit 0.2.15 und 0.2.14, DMS-Plugin 1.2.0). Die
+  Watch-only-Wallet ist auf allen Plattformen entfernt: WatchView.qml,
+  Einstellungsseite, walletEnabled, xpub-Suche, Hervorhebung im Feed,
+  im Dienst xpub/BIP32/secp256k1, /wallets, Abtastung. Id 4 bleibt frei;
+  eine gespeicherte 4 und `--view 4` fallen auf die erste Ansicht der
+  eigenen Reihenfolge. `sources.json` wird ueber `sources_schreiben()`
+  mit Rechten 600 geschrieben; ein alter "watch"-Eintrag wird uebergangen.
+- Gemessen: Galaxy (0.2.15 ueber 0.2.14, fuenf Reiter, Einstellungen
+  erhalten), Windows-VM (`--view 4` gibt den Feed), Flatpak mit alten
+  Wallet-Einstellungen, Dienst mit alter Beobachtungsliste.
+- Seite: fuenf Ansichten ohne Nummern, als Zeilen mit Bild im Wechsel und
+  Bildansicht (`website/lichtbox.js`), Plattformen und Download in einem
+  Abschnitt mit Systemsymbolen (`website/symbole/`, Simple Icons CC0),
+  Impressum und Datenschutz DE/EN (`website/recht/`, ohne Telefonnummer,
+  ohne Art.-27-Vertreter), Fuss mit GitHub-Symbol und Sprachwahl.
+- **Nie** `daemon/orangedeck-dashtab` zum Pruefen starten: es beendet DMS
+  und baut die Ueberlagerung neu (am 26.09. durch einen Subagenten passiert).
+
 ## NACHTRAG 26.09.2026 -- 0.2.14 veroeffentlicht, Seite neu
 
 - **0.2.14 ist draussen** (Tag `v0.2.14` auf `7c93a4d`, Pin `bca8208`,
