@@ -215,6 +215,21 @@
        das Repo umgezogen ist, gehoert nicht hierher: es aendert nichts an der
        Anwendung. Das Datum ist vorlaeufig (19.09.2026). -->
   <releases>
+    <release version="0.2.15" date="2026-09-26">
+      <description>
+        <p>
+          The watch-only wallet is gone. OrangeDeck now shows the same five
+          views on every platform and asks for none of your addresses. A
+          watch list left in the service's configuration is ignored.
+        </p>
+        <p xml:lang="de">
+          Die Wallet zum Beobachten ist weg. OrangeDeck zeigt jetzt auf allen
+          Plattformen dieselben fuenf Ansichten und fragt nach keinen Adressen.
+          Eine Beobachtungsliste in der Konfiguration des Dienstes wird
+          uebergangen.
+        </p>
+      </description>
+    </release>
     <release version="0.2.14" date="2026-09-26">
       <description>
         <p>
