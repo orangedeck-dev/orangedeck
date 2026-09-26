@@ -87,7 +87,7 @@ public class WidgetKursGross extends GraphWidget {
     private double[] ersteGeschichte(Context c, double jetzt) {
         try {
             JSONObject h = new JSONObject(
-                holeVon("https://mempool.space/api/v1/historical-price?currency="
+                holeVon(api(c) + "/v1/historical-price?currency="
                         + waehrungSchluessel(c), 8000));
             JSONArray a = h.optJSONArray("prices");
             if (a == null || a.length() == 0)

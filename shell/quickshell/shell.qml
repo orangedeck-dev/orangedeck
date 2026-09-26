@@ -32,6 +32,7 @@ ShellRoot {
         property var tabOrder: []
         // "daemon" oder "direct" -- siehe FeedState.mode
         property string dataSource: "daemon"
+        property string mempoolHost: ""
         // Vorgabe USD, wie in app/qml/Main.qml und FeedTabs.
         property string currency: "usd"
         property string tileColorMode: "fee"
@@ -98,6 +99,7 @@ ShellRoot {
             "density": density,
             "startView": startView,
             "dataSource": dataSource,
+            "mempoolHost": mempoolHost,
             "colorMode": colorMode,
             "sizeMode": sizeMode,
             "showInfo": showInfo,
@@ -159,6 +161,8 @@ ShellRoot {
                 startView = value;
             else if (key === "dataSource")
                 dataSource = value;
+            else if (key === "mempoolHost")
+                mempoolHost = (value || "").trim();
             else if (key === "colorMode")
                 colorMode = value;
             else if (key === "sizeMode")
@@ -278,6 +282,7 @@ ShellRoot {
                 "density": density,
                 "startView": startView,
                 "dataSource": dataSource,
+            "mempoolHost": mempoolHost,
                 "currency": currency,
                 "tileColorMode": tileColorMode,
                 "clockBars": clockBars,
@@ -374,6 +379,8 @@ ShellRoot {
                         win.startView = Math.max(-1, v.startView);
                     if (v.dataSource)
                         win.dataSource = v.dataSource;
+                    if (typeof v.mempoolHost === "string")
+                        win.mempoolHost = v.mempoolHost;
                     if (v.currency)
                         win.currency = v.currency;
                     if (v.tileColorMode)
@@ -481,6 +488,7 @@ ShellRoot {
             id: feedState
 
             mode: win.dataSource
+            mempoolHost: win.mempoolHost
         }
 
         // **Alle Ansichten stehen in `FeedTabs`** -- dasselbe Bauteil wie im

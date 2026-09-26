@@ -79,7 +79,25 @@ public abstract class DeckWidget extends AppWidgetProvider {
      */
     protected abstract String[] werte(Context c) throws Exception;
 
-    private static final String API = "https://mempool.space/api";
+    /**
+     * Die Mempool-Instanz aus den Einstellungen der App, Schluessel
+     * {@code mempoolHost}, wie {@code FeedState.basisAus} in QML: leer ist
+     * mempool.space, ohne Schema https, ein angehaengtes "/api" faellt weg.
+     * Vor jedem Abruf eines Widgets neu gelesen ({@link #api(Context)}), damit
+     * eine Aenderung in der App beim naechsten Aufwachen gilt.
+     */
+    private static volatile String API = "https://mempool.space/api";
+
+    protected static String api(Context c) {
+        String h = ausEinstellungen(c, "mempoolHost");
+        h = h == null ? "" : h.trim();
+        if (h.isEmpty())
+            return "https://mempool.space/api";
+        if (!h.matches("(?i)^https?://.*"))
+            h = "https://" + h;
+        h = h.replaceAll("/+$", "").replaceAll("(?i)/api(/v1)?$", "").replaceAll("/+$", "");
+        return h + "/api";
+    }
 
     /**
      * **Alle Abrufe eines Widgets zusammen, nicht je Anfrage.** Am 15.09.2026
@@ -146,6 +164,7 @@ public abstract class DeckWidget extends AppWidgetProvider {
                     public void run() {
                         ENDE.set(System.currentTimeMillis() + BUDGET_MS);
                         try {
+                            API = api(c);
                             String[] w = werte(c);
                             merke(c, w);
                             synchronized (ergebnis) {

@@ -975,6 +975,16 @@ Daemon: `/lookup/<art>/<wert>`. Drei Gruende:
 1. Nur eine Stelle weiss, woher die Daten kommen -- der Wechsel auf einen
    eigenen Node ist `{"host": "mempool.eigenes.netz", "scheme": "http"}` in
    `sources.json`, und Feed, Kennzahlen und Explorer folgen alle.
+   Seit dem 26.09.2026 gibt es dafuer das Feld **Mempool-Instanz** unter
+   Einstellungen > Allgemein (`mempoolHost`). Es gilt im Direktbezug
+   (`FeedState.mempoolBasis`), fuer die Details einer Kachel, in den
+   Android-Widgets (`DeckWidget.api`) und fuer den Dienst: die Oberflaeche
+   schickt die Eingabe an `POST /config`, der Dienst schreibt sie in
+   `sources.json` und verbindet neu. Angenommen wird das nur von 127.0.0.1,
+   nur als JSON und ohne Origin-Kopf, damit weder ein Rechner im Netz noch
+   eine Webseite im Browser die Quelle umbiegt; eine fremde Instanz saehe
+   die Abfragen der beobachteten Adressen. Geprueft mit mempool.emzy.de und
+   mempool.ninja.
 2. Das Tablet spricht ohnehin nur mit dem Daemon.
 3. Ein Zwischenspeicher (45 s, fuer Unbestaetigtes 8 s) verhindert, dass jeder
    Klick eine Anfrage nach draussen ausloest.

@@ -83,6 +83,7 @@ Item {
     function buildOpts() {
         return ({
             "dataSource": root.get("dataSource", "auto"),
+            "mempoolHost": root.get("mempoolHost", ""),
             "currency": root.get("currency", "usd"),
             // Empty means FeedTabs uses the system language.
             "lang": root.get("lang", ""),
@@ -158,6 +159,7 @@ Item {
 
         pollMs: 500
         mode: root.get("dataSource", "auto")
+        mempoolHost: root.opts.mempoolHost || ""
     }
 
     Rectangle {

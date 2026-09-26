@@ -36,7 +36,7 @@ public class WidgetUhrGross extends DeckWidget {
     @Override
     protected String[] werte(Context c) throws Exception {
         // 1. Block: ohne ihn gibt es keine Uhr.
-        JSONArray a = new JSONArray(holeVon("https://mempool.space/api/v1/blocks", 3000));
+        JSONArray a = new JSONArray(holeVon(api(c) + "/v1/blocks", 3000));
         if (a.length() == 0)
             throw new IllegalStateException("keine Bloecke");
         long hoehe = a.getJSONObject(0).getLong("height");
@@ -45,13 +45,13 @@ public class WidgetUhrGross extends DeckWidget {
 
         try {
             JSONObject g = new JSONObject(
-                holeVon("https://mempool.space/api/v1/fees/recommended", 3000));
+                holeVon(api(c) + "/v1/fees/recommended", 3000));
             gebuehr = zahl(g.optDouble("halfHourFee", 0), 1) + " sat/vB";
         } catch (Exception e) { /* Spalte bleibt leer */ }
 
         try {
             JSONObject p = new JSONObject(
-                holeVon("https://mempool.space/api/v1/prices", 3000));
+                holeVon(api(c) + "/v1/prices", 3000));
             double wert = p.optDouble(waehrungSchluessel(c), 0);
             if (wert > 0) {
                 kurs = zahl(wert, 0) + " " + waehrungZeichen(c);
@@ -61,14 +61,14 @@ public class WidgetUhrGross extends DeckWidget {
 
         try {
             JSONObject m = new JSONObject(
-                holeVon("https://mempool.space/api/mempool", 3000));
+                holeVon(api(c) + "/mempool", 3000));
             mempool = zahl(m.optLong("count", 0), 0);
         } catch (Exception e) { /* Spalte bleibt leer */ }
 
         String diffLinks = null, diffRechts = null, fortschritt = "0";
         try {
             JSONObject d = new JSONObject(
-                holeVon("https://mempool.space/api/v1/difficulty-adjustment", 3000));
+                holeVon(api(c) + "/v1/difficulty-adjustment", 3000));
             double aend = d.optDouble("difficultyChange", 0);
             diffLinks = Texte.t(c, "schwierigkeit_links",
                                     (aend >= 0 ? "+" : "") + zahl(aend, 2));

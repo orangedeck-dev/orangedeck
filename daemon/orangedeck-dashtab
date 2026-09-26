@@ -96,6 +96,7 @@ Item {
     property string colorMode: SettingsData.getPluginSetting(pid, "colorMode", "age")
     property string sizeMode: SettingsData.getPluginSetting(pid, "sizeMode", "value")
     property string dataSource: SettingsData.getPluginSetting(pid, "dataSource", "daemon")
+    property string mempoolHost: SettingsData.getPluginSetting(pid, "mempoolHost", "")
     property string currency: SettingsData.getPluginSetting(pid, "currency", "usd")
     property string lang: SettingsData.getPluginSetting(pid, "lang", "") || Tr.systemLang(SessionData.locale)
     // Die Wallet-Ansicht bleibt aus, bis sie ausdruecklich eingeschaltet wird
@@ -164,6 +165,7 @@ Item {
 
     readonly property var opts: ({
         "dataSource": dataSource,
+        "mempoolHost": mempoolHost,
         "currency": currency,
         "lang": lang,
         "density": density,
@@ -259,6 +261,7 @@ Item {
         // Sieht niemand hin, wird auch nichts geholt
         active: root.live
         mode: root.dataSource
+        mempoolHost: root.mempoolHost
     }
 
     FeedTabs {

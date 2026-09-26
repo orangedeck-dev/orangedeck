@@ -93,6 +93,43 @@ Item {
     // reads `sources.json`.
     property var minerHosts: []
 
+    // The mempool instance, as typed into the settings: empty for
+    // mempool.space, otherwise "mempool.emzy.de", "https://mempool.ninja" or a
+    // node at home such as "http://umbrel.local:3006". `mempoolBasis` is the
+    // cleaned-up form every request is built from: scheme and host, no slash
+    // and no "/api" at the end. Without a scheme it is https; a node at home
+    // that only speaks http has to say so.
+    property string mempoolHost: ""
+    readonly property string mempoolBasis: root.basisAus(root.mempoolHost)
+    readonly property string mempoolApi: root.mempoolBasis + "/api"
+
+    function basisAus(eingabe) {
+        var h = String(eingabe || "").trim();
+        if (!h.length)
+            return "https://mempool.space";
+        if (!/^https?:\/\//i.test(h))
+            h = "https://" + h;
+        h = h.replace(/\/+$/, "").replace(/\/api(\/v1)?$/i, "").replace(/\/+$/, "");
+        return h;
+    }
+
+    // Tells the service on this machine to use the instance as well, so the
+    // setting holds everywhere and not only in direct mode. Only for the
+    // local service: one on another device takes its setting from its own
+    // machine, and it refuses such a request anyway (it accepts it from
+    // 127.0.0.1 only). Called by `FeedTabs` when the field changes, not on
+    // every start, so two windows with different values do not fight.
+    function dienstMempool(eingabe) {
+        if (!/^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/|$)/.test(root.endpoint))
+            return;
+        var x = new XMLHttpRequest();
+        try {
+            x.open("POST", root.endpoint + "/config");
+            x.setRequestHeader("Content-Type", "application/json");
+            x.send(JSON.stringify({ "mempool": String(eingabe || "").trim() }));
+        } catch (e) {}
+    }
+
     // Parsed state
     property var snap: ({})
     property var block: ({})          // tile data of the most recently found block
@@ -369,6 +406,11 @@ Item {
 
         active: root.direkt
         source: "DirectFeed.qml"
+        onLoaded: {
+            direkt.item.basis = Qt.binding(function () {
+                return root.mempoolBasis;
+            });
+        }
         onStatusChanged: {
             if (direkt.status === Loader.Error) {
                 root.lastError = "Direktbezug nicht verfuegbar (QtWebSockets fehlt)";

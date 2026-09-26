@@ -27,8 +27,11 @@ ihre Adresse per DHCP):
   orangedeck --discover-miners --write   sie in sources.json eintragen
 
 Zusaetzlich zu state.json bietet der Daemon die Daten unter
-http://127.0.0.1:21021/state, /block und /health an -- nur lesend und nur
+http://127.0.0.1:21021/state, /block und /health an -- lesend und nur
 lokal. ORANGEDECK_ADDR und ORANGEDECK_PORT aendern das, siehe Kommentar dort.
+Der einzige schreibende Weg ist POST /config {"mempool": "..."}: die
+Mempool-Instanz aus dem Feld der Einstellungen, nur von 127.0.0.1, nur als
+JSON und ohne Origin-Kopf (siehe do_POST).
 """
 import base64
 import collections
@@ -214,6 +217,76 @@ SOURCES = load_sources()
 # Feed, Kennzahlen und Explorer holen dann von dort.
 apply_host(SOURCES.get("host") or os.environ.get("ORANGEDECK_HOST"),
            SOURCES.get("scheme") or os.environ.get("ORANGEDECK_SCHEME"))
+
+# Der laufende WebSocket, damit ein Wechsel der Instanz ihn schliessen kann.
+WS_AKTUELL = [None]
+
+
+def mempool_zerlegen(eingabe):
+    """Die Eingabe aus dem Feld "Mempool-Instanz" wie `FeedState.basisAus`:
+    leer ist mempool.space, ohne Schema https, "/api" am Ende faellt weg.
+    Gibt (host, scheme) zurueck; host darf Port und Pfad tragen
+    ("umbrel.local:3006", "example.org/mempool"). None bei Unsinn."""
+    h = (eingabe or "").strip()
+    if not h:
+        return ("mempool.space", "https")
+    if not re.match(r"^https?://", h, re.I):
+        h = "https://" + h
+    teile = urlparse(h)
+    pfad = re.sub(r"/api(/v1)?/*$", "", teile.path.rstrip("/"), flags=re.I).rstrip("/")
+    if teile.scheme.lower() not in ("http", "https") or not teile.netloc:
+        return None
+    if not re.match(r"^[A-Za-z0-9.\-:\[\]]+$", teile.netloc):
+        return None
+    if pfad and not re.match(r"^[A-Za-z0-9._~/\-]+$", pfad):
+        return None
+    return (teile.netloc + pfad, teile.scheme.lower())
+
+
+def mempool_umstellen(feed, eingabe):
+    """Die Instanz wechseln, in sources.json festhalten und neu verbinden.
+
+    Kommt aus `POST /config`, also aus einer Oberflaeche auf diesem Rechner,
+    wenn dort das Feld geaendert wurde. Leer entfernt den Eintrag wieder;
+    dann gilt ORANGEDECK_HOST oder mempool.space."""
+    ziel = mempool_zerlegen(eingabe)
+    if ziel is None:
+        return False
+    roh = {}
+    try:
+        with open(SOURCES_FILE) as f:
+            roh = json.load(f) or {}
+    except Exception:
+        roh = {}
+    if (eingabe or "").strip():
+        roh["host"], roh["scheme"] = ziel
+    else:
+        roh.pop("host", None)
+        roh.pop("scheme", None)
+        if os.environ.get("ORANGEDECK_HOST"):
+            ziel = (os.environ["ORANGEDECK_HOST"],
+                    os.environ.get("ORANGEDECK_SCHEME") or "https")
+    os.makedirs(os.path.dirname(SOURCES_FILE), exist_ok=True)
+    tmp = SOURCES_FILE + ".neu"
+    with open(tmp, "w") as f:
+        json.dump(roh, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    os.replace(tmp, SOURCES_FILE)
+    if (HOST, SCHEME) == ziel:
+        return True
+    apply_host(*ziel)
+    sys.stderr.write("Mempool-Instanz: %s://%s\n" % (SCHEME, HOST))
+    # Was von der alten Instanz kam, faellt weg; der WebSocket wird
+    # geschlossen, und die Schleife in main() verbindet mit der neuen.
+    feed.recent = []
+    feed.projected = []
+    ws = WS_AKTUELL[0]
+    if ws is not None:
+        try:
+            ws.sock.shutdown(socket.SHUT_RDWR)
+        except Exception:
+            pass
+    return True
 
 # Wie oft die langsamen Kennzahlen geholt werden. Schwierigkeit und Hashrate
 # aendern sich im Stunden- bis Tagestakt -- alle fuenf Minuten ist reichlich.
@@ -2149,6 +2222,7 @@ class Feed:
         d = {
             "ts": round(time.time(), 2),
             "source": self.source,
+            "instance": "%s://%s" % (SCHEME, HOST),
             "error": self.error,
             "mempool": self.mempool,
             "fees": self.fees,
@@ -2403,6 +2477,41 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(raw)
+
+    def do_POST(self):
+        """Der einzige schreibende Weg: die Mempool-Instanz umstellen.
+
+        **Nur vom eigenen Rechner.** Lauscht der Dienst im Netz
+        (ORANGEDECK_ADDR), darf trotzdem niemand dort die Quelle umbiegen:
+        eine fremde Instanz saehe die Abfragen der beobachteten Adressen.
+        **Nur JSON und ohne Origin**, damit auch eine Webseite im Browser auf
+        diesem Rechner es nicht kann: Browser schicken bei jeder fremden
+        POST-Anfrage einen Origin-Kopf mit, und fuer JSON fragen sie vorher
+        per OPTIONS, das dieser Dienst nicht beantwortet."""
+        if urlparse(self.path).path != "/config":
+            self._send(json.dumps({"error": "unbekannt"}), 404)
+            return
+        adresse = self.client_address[0] if self.client_address else ""
+        if adresse not in ("127.0.0.1", "::1", "::ffff:127.0.0.1"):
+            self._send(json.dumps({"error": "nur lokal"}), 403)
+            return
+        if self.headers.get("Origin") or \
+                (self.headers.get("Content-Type") or "").split(";")[0].strip() != "application/json":
+            self._send(json.dumps({"error": "abgelehnt"}), 403)
+            return
+        try:
+            laenge = int(self.headers.get("Content-Length") or 0)
+            if laenge <= 0 or laenge > 4096:
+                raise ValueError
+            d = json.loads(self.rfile.read(laenge).decode("utf-8"))
+            eingabe = str(d.get("mempool", ""))
+        except Exception:
+            self._send(json.dumps({"error": "Anfrage nicht lesbar"}), 400)
+            return
+        if not mempool_umstellen(self.feed, eingabe):
+            self._send(json.dumps({"error": "Adresse nicht gueltig"}), 400)
+            return
+        self._send(json.dumps({"ok": True, "instance": "%s://%s" % (SCHEME, HOST)}))
 
     def do_GET(self):
         zerlegt = urlparse(self.path)
@@ -3514,7 +3623,8 @@ def handle_projected(feed, p):
 
 
 def run_ws(feed, still_max=None):
-    ws = WebSocket(WS_URL, origin=f"https://{HOST}")
+    ws = WebSocket(WS_URL, origin=f"{SCHEME}://{HOST}")
+    WS_AKTUELL[0] = ws
     feed.source = "ws"
     feed.error = ""
 

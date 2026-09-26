@@ -579,6 +579,10 @@ Item {
         }
         onChanged: function (key, value) {
             root.optRequested(key, value);
+            // The instance also goes to the local service, so it holds in every
+            // mode (FeedState.dienstMempool).
+            if (key === "mempoolHost" && root.feed)
+                root.feed.dienstMempool(value);
         }
     }
 

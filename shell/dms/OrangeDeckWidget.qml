@@ -47,6 +47,7 @@ PluginComponent {
         // more than needed.
         pollMs: 2000
         mode: root.get("dataSource", "auto")
+        mempoolHost: root.opts.mempoolHost || ""
     }
 
     // ------------------------------------------------------ Settings
@@ -70,6 +71,7 @@ PluginComponent {
     function buildOpts() {
         return ({
             "dataSource": root.get("dataSource", "auto"),
+            "mempoolHost": root.get("mempoolHost", ""),
             "currency": root.get("currency", "usd"),
             // Empty means FeedTabs uses the system language.
             "lang": root.get("lang", ""),

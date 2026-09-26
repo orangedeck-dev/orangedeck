@@ -665,7 +665,8 @@ Item {
         root.inOutKey = txid;
         root.inOutText = "";
         var req = new XMLHttpRequest();
-        req.open("GET", "https://mempool.space/api/tx/" + txid);
+        // The instance from the settings, like everything else in direct mode.
+        req.open("GET", (root.feed ? root.feed.mempoolApi : "https://mempool.space/api") + "/tx/" + txid);
         req.onreadystatechange = function () {
             if (req.readyState !== XMLHttpRequest.DONE)
                 return;

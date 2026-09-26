@@ -142,6 +142,9 @@ Window {
     // weiss -- auch die watch-only-Adressen aus der Wallet. Ein Heimnetz ist
     // kein Personenkreis.
     property string daemonHost: ""
+    // The mempool instance for every mode: FeedState.mempoolHost. The Android
+    // widgets read the same key from this settings file (DeckWidget.api).
+    property string mempoolHost: ""
     readonly property string effEndpoint: {
         var h = win.daemonHost.trim();
         if (!h.length)
@@ -303,6 +306,7 @@ Window {
         property alias minerFieldsRaw: win.minerFieldsRaw
         property alias minerHostsRaw: win.minerHostsRaw
         property alias daemonHost: win.daemonHost
+        property alias mempoolHost: win.mempoolHost
         property alias showHeader: win.showHeader
         property alias showFooter: win.showFooter
         property alias showBlock: win.showBlock
@@ -414,6 +418,8 @@ Window {
         // Zaehler in /health, dass von der App gar keine Anfrage kam.
         else if (key === "daemonHost")
             win.daemonHost = (value || "").trim();
+        else if (key === "mempoolHost")
+            win.mempoolHost = (value || "").trim();
         else if (key === "colorMode")
             win.colorMode = value;
         else if (key === "sizeMode")
@@ -528,6 +534,7 @@ Window {
         "startView": win.startView,
         "dataSource": win.dataSource,
         "daemonHost": win.daemonHost,
+        "mempoolHost": win.mempoolHost,
         "dienstMoeglich": win.dienstMoeglich,
         "colorMode": win.colorMode,
         "sizeMode": win.sizeMode,
@@ -599,6 +606,7 @@ Window {
         // Die Adressen der Miner. Im Daemon-Betrieb ungenutzt -- dort liest
         // der Dienst `sources.json`.
         minerHosts: win.minerHosts
+        mempoolHost: win.mempoolHost
     }
 
     // **Der Rand, den sich das System nimmt.** Ab Android 15 (API 35)

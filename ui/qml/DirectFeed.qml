@@ -30,9 +30,30 @@ Item {
     visible: false
 
     property bool active: true
-    property string host: "mempool.space"
-    readonly property string api: "https://" + root.host + "/api"
-    readonly property string wsUrl: "wss://" + root.host + "/api/v1/ws"
+    // The instance, from `FeedState.mempoolBasis`: "https://mempool.space" or
+    // whatever the settings say. http becomes ws, https becomes wss.
+    property string basis: "https://mempool.space"
+    readonly property string api: root.basis + "/api"
+    readonly property string wsUrl: root.basis.replace(/^http/i, "ws") + "/api/v1/ws"
+
+    // **A different instance is a fresh start.** What came from the old one
+    // (the pile, the projected block, the tip) would otherwise stay next to
+    // what the new one sends, and the connection has to be opened again: the
+    // WebSocket does not follow a changed url by itself.
+    onBasisChanged: {
+        root.__recent = [];
+        root.__projected = [];
+        root.__nextBlock = ({});
+        root.__tip = ({});
+        root.__dirty = true;
+        sock.active = false;
+        Qt.callLater(function () {
+            sock.active = Qt.binding(function () {
+                return root.active;
+            });
+            root.__slow();
+        });
+    }
 
     // How often the collected state is passed on. The daemon writes at the same
     // rate; anything faster only costs CPU because the display is not faster

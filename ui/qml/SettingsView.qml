@@ -624,6 +624,23 @@ Item {
                     }
                 }
 
+                // The mempool instance. For every mode and every host: in direct
+                // mode the window asks it itself, in daemon mode the local
+                // service is switched over too (FeedState.dienstMempool), and
+                // the Android widgets read it from the same settings.
+                Zeile {
+                    label: Tr.t("set.mempoolHost", root.lang)
+                    help: Tr.t("set.mempoolHostHelp", root.lang)
+
+                    Textzeile {
+                        wert: root.val("mempoolHost", "")
+                        platzhalter: "mempool.space"
+                        onUebernommen: function (neu) {
+                            root.changed("mempoolHost", neu);
+                        }
+                    }
+                }
+
                 Zeile {
                     label: Tr.t("set.currency", root.lang)
                     help: Tr.t("set.currencyHelp", root.lang)
