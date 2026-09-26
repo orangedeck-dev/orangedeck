@@ -110,7 +110,7 @@
     ],
     [
       "Nessun server nostro",
-      "Parla con mempool.space o, tramite il servizio su Linux, con il proprio nodo. Nessun conteggio, nessun rapporto sugli arresti anomali, nessun account."
+      "Parla con mempool.space o con l’istanza scelta, compreso il proprio nodo. Nessun conteggio, nessun rapporto sugli arresti anomali, nessun account."
     ],
     [
       "Misurato, non indovinato",
@@ -180,7 +180,7 @@
     ],
     [
       "Da dove vengono i dati?",
-      "Da mempool.space come impostazione predefinita. Su Linux, il servizio di OrangeDeck può usare la propria istanza di mempool o un’altra pubblica; basta una riga nel suo file di configurazione. I dati di mercato vengono dai feed pubblici degli exchange."
+      "Da mempool.space come impostazione predefinita. Nelle impostazioni si può indicare un’altra istanza pubblica di mempool o il proprio nodo; la scelta vale poi ovunque, anche nei widget e nel servizio. I dati di mercato vengono dai feed pubblici degli exchange."
     ],
     [
       "Manda dati a casa?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Blocchi, mempool, commissioni, hashrate",
-      "Il WebSocket pubblico di mempool.space. Su Linux, il servizio di OrangeDeck può usare al suo posto la propria istanza di mempool o un’altra pubblica."
+      "Il WebSocket pubblico di mempool.space, di un’altra istanza pubblica di mempool o del proprio nodo. Si sceglie nel campo Istanza mempool delle impostazioni."
     ],
     [
       "Prezzo e scambi",
@@ -320,7 +320,7 @@
         ],
         [
           "Mi serve un nodo mio?",
-          "No. I numeri vengono da mempool.space. Su Linux, il servizio di OrangeDeck può usare al suo posto una tua istanza di mempool."
+          "No. I numeri vengono da mempool.space. Se gestisci una tua istanza di mempool, inserisci il suo indirizzo nelle impostazioni e l’orologio userà quella."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Candele o linea, volume o CVD, periodo, mirino e nastro degli scambi, ognuno con la sua impostazione."
     ],
     [
-      "Lingua, valuta, aspetto",
-      "Tredici lingue, sette valute, opacità della finestra e sfocatura dietro il testo."
+      "Lingua, valuta, origine dei dati",
+      "Tredici lingue, sette valute e qualsiasi istanza di mempool, compreso il proprio nodo."
     ]
   ]
 }

@@ -110,7 +110,7 @@
     ],
     [
       "Żadnego naszego serwera",
-      "Łączy się z mempool.space albo, przez usługę w systemie Linux, z twoim własnym węzłem. Nie ma liczenia użytkowników, raportów o awariach ani konta."
+      "Łączy się z mempool.space albo z wybraną przez ciebie instancją, także z twoim własnym węzłem. Nie ma liczenia użytkowników, raportów o awariach ani konta."
     ],
     [
       "Zmierzone, nie zgadywane",
@@ -180,7 +180,7 @@
     ],
     [
       "Skąd pochodzą dane?",
-      "Domyślnie z mempool.space. W systemie Linux usługa OrangeDeck może korzystać z twojej własnej instancji mempool albo z innej publicznej; wystarczy jedna linijka w jej pliku konfiguracyjnym. Dane rynkowe pochodzą z publicznych strumieni giełd."
+      "Domyślnie z mempool.space. W ustawieniach możesz wpisać inną publiczną instancję mempool albo własny węzeł; ten wybór obowiązuje wtedy wszędzie, także w widżetach i w usłudze. Dane rynkowe pochodzą z publicznych strumieni giełd."
     ],
     [
       "Czy wysyła coś do autora?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Bloki, mempool, opłaty, hashrate",
-      "Publiczny WebSocket mempool.space. W systemie Linux usługa OrangeDeck może zamiast tego korzystać z twojej własnej instancji mempool albo z innej publicznej."
+      "Publiczny WebSocket mempool.space, innej publicznej instancji mempool albo twojego własnego węzła. Wybiera się go w polu „Instancja mempool” w ustawieniach."
     ],
     [
       "Kurs i transakcje",
@@ -320,7 +320,7 @@
         ],
         [
           "Czy potrzebuję własnego węzła?",
-          "Nie. Liczby pochodzą z mempool.space. W systemie Linux usługa OrangeDeck może zamiast tego korzystać z twojej własnej instancji mempool."
+          "Nie. Liczby pochodzą z mempool.space. Jeśli masz własną instancję mempool, wpisz jej adres w ustawieniach, a zegar będzie z niej korzystał."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Świece albo linia, wolumen albo CVD, zakres, celownik i taśma transakcji: każde z nich ustawiasz osobno."
     ],
     [
-      "Język, waluta, wygląd",
-      "Trzynaście języków, siedem walut, krycie okna i rozmycie za tekstem."
+      "Język, waluta, źródło danych",
+      "Trzynaście języków, siedem walut i dowolna instancja mempool, także twój własny węzeł."
     ]
   ]
 }

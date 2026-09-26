@@ -110,7 +110,7 @@
     ],
     [
       "Ningún servidor propio",
-      "Habla con mempool.space o, a través del servicio en Linux, con tu propio nodo. No hay recuento de usuarios, ni informes de fallos, ni cuenta."
+      "Habla con mempool.space o con la instancia que elijas, incluido tu propio nodo. No hay recuento de usuarios, ni informes de fallos, ni cuenta."
     ],
     [
       "Medido, no supuesto",
@@ -180,7 +180,7 @@
     ],
     [
       "¿De dónde salen los datos?",
-      "Por defecto, de mempool.space. En Linux, el servicio de OrangeDeck puede usar tu propia instancia de mempool u otra pública; basta con una línea en su archivo de configuración. Los datos de mercado vienen de los canales públicos de los exchanges."
+      "Por defecto, de mempool.space. En los ajustes puedes indicar otra instancia pública de mempool o tu propio nodo; a partir de ahí se usa en todas partes, también en los widgets y en el servicio. Los datos de mercado vienen de los canales públicos de los exchanges."
     ],
     [
       "¿Envía datos a algún sitio?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Bloques, mempool, comisiones, tasa de hash",
-      "El WebSocket público de mempool.space. En Linux, el servicio de OrangeDeck puede usar en su lugar tu propia instancia de mempool u otra pública."
+      "El WebSocket público de mempool.space, de otra instancia pública de mempool o de tu propio nodo. Se elige en el campo Instancia de mempool de los ajustes."
     ],
     [
       "Precio y operaciones",
@@ -320,7 +320,7 @@
         ],
         [
           "¿Necesito un nodo propio?",
-          "No. Las cifras vienen de mempool.space. En Linux, el servicio de OrangeDeck puede usar en su lugar tu propia instancia de mempool."
+          "No. Las cifras vienen de mempool.space. Si tienes tu propia instancia de mempool, introduce su dirección en los ajustes y el reloj la usará."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Velas o línea, volumen o CVD, intervalo, retícula y cinta de operaciones, cada uno con su propio ajuste."
     ],
     [
-      "Idioma, moneda, aspecto",
-      "Trece idiomas, siete monedas, opacidad de la ventana y desenfoque tras el texto."
+      "Idioma, moneda, fuente de datos",
+      "Trece idiomas, siete monedas y cualquier instancia de mempool, incluido tu propio nodo."
     ]
   ]
 }

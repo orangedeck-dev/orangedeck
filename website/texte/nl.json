@@ -110,7 +110,7 @@
     ],
     [
       "Geen server van ons",
-      "Het praat met mempool.space, of via de dienst op Linux met je eigen node. Er wordt niets geteld, er zijn geen crashrapporten en er is geen account."
+      "Het praat met mempool.space of met de instantie die je kiest, ook je eigen node. Er wordt niets geteld, er zijn geen crashrapporten en er is geen account."
     ],
     [
       "Gemeten, niet geraden",
@@ -180,7 +180,7 @@
     ],
     [
       "Waar komen de gegevens vandaan?",
-      "Standaard van mempool.space. Op Linux kan de OrangeDeck-dienst je eigen mempool-instantie of een andere openbare gebruiken; dat is één regel in zijn configuratiebestand. Marktgegevens komen uit de openbare feeds van de beurzen."
+      "Standaard van mempool.space. In de instellingen kun je een andere openbare mempool-instantie of je eigen node invullen; die keuze geldt dan overal, ook in de widgets en de dienst. Marktgegevens komen uit de openbare feeds van de beurzen."
     ],
     [
       "Stuurt het gegevens naar huis?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Blokken, mempool, kosten, hashrate",
-      "De openbare WebSocket van mempool.space. Op Linux kan de OrangeDeck-dienst in plaats daarvan je eigen mempool-instantie of een andere openbare gebruiken."
+      "De openbare WebSocket van mempool.space, van een andere openbare mempool-instantie of van je eigen node. Dat kies je in het veld Mempool-instantie in de instellingen."
     ],
     [
       "Koers en transacties",
@@ -320,7 +320,7 @@
         ],
         [
           "Heb ik een eigen node nodig?",
-          "Nee. De cijfers komen van mempool.space. Op Linux kan de OrangeDeck-dienst in plaats daarvan je eigen mempool-instantie gebruiken."
+          "Nee. De cijfers komen van mempool.space. Draai je een eigen mempool-instantie, vul dan het adres in bij de instellingen en de klok gebruikt die."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Kaarsen of lijn, volume of CVD, periode, draadkruis en transactielint stel je elk apart in."
     ],
     [
-      "Taal, valuta, uiterlijk",
-      "Dertien talen, zeven valuta, vensterdekking en vervaging achter de tekst."
+      "Taal, valuta, gegevensbron",
+      "Dertien talen, zeven valuta en elke mempool-instantie, ook je eigen node."
     ]
   ]
 }

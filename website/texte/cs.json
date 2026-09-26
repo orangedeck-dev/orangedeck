@@ -110,7 +110,7 @@
     ],
     [
       "Žádný náš server",
-      "Komunikuje s mempool.space, nebo přes službu v Linuxu s vaším vlastním uzlem. Nesbírá statistiky, neposílá hlášení o pádech a nepotřebuje účet."
+      "Komunikuje s mempool.space nebo s instancí, kterou si zvolíte, včetně vašeho vlastního uzlu. Nesbírá statistiky, neposílá hlášení o pádech a nepotřebuje účet."
     ],
     [
       "Změřeno, ne odhadnuto",
@@ -180,7 +180,7 @@
     ],
     [
       "Odkud pocházejí data?",
-      "Standardně z mempool.space. V Linuxu může služba OrangeDeck používat vaši vlastní instanci mempool nebo jinou veřejnou, stačí k tomu jeden řádek v jejím konfiguračním souboru. Tržní data pocházejí z veřejných kanálů burz."
+      "Standardně z mempool.space. V nastavení můžete zadat jinou veřejnou instanci mempool nebo vlastní uzel; tato volba pak platí všude, včetně widgetů a služby. Tržní data pocházejí z veřejných kanálů burz."
     ],
     [
       "Posílá něco domů?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Bloky, mempool, poplatky, hashrate",
-      "Veřejný WebSocket mempool.space. V Linuxu může služba OrangeDeck místo něj používat vaši vlastní instanci mempool nebo jinou veřejnou."
+      "Veřejný WebSocket mempool.space, jiné veřejné instance mempool nebo vašeho vlastního uzlu. Vybírá se v poli „Instance mempool“ v nastavení."
     ],
     [
       "Kurz a obchody",
@@ -320,7 +320,7 @@
         ],
         [
           "Potřebuji vlastní uzel?",
-          "Ne. Čísla pocházejí z mempool.space. V Linuxu může služba OrangeDeck místo toho používat vaši vlastní instanci mempool."
+          "Ne. Čísla pocházejí z mempool.space. Pokud provozujete vlastní instanci mempool, zadejte její adresu v nastavení a hodiny ji budou používat."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Svíčky nebo čára, objem nebo CVD, období, nitkový kříž a pás obchodů se nastavují každé zvlášť."
     ],
     [
-      "Jazyk, měna, vzhled",
-      "Třináct jazyků, sedm měn, krytí okna a rozostření za textem."
+      "Jazyk, měna, zdroj dat",
+      "Třináct jazyků, sedm měn a libovolná instance mempool, včetně vašeho vlastního uzlu."
     ]
   ]
 }

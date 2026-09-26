@@ -1,5 +1,17 @@
 [
   {
+    "v": "0.2.14",
+    "datum": "2026-09-26",
+    "en": [
+      "A field in the settings chooses the mempool instance: mempool.space, another public one or your own node. It applies everywhere, including the Android widgets and the service on Linux.",
+      "The service accepts that change only from the same computer, not from the network and not from a website in a browser."
+    ],
+    "de": [
+      "Ein Feld in den Einstellungen wählt die Mempool-Instanz: mempool.space, eine andere öffentliche oder den eigenen Node. Es gilt überall, auch in den Android-Widgets und im Dienst unter Linux.",
+      "Der Dienst nimmt diese Änderung nur vom selben Rechner an, nicht aus dem Netz und nicht von einer Webseite im Browser."
+    ]
+  },
+  {
     "v": "0.2.13",
     "datum": "2026-09-25",
     "en": [

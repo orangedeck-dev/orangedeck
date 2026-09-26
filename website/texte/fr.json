@@ -110,7 +110,7 @@
     ],
     [
       "Aucun serveur à nous",
-      "Il parle à mempool.space ou, via le service sous Linux, à votre propre nœud. Pas de comptage, pas de rapports de plantage, pas de compte."
+      "Il parle à mempool.space ou à l’instance de votre choix, y compris votre propre nœud. Pas de comptage, pas de rapports de plantage, pas de compte."
     ],
     [
       "Mesuré, pas deviné",
@@ -180,7 +180,7 @@
     ],
     [
       "D’où viennent les données ?",
-      "De mempool.space par défaut. Sous Linux, le service OrangeDeck peut utiliser votre propre instance mempool ou une autre instance publique ; il suffit d’une ligne dans son fichier de configuration. Les données de marché viennent des flux publics des plateformes d’échange."
+      "De mempool.space par défaut. Dans les paramètres, vous pouvez indiquer une autre instance mempool publique ou votre propre nœud ; ce choix s’applique alors partout, y compris aux widgets et au service. Les données de marché viennent des flux publics des plateformes d’échange."
     ],
     [
       "Envoie-t-il des données quelque part ?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Blocs, mempool, frais, hashrate",
-      "Le WebSocket public de mempool.space. Sous Linux, le service OrangeDeck peut utiliser à la place votre propre instance mempool ou une autre instance publique."
+      "Le WebSocket public de mempool.space, d’une autre instance mempool publique ou de votre propre nœud. Il se choisit dans le champ Instance mempool des paramètres."
     ],
     [
       "Cours et transactions",
@@ -320,7 +320,7 @@
         ],
         [
           "Ai-je besoin de mon propre nœud ?",
-          "Non. Les chiffres viennent de mempool.space. Sous Linux, le service OrangeDeck peut utiliser votre propre instance mempool à la place."
+          "Non. Les chiffres viennent de mempool.space. Si vous faites tourner votre propre instance mempool, saisissez son adresse dans les paramètres et l’horloge l’utilisera."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Chandelles ou courbe, volume ou CVD, période, réticule et bande des transactions, chacun avec son propre réglage."
     ],
     [
-      "Langue, devise, apparence",
-      "Treize langues, sept devises, opacité de la fenêtre et flou derrière le texte."
+      "Langue, devise, source des données",
+      "Treize langues, sept devises et n’importe quelle instance mempool, y compris votre propre nœud."
     ]
   ]
 }
