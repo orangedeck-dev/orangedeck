@@ -1,5 +1,5 @@
-<!-- Der Text unten ist der Entwurf fuer 0.2.13 (25.09.2026). Die Texte von
-     0.2.8 bis 0.2.12 stehen in der Geschichte dieser Datei.
+<!-- Der Text unten ist der Entwurf fuer 0.2.14 (26.09.2026). Die Texte von
+     0.2.8 bis 0.2.13 stehen in der Geschichte dieser Datei.
 
      **Die Pruefliste gilt fuer jede Nummer, nicht nur fuer die, bei der sie
      entstand.** Am 14.09.2026 nannte sie fuer 0.2.9 nur Windows und das
@@ -42,16 +42,16 @@
 
 A Bitcoin dashboard with the mempool as a live tile mosaic, a block height clock, mining figures for the whole network and your own Bitaxe, a block explorer and the BTC market. MIT licensed, no account needed.
 
-This release fixes four things that looked wrong outside of the German interface or outside of the system it was built on.
+This release lets you choose where the data comes from.
 
-## What's new since 0.2.12
+## What's new since 0.2.13
 
-- Numbers and dates follow the language of the interface. The English interface showed German forms next to English text, such as "0,01" in the legend, "78.324 transactions" and "19.09.2026". Now it writes 0.01 and 78,324, and dates in English are written as 2026-09-25, so day and month cannot be mixed up.
-- The fee rate in the details of a mempool tile matches the size and fee shown above it. It came from mempool.space, which includes parent transactions and sigops, so it could differ from fee divided by size in the same box. The tooltip now shows its own calculation. If the effective rate differs, it has a line of its own, and the tile keeps its color by the effective rate, because that is the one miners choose by.
-- The price axis in the market view is no longer cut off at the right edge. On Ubuntu and Fedora the last digit was missing, because the labels were measured in a different font than the one they were drawn in.
-- On Linux the window shows its icon in the title bar and the taskbar. It had none on Fedora with KDE. The window now carries the icon itself, and the desktop file names the window class for X11.
+- A new field in the settings, Mempool instance, under General. Leave it empty for mempool.space, or enter another public instance such as mempool.emzy.de or mempool.ninja, or your own node, for example http://umbrel.local:3006. Without a scheme the address is taken as https, and an /api at the end does not matter.
+- The instance applies everywhere: the live feed and every view in direct mode, the details of a mempool tile, the explorer, the Android widgets, and the OrangeDeck service on Linux. When the field changes, the service on the same computer switches over, saves the address in sources.json and reconnects.
+- The service accepts that change only from the same computer, only as JSON and never with an Origin header. No other device on the network and no website in a browser can point it somewhere else. This matters because the service also asks the instance about the addresses you watch.
+- The data source choice now reads "Directly to the mempool instance" instead of naming mempool.space.
 
-## Windows: `orangedeck-0.2.13-windows-x86_64.zip`
+## Windows: `orangedeck-0.2.14-windows-x86_64.zip`
 
 Unzip anywhere and run `orangedeck-app.exe`. Requires Windows 10 or 11, 64-bit.
 
@@ -63,13 +63,13 @@ To start a widget, for example the block clock in the top right corner:
 
 Click a widget and press Q to close it. Details are in `packaging/widgets/README.md`.
 
-## Android: `orangedeck-0.2.13-arm64-v8a.apk`
+## Android: `orangedeck-0.2.14-arm64-v8a.apk`
 
-For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.12.
+For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.13.
 
 Please check the signature before installing:
 
-    apksigner verify --print-certs orangedeck-0.2.13-arm64-v8a.apk
+    apksigner verify --print-certs orangedeck-0.2.14-arm64-v8a.apk
 
 The SHA-256 fingerprint of the signing certificate must be:
 
@@ -79,9 +79,9 @@ The same APK is also in the OrangeDeck F-Droid repository, which keeps it up to 
 
     https://fdroid.orangedeck.dev/repo?fingerprint=06E62F144A293077C333DE18FA6076364FE7FB0718F1F3D6E8897E7291DC4C59
 
-## Linux: `orangedeck-0.2.13.flatpak`
+## Linux: `orangedeck-0.2.14.flatpak`
 
-    flatpak install --user orangedeck-0.2.13.flatpak
+    flatpak install --user orangedeck-0.2.14.flatpak
 
 This pulls the KDE runtime 6.9 from Flathub. All six views are included on Linux. To serve the wallet to other Linux computers on your network:
 
@@ -91,29 +91,28 @@ This pulls the KDE runtime 6.9 from Flathub. All six views are included on Linux
 
 ## Tested on
 
-- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.12 with its settings kept: the tabs with live data, German numbers and dates, and the full price axis in the market view.
-- Windows 11 in a VM with a German system, this ZIP: feed and market with live data, the fee rate in the details of a tile matches fee divided by size, and the price axis shows every digit.
-- This Flatpak bundle, freshly installed in live sessions of Ubuntu 24.04 with GNOME and Fedora 44 with KDE, both in English: feed and market with live data, English numbers and dates, the fee rate in the tile details matches its own numbers, and the price axis shows every digit. On Fedora the icon shows in the title bar and the taskbar. On Ubuntu the dock showed a generic icon, because flatpak was installed into the running live session and the session did not know its path yet; on an installed system that is set at login.
-- Not tested yet: macOS, real tablets, and display scaling above 100% on Windows. If something looks wrong, please open an issue.
+- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.13 with its settings kept: the field under General, the clock with live data from mempool.emzy.de, and "no connection" with an address that does not exist.
+- Windows 11 in a VM with a German system, this ZIP: the clock with live data with the field empty, "no connection" with an address that does not exist, and live data again with mempool.ninja. The field shows under General.
+- This Flatpak bundle on a Linux desktop, in English: the same three cases with the same results, and the field under General.
+- The service on Linux: switched to mempool.ninja and back through the field's request, with the address saved and the connection renewed; requests from the network, with an Origin header or not as JSON were refused.
+- Not tested in this release: the live sessions of Ubuntu and Fedora, macOS, real tablets, and display scaling above 100% on Windows. If something looks wrong, please open an issue.
 
 ## Checksums (SHA-256)
 
-    8999e5f5536606e462ecc7838ca52b8836fee08b12d993806357638c72c81c2c  orangedeck-0.2.13-windows-x86_64.zip
-    ef54af3ef4e7dcaec78bbb81be18ddf87c9708160c80187c8e8219928ef85e07  orangedeck-0.2.13-arm64-v8a.apk
-    85872cb477a8f495f37e79e379e27a4fe09644c7819110a493cd719caa625542  orangedeck-0.2.13.flatpak
+    fb792156e52c5d705f3c5dd7328d009e487741a5dd954a65e89f85c48b7bcd74  orangedeck-0.2.14-windows-x86_64.zip
+    5765cb87c3e81409bb9faab209690f9a74cbd517d4974f11c98723dc6981b0eb  orangedeck-0.2.14-arm64-v8a.apk
+    e45c8b74ab0a336b823eb440988f64e200349f689dec0bb975806ca817bcaf9f  orangedeck-0.2.14.flatpak
 
 ---
 
 ## Deutsch
 
-0.2.13 behebt vier Dinge, die außerhalb der deutschen Oberfläche oder außerhalb des Systems, auf dem gebaut wurde, falsch aussahen.
+0.2.14 lässt wählen, woher die Daten kommen.
 
-Zahlen und Datum folgen der Sprache der Oberfläche. In der englischen Oberfläche standen deutsche Schreibweisen neben englischem Text, etwa "0,01" in der Legende, "78.324 transactions" und "19.09.2026". Jetzt steht dort 0.01 und 78,324, und das Datum steht auf Englisch als 2026-09-25, damit Tag und Monat nicht zu verwechseln sind.
+In den Einstellungen gibt es unter Allgemein ein neues Feld, Mempool-Instanz. Leer bleibt es bei mempool.space. Eingetragen werden kann eine andere öffentliche Instanz wie mempool.emzy.de oder mempool.ninja oder der eigene Node, etwa http://umbrel.local:3006. Ohne Schema gilt https, und ein /api am Ende stört nicht.
 
-Die Gebührenrate in den Angaben einer Mempool-Kachel passt zu Größe und Gebühr darüber. Sie kam von mempool.space und rechnet Vorgänger-Transaktionen und Sigops mit, deshalb konnte sie von Gebühr geteilt durch Größe im selben Kasten abweichen. Der Tooltip zeigt jetzt die eigene Rechnung. Weicht die wirksame Rate ab, steht sie in einer eigenen Zeile, und die Kachel behält ihre Farbe nach der wirksamen Rate, weil Miner nach ihr auswählen.
+Die Instanz gilt überall: im Live-Feed und in allen Ansichten im Direktbezug, in den Details einer Mempool-Kachel, im Explorer, in den Android-Widgets und im OrangeDeck-Dienst unter Linux. Ändert sich das Feld, stellt der Dienst auf demselben Rechner mit um, speichert die Adresse in sources.json und verbindet sich neu.
 
-Die Preisachse im Markt wird am rechten Rand nicht mehr abgeschnitten. Unter Ubuntu und Fedora fehlte die letzte Ziffer, weil die Beschriftung in einer anderen Schrift gemessen wurde, als in der sie gezeichnet wird.
+Der Dienst nimmt diese Änderung nur vom selben Rechner an, nur als JSON und nie mit einem Origin-Kopf. Kein anderes Gerät im Netz und keine Webseite im Browser kann ihn damit woandershin lenken. Das zählt, weil der Dienst die Instanz auch nach den beobachteten Adressen fragt.
 
-Unter Linux zeigt das Fenster sein Symbol in der Titelleiste und in der Leiste. Unter Fedora mit KDE hatte es keines. Das Fenster trägt das Symbol jetzt selbst, und die Desktop-Datei nennt die Fensterklasse für X11.
-
-Das APK installiert sich über 0.2.12 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
+Das APK installiert sich über 0.2.13 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
