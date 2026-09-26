@@ -756,6 +756,10 @@ def fassungen():
     kennung = {}
     for name in ("stil.css", "live.js", "mondrian.js", "colors.js"):
         kennung[name] = hashlib.sha256((ZIEL / name).read_bytes()).hexdigest()[:10]
+    # Die Bilder ebenso: das Logo ohne Rahmen kam am 26.09.2026 erst Stunden
+    # spaeter an, weil Cloudflare das alte symbol.svg weiter auslieferte.
+    for bild in (ZIEL / "bilder").iterdir():
+        kennung["bilder/" + bild.name] = hashlib.sha256(bild.read_bytes()).hexdigest()[:10]
     for f in ZIEL.rglob("*.html"):
         h = f.read_text(encoding="utf-8")
         for name, k in kennung.items():
