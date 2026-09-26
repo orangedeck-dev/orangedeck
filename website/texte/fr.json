@@ -334,7 +334,7 @@
       "text": [
         "OrangeDeck figure dans l’annuaire des plugins de DankMaterialShell sous le nom OrangeDeck Bitcoin Dashboard. Il s’installe avec une seule commande : dms plugins install orangedeck.",
         "Dans la barre, il se présente comme une pastille avec le nombre de transactions en attente. Un clic ouvre un popout avec les mêmes vues que l’application : Flux, Horloge, Minage, Explorateur et Marché. Il y a aussi une tuile pour le centre de contrôle et un widget de bureau.",
-        "Le plugin fonctionne sans l’application et va chercher ses données lui-même sur mempool.space. Si l’application OrangeDeck est installée et que son service tourne, le plugin l’utilise à la place, et toutes les fenêtres partagent ainsi une seule connexion.",
+        "Le plugin fonctionne sans l’application et va chercher ses données lui-même, sur mempool.space ou sur l’instance mempool indiquée dans ses paramètres. Si l’application OrangeDeck est installée et que son service tourne, le plugin l’utilise à la place, et toutes les fenêtres partagent ainsi une seule connexion.",
         "Il suit la langue de DankMaterialShell et parle les mêmes treize langues que l’application."
       ],
       "bild": "dms",

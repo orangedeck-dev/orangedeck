@@ -24,7 +24,9 @@ Ziel bleibt eine portable Qt-Anwendung fuer jeden Linux-Desktop plus eine
 Android-Fassung, die ein Tablet zur Wanduhr macht — siehe `docs/ZIELBILD.md`.
 
 Die Daten kommen von [mempool.space](https://mempool.space) (kein eigener Node
-noetig) und, allein fuer den Markt-Reiter, von den oeffentlichen
+noetig), von einer anderen oeffentlichen Mempool-Instanz oder vom eigenen Node,
+einzutragen unter Einstellungen > Allgemein > Mempool-Instanz, und, allein fuer
+den Markt-Reiter, von den oeffentlichen
 Schnittstellen von Binance, Bybit und OKX -- ueber den Dienst oder, wo es
 keinen gibt, direkt aus der Anwendung. Ohne Schluessel, ohne Anmeldung.
 
@@ -92,10 +94,17 @@ Zwei Wege, umschaltbar in den Einstellungen unter "Allgemein":
 - **Eigener Dienst** (Vorgabe) -- `daemon/orangedeck` auf `127.0.0.1:21021`. Er
   haelt **eine** Verbindung fuer alle Fenster und Widgets, leitet Wallets aus
   dem xpub ab und fragt den Miner im Heimnetz.
-- **Direkt** -- die Oberflaeche redet selbst mit mempool.space, ueber denselben
-  WebSocket, den auch der Dienst benutzt. Kein Dienst noetig, kein systemd,
+- **Direkt** -- die Oberflaeche redet selbst mit mempool.space oder der
+  eingetragenen Instanz, ueber denselben WebSocket, den auch der Dienst benutzt. Kein Dienst noetig, kein systemd,
   keine Einrichtung. Dafuer fallen Miner und Wallet weg: das eine steht im
   Heimnetz, das andere ist Rechenarbeit des Dienstes.
+
+Welche Mempool-Instanz beide Wege fragen, steht im Feld **Mempool-Instanz**
+darunter: leer fuer mempool.space, sonst etwa `mempool.emzy.de`,
+`mempool.ninja` oder der eigene Node wie `http://umbrel.local:3006`. Es gilt
+auch fuer die Android-Widgets; den Dienst auf demselben Rechner stellt die
+Oberflaeche mit um (`POST /config`, nur von 127.0.0.1), und er merkt sich die
+Adresse in `~/.config/orangedeck/sources.json`.
 
 Auf dem Rechner ist der Dienst die bessere Wahl, auf dem Handy gibt es ihn
 nicht. **Unter Android und Windows gibt es nur den Direktbezug**, und damit

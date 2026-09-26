@@ -1,5 +1,7 @@
 The Bitcoin mempool as a living tile mosaic: waiting transactions fall onto a heap, confirmed ones fly into the block. Alongside it a block clock, mining figures, a block explorer to leaf through and a watch-only view of your own addresses.
 
+The data comes from mempool.space, from another public mempool instance or from your own node, one field in the settings.
+
 The application is a viewer and nothing else. It holds no private key, cannot sign, and ships no library that could. There is no server of its own, no counting, no crash reports and no account.
 
 Home screen widgets show block height, mempool, price, mining network and your own miner.

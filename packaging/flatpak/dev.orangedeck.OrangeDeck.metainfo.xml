@@ -32,6 +32,14 @@
       Durchblaettern und eine Beobachtung eigener Adressen ohne Schluessel.
     </p>
     <p>
+      The data comes from mempool.space, from another public mempool
+      instance or from your own node, one field in the settings.
+    </p>
+    <p xml:lang="de">
+      Die Daten kommen von mempool.space, von einer anderen oeffentlichen
+      Mempool-Instanz oder vom eigenen Node, ein Feld in den Einstellungen.
+    </p>
+    <p>
       The application is a viewer and nothing else. It holds no private key,
       cannot sign, and ships no library that could. There is no server of its
       own, no counting, no crash reports and no account.

@@ -334,7 +334,7 @@
       "text": [
         "OrangeDeck jest w katalogu wtyczek DankMaterialShell pod nazwą OrangeDeck Bitcoin Dashboard. Instaluje się go jednym poleceniem: dms plugins install orangedeck.",
         "Na pasku wyświetla się jako pastylka z liczbą oczekujących transakcji. Kliknięcie otwiera okienko z tymi samymi widokami co w aplikacji: Kanał, Zegar, Kopanie, Eksplorator i Rynek. Jest też kafelek centrum sterowania i widżet pulpitu.",
-        "Wtyczka działa bez aplikacji i sama pobiera dane z mempool.space. Jeśli aplikacja OrangeDeck jest zainstalowana, a jej usługa działa, wtyczka korzysta z niej, więc wszystkie okna dzielą jedno połączenie.",
+        "Wtyczka działa bez aplikacji i sama pobiera dane z mempool.space albo z instancji mempool podanej w jej ustawieniach. Jeśli aplikacja OrangeDeck jest zainstalowana, a jej usługa działa, wtyczka korzysta z niej, więc wszystkie okna dzielą jedno połączenie.",
         "Wtyczka podąża za językiem DankMaterialShell i obsługuje te same trzynaście języków co aplikacja."
       ],
       "bild": "dms",

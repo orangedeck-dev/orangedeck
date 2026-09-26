@@ -1,5 +1,7 @@
 Der Bitcoin-Mempool als lebendige Kachelgrafik: wartende Transaktionen fallen auf die Halde, bestätigte fliegen in den Block. Dazu eine Blockuhr, Kennzahlen zum Schürfen, ein Blockforscher zum Durchblättern und eine Beobachtung eigener Adressen ohne Schlüssel.
 
+Die Daten kommen von mempool.space, von einer anderen öffentlichen Mempool-Instanz oder vom eigenen Node, ein Feld in den Einstellungen.
+
 Die Anwendung ist ein reiner Betrachter. Sie kennt keinen privaten Schlüssel, kann nicht unterschreiben und trägt keine Bibliothek mit, die das könnte. Es gibt keinen eigenen Server, keine Zählung, keine Absturzberichte und kein Konto.
 
 Widgets für den Startbildschirm zeigen Blockhöhe, Mempool, Kurs, das Mining-Netzwerk und den eigenen Miner.
