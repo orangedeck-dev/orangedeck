@@ -2,18 +2,17 @@
 
 > Bitcoin mempool visualizer for Linux, Windows and Android, with a block height clock, Bitaxe monitor, block explorer and market data. Free and open source.
 
-OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, mining figures, block explorer, market data and watch-only addresses. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.
+OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines five views in one window: mempool feed, block height clock, mining figures, block explorer and market data. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.
 
-Current version: 0.2.14, released 2026-09-26. Website: https://orangedeck.dev/en/
+Current version: 0.2.15, released 2026-09-26. Website: https://orangedeck.dev/en/
 
-## Six views
+## Five views
 
 - **Feed**: The mempool as a living mosaic, with the last block beside it. Colour by age, fee or transaction type.
 - **Clock**: Block height, fees, price, hashrate and the halving countdown, large and without controls. For a tablet on the wall.
 - **Mining**: A Bitaxe monitor: hashrate, best share against the network difficulty, temperature and power of your own miner. Beside it the network with hashrate, difficulty and the next adjustment.
 - **Explorer**: Search by height, hash, txid or address. Browse blocks and their contents, see what replaced what.
 - **Market**: Price as candles or a line, volume, cumulative volume delta and liquidations, aggregated across exchanges.
-- **Wallet**: Your own addresses or an xpub, watch-only. Your transactions are highlighted while they sit in the heap. On Linux, with the OrangeDeck service.
 
 ## Set up the way you want it
 
@@ -31,7 +30,7 @@ Every tab can be switched off, and the ones that stay can be put in any order. I
 - **Any Linux desktop**: An ordinary window. Wayland with an X11 fallback.
 - **As a widget or bar**: Layer-shell on niri, sway, Hyprland, river, labwc.
 - **Inside DankMaterialShell**: Listed in the DMS plugin directory. As a dashboard tab, a bar pill, a control center tile or a desktop widget.
-- **Windows**: A ZIP, unzip and run. The same views apart from the wallet, which needs the service on Linux.
+- **Windows**: A ZIP, unzip and run. The same views as on Linux.
 - **macOS**: Builds, but has not been tested yet. There is no package so far.
 - **Android**: Phone or tablet. Each view has its own home screen shortcut.
 
@@ -41,14 +40,13 @@ Every tab can be switched off, and the ones that stay can be put in any order. I
 - **Price and trades**: The public streams of Binance, Bybit and OKX.
 - **Liquidations**: Bybit and OKX. The heatmap is a model built from Binance open interest, and it says so on screen.
 - **Your own miner**: The local API of the device, AxeOS or cgminer. The request stays in your home network.
-- **Watched addresses**: Balance queries to the same mempool instance. No keys, and nothing else leaves the device.
 
 ## Get it
 
-- **Windows**: Version 0.2.14. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.14-windows-x86_64.zip
-- **Linux**: Version 0.2.14. Flatpak bundle: flatpak install --user orangedeck-0.2.14.flatpak. The runtime comes from Flathub. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.14.flatpak
+- **Windows**: Version 0.2.15. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.15-windows-x86_64.zip
+- **Linux**: Version 0.2.15. Flatpak bundle: flatpak install --user orangedeck-0.2.15.flatpak. The runtime comes from Flathub. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.15.flatpak
 - **DankMaterialShell**: From the DMS plugin directory: dms plugins install orangedeck. Runs on its own and uses the app's data when the app is running. https://github.com/orangedeck-dev/dms-plugin
-- **Android APK**: Version 0.2.14. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.14-arm64-v8a.apk
+- **Android APK**: Version 0.2.15. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.15-arm64-v8a.apk
 - **F-Droid**: OrangeDeck's own repository. Add it once in F-Droid, Droid-ify or Neo Store, and updates arrive by themselves. https://fdroid.orangedeck.dev/repo/
 - **Obtainium**: Takes every new version straight from the GitHub releases. Add the repository address as the source. https://github.com/orangedeck-dev/orangedeck
 - **All versions**: Release notes, checksums and older versions on GitHub. https://github.com/orangedeck-dev/orangedeck/releases
@@ -65,7 +63,7 @@ Every tab can be switched off, and the ones that stay can be put in any order. I
 
 ### Does it need my keys?
 
-No. It cannot sign anything. Watched addresses are entered as addresses or an xpub and never leave your machine except as a balance query.
+No. It holds no keys, cannot sign anything and asks for none of your addresses.
 
 ### Can I hide the tabs I do not use?
 
