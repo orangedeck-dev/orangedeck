@@ -209,3 +209,13 @@ footer .sprachen + p { margin-top: 1.4rem; }
 /* Japanisch und Chinesisch brechen sonst mitten im Wort um: dort gibt es
    keine Leerzeichen, und 20ch sind fuer diese Zeichen zu schmal. */
 :lang(ja) .hero h1, :lang(zh) .hero h1 { max-width: none; word-break: auto-phrase; }
+
+/* Ein Punkt je Reiter unter dem bewegten Kopf, erst sichtbar, wenn er laeuft.
+   Die Knoepfe sind 24 px gross zum Tippen, der Punkt darin 8 px. */
+.live-punkte { display: none; justify-content: center; gap: 4px; margin-top: 0.7rem; }
+.live.laeuft + .live-punkte { display: flex; }
+.live-punkte button { all: unset; cursor: pointer; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; }
+.live-punkte button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #4a4658; transition: background 0.2s, transform 0.2s; }
+.live-punkte button:hover::before { background: var(--gedaempft); }
+.live-punkte button[aria-current="true"]::before { background: var(--orange); transform: scale(1.25); }
+.live-punkte button:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }

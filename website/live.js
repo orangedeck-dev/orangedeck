@@ -171,7 +171,9 @@
       + ";font-family:'Noto Sans',system-ui,sans-serif;line-height:1.3;text-align:left;"));
 
     // Reiter oben links, wie ViewTabs.qml
-    var reihe = an(this.fenster, el("div", "position:absolute;left:14px;top:6px;display:flex;gap:19px;font-size:14px;"));
+    // z-index: die Flächen der Ansichten liegen im DOM danach und fingen
+    // sonst jeden Klick auf die Reiter ab.
+    var reihe = an(this.fenster, el("div", "position:absolute;left:14px;top:6px;display:flex;gap:19px;font-size:14px;z-index:3;"));
     var namen = [t("tab.feed"), t("tab.clock"), t("tab.miner"), t("tab.explorer"), t("tab.market")];
     this.knoepfe = namen.map(function (n, i) {
       var b = an(reihe, el("button", "all:unset;cursor:pointer;color:" + DIM + ";padding-bottom:5px;border-bottom:2px solid transparent;", n));
@@ -180,10 +182,39 @@
       return b;
     });
     // Zahnrad und Vollbild der Anwendung, hier nur als Bild
-    var symbole = an(this.fenster, el("div", "position:absolute;right:18px;top:8px;display:flex;gap:24px;pointer-events:none;"));
+    var symbole = an(this.fenster, el("div", "position:absolute;right:18px;top:8px;display:flex;gap:24px;pointer-events:none;z-index:3;"));
     symbole.setAttribute("aria-hidden", "true");
     symbole.innerHTML = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="' + TEXT + '" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'
       + '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="' + TEXT + '" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+
+    // Ein Punkt je Reiter unter dem Kopf. Er steht außerhalb des skalierten
+    // Fensters, damit er auf dem Telefon groß genug zum Tippen bleibt.
+    this.punkte = document.createElement("div");
+    this.punkte.className = "live-punkte";
+    wirt.parentNode.insertBefore(this.punkte, wirt.nextSibling);
+    this.punktKnoepfe = namen.map(function (n, i) {
+      var b = an(ich.punkte, el("button", ""));
+      b.type = "button";
+      b.setAttribute("aria-label", n);
+      b.addEventListener("click", function () { ich.zeigen(i, true); });
+      return b;
+    });
+    // Pfeiltasten, solange der Kopf den Fokus hat, und Wischen auf dem Telefon
+    [wirt, this.punkte].forEach(function (z) {
+      z.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight") { ich.zeigen((ich.seite + 1) % namen.length, true); e.preventDefault(); }
+        if (e.key === "ArrowLeft") { ich.zeigen((ich.seite + namen.length - 1) % namen.length, true); e.preventDefault(); }
+      });
+    });
+    var startX = null;
+    wirt.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    wirt.addEventListener("touchend", function (e) {
+      if (startX === null) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      startX = null;
+      if (Math.abs(dx) < 40) return;
+      ich.zeigen((ich.seite + (dx < 0 ? 1 : namen.length - 1)) % namen.length, true);
+    }, { passive: true });
 
     this.seiten = [new Feed(), new Uhr(), new Mining(), new Explorer(), new Markt()];
     this.seiten.forEach(function (s) {
@@ -255,14 +286,12 @@
 
   Kopf.prototype.zeigen = function (i, vonHand) {
     var ich = this;
+    // **Wer selbst wählt, bestimmt.** Nach einem Klick, einem Punkt, einer
+    // Pfeiltaste oder einem Wischer schaltet der Kopf nicht mehr von allein
+    // weiter; sonst wäre die gewählte Ansicht nach ein paar Sekunden wieder weg.
     if (vonHand) {
       this.blick = Date.now();
-      // **Die Uhr fängt von vorn an.** Sonst springt die Anzeige gleich nach
-      // dem Klick weiter, und der gewählte Reiter steht eine Sekunde da.
-      if (this.uhrwerk) {
-        window.clearInterval(this.uhrwerk);
-        this.uhrwerk = window.setInterval(function () { ich.weiter(); }, WECHSEL_MS);
-      }
+      if (this.uhrwerk) { window.clearInterval(this.uhrwerk); this.uhrwerk = null; }
     }
     this.seite = i;
     for (var k = 0; k < this.seiten.length; k++) {
@@ -271,6 +300,8 @@
       b.style.color = aktiv ? TEXT : DIM;
       b.style.fontWeight = aktiv ? "700" : "400";
       b.style.borderBottomColor = aktiv ? ORANGE : "transparent";
+      if (aktiv) this.punktKnoepfe[k].setAttribute("aria-current", "true");
+      else this.punktKnoepfe[k].removeAttribute("aria-current");
       if (aktiv && s.sichtbar) s.sichtbar(this.stand);
       if (aktiv && s.auffrischen) s.auffrischen(this.stand);
       if (!aktiv && s.verdeckt) s.verdeckt();
