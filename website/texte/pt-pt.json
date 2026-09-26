@@ -40,15 +40,15 @@
   "badges": [
     "Licença MIT",
     "Sem conta, sem telemetria",
-    "Só observação, sem chaves",
-    "Seis vistas, cinco ambientes"
+    "Sem chaves, sem assinatura",
+    "Cinco vistas, cinco ambientes"
   ],
   "was_titel": "O que é",
   "was": [
     "O OrangeDeck é um visualizador do mempool de Bitcoin. Desenha o mempool tal como ele se comporta: cada transação em espera é um quadrado. Acumula-se, é minerada, é substituída, e vê-se isso a acontecer em vez de se ler um número.",
-    "À volta há mais cinco vistas: um relógio de altura de bloco para um tablet na parede, dados de mineração do seu próprio Bitaxe e da rede, um explorador de blocos, um separador de mercado com velas, delta de volume acumulado e liquidações, e endereços só de observação."
+    "À volta há mais quatro vistas: um relógio de altura de bloco para um tablet na parede, dados de mineração do seu próprio Bitaxe e da rede, um explorador de blocos e um separador de mercado com velas, delta de volume acumulado e liquidações."
   ],
-  "ansichten_titel": "Seis vistas",
+  "ansichten_titel": "Cinco vistas",
   "ansichten": [
     [
       "Feed",
@@ -69,10 +69,6 @@
     [
       "Mercado",
       "Preço em velas ou em linha, volume, delta de volume acumulado e liquidações, agregados de várias corretoras."
-    ],
-    [
-      "Carteira",
-      "Os seus próprios endereços ou uma xpub, só de observação. As suas transações ficam destacadas enquanto estão no monte. Em Linux, com o serviço OrangeDeck."
     ]
   ],
   "wo_titel": "Onde funciona",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "Um ZIP: extrair e executar. As mesmas vistas, exceto a carteira, que precisa do serviço em Linux."
+      "Um ZIP: extrair e executar. As mesmas vistas que em Linux."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "Serve para ver e mais nada",
-      "Não conhece nenhuma chave privada, não consegue assinar e não traz nenhuma biblioteca que o consiga. Só observação quer dizer só observação."
+      "Não conhece nenhuma chave privada, não consegue assinar e não traz nenhuma biblioteca que o consiga. Limita-se a mostrar."
     ],
     [
       "Nenhum servidor nosso",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "Precisa das minhas chaves?",
-      "Não. Não consegue assinar nada. Os endereços observados são introduzidos como endereços ou como uma xpub e nunca saem do seu computador, a não ser como consulta de saldo."
+      "Não. Não guarda chaves, não consegue assinar nada e não pede nenhum dos seus endereços."
     ],
     [
       "Posso esconder os separadores que não uso?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Arrumação dos quadrados e modelo de cores adaptados do bitfeed (MIT, mononaut).",
   "fuss_lizenz": "O OrangeDeck tem licença MIT.",
   "sprache_waehlen": "Idioma",
-  "seo_kurz": "O OrangeDeck é uma aplicação gratuita para computador e Android que desenha o mempool de Bitcoin como um mosaico vivo. Junta seis vistas numa só janela: feed do mempool, relógio de altura de bloco, dados de mineração, explorador de blocos, dados de mercado e endereços só de observação. Funciona em Linux, Windows e Android e como plugin do DankMaterialShell, está disponível em treze línguas, tem licença MIT e não exige conta.",
+  "seo_kurz": "O OrangeDeck é uma aplicação gratuita para computador e Android que desenha o mempool de Bitcoin como um mosaico vivo. Junta cinco vistas numa só janela: feed do mempool, relógio de altura de bloco, dados de mineração, explorador de blocos e dados de mercado. Funciona em Linux, Windows e Android e como plugin do DankMaterialShell, está disponível em treze línguas, tem licença MIT e não exige conta.",
   "bilder_titel": "Capturas de ecrã",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "O seu próprio mineiro",
       "A API local do dispositivo, AxeOS ou cgminer. O pedido não sai da sua rede doméstica."
-    ],
-    [
-      "Endereços observados",
-      "Consultas de saldo à mesma instância de mempool. Sem chaves, e mais nada sai do dispositivo."
     ]
   ],
   "einsatz_titel": "Feito para",

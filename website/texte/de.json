@@ -40,15 +40,15 @@
   "badges": [
     "MIT-lizenziert",
     "Kein Konto, keine Zählung",
-    "Nur beobachtend, keine Schlüssel",
-    "Sechs Ansichten, fünf Wirte"
+    "Keine Schlüssel, keine Signatur",
+    "Fünf Ansichten, fünf Wirte"
   ],
   "was_titel": "Was es ist",
   "was": [
     "OrangeDeck macht den Bitcoin-Mempool sichtbar. Es zeichnet ihn so, wie er sich tatsächlich verhält: Jede wartende Transaktion ist ein Quadrat. Sie häuft sich, sie wird geschürft, sie wird verdrängt, und man sieht es geschehen, statt eine Zahl zu lesen.",
-    "Darum herum liegen fünf weitere Ansichten: eine Blockuhr für das Tablet an der Wand, Mining-Zahlen des eigenen Bitaxe und des Netzes, ein Blockforscher, ein Markt-Reiter mit Kerzen, kumuliertem Volumendelta und Liquidationen sowie beobachtete Adressen."
+    "Darum herum liegen vier weitere Ansichten: eine Blockuhr für das Tablet an der Wand, Mining-Zahlen des eigenen Bitaxe und des Netzes, ein Blockforscher und ein Markt-Reiter mit Kerzen, kumuliertem Volumendelta und Liquidationen."
   ],
-  "ansichten_titel": "Sechs Ansichten",
+  "ansichten_titel": "Fünf Ansichten",
   "ansichten": [
     [
       "Feed",
@@ -69,10 +69,6 @@
     [
       "Markt",
       "Kurs als Kerzen oder Linie, Volumen, kumuliertes Volumendelta und Liquidationen, über Börsen hinweg zusammengeführt."
-    ],
-    [
-      "Wallet",
-      "Eigene Adressen oder ein xpub, nur beobachtet. Die eigenen Transaktionen stechen hervor, solange sie in der Halde liegen. Unter Linux, mit dem OrangeDeck-Dienst."
     ]
   ],
   "wo_titel": "Wo es läuft",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "Ein ZIP, entpacken und starten. Dieselben Ansichten bis auf die Wallet, die den Dienst unter Linux braucht."
+      "Ein ZIP, entpacken und starten. Dieselben Ansichten wie unter Linux."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "Es ist ein Betrachter, sonst nichts",
-      "Es kennt keinen privaten Schlüssel, kann nicht unterschreiben und trägt keine Bibliothek mit, die das könnte."
+      "Es kennt keinen privaten Schlüssel, kann nicht unterschreiben und trägt keine Bibliothek mit, die das könnte. Es zeigt nur an."
     ],
     [
       "Kein Server von uns",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "Braucht es meine Schlüssel?",
-      "Nein. Es kann nichts unterschreiben. Beobachtete Adressen gibt man als Adresse oder xpub ein; sie verlassen den Rechner nur als Guthabenabfrage."
+      "Nein. Es kennt keine Schlüssel, kann nichts unterschreiben und fragt nach keinen Adressen."
     ],
     [
       "Kann ich Reiter ausblenden, die ich nicht brauche?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Kachelpackung und Farbmodell aus bitfeed portiert (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck steht unter der MIT-Lizenz.",
   "sprache_waehlen": "Sprache",
-  "seo_kurz": "OrangeDeck ist eine freie Desktop- und Android-Anwendung, die den Bitcoin-Mempool als lebendige Kachelgrafik zeichnet. Sie vereint sechs Ansichten in einem Fenster: Mempool-Feed, Blockuhr, Mining-Zahlen, Blockforscher, Marktdaten und beobachtete Adressen. Sie läuft auf Linux, Windows und Android und als Plugin für DankMaterialShell, spricht dreizehn Sprachen, ist MIT-lizenziert und verlangt kein Konto.",
+  "seo_kurz": "OrangeDeck ist eine freie Desktop- und Android-Anwendung, die den Bitcoin-Mempool als lebendige Kachelgrafik zeichnet. Sie vereint fünf Ansichten in einem Fenster: Mempool-Feed, Blockuhr, Mining-Zahlen, Blockforscher und Marktdaten. Sie läuft auf Linux, Windows und Android und als Plugin für DankMaterialShell, spricht dreizehn Sprachen, ist MIT-lizenziert und verlangt kein Konto.",
   "bilder_titel": "Bilder",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "Eigener Miner",
       "Die lokale Schnittstelle des Geräts, AxeOS oder cgminer. Die Abfrage bleibt im Heimnetz."
-    ],
-    [
-      "Beobachtete Adressen",
-      "Guthabenabfragen an dieselbe Mempool-Instanz. Keine Schlüssel, und sonst verlässt nichts das Gerät."
     ]
   ],
   "einsatz_titel": "Wofür",

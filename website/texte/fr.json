@@ -40,15 +40,15 @@
   "badges": [
     "Sous licence MIT",
     "Pas de compte, pas de télémétrie",
-    "Lecture seule, aucune clé",
-    "Six vues, cinq environnements"
+    "Aucune clé, aucune signature",
+    "Cinq vues, cinq environnements"
   ],
   "was_titel": "Ce que c’est",
   "was": [
     "OrangeDeck est un visualiseur de mempool Bitcoin. Il dessine le mempool tel qu’il se comporte réellement : chaque transaction en attente est un carré. Elle s’empile, elle est minée, elle est remplacée, et on le voit se produire au lieu de lire un chiffre.",
-    "Autour, cinq autres vues : une horloge de hauteur de bloc pour une tablette au mur, les chiffres de minage de votre propre Bitaxe et du réseau, un explorateur de blocs, un onglet marché avec chandelles, delta de volume cumulé et liquidations, et des adresses en lecture seule."
+    "Autour, quatre autres vues : une horloge de hauteur de bloc pour une tablette au mur, les chiffres de minage de votre propre Bitaxe et du réseau, un explorateur de blocs et un onglet marché avec chandelles, delta de volume cumulé et liquidations."
   ],
-  "ansichten_titel": "Six vues",
+  "ansichten_titel": "Cinq vues",
   "ansichten": [
     [
       "Flux",
@@ -69,10 +69,6 @@
     [
       "Marché",
       "Le cours en chandelles ou en ligne, le volume, le delta de volume cumulé et les liquidations, agrégés sur plusieurs plateformes d’échange."
-    ],
-    [
-      "Portefeuille",
-      "Vos propres adresses ou une xpub, en lecture seule. Vos transactions sont mises en évidence tant qu’elles attendent dans le tas. Sous Linux, avec le service OrangeDeck."
     ]
   ],
   "wo_titel": "Où ça tourne",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "Un ZIP à décompresser, puis on lance. Les mêmes vues sauf le portefeuille, qui a besoin du service sous Linux."
+      "Un ZIP à décompresser, puis on lance. Les mêmes vues que sous Linux."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "Un afficheur, rien d’autre",
-      "Il ne connaît aucune clé privée, ne peut rien signer et n’embarque aucune bibliothèque qui le pourrait. Lecture seule veut dire lecture seule."
+      "Il ne connaît aucune clé privée, ne peut rien signer et n’embarque aucune bibliothèque qui le pourrait. Il ne fait qu’afficher."
     ],
     [
       "Aucun serveur à nous",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "A-t-il besoin de mes clés ?",
-      "Non. Il ne peut rien signer. Les adresses suivies sont saisies comme adresses ou comme xpub et ne quittent votre machine que sous forme de requête de solde."
+      "Non. Il ne détient aucune clé, ne peut rien signer et ne vous demande aucune de vos adresses."
     ],
     [
       "Puis-je masquer les onglets dont je ne me sers pas ?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Empilement des tuiles et modèle de couleurs repris de bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck est sous licence MIT.",
   "sprache_waehlen": "Langue",
-  "seo_kurz": "OrangeDeck est une application gratuite pour ordinateur et Android qui dessine le mempool Bitcoin comme une mosaïque de tuiles vivante. Elle réunit six vues dans une seule fenêtre : flux du mempool, horloge de hauteur de bloc, chiffres de minage, explorateur de blocs, données de marché et adresses en lecture seule. Elle fonctionne sous Linux, Windows et Android ainsi qu’en plugin DankMaterialShell, parle treize langues, est sous licence MIT et ne demande aucun compte.",
+  "seo_kurz": "OrangeDeck est une application gratuite pour ordinateur et Android qui dessine le mempool Bitcoin comme une mosaïque de tuiles vivante. Elle réunit cinq vues dans une seule fenêtre : flux du mempool, horloge de hauteur de bloc, chiffres de minage, explorateur de blocs et données de marché. Elle fonctionne sous Linux, Windows et Android ainsi qu’en plugin DankMaterialShell, parle treize langues, est sous licence MIT et ne demande aucun compte.",
   "bilder_titel": "Captures d’écran",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "Votre propre mineur",
       "L’API locale de l’appareil, AxeOS ou cgminer. La requête reste dans votre réseau domestique."
-    ],
-    [
-      "Adresses suivies",
-      "Des requêtes de solde vers la même instance mempool. Aucune clé, et rien d’autre ne quitte l’appareil."
     ]
   ],
   "einsatz_titel": "Pensé pour",

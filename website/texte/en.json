@@ -40,15 +40,15 @@
   "badges": [
     "MIT licensed",
     "No account, no telemetry",
-    "Watch-only, no keys",
-    "Six views, five hosts"
+    "No keys, cannot sign",
+    "Five views, five hosts"
   ],
   "was_titel": "What it is",
   "was": [
     "OrangeDeck is a Bitcoin mempool visualizer. It draws the mempool the way it actually behaves: every waiting transaction is a square. It piles up, it gets mined, it gets replaced, and you see it happen instead of reading a number.",
-    "Around that sit five more views: a block height clock for a tablet on the wall, mining figures from your own Bitaxe and from the network, a block explorer, a market tab with candles, cumulative volume delta and liquidations, and watch-only addresses."
+    "Around that sit four more views: a block height clock for a tablet on the wall, mining figures from your own Bitaxe and from the network, a block explorer, and a market tab with candles, cumulative volume delta and liquidations."
   ],
-  "ansichten_titel": "Six views",
+  "ansichten_titel": "Five views",
   "ansichten": [
     [
       "Feed",
@@ -69,10 +69,6 @@
     [
       "Market",
       "Price as candles or a line, volume, cumulative volume delta and liquidations, aggregated across exchanges."
-    ],
-    [
-      "Wallet",
-      "Your own addresses or an xpub, watch-only. Your transactions are highlighted while they sit in the heap. On Linux, with the OrangeDeck service."
     ]
   ],
   "wo_titel": "Where it runs",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "A ZIP, unzip and run. The same views apart from the wallet, which needs the service on Linux."
+      "A ZIP, unzip and run. The same views as on Linux."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "It is a viewer, and nothing else",
-      "It knows no private key, cannot sign, and carries no library that could. Watch-only means watch-only."
+      "It knows no private key, cannot sign, and carries no library that could. It only shows."
     ],
     [
       "No server of ours",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "Does it need my keys?",
-      "No. It cannot sign anything. Watched addresses are entered as addresses or an xpub and never leave your machine except as a balance query."
+      "No. It holds no keys, cannot sign anything and asks for none of your addresses."
     ],
     [
       "Can I hide the tabs I do not use?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Tile packing and colour model ported from bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck is MIT licensed.",
   "sprache_waehlen": "Language",
-  "seo_kurz": "OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, mining figures, block explorer, market data and watch-only addresses. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.",
+  "seo_kurz": "OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines five views in one window: mempool feed, block height clock, mining figures, block explorer and market data. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.",
   "bilder_titel": "Screenshots",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "Your own miner",
       "The local API of the device, AxeOS or cgminer. The request stays in your home network."
-    ],
-    [
-      "Watched addresses",
-      "Balance queries to the same mempool instance. No keys, and nothing else leaves the device."
     ]
   ],
   "einsatz_titel": "Made for",

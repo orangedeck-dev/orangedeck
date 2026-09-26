@@ -40,15 +40,15 @@
   "badges": [
     "Licence MIT",
     "Bez účtu, bez telemetrie",
-    "Jen ke sledování, bez klíčů",
-    "Šest zobrazení, pět prostředí"
+    "Bez klíčů, bez podpisu",
+    "Pět zobrazení, pět prostředí"
   ],
   "was_titel": "Co to je",
   "was": [
     "OrangeDeck je vizualizace mempoolu bitcoinu. Kreslí mempool tak, jak se skutečně chová: každá čekající transakce je čtverec. Čtverce se hromadí, jsou vytěženy, bývají nahrazeny a vy to vidíte na vlastní oči, místo abyste četli číslo.",
-    "Kolem toho je dalších pět zobrazení: hodiny výšky bloku pro tablet na zdi, těžební údaje z vlastního Bitaxe i ze sítě, průzkumník bloků, tržní karta se svíčkami, kumulativní deltou objemu a likvidacemi a adresy jen ke sledování."
+    "Kolem toho jsou další čtyři zobrazení: hodiny výšky bloku pro tablet na zdi, těžební údaje z vlastního Bitaxe i ze sítě, průzkumník bloků a tržní karta se svíčkami, kumulativní deltou objemu a likvidacemi."
   ],
-  "ansichten_titel": "Šest zobrazení",
+  "ansichten_titel": "Pět zobrazení",
   "ansichten": [
     [
       "Kanál",
@@ -69,10 +69,6 @@
     [
       "Trh",
       "Kurz jako svíčky nebo čára, objem, kumulativní delta objemu a likvidace, souhrnně z více burz."
-    ],
-    [
-      "Peněženka",
-      "Vlastní adresy nebo xpub, jen ke sledování. Vaše transakce jsou zvýrazněné, dokud leží na hromadě. Na Linuxu, se službou OrangeDeck."
     ]
   ],
   "wo_titel": "Kde běží",
@@ -91,7 +87,7 @@
     ],
     [
       "Windows",
-      "ZIP: rozbalit a spustit. Stejná zobrazení kromě peněženky, která potřebuje službu na Linuxu."
+      "ZIP: rozbalit a spustit. Stejná zobrazení jako na Linuxu."
     ],
     [
       "macOS",
@@ -106,7 +102,7 @@
   "warum": [
     [
       "Jen zobrazuje, nic jiného",
-      "Nezná žádný soukromý klíč, neumí podepisovat a neobsahuje knihovnu, která by to uměla. Jen ke sledování znamená jen ke sledování."
+      "Nezná žádný soukromý klíč, neumí podepisovat a neobsahuje knihovnu, která by to uměla. Jen zobrazuje."
     ],
     [
       "Žádný náš server",
@@ -172,7 +168,7 @@
   "faq": [
     [
       "Potřebuje moje klíče?",
-      "Ne. Nedokáže nic podepsat. Sledované adresy se zadávají jako adresy nebo xpub a váš počítač opouštějí jen jako dotaz na zůstatek."
+      "Ne. Neuchovává žádné klíče, nedokáže nic podepsat a nežádá žádnou z vašich adres."
     ],
     [
       "Mohu skrýt karty, které nepoužívám?",
@@ -207,7 +203,7 @@
   "fuss_herkunft": "Skládání dlaždic a barevný model převzaty z bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck je pod licencí MIT.",
   "sprache_waehlen": "Jazyk",
-  "seo_kurz": "OrangeDeck je bezplatná aplikace pro počítač a Android, která kreslí mempool bitcoinu jako živou mozaiku dlaždic. V jednom okně spojuje šest zobrazení: kanál mempoolu, hodiny výšky bloku, těžební údaje, průzkumník bloků, tržní data a adresy jen ke sledování. Běží na Linuxu, Windows a Androidu a také jako plugin DankMaterialShell, mluví třinácti jazyky, má licenci MIT a nevyžaduje účet.",
+  "seo_kurz": "OrangeDeck je bezplatná aplikace pro počítač a Android, která kreslí mempool bitcoinu jako živou mozaiku dlaždic. V jednom okně spojuje pět zobrazení: kanál mempoolu, hodiny výšky bloku, těžební údaje, průzkumník bloků a tržní data. Běží na Linuxu, Windows a Androidu a také jako plugin DankMaterialShell, mluví třinácti jazyky, má licenci MIT a nevyžaduje účet.",
   "bilder_titel": "Snímky obrazovky",
   "bilder": [
     [
@@ -250,10 +246,6 @@
     [
       "Vlastní těžař",
       "Lokální API zařízení, AxeOS nebo cgminer. Dotaz zůstává v domácí síti."
-    ],
-    [
-      "Sledované adresy",
-      "Dotazy na zůstatek u stejné instance mempool. Žádné klíče a nic jiného zařízení neopouští."
     ]
   ],
   "einsatz_titel": "K čemu se hodí",

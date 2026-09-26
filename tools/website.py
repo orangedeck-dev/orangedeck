@@ -117,8 +117,9 @@ process.stdout.write(JSON.stringify(aus));
     return json.loads(lauf.stdout)
 
 
-# Die Bilder der sechs Ansichten, in der Reihenfolge von "ansichten".
-ANSICHT_BILDER = ["feed", "uhr", "mining", "explorer", "markt", "wallet"]
+# Die Bilder der fuenf Ansichten, in der Reihenfolge von "ansichten".
+# Die Wallet fiel am 26.09.2026 weg, mit ihr das sechste Bild.
+ANSICHT_BILDER = ["feed", "uhr", "mining", "explorer", "markt"]
 
 # Profile im Fuss: (Name, Adresse, Symbol aus website/symbole/).
 PROFILE = [("GitHub", "https://github.com/orangedeck-dev/orangedeck", "github")]

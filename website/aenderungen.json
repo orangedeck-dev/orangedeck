@@ -1,5 +1,17 @@
 [
   {
+    "v": "0.2.15",
+    "datum": "2026-09-26",
+    "en": [
+      "The watch-only wallet is gone, on every platform. OrangeDeck now shows the same five views everywhere and asks for none of your addresses.",
+      "The service no longer derives addresses from an xpub; a watch list left in sources.json is ignored."
+    ],
+    "de": [
+      "Die Wallet zum Beobachten ist weg, auf allen Plattformen. OrangeDeck zeigt jetzt überall dieselben fünf Ansichten und fragt nach keinen Adressen.",
+      "Der Dienst leitet keine Adressen mehr aus einem xpub ab; eine Beobachtungsliste in sources.json wird übergangen."
+    ]
+  },
+  {
     "v": "0.2.14",
     "datum": "2026-09-26",
     "en": [
