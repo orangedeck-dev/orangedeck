@@ -69,6 +69,7 @@ footer { border-top: 1px solid var(--linie); padding: 2rem 0 3rem; color: var(--
 .kopf { display: flex; align-items: center; gap: 1.5rem; height: 60px; }
 .kopf .marke { display: flex; align-items: center; gap: 0.6rem; color: var(--schrift); font-weight: 600; }
 .kopf .marke:hover { text-decoration: none; }
+.kopf .marke img { width: 30px; height: 30px; }
 .nav { display: flex; gap: 1.3rem; margin-left: auto; font-size: 0.94rem; }
 .nav a { color: var(--gedaempft); }
 .nav a:hover { color: var(--schrift); text-decoration: none; }
