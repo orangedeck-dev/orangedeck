@@ -189,3 +189,24 @@ footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
   .live-bloecke { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .live-reiter { gap: 0.9rem; font-size: 0.82rem; }
 }
+
+/* ---- Unterseiten, Verweiskarten, Fassung ------------------------------- */
+.fassung { color: var(--gedaempft); font-size: 0.86rem; margin: 1.2rem 0 0; }
+.karten.verweise li { padding: 0; }
+.karten.verweise a { display: block; padding: 1.2rem 1.3rem; color: var(--schrift); height: 100%; }
+.karten.verweise a:hover { text-decoration: none; background: rgba(247, 147, 26, 0.06); border-radius: 12px; }
+.karten.verweise b::after { content: " \203A"; color: var(--orange); }
+.hero.unter { padding: 3rem 0 1.5rem; }
+.hero.unter h1 { font-size: clamp(1.9rem, 5vw, 2.8rem); }
+.pfad { color: var(--gedaempft); font-size: 0.86rem; margin: 0 0 1rem; }
+.text p { color: var(--schrift); }
+.einzelbild { margin: 2rem 0; }
+.einzelbild img { width: 100%; height: auto; display: block; border: 1px solid var(--linie); border-radius: 10px; }
+.aenderungen article { margin-bottom: 2rem; }
+.aenderungen h2 { margin-bottom: 0.7rem; }
+.aenderungen .datum { color: var(--gedaempft); font-weight: 400; font-size: 0.95rem; margin-left: 0.4rem; }
+footer .klein { margin-bottom: 0; }
+footer .sprachen + p { margin-top: 1.4rem; }
+/* Japanisch und Chinesisch brechen sonst mitten im Wort um: dort gibt es
+   keine Leerzeichen, und 20ch sind fuer diese Zeichen zu schmal. */
+:lang(ja) .hero h1, :lang(zh) .hero h1 { max-width: none; word-break: auto-phrase; }

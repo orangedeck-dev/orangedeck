@@ -1,0 +1,389 @@
+{
+  "code": "zh",
+  "name": "中文",
+  "richtung": "ltr",
+  "repo": "https://github.com/orangedeck-dev/orangedeck",
+  "titel": "OrangeDeck：比特币内存池可视化、区块高度时钟和 Bitaxe 监控",
+  "beschreibung": "适用于 Linux、Windows 和 Android 的比特币内存池可视化工具，带区块高度时钟、Bitaxe 矿机监控、区块浏览器和行情数据。免费开源。",
+  "nav": [
+    [
+      "简介",
+      "#was"
+    ],
+    [
+      "视图",
+      "#ansichten"
+    ],
+    [
+      "运行平台",
+      "#wo"
+    ],
+    [
+      "特点",
+      "#warum"
+    ],
+    [
+      "常见问题",
+      "#faq"
+    ]
+  ],
+  "hero_titel": "实时查看比特币内存池",
+  "hero_text": "等待确认的交易以方块拼图的形式落到一堆里，大小取决于转移的金额，颜色按存在时间、手续费或类型区分。已确认的交易会飞进区块。你能看到网络的呼吸。",
+  "hero_cta1": "下载",
+  "hero_cta1_ziel": "#holen",
+  "hero_cta2": "查看源代码",
+  "hero_cta2_ziel": "https://github.com/orangedeck-dev/orangedeck",
+  "badges": [
+    "MIT 许可证",
+    "无需账户，无遥测",
+    "只读，不需要密钥",
+    "六个视图，五种运行环境"
+  ],
+  "was_titel": "简介",
+  "was": [
+    "OrangeDeck 是一个比特币内存池可视化工具。它按内存池的真实变化来绘制：每笔等待确认的交易都是一个方块。它们堆积、被打包、被替换，你直接看到这一过程，而不是去读一个数字。",
+    "围绕它还有五个视图：适合挂在墙上的平板的区块高度时钟，来自你自己的 Bitaxe 和全网的挖矿数据，区块浏览器，带蜡烛图、累计成交量差和强平数据的市场页面，以及只读的地址监视。"
+  ],
+  "ansichten_titel": "六个视图",
+  "ansichten": [
+    [
+      "动态",
+      "以动态拼图呈现的内存池，旁边是最新的区块。颜色可按存在时间、手续费或交易类型区分。"
+    ],
+    [
+      "时钟",
+      "用大字显示区块高度、手续费、价格、算力和减半倒计时，界面上没有任何按钮。适合挂在墙上的平板。"
+    ],
+    [
+      "挖矿",
+      "一个 Bitaxe 监控：显示你自己矿机的算力、最佳份额与全网难度的对比、温度和功率。旁边是全网的算力、难度和下次难度调整。"
+    ],
+    [
+      "浏览器",
+      "按区块高度、哈希、txid 或地址搜索。浏览区块及其内容，查看哪笔交易替换了哪笔。"
+    ],
+    [
+      "市场",
+      "以蜡烛图或折线显示价格，并显示成交量、累计成交量差和强平，数据汇总自多家交易所。"
+    ],
+    [
+      "钱包",
+      "只读查看你自己的地址或 xpub。你的交易在堆里等待时会被高亮显示。需要在一台 Linux 电脑上运行 OrangeDeck 服务，手机和 Windows 通过家庭网络访问它。"
+    ]
+  ],
+  "wo_titel": "运行平台",
+  "wo": [
+    [
+      "任何 Linux 桌面",
+      "普通窗口。支持 Wayland，也可退回到 X11。"
+    ],
+    [
+      "作为小部件或状态栏",
+      "在 niri、sway、Hyprland、river、labwc 上使用 layer-shell。"
+    ],
+    [
+      "在 DankMaterialShell 中",
+      "已收录在 DMS 插件目录中。可作为仪表盘标签页、状态栏胶囊、控制中心磁贴或桌面小部件使用。"
+    ],
+    [
+      "Windows",
+      "一个 ZIP 包，解压即可运行。视图相同；钱包数据来自同一网络中一台 Linux 电脑上的服务。"
+    ],
+    [
+      "macOS",
+      "可以编译，但尚未测试。目前还没有安装包。"
+    ],
+    [
+      "Android",
+      "手机或平板均可。每个视图都有自己的主屏幕快捷方式。"
+    ]
+  ],
+  "warum_titel": "为什么选择 OrangeDeck",
+  "warum": [
+    [
+      "它只是一个查看器",
+      "它不知道任何私钥，不能签名，也不包含任何能签名的库。只读就是只读。"
+    ],
+    [
+      "没有我们自己的服务器",
+      "它只连接 mempool.space 或你自己的节点。没有统计，没有崩溃报告，也没有账户。"
+    ],
+    [
+      "实测，而非猜测",
+      "如果某个数字来自模型而不是实测，比如强平热力图，屏幕上会写明，并列出所用的假设。"
+    ],
+    [
+      "一套代码，五种环境",
+      "窗口、小部件、面板和手机都由同一套 QML 绘制。在一处修好的问题，在所有地方都修好了。"
+    ],
+    [
+      "代码可以自己读",
+      "MIT 许可证，没有混淆，每次改动的理由都写在提交信息里。"
+    ]
+  ],
+  "holen_titel": "下载",
+  "holen": [
+    [
+      "Windows",
+      "版本 {v}。适用于 Windows 10 和 11（64 位）的 ZIP 包：解压后运行 orangedeck-app.exe。程序未签名，首次启动时 SmartScreen 会弹出询问。",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-windows-x86_64.zip"
+    ],
+    [
+      "Linux",
+      "版本 {v}。Flatpak 包：flatpak install --user orangedeck-{v}.flatpak。运行时从 Flathub 获取。",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
+    ],
+    [
+      "DankMaterialShell",
+      "从 DMS 插件目录安装：dms plugins install orangedeck。可以单独运行，应用在运行时会使用应用的数据。",
+      "https://github.com/orangedeck-dev/dms-plugin"
+    ],
+    [
+      "Android APK",
+      "版本 {v}。适用于 Android 9 及以上、64 位 ARM。已签名，证书指纹见发布说明。",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-arm64-v8a.apk"
+    ],
+    [
+      "F-Droid",
+      "OrangeDeck 自己的软件源。在 F-Droid、Droid-ify 或 Neo Store 中添加一次，之后会自动收到更新。",
+      "https://fdroid.orangedeck.dev/repo/"
+    ],
+    [
+      "Obtainium",
+      "直接从 GitHub 的发布页获取每个新版本。把仓库地址添加为来源即可。",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ],
+    [
+      "所有版本",
+      "发布说明、校验和以及旧版本都在 GitHub 上。",
+      "https://github.com/orangedeck-dev/orangedeck/releases"
+    ],
+    [
+      "源代码",
+      "自己编译。MIT 许可证。",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ]
+  ],
+  "faq_titel": "常见问题",
+  "faq": [
+    [
+      "需要我的密钥吗？",
+      "不需要。它什么都不能签名。要监视的地址以地址或 xpub 的形式输入，除了查询余额之外，不会离开你的设备。"
+    ],
+    [
+      "数据从哪里来？",
+      "默认来自 mempool.space，也可以来自你自己的 mempool 实例，只需改一项设置。行情数据来自交易所的公开数据流。"
+    ],
+    [
+      "它会向外发送数据吗？",
+      "不会。没有我们自己的服务器，没有统计分析，也没有崩溃报告。"
+    ],
+    [
+      "要花钱吗？",
+      "不要。它采用 MIT 许可证，没有付费版本。"
+    ],
+    [
+      "支持哪些语言？",
+      "十三种：英语、德语、西班牙语、法语、意大利语、葡萄牙语（葡萄牙和巴西）、荷兰语、俄语、日语、中文、波兰语和捷克语。启动时使用系统语言，数字和日期格式跟随你在设置中选择的语言。"
+    ],
+    [
+      "强平热力图是真实数据吗？",
+      "不是，屏幕上也写明了。没有人会公开别人的仓位；它是一个列明了假设的模型。"
+    ],
+    [
+      "可以在墙上的平板上运行吗？",
+      "时钟视图就是为此设计的：大号数字，没有按钮。Android 版带有直接打开时钟的快捷方式。"
+    ]
+  ],
+  "fuss_cta": "试一试",
+  "fuss_herkunft": "方块排布和配色模型移植自 bitfeed（MIT，mononaut）。",
+  "fuss_lizenz": "OrangeDeck 采用 MIT 许可证。",
+  "sprache_waehlen": "语言",
+  "live": {
+    "reiter": [
+      "动态",
+      "时钟",
+      "挖矿",
+      "浏览器",
+      "市场",
+      "钱包"
+    ],
+    "live": "实时",
+    "beispiel": "示例",
+    "beispielHinweis": "从这里无法查询陌生人的矿机或钱包，所以这两个视图显示的是虚构的数字。应用里显示的是你自己的数据。",
+    "quelle": "实时来自内存池",
+    "block": "区块",
+    "vorMin": "{0} 分钟前",
+    "gebuehr": "手续费",
+    "kurs": "价格",
+    "mempool": "内存池",
+    "hashrate": "算力",
+    "moscow": "莫斯科时间",
+    "schwierigkeit": "难度",
+    "halving": "减半",
+    "bloecke": "区块",
+    "txn": "笔交易",
+    "beste": "最佳份额",
+    "temperatur": "温度",
+    "leistung": "功率",
+    "guthaben": "余额",
+    "adressen": "地址",
+    "unbestaetigt": "未确认",
+    "gerechnet": "由难度推算",
+    "verbindet": "正在连接 …"
+  },
+  "seo_kurz": "OrangeDeck 是一款免费的桌面和 Android 应用，把比特币内存池绘制成动态的方块拼图。它在一个窗口里集合了六个视图：内存池动态、区块高度时钟、挖矿数据、区块浏览器、行情数据和只读地址监视。它可在 Linux、Windows 和 Android 上运行，也可作为 DankMaterialShell 插件使用，支持十三种语言，采用 MIT 许可证，无需账户。",
+  "bilder_titel": "截图",
+  "bilder": [
+    [
+      "uhr",
+      "时钟：区块高度、手续费、价格和下次难度调整。"
+    ],
+    [
+      "mining",
+      "挖矿：一年内的全网算力和难度。"
+    ],
+    [
+      "explorer",
+      "浏览器：预测区块和已确认区块，下一个区块以方块显示。"
+    ],
+    [
+      "markt",
+      "市场：来自 Binance 和 Bybit 的蜡烛图和成交量。"
+    ]
+  ],
+  "vorschau_fuss": [
+    "Linux · Windows · Android · DankMaterialShell",
+    "MIT 许可证，无需账户"
+  ],
+  "hero_fassung": "版本 {v}，发布于 {datum}",
+  "neu_link": "更新内容",
+  "quellen_titel": "数据来源",
+  "quellen": [
+    [
+      "区块、内存池、手续费、算力",
+      "mempool.space 的公开 WebSocket，或你自己的 mempool 实例，只需改一项设置。"
+    ],
+    [
+      "价格和成交",
+      "Binance、Bybit 和 OKX 的公开数据流。"
+    ],
+    [
+      "强平",
+      "Bybit 和 OKX。热力图是根据 Binance 未平仓合约建立的模型，屏幕上也写明了这一点。"
+    ],
+    [
+      "你自己的矿机",
+      "设备的本地 API，即 AxeOS 或 cgminer。请求不会离开你的家庭网络。"
+    ],
+    [
+      "监视的地址",
+      "向同一个 mempool 实例查询余额。不涉及密钥，除此之外没有任何数据离开设备。"
+    ]
+  ],
+  "einsatz_titel": "适用场景",
+  "zurueck": "概览",
+  "mehr_titel": "关于 OrangeDeck 的更多内容",
+  "alte_fassungen": "旧版本、校验和以及完整的发布说明都在 GitHub 上。",
+  "nur_englisch": "各版本的说明为英文。",
+  "unterseiten": [
+    {
+      "slug": "bitaxe",
+      "name": "Bitaxe 监控",
+      "karte": "你自己矿机的算力、最佳份额和温度，与全网数据并排显示。",
+      "titel": "适用于 Linux、Windows 和 Android 的 Bitaxe 监控 | OrangeDeck",
+      "beschreibung": "监控你的 Bitaxe 或任何 AxeOS、cgminer 矿机：算力、最佳份额与全网难度的对比、温度和功率。本地运行，免费，无需账户。",
+      "h1": "内存池旁边的 Bitaxe 监控",
+      "text": [
+        "OrangeDeck 的挖矿视图通过本地 API 读取你的矿机，显示算力、最佳份额、温度、功率和风扇转速。它能识别 Bitaxe、NerdAxe 等 AxeOS 设备，以及所有支持 cgminer API 的设备，例如 Antminer、Avalon 或 Whatsminer。",
+        "唯一需要设置的是地址，多台矿机填在同一个输入框里，用竖线分隔。请求只发往你家庭网络中的设备，不会发往别处。没有云账户，也不需要登录矿池。",
+        "最佳份额会与当前全网难度对比，视图还会按你的算力计算出块概率，分别给出每天的概率和平均间隔。对单台 Bitaxe 来说，这个间隔非常长，OrangeDeck 会如实显示这个数字。",
+        "设备旁边是全网数据：从 30 天前一直到 2009 年的算力和难度、下次难度调整、平均出块时间，以及上一个区块的矿池。",
+        "这个视图也能作为小部件运行：在 Linux 上是桌面上的 layer-shell 图层，在 Windows 上是无边框窗口，在 Android 上是主屏幕小部件。"
+      ],
+      "bild": "mining",
+      "bild_alt": "挖矿视图，显示一年内的全网算力和难度。",
+      "faq": [
+        [
+          "OrangeDeck 支持哪些矿机？",
+          "Bitaxe、NerdAxe 等 AxeOS 设备，以及支持 cgminer API 的矿机，例如 Antminer、Avalon 和 Whatsminer。"
+        ],
+        [
+          "矿机数据会离开我的网络吗？",
+          "不会。OrangeDeck 直接访问设备的本地地址，不经过任何服务器。"
+        ],
+        [
+          "可以同时监控多台矿机吗？",
+          "可以。在设置中输入地址，用竖线分隔，例如 http://192.168.1.42|http://192.168.1.43。"
+        ]
+      ]
+    },
+    {
+      "slug": "wall-display",
+      "name": "挂墙显示",
+      "karte": "用大号数字显示区块高度、手续费和价格，适合旧平板。",
+      "titel": "挂在墙上的平板：比特币区块高度显示屏 | OrangeDeck",
+      "beschreibung": "把旧 Android 平板变成比特币区块高度显示屏：用大号数字显示区块高度、手续费、价格、莫斯科时间和减半倒计时。免费，无需账户。",
+      "h1": "挂在墙上的区块高度显示屏",
+      "text": [
+        "时钟视图用大号数字显示当前区块高度，下面是手续费、价格、莫斯科时间、内存池大小和算力。一条进度条显示距下次难度调整的进度，一条线显示距减半的进度。",
+        "屏幕上没有按钮，站在房间另一头也能看清。中间大字显示的内容可以在设置中更改，选了多项时会轮流显示。",
+        "在 Android 上，OrangeDeck 全屏运行时屏幕保持常亮。不需要任何权限，应用在后台也不会阻止设备休眠。Android 版带有一个直接打开时钟的主屏幕快捷方式。",
+        "任何 Android 9 及以上、配备 64 位 ARM 处理器的手机或平板都可以。在桌面上，同一个视图可以作为小部件运行，比如放在第二块屏幕的角落。",
+        "价格和莫斯科时间跟随你选择的货币：欧元、美元、英镑、瑞士法郎、加元、澳元或日元。"
+      ],
+      "bild": "uhr",
+      "bild_alt": "时钟视图，显示区块高度、手续费、价格、莫斯科时间、内存池和算力。",
+      "faq": [
+        [
+          "屏幕会保持常亮吗？",
+          "会，在 Android 上只要应用处于全屏状态。退出全屏或切换到其他应用后，恢复正常的息屏时间。"
+        ],
+        [
+          "哪些平板可以用？",
+          "Android 9 及以上、配备 64 位 ARM 处理器的平板。近几年的大多数平板都符合。"
+        ],
+        [
+          "需要自己的节点吗？",
+          "不需要。数据来自 mempool.space。如果你运行了自己的 mempool 实例，填入它的地址，时钟就会改用它。"
+        ]
+      ]
+    },
+    {
+      "slug": "dankmaterialshell",
+      "name": "DankMaterialShell",
+      "karte": "适用于 DMS 的状态栏胶囊、控制中心磁贴和桌面小部件。",
+      "titel": "DankMaterialShell 比特币仪表盘插件 | OrangeDeck",
+      "beschreibung": "OrangeDeck 作为 DankMaterialShell 插件：在状态栏弹出窗口中显示内存池动态、区块高度时钟、挖矿、浏览器和市场，另有桌面小部件。一条命令即可安装。",
+      "h1": "DankMaterialShell 中的 OrangeDeck",
+      "text": [
+        "OrangeDeck 以 OrangeDeck Bitcoin Dashboard 的名称收录在 DankMaterialShell 的插件目录中。一条命令即可安装：dms plugins install orangedeck。",
+        "它在状态栏里是一个胶囊，显示等待确认的交易数量。点击后打开一个弹出窗口，里面是与应用相同的视图：动态、时钟、挖矿、浏览器和市场。另外还有控制中心磁贴和桌面小部件。",
+        "插件不依赖应用，会自己从 mempool.space 获取数据。如果安装了 OrangeDeck 应用并且其服务在运行，插件就改用服务的数据，这样所有窗口共用一个连接。",
+        "它跟随 DankMaterialShell 的语言，支持与应用相同的十三种语言。"
+      ],
+      "bild": "dms",
+      "bild_alt": "DankMaterialShell 状态栏中的 OrangeDeck 弹出窗口，显示内存池动态。",
+      "faq": [
+        [
+          "需要哪个版本的 DMS？",
+          "DankMaterialShell 1.5.0 或更高版本，任何 DMS 支持的合成器均可。"
+        ],
+        [
+          "还需要安装 OrangeDeck 应用吗？",
+          "不需要。插件会自己获取所有数据。如果应用及其服务在运行，插件会共用它们的连接。"
+        ],
+        [
+          "源代码在哪里？",
+          "在单独的仓库 github.com/orangedeck-dev/dms-plugin 中，由主项目生成。MIT 许可证。"
+        ]
+      ]
+    }
+  ],
+  "neu": {
+    "titel": "OrangeDeck 更新内容：版本历史",
+    "beschreibung": "比特币内存池可视化工具 OrangeDeck 的版本历史：每个版本改了什么，附发布日期。",
+    "h1": "更新内容",
+    "text": "所有版本及其日期，最新的在前。"
+  }
+}

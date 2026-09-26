@@ -1,0 +1,389 @@
+{
+  "code": "fr",
+  "name": "Français",
+  "richtung": "ltr",
+  "repo": "https://github.com/orangedeck-dev/orangedeck",
+  "titel": "OrangeDeck : mempool Bitcoin en direct, hauteur de bloc et Bitaxe",
+  "beschreibung": "Visualiseur de mempool Bitcoin pour Linux, Windows et Android : horloge de hauteur de bloc, moniteur Bitaxe, explorateur de blocs, marché. Libre et gratuit.",
+  "nav": [
+    [
+      "Ce que c’est",
+      "#was"
+    ],
+    [
+      "Vues",
+      "#ansichten"
+    ],
+    [
+      "Où ça tourne",
+      "#wo"
+    ],
+    [
+      "Pourquoi",
+      "#warum"
+    ],
+    [
+      "FAQ",
+      "#faq"
+    ]
+  ],
+  "hero_titel": "Le mempool Bitcoin en direct",
+  "hero_text": "Les transactions en attente tombent sur un tas en mosaïque de tuiles, à la taille de ce qu’elles déplacent et colorées selon leur âge, leurs frais ou leur type. Les transactions confirmées s’envolent dans le bloc. On regarde le réseau respirer.",
+  "hero_cta1": "Télécharger",
+  "hero_cta1_ziel": "#holen",
+  "hero_cta2": "Lire le code source",
+  "hero_cta2_ziel": "https://github.com/orangedeck-dev/orangedeck",
+  "badges": [
+    "Sous licence MIT",
+    "Pas de compte, pas de télémétrie",
+    "Lecture seule, aucune clé",
+    "Six vues, cinq environnements"
+  ],
+  "was_titel": "Ce que c’est",
+  "was": [
+    "OrangeDeck est un visualiseur de mempool Bitcoin. Il dessine le mempool tel qu’il se comporte réellement : chaque transaction en attente est un carré. Elle s’empile, elle est minée, elle est remplacée, et on le voit se produire au lieu de lire un chiffre.",
+    "Autour, cinq autres vues : une horloge de hauteur de bloc pour une tablette au mur, les chiffres de minage de votre propre Bitaxe et du réseau, un explorateur de blocs, un onglet marché avec chandelles, delta de volume cumulé et liquidations, et des adresses en lecture seule."
+  ],
+  "ansichten_titel": "Six vues",
+  "ansichten": [
+    [
+      "Flux",
+      "Le mempool comme une mosaïque vivante, avec le dernier bloc à côté. Couleurs selon l’âge, les frais ou le type de transaction."
+    ],
+    [
+      "Horloge",
+      "Hauteur de bloc, frais, cours, hashrate et compte à rebours du halving, en grand et sans commandes. Pour une tablette au mur."
+    ],
+    [
+      "Minage",
+      "Un moniteur Bitaxe : hashrate, meilleure part face à la difficulté du réseau, température et puissance de votre propre mineur. À côté, le réseau avec son hashrate, sa difficulté et le prochain ajustement."
+    ],
+    [
+      "Explorateur",
+      "Recherche par hauteur, hash, txid ou adresse. Parcourez les blocs et leur contenu, voyez ce qui a remplacé quoi."
+    ],
+    [
+      "Marché",
+      "Le cours en chandelles ou en ligne, le volume, le delta de volume cumulé et les liquidations, agrégés sur plusieurs plateformes d’échange."
+    ],
+    [
+      "Portefeuille",
+      "Vos propres adresses ou une xpub, en lecture seule. Vos transactions sont mises en évidence tant qu’elles attendent dans le tas. Nécessite le service OrangeDeck sur un ordinateur Linux ; téléphones et Windows y accèdent par le réseau domestique."
+    ]
+  ],
+  "wo_titel": "Où ça tourne",
+  "wo": [
+    [
+      "Tout bureau Linux",
+      "Une fenêtre ordinaire. Wayland, avec X11 en solution de repli."
+    ],
+    [
+      "En widget ou en barre",
+      "Layer-shell sur niri, sway, Hyprland, river, labwc."
+    ],
+    [
+      "Dans DankMaterialShell",
+      "Présent dans l’annuaire des plugins DMS. En onglet du tableau de bord, en pastille dans la barre, en tuile du centre de contrôle ou en widget de bureau."
+    ],
+    [
+      "Windows",
+      "Un ZIP à décompresser, puis on lance. Les mêmes vues ; le portefeuille vient d’un service sur un ordinateur Linux du même réseau."
+    ],
+    [
+      "macOS",
+      "Se compile, mais n’a pas encore été testé. Il n’existe pas encore de paquet."
+    ],
+    [
+      "Android",
+      "Téléphone ou tablette. Chaque vue a son propre raccourci sur l’écran d’accueil."
+    ]
+  ],
+  "warum_titel": "Pourquoi OrangeDeck",
+  "warum": [
+    [
+      "Un afficheur, rien d’autre",
+      "Il ne connaît aucune clé privée, ne peut rien signer et n’embarque aucune bibliothèque qui le pourrait. Lecture seule veut dire lecture seule."
+    ],
+    [
+      "Aucun serveur à nous",
+      "Il parle à mempool.space ou à votre propre nœud. Pas de comptage, pas de rapports de plantage, pas de compte."
+    ],
+    [
+      "Mesuré, pas deviné",
+      "Quand un chiffre est un modèle et non une mesure, comme pour la carte de chaleur des liquidations, l’écran le dit, avec les hypothèses écrites en clair."
+    ],
+    [
+      "Un seul code, cinq environnements",
+      "Le même QML dessine la fenêtre, le widget, le panneau et le téléphone. Ce qui est corrigé à un endroit l’est partout."
+    ],
+    [
+      "À lire par vous-même",
+      "Sous licence MIT, rien d’obscurci, et les raisons sont dans les messages de commit au lieu de se perdre."
+    ]
+  ],
+  "holen_titel": "Télécharger",
+  "holen": [
+    [
+      "Windows",
+      "Version {v}. ZIP pour Windows 10 et 11, 64 bits : décompressez et lancez orangedeck-app.exe. Non signé, SmartScreen pose la question au premier lancement.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-windows-x86_64.zip"
+    ],
+    [
+      "Linux",
+      "Version {v}. Paquet Flatpak : flatpak install --user orangedeck-{v}.flatpak. Le runtime vient de Flathub.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
+    ],
+    [
+      "DankMaterialShell",
+      "Depuis l’annuaire des plugins DMS : dms plugins install orangedeck. Fonctionne seul et utilise les données de l’application quand elle tourne.",
+      "https://github.com/orangedeck-dev/dms-plugin"
+    ],
+    [
+      "APK Android",
+      "Version {v}. Pour Android 9 ou plus récent, ARM 64 bits. Signé, l’empreinte figure dans les notes de version.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-arm64-v8a.apk"
+    ],
+    [
+      "F-Droid",
+      "Le dépôt propre à OrangeDeck. Ajoutez-le une fois dans F-Droid, Droid-ify ou Neo Store, et les mises à jour arrivent toutes seules.",
+      "https://fdroid.orangedeck.dev/repo/"
+    ],
+    [
+      "Obtainium",
+      "Récupère chaque nouvelle version directement depuis les releases GitHub. Indiquez l’adresse du dépôt comme source.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ],
+    [
+      "Toutes les versions",
+      "Notes de version, sommes de contrôle et anciennes versions sur GitHub.",
+      "https://github.com/orangedeck-dev/orangedeck/releases"
+    ],
+    [
+      "Code source",
+      "À compiler soi-même. MIT.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ]
+  ],
+  "faq_titel": "Questions",
+  "faq": [
+    [
+      "A-t-il besoin de mes clés ?",
+      "Non. Il ne peut rien signer. Les adresses suivies sont saisies comme adresses ou comme xpub et ne quittent votre machine que sous forme de requête de solde."
+    ],
+    [
+      "D’où viennent les données ?",
+      "De mempool.space par défaut, ou de votre propre instance mempool. C’est un seul réglage. Les données de marché viennent des flux publics des plateformes d’échange."
+    ],
+    [
+      "Envoie-t-il des données quelque part ?",
+      "Non. Il n’y a aucun serveur à nous, pas de statistiques d’utilisation et pas de rapports de plantage."
+    ],
+    [
+      "Combien ça coûte ?",
+      "Rien. Il est sous licence MIT et il n’existe pas de version payante."
+    ],
+    [
+      "Quelles langues parle-t-il ?",
+      "Treize : anglais, allemand, espagnol, français, italien, portugais (Portugal et Brésil), néerlandais, russe, japonais, chinois, polonais et tchèque. Il démarre dans la langue du système, et les nombres et les dates suivent la langue choisie dans les paramètres."
+    ],
+    [
+      "La carte de chaleur des liquidations montre-t-elle des données réelles ?",
+      "Non, et l’écran le dit. Personne ne publie les positions des autres ; c’est un modèle dont les hypothèses sont écrites en clair."
+    ],
+    [
+      "Peut-on l’utiliser sur une tablette au mur ?",
+      "C’est à cela que sert la vue Horloge : de grands chiffres, aucune commande. La version Android contient un raccourci qui l’ouvre directement."
+    ]
+  ],
+  "fuss_cta": "Essayer",
+  "fuss_herkunft": "Empilement des tuiles et modèle de couleurs repris de bitfeed (MIT, mononaut).",
+  "fuss_lizenz": "OrangeDeck est sous licence MIT.",
+  "sprache_waehlen": "Langue",
+  "live": {
+    "reiter": [
+      "Flux",
+      "Horloge",
+      "Minage",
+      "Explorateur",
+      "Marché",
+      "Portefeuille"
+    ],
+    "live": "EN DIRECT",
+    "beispiel": "EXEMPLE",
+    "beispielHinweis": "Aucun mineur ni aucun portefeuille d’un inconnu ne peut être interrogé d’ici. Ces deux vues montrent donc des chiffres inventés. L’application affiche les vôtres.",
+    "quelle": "En direct du mempool",
+    "block": "Bloc",
+    "vorMin": "il y a {0} min",
+    "gebuehr": "Frais",
+    "kurs": "Cours",
+    "mempool": "Mempool",
+    "hashrate": "Taux de hachage",
+    "moscow": "Moscow Time",
+    "schwierigkeit": "Difficulté",
+    "halving": "Halving",
+    "bloecke": "Blocs",
+    "txn": "transactions",
+    "beste": "Meilleure part",
+    "temperatur": "Température",
+    "leistung": "Puissance",
+    "guthaben": "Solde",
+    "adressen": "Adresses",
+    "unbestaetigt": "non confirmées",
+    "gerechnet": "calculé à partir de la difficulté",
+    "verbindet": "connexion …"
+  },
+  "seo_kurz": "OrangeDeck est une application gratuite pour ordinateur et Android qui dessine le mempool Bitcoin comme une mosaïque de tuiles vivante. Elle réunit six vues dans une seule fenêtre : flux du mempool, horloge de hauteur de bloc, chiffres de minage, explorateur de blocs, données de marché et adresses en lecture seule. Elle fonctionne sous Linux, Windows et Android ainsi qu’en plugin DankMaterialShell, parle treize langues, est sous licence MIT et ne demande aucun compte.",
+  "bilder_titel": "Captures d’écran",
+  "bilder": [
+    [
+      "uhr",
+      "Horloge : hauteur de bloc, frais, cours et prochain ajustement de difficulté."
+    ],
+    [
+      "mining",
+      "Minage : hashrate et difficulté du réseau sur un an."
+    ],
+    [
+      "explorer",
+      "Explorateur : blocs projetés et confirmés, le prochain bloc en tuiles."
+    ],
+    [
+      "markt",
+      "Marché : chandelles et volume de Binance et Bybit."
+    ]
+  ],
+  "vorschau_fuss": [
+    "Linux · Windows · Android · DankMaterialShell",
+    "Sous licence MIT, sans compte"
+  ],
+  "hero_fassung": "Version {v} du {datum}",
+  "neu_link": "Nouveautés",
+  "quellen_titel": "D’où viennent les chiffres",
+  "quellen": [
+    [
+      "Blocs, mempool, frais, hashrate",
+      "Le WebSocket public de mempool.space, ou votre propre instance mempool. C’est un seul réglage."
+    ],
+    [
+      "Cours et transactions",
+      "Les flux publics de Binance, Bybit et OKX."
+    ],
+    [
+      "Liquidations",
+      "Bybit et OKX. La carte de chaleur est un modèle construit à partir de l’open interest de Binance, et l’écran le dit."
+    ],
+    [
+      "Votre propre mineur",
+      "L’API locale de l’appareil, AxeOS ou cgminer. La requête reste dans votre réseau domestique."
+    ],
+    [
+      "Adresses suivies",
+      "Des requêtes de solde vers la même instance mempool. Aucune clé, et rien d’autre ne quitte l’appareil."
+    ]
+  ],
+  "einsatz_titel": "Pensé pour",
+  "zurueck": "Vue d’ensemble",
+  "mehr_titel": "En savoir plus sur OrangeDeck",
+  "alte_fassungen": "Les anciennes versions, les sommes de contrôle et les notes de version complètes sont sur GitHub.",
+  "nur_englisch": "Les notes de chaque version sont rédigées en anglais.",
+  "unterseiten": [
+    {
+      "slug": "bitaxe",
+      "name": "Moniteur Bitaxe",
+      "karte": "Hashrate, meilleure part et température de votre propre mineur, à côté du réseau.",
+      "titel": "Moniteur Bitaxe pour Linux, Windows et Android | OrangeDeck",
+      "beschreibung": "Surveillez votre Bitaxe ou un appareil AxeOS ou cgminer : hashrate, best share face à la difficulté, température, puissance. Local, gratuit, sans compte.",
+      "h1": "Un moniteur Bitaxe à côté du mempool",
+      "text": [
+        "La vue Minage d’OrangeDeck lit votre mineur par son API locale et affiche le hashrate, la meilleure part, la température, la puissance et la vitesse du ventilateur. Elle reconnaît les appareils AxeOS comme le Bitaxe et le NerdAxe, ainsi que tout ce qui parle l’API cgminer, par exemple Antminer, Avalon ou Whatsminer.",
+        "L’adresse est le seul réglage, et plusieurs mineurs vont dans le même champ, séparés par une barre verticale. La requête va à l’appareil dans votre réseau domestique et nulle part ailleurs. Il n’y a ni compte cloud ni identifiant de pool.",
+        "La meilleure part est mise en regard de la difficulté actuelle du réseau, et la vue calcule la probabilité de trouver un bloc avec votre hashrate, par jour et en intervalle moyen. Pour un seul Bitaxe, cet intervalle est très long, et OrangeDeck affiche le chiffre tel qu’il est.",
+        "À côté de l’appareil se trouve le réseau : hashrate et difficulté de 30 jours jusqu’à 2009, le prochain ajustement de difficulté, le temps de bloc moyen et le pool du dernier bloc.",
+        "La vue fonctionne aussi en widget : sous Linux comme surface layer-shell sur le bureau, sous Windows comme fenêtre sans bordure, et sous Android comme widget de l’écran d’accueil."
+      ],
+      "bild": "mining",
+      "bild_alt": "La vue Minage avec le hashrate et la difficulté du réseau sur un an.",
+      "faq": [
+        [
+          "Quels mineurs OrangeDeck prend-il en charge ?",
+          "Les appareils AxeOS comme le Bitaxe et le NerdAxe, et les mineurs dotés de l’API cgminer, par exemple Antminer, Avalon et Whatsminer."
+        ],
+        [
+          "Les données du mineur quittent-elles mon réseau ?",
+          "Non. OrangeDeck interroge l’appareil directement à son adresse locale. Rien ne passe par un serveur."
+        ],
+        [
+          "Puis-je surveiller plusieurs mineurs ?",
+          "Oui. Saisissez les adresses dans les paramètres, séparées par une barre verticale, par exemple http://192.168.1.42|http://192.168.1.43."
+        ]
+      ]
+    },
+    {
+      "slug": "wall-display",
+      "name": "Affichage mural",
+      "karte": "Hauteur de bloc, frais et cours en grands chiffres, pour une vieille tablette.",
+      "titel": "Hauteur de bloc Bitcoin sur une tablette murale | OrangeDeck",
+      "beschreibung": "Une vieille tablette Android devient un écran de hauteur de bloc Bitcoin : frais, cours, Moscow Time et halving en grands chiffres. Gratuit, sans compte.",
+      "h1": "Un affichage de hauteur de bloc pour le mur",
+      "text": [
+        "La vue Horloge affiche la hauteur de bloc actuelle en grands chiffres, avec en dessous les frais, le cours, Moscow Time, la taille du mempool et le hashrate. Une barre compte à rebours jusqu’au prochain ajustement de difficulté, une ligne jusqu’au halving.",
+        "Il n’y a aucune commande à l’écran, on le lit donc bien depuis l’autre bout de la pièce. Ce qui s’affiche en grand au centre se change dans les paramètres, et si plusieurs valeurs sont choisies, elles s’affichent à tour de rôle.",
+        "Sous Android, l’écran reste allumé tant qu’OrangeDeck tourne en plein écran. Aucune autorisation n’est nécessaire, et en arrière-plan l’application ne maintient rien éveillé. La version Android contient un raccourci d’écran d’accueil qui ouvre directement l’horloge.",
+        "N’importe quel téléphone ou tablette sous Android 9 ou plus récent avec un processeur ARM 64 bits fait l’affaire. Sur un ordinateur, la même vue tourne en widget, par exemple dans un coin d’un second écran.",
+        "Le cours et Moscow Time suivent la devise choisie : euro, dollar américain, livre, franc suisse, dollar canadien ou australien, ou yen."
+      ],
+      "bild": "uhr",
+      "bild_alt": "La vue Horloge avec la hauteur de bloc, les frais, le cours, Moscow Time, le mempool et le hashrate.",
+      "faq": [
+        [
+          "L’écran reste-t-il allumé ?",
+          "Oui, sous Android tant que l’application est en plein écran. Quand on quitte le plein écran ou qu’on change d’application, la mise en veille normale de l’écran s’applique de nouveau."
+        ],
+        [
+          "Quelles tablettes conviennent ?",
+          "Android 9 ou plus récent avec un processeur ARM 64 bits. Cela couvre la plupart des tablettes de ces dernières années."
+        ],
+        [
+          "Ai-je besoin de mon propre nœud ?",
+          "Non. Les chiffres viennent de mempool.space. Si vous faites tourner votre propre instance mempool, saisissez son adresse et l’horloge l’utilise."
+        ]
+      ]
+    },
+    {
+      "slug": "dankmaterialshell",
+      "name": "DankMaterialShell",
+      "karte": "Une pastille dans la barre, une tuile du centre de contrôle et un widget de bureau pour DMS.",
+      "titel": "Tableau de bord Bitcoin pour DankMaterialShell | OrangeDeck",
+      "beschreibung": "OrangeDeck en plugin DankMaterialShell : mempool, hauteur de bloc, minage, explorateur et marché dans la barre, plus un widget de bureau. Une seule commande.",
+      "h1": "OrangeDeck dans DankMaterialShell",
+      "text": [
+        "OrangeDeck figure dans l’annuaire des plugins de DankMaterialShell sous le nom OrangeDeck Bitcoin Dashboard. Il s’installe avec une seule commande : dms plugins install orangedeck.",
+        "Dans la barre, il se présente comme une pastille avec le nombre de transactions en attente. Un clic ouvre un popout avec les mêmes vues que l’application : Flux, Horloge, Minage, Explorateur et Marché. Il y a aussi une tuile pour le centre de contrôle et un widget de bureau.",
+        "Le plugin fonctionne sans l’application et va chercher ses données lui-même sur mempool.space. Si l’application OrangeDeck est installée et que son service tourne, le plugin l’utilise à la place, et toutes les fenêtres partagent ainsi une seule connexion.",
+        "Il suit la langue de DankMaterialShell et parle les mêmes treize langues que l’application."
+      ],
+      "bild": "dms",
+      "bild_alt": "Le popout OrangeDeck dans la barre de DankMaterialShell avec le flux du mempool.",
+      "faq": [
+        [
+          "Quelle version de DMS faut-il ?",
+          "DankMaterialShell 1.5.0 ou plus récent, sur n’importe quel compositeur pris en charge par DMS."
+        ],
+        [
+          "Faut-il aussi l’application OrangeDeck ?",
+          "Non. Le plugin va tout chercher lui-même. Quand l’application et son service tournent, il partage leur connexion."
+        ],
+        [
+          "Où est le code source ?",
+          "Dans son propre dépôt, github.com/orangedeck-dev/dms-plugin, généré à partir du projet principal. Sous licence MIT."
+        ]
+      ]
+    }
+  ],
+  "neu": {
+    "titel": "Nouveautés d’OrangeDeck : historique des versions",
+    "beschreibung": "Historique des versions d’OrangeDeck, le visualiseur de mempool Bitcoin : ce qui a changé dans chaque version, avec les dates.",
+    "h1": "Nouveautés",
+    "text": "Chaque version avec sa date, de la plus récente à la plus ancienne."
+  }
+}

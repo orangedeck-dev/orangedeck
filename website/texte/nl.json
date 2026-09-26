@@ -1,0 +1,389 @@
+{
+  "code": "nl",
+  "name": "Nederlands",
+  "richtung": "ltr",
+  "repo": "https://github.com/orangedeck-dev/orangedeck",
+  "titel": "OrangeDeck: Bitcoin-mempool live, blokhoogteklok, Bitaxe-monitor",
+  "beschreibung": "Bitcoin-mempoolvisualisatie voor Linux, Windows en Android, met een blokhoogteklok, Bitaxe-monitor, blockexplorer en marktgegevens. Gratis en open source.",
+  "nav": [
+    [
+      "Wat het is",
+      "#was"
+    ],
+    [
+      "Weergaven",
+      "#ansichten"
+    ],
+    [
+      "Waar het draait",
+      "#wo"
+    ],
+    [
+      "Waarom",
+      "#warum"
+    ],
+    [
+      "FAQ",
+      "#faq"
+    ]
+  ],
+  "hero_titel": "De Bitcoin-mempool, live",
+  "hero_text": "Wachtende transacties vallen als tegels op een hoop, zo groot als wat ze verplaatsen en gekleurd naar leeftijd, kosten of type. Bevestigde transacties vliegen het blok in. Je ziet het netwerk ademen.",
+  "hero_cta1": "Downloaden",
+  "hero_cta1_ziel": "#holen",
+  "hero_cta2": "Bekijk de broncode",
+  "hero_cta2_ziel": "https://github.com/orangedeck-dev/orangedeck",
+  "badges": [
+    "MIT-licentie",
+    "Geen account, geen telemetrie",
+    "Alleen bekijken, geen sleutels",
+    "Zes weergaven, vijf omgevingen"
+  ],
+  "was_titel": "Wat het is",
+  "was": [
+    "OrangeDeck is een mempoolvisualisatie voor Bitcoin. Het tekent de mempool zoals die zich echt gedraagt: elke wachtende transactie is een vierkantje. Ze stapelen zich op, worden gemined, worden vervangen, en je ziet het gebeuren in plaats van een getal te lezen.",
+    "Daaromheen zitten nog vijf weergaven: een blokhoogteklok voor een tablet aan de muur, miningcijfers van je eigen Bitaxe en van het netwerk, een blockexplorer, een markttabblad met candles, cumulatieve volumedelta en liquidaties, en adressen die je alleen bekijkt."
+  ],
+  "ansichten_titel": "Zes weergaven",
+  "ansichten": [
+    [
+      "Feed",
+      "De mempool als levend mozaïek, met het laatste blok ernaast. Kleur naar leeftijd, kosten of transactietype."
+    ],
+    [
+      "Klok",
+      "Blokhoogte, kosten, koers, hashrate en het aftellen naar de halving, groot en zonder bediening. Voor een tablet aan de muur."
+    ],
+    [
+      "Mining",
+      "Een Bitaxe-monitor: hashrate, beste share tegenover de netwerkmoeilijkheid, temperatuur en vermogen van je eigen miner. Ernaast het netwerk met hashrate, moeilijkheid en de volgende aanpassing."
+    ],
+    [
+      "Verkenner",
+      "Zoeken op hoogte, hash, txid of adres. Blader door blokken en hun inhoud, zie wat door wat vervangen is."
+    ],
+    [
+      "Markt",
+      "Koers als candles of als lijn, volume, cumulatieve volumedelta en liquidaties, samengevoegd over meerdere beurzen."
+    ],
+    [
+      "Wallet",
+      "Je eigen adressen of een xpub, alleen bekijken. Je eigen transacties zijn gemarkeerd zolang ze op de hoop liggen. Vereist de OrangeDeck-dienst op een Linux-computer; telefoons en Windows bereiken die via het thuisnetwerk."
+    ]
+  ],
+  "wo_titel": "Waar het draait",
+  "wo": [
+    [
+      "Elke Linux-desktop",
+      "Een gewoon venster. Wayland, met X11 als terugvaloptie."
+    ],
+    [
+      "Als widget of balk",
+      "Layer-shell op niri, sway, Hyprland, river, labwc."
+    ],
+    [
+      "In DankMaterialShell",
+      "Opgenomen in de DMS-plugindirectory. Als dashboardtabblad, pil in de balk, tegel in het controlecentrum of bureaubladwidget."
+    ],
+    [
+      "Windows",
+      "Een ZIP: uitpakken en starten. Dezelfde weergaven; de wallet komt van een dienst op een Linux-computer in hetzelfde netwerk."
+    ],
+    [
+      "macOS",
+      "Laat zich bouwen, maar is nog niet getest. Er is nog geen pakket."
+    ],
+    [
+      "Android",
+      "Telefoon of tablet. Elke weergave heeft een eigen snelkoppeling op het startscherm."
+    ]
+  ],
+  "warum_titel": "Waarom OrangeDeck",
+  "warum": [
+    [
+      "Het is een kijker, verder niets",
+      "Het kent geen privésleutel, kan niet ondertekenen en bevat geen bibliotheek die dat wel kan. Alleen bekijken betekent alleen bekijken."
+    ],
+    [
+      "Geen server van ons",
+      "Het praat met mempool.space of met je eigen node. Er wordt niets geteld, er zijn geen crashrapporten en er is geen account."
+    ],
+    [
+      "Gemeten, niet geraden",
+      "Waar een getal een model is en geen meting, zoals bij de liquidatie-heatmap, staat dat op het scherm, met de aannames uitgeschreven."
+    ],
+    [
+      "Eén codebase, vijf omgevingen",
+      "Dezelfde QML tekent het venster, de widget, het paneel en de telefoon. Wat op één plek gerepareerd is, is overal gerepareerd."
+    ],
+    [
+      "Zelf na te lezen",
+      "MIT-licentie, niets versluierd, en de redenen staan in de commitberichten in plaats van verloren te gaan."
+    ]
+  ],
+  "holen_titel": "Downloaden",
+  "holen": [
+    [
+      "Windows",
+      "Versie {v}. ZIP voor Windows 10 en 11, 64-bit: uitpakken en orangedeck-app.exe starten. Niet ondertekend, SmartScreen vraagt bij de eerste start om bevestiging.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-windows-x86_64.zip"
+    ],
+    [
+      "Linux",
+      "Versie {v}. Flatpak-bundel: flatpak install --user orangedeck-{v}.flatpak. De runtime komt van Flathub.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
+    ],
+    [
+      "DankMaterialShell",
+      "Uit de DMS-plugindirectory: dms plugins install orangedeck. Werkt zelfstandig en gebruikt de gegevens van de app als de app draait.",
+      "https://github.com/orangedeck-dev/dms-plugin"
+    ],
+    [
+      "Android-APK",
+      "Versie {v}. Voor Android 9 of nieuwer, 64-bit ARM. Ondertekend, de vingerafdruk staat in de release notes.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-arm64-v8a.apk"
+    ],
+    [
+      "F-Droid",
+      "De eigen repository van OrangeDeck. Voeg hem één keer toe in F-Droid, Droid-ify of Neo Store, en updates komen vanzelf binnen.",
+      "https://fdroid.orangedeck.dev/repo/"
+    ],
+    [
+      "Obtainium",
+      "Haalt elke nieuwe versie direct uit de GitHub-releases. Geef het adres van de repository op als bron.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ],
+    [
+      "Alle versies",
+      "Release notes, checksums en oudere versies op GitHub.",
+      "https://github.com/orangedeck-dev/orangedeck/releases"
+    ],
+    [
+      "Broncode",
+      "Zelf bouwen. MIT.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ]
+  ],
+  "faq_titel": "Vragen",
+  "faq": [
+    [
+      "Heeft het mijn sleutels nodig?",
+      "Nee. Het kan niets ondertekenen. Gevolgde adressen voer je in als adressen of als xpub, en ze verlaten je computer alleen als saldo-opvraag."
+    ],
+    [
+      "Waar komen de gegevens vandaan?",
+      "Standaard van mempool.space, of van je eigen mempool-instantie. Dat is één instelling. Marktgegevens komen uit de openbare feeds van de beurzen."
+    ],
+    [
+      "Stuurt het gegevens naar huis?",
+      "Nee. Er is geen server van ons, geen analytics en geen crashrapportage."
+    ],
+    [
+      "Wat kost het?",
+      "Niets. Het heeft een MIT-licentie en er is geen betaalde versie."
+    ],
+    [
+      "Welke talen spreekt het?",
+      "Dertien: Engels, Duits, Spaans, Frans, Italiaans, Portugees (Portugal en Brazilië), Nederlands, Russisch, Japans, Chinees, Pools en Tsjechisch. Het start in de systeemtaal, en getallen en datums volgen de taal die je in de instellingen kiest."
+    ],
+    [
+      "Toont de liquidatie-heatmap echte gegevens?",
+      "Nee, en dat staat ook op het scherm. Niemand publiceert de posities van anderen; het is een model met uitgeschreven aannames."
+    ],
+    [
+      "Kan ik het op een tablet aan de muur gebruiken?",
+      "Daar is de klokweergave voor: grote cijfers, geen bediening. De Android-versie heeft een snelkoppeling die er direct naartoe gaat."
+    ]
+  ],
+  "fuss_cta": "Probeer het",
+  "fuss_herkunft": "Tegelindeling en kleurmodel overgenomen van bitfeed (MIT, mononaut).",
+  "fuss_lizenz": "OrangeDeck valt onder de MIT-licentie.",
+  "sprache_waehlen": "Taal",
+  "live": {
+    "reiter": [
+      "Feed",
+      "Klok",
+      "Mining",
+      "Verkenner",
+      "Markt",
+      "Wallet"
+    ],
+    "live": "LIVE",
+    "beispiel": "VOORBEELD",
+    "beispielHinweis": "De miner of wallet van een vreemde kun je van hieruit niet opvragen. Deze twee weergaven tonen daarom verzonnen cijfers. De applicatie toont die van jou.",
+    "quelle": "Live uit de mempool",
+    "block": "Blok",
+    "vorMin": "{0} min geleden",
+    "gebuehr": "Kosten",
+    "kurs": "Koers",
+    "mempool": "Mempool",
+    "hashrate": "Hashrate",
+    "moscow": "Moscow Time",
+    "schwierigkeit": "Moeilijkheid",
+    "halving": "Halving",
+    "bloecke": "Blokken",
+    "txn": "transacties",
+    "beste": "Beste share",
+    "temperatur": "Temperatuur",
+    "leistung": "Vermogen",
+    "guthaben": "Saldo",
+    "adressen": "Adressen",
+    "unbestaetigt": "onbevestigd",
+    "gerechnet": "berekend uit de moeilijkheid",
+    "verbindet": "verbinden …"
+  },
+  "seo_kurz": "OrangeDeck is een gratis desktop- en Android-applicatie die de Bitcoin-mempool tekent als een levend tegelmozaïek. Het bundelt zes weergaven in één venster: mempoolfeed, blokhoogteklok, miningcijfers, blockexplorer, marktgegevens en adressen die je alleen bekijkt. Het draait op Linux, Windows en Android en als DankMaterialShell-plugin, spreekt dertien talen, heeft een MIT-licentie en vraagt geen account.",
+  "bilder_titel": "Schermafbeeldingen",
+  "bilder": [
+    [
+      "uhr",
+      "Klok: blokhoogte, kosten, koers en de volgende moeilijkheidsaanpassing."
+    ],
+    [
+      "mining",
+      "Mining: hashrate en moeilijkheid van het netwerk over een jaar."
+    ],
+    [
+      "explorer",
+      "Verkenner: verwachte en bevestigde blokken, het volgende blok als tegels."
+    ],
+    [
+      "markt",
+      "Markt: candles en volume van Binance en Bybit."
+    ]
+  ],
+  "vorschau_fuss": [
+    "Linux · Windows · Android · DankMaterialShell",
+    "MIT-licentie, geen account"
+  ],
+  "hero_fassung": "Versie {v} van {datum}",
+  "neu_link": "Wat is er nieuw",
+  "quellen_titel": "Waar de cijfers vandaan komen",
+  "quellen": [
+    [
+      "Blokken, mempool, kosten, hashrate",
+      "De openbare WebSocket van mempool.space, of je eigen mempool-instantie. Dat is één instelling."
+    ],
+    [
+      "Koers en transacties",
+      "De openbare streams van Binance, Bybit en OKX."
+    ],
+    [
+      "Liquidaties",
+      "Bybit en OKX. De heatmap is een model op basis van de open interest van Binance, en dat staat op het scherm."
+    ],
+    [
+      "Je eigen miner",
+      "De lokale API van het apparaat, AxeOS of cgminer. Het verzoek blijft in je thuisnetwerk."
+    ],
+    [
+      "Gevolgde adressen",
+      "Saldo-opvragen bij dezelfde mempool-instantie. Geen sleutels, en verder verlaat niets het apparaat."
+    ]
+  ],
+  "einsatz_titel": "Gemaakt voor",
+  "zurueck": "Overzicht",
+  "mehr_titel": "Meer over OrangeDeck",
+  "alte_fassungen": "Oudere versies, checksums en de volledige release notes staan op GitHub.",
+  "nur_englisch": "De notities bij elke versie zijn in het Engels.",
+  "unterseiten": [
+    {
+      "slug": "bitaxe",
+      "name": "Bitaxe-monitor",
+      "karte": "Hashrate, beste share en temperatuur van je eigen miner, naast het netwerk.",
+      "titel": "Bitaxe-monitor voor Linux, Windows en Android | OrangeDeck",
+      "beschreibung": "Houd je Bitaxe of een AxeOS- of cgminer-apparaat in de gaten: hashrate, beste share tegenover de netwerkmoeilijkheid, temperatuur, vermogen. Lokaal, gratis.",
+      "h1": "Een Bitaxe-monitor naast de mempool",
+      "text": [
+        "De weergave Mining van OrangeDeck leest je miner uit via de lokale API en toont hashrate, beste share, temperatuur, vermogen en ventilatorsnelheid. Hij herkent AxeOS-apparaten zoals de Bitaxe en de NerdAxe, en alles wat de cgminer-API spreekt, bijvoorbeeld Antminer, Avalon of Whatsminer.",
+        "Het adres is de enige instelling, en meerdere miners gaan in hetzelfde veld, gescheiden door een verticale streep. Het verzoek gaat naar het apparaat in je thuisnetwerk en nergens anders heen. Er is geen cloudaccount en geen pool-login.",
+        "De beste share wordt afgezet tegen de huidige netwerkmoeilijkheid, en de weergave rekent uit hoe groot de kans is om met jouw hashrate een blok te vinden, per dag en als gemiddelde tussentijd. Voor één Bitaxe is die tussentijd erg lang, en OrangeDeck toont het getal zoals het is.",
+        "Naast het apparaat staat het netwerk: hashrate en moeilijkheid van 30 dagen terug tot 2009, de volgende moeilijkheidsaanpassing, de gemiddelde bloktijd en de pool van het laatste blok.",
+        "De weergave draait ook als widget: op Linux als layer-shell-oppervlak op het bureaublad, op Windows als randloos venster en op Android als widget op het startscherm."
+      ],
+      "bild": "mining",
+      "bild_alt": "De weergave Mining met hashrate en moeilijkheid van het netwerk over een jaar.",
+      "faq": [
+        [
+          "Welke miners ondersteunt OrangeDeck?",
+          "AxeOS-apparaten zoals de Bitaxe en de NerdAxe, en miners met de cgminer-API, bijvoorbeeld Antminer, Avalon en Whatsminer."
+        ],
+        [
+          "Verlaten de minergegevens mijn netwerk?",
+          "Nee. OrangeDeck vraagt het apparaat rechtstreeks op zijn lokale adres. Er gaat niets via een server."
+        ],
+        [
+          "Kan ik meerdere miners volgen?",
+          "Ja. Voer de adressen in bij de instellingen, gescheiden door een verticale streep, bijvoorbeeld http://192.168.1.42|http://192.168.1.43."
+        ]
+      ]
+    },
+    {
+      "slug": "wall-display",
+      "name": "Wandscherm",
+      "karte": "Blokhoogte, kosten en koers in grote cijfers, voor een oude tablet.",
+      "titel": "Bitcoin-blokhoogte op een tablet aan de muur | OrangeDeck",
+      "beschreibung": "Maak van een oude Android-tablet een Bitcoin-blokhoogtescherm: blokhoogte, kosten, koers, Moscow Time en de halving in grote cijfers. Gratis, zonder account.",
+      "h1": "Een blokhoogtescherm voor aan de muur",
+      "text": [
+        "De klokweergave toont de huidige blokhoogte in grote cijfers, met daaronder kosten, koers, Moscow Time, de grootte van de mempool en de hashrate. Een balk telt af naar de volgende moeilijkheidsaanpassing, een lijn naar de halving.",
+        "Er staat geen bediening op het scherm, dus het is ook vanaf de andere kant van de kamer goed te lezen. Wat groot in het midden staat, stel je in bij de instellingen, en als je meerdere waarden kiest, wisselen ze elkaar af.",
+        "Op Android blijft het scherm aan zolang OrangeDeck schermvullend draait. Er is geen toestemming voor nodig, en op de achtergrond houdt de app niets wakker. De Android-versie heeft een snelkoppeling op het startscherm die de klok direct opent.",
+        "Elke telefoon of tablet met Android 9 of nieuwer en een 64-bit ARM-processor is geschikt. Op een desktop draait dezelfde weergave als widget, bijvoorbeeld in een hoek van een tweede scherm.",
+        "Koers en Moscow Time volgen de valuta die je kiest: euro, Amerikaanse dollar, pond, Zwitserse frank, Canadese of Australische dollar, of yen."
+      ],
+      "bild": "uhr",
+      "bild_alt": "De klokweergave met blokhoogte, kosten, koers, Moscow Time, mempool en hashrate.",
+      "faq": [
+        [
+          "Blijft het scherm aan?",
+          "Ja, op Android zolang de app schermvullend draait. Verlaat je de schermvullende weergave of wissel je van app, dan geldt weer de gewone schermtime-out."
+        ],
+        [
+          "Welke tablets werken?",
+          "Android 9 of nieuwer met een 64-bit ARM-processor. Dat zijn de meeste tablets van de laatste jaren."
+        ],
+        [
+          "Heb ik een eigen node nodig?",
+          "Nee. De cijfers komen van mempool.space. Draai je een eigen mempool-instantie, vul dan het adres daarvan in en de klok gebruikt die."
+        ]
+      ]
+    },
+    {
+      "slug": "dankmaterialshell",
+      "name": "DankMaterialShell",
+      "karte": "Een pil in de balk, een tegel in het controlecentrum en een bureaubladwidget voor DMS.",
+      "titel": "Bitcoin-dashboardplugin voor DankMaterialShell | OrangeDeck",
+      "beschreibung": "OrangeDeck als DankMaterialShell-plugin: mempoolfeed, blokhoogteklok, mining, verkenner en markt in de balk, plus een bureaubladwidget. Eén commando.",
+      "h1": "OrangeDeck in DankMaterialShell",
+      "text": [
+        "OrangeDeck staat in de plugindirectory van DankMaterialShell als OrangeDeck Bitcoin Dashboard. Installeren gaat met één commando: dms plugins install orangedeck.",
+        "In de balk zit het als pil met het aantal wachtende transacties. Een klik opent een pop-up met dezelfde weergaven als de app: Feed, Klok, Mining, Verkenner en Markt. Daarnaast is er een tegel voor het controlecentrum en een bureaubladwidget.",
+        "De plugin werkt zonder de app en haalt zijn gegevens zelf van mempool.space. Als de OrangeDeck-app geïnstalleerd is en de dienst draait, gebruikt de plugin die, zodat alle vensters één verbinding delen.",
+        "Hij volgt de taal van DankMaterialShell en spreekt dezelfde dertien talen als de app."
+      ],
+      "bild": "dms",
+      "bild_alt": "De OrangeDeck-pop-up in de balk van DankMaterialShell met de mempoolfeed.",
+      "faq": [
+        [
+          "Welke DMS-versie is nodig?",
+          "DankMaterialShell 1.5.0 of nieuwer, op elke compositor die DMS ondersteunt."
+        ],
+        [
+          "Heb ik de OrangeDeck-app ook nodig?",
+          "Nee. De plugin haalt alles zelf op. Als de app en de dienst draaien, deelt hij hun verbinding."
+        ],
+        [
+          "Waar staat de broncode?",
+          "In een eigen repository, github.com/orangedeck-dev/dms-plugin, gegenereerd uit het hoofdproject. MIT-licentie."
+        ]
+      ]
+    }
+  ],
+  "neu": {
+    "titel": "Wat is er nieuw in OrangeDeck: versiegeschiedenis",
+    "beschreibung": "Versiegeschiedenis van OrangeDeck, de Bitcoin-mempoolvisualisatie: wat er in elke versie veranderd is, met datum.",
+    "h1": "Wat is er nieuw",
+    "text": "Elke versie met datum, de nieuwste eerst."
+  }
+}

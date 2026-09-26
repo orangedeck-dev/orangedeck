@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja" dir="ltr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OrangeDeck：ビットコインのメンプール可視化、ブロック高時計、Bitaxe モニター</title>
+<meta name="description" content="ビットコインのメンプールを可視化する Linux・Windows・Android 用アプリです。ブロック高の時計、Bitaxe モニター、ブロックエクスプローラ、市場データもあります。無料のオープンソースです。">
+<meta property="og:title" content="OrangeDeck：ビットコインのメンプール可視化、ブロック高時計、Bitaxe モニター">
+<meta property="og:description" content="ビットコインのメンプールを可視化する Linux・Windows・Android 用アプリです。ブロック高の時計、Bitaxe モニター、ブロックエクスプローラ、市場データもあります。無料のオープンソースです。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orangedeck.dev/ja/">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="it_IT">
+<meta property="og:locale:alternate" content="pt_PT">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="pl_PL">
+<meta property="og:locale:alternate" content="cs_CZ">
+<meta property="og:site_name" content="OrangeDeck">
+<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau-ja.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="OrangeDeck：ビットコインのメンプール可視化、ブロック高時計、Bitaxe モニター">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OrangeDeck：ビットコインのメンプール可視化、ブロック高時計、Bitaxe モニター">
+<meta name="twitter:description" content="ビットコインのメンプールを可視化する Linux・Windows・Android 用アプリです。ブロック高の時計、Bitaxe モニター、ブロックエクスプローラ、市場データもあります。無料のオープンソースです。">
+<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-ja.png">
+<link rel="canonical" href="https://orangedeck.dev/ja/">
+<link rel="icon" href="../bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../stil.css">
+<link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/">
+<link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/">
+<link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/">
+<link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/">
+<link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/">
+<link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/">
+<link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/">
+<link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/">
+<link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/">
+<link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/">
+<link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/">
+<link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/">
+<link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/">
+<link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/">
+<body>
+<div class="kopfleiste"><div class="mitte kopf">
+  <a class="marke" href="#"><img src="../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
+  <nav class="nav"><a href="#was">概要</a><a href="#ansichten">画面</a><a href="#wo">動作環境</a><a href="#warum">特徴</a><a href="#faq">よくある質問</a></nav>
+  <nav class="sprachen"><a href="#sprache" aria-current="true">JA</a></nav>
+</div></div>
+
+<div class="mitte">
+  <header class="hero">
+    <h1>ビットコインのメンプールをライブで</h1>
+    <p class="fuehrend">承認待ちのトランザクションがタイルのモザイクになって山に積もります。大きさは動かす金額で決まり、色は経過時間、手数料、種別のどれかで付きます。承認されたものはブロックへ飛んでいきます。ネットワークが呼吸する様子を眺めることができます。</p>
+    <div class="knopfreihe">
+      <a class="tat" href="#holen">入手する</a>
+      <a class="tat zweit" href="https://github.com/orangedeck-dev/orangedeck">ソースコードを見る</a>
+    </div>
+    <div class="badges"><span class="badge">MIT ライセンス</span><span class="badge">アカウント不要、テレメトリーなし</span><span class="badge">閲覧専用、鍵は不要</span><span class="badge">6つの画面、5つの動作環境</span></div>
+    <p class="fassung">バージョン 0.2.13（2026-09-25） · <a href="changelog/">更新内容</a></p>
+  </header>
+
+  <section class="schau">
+    <!-- **Das Standbild steht darunter, nicht daneben.** `live.js` blendet es
+         erst aus, wenn die ersten Transaktionen angekommen sind; ohne
+         JavaScript, ohne Verbindung zu mempool.space und bei
+         `prefers-reduced-motion` bleibt es liegen. Eine Seite, deren
+         Herzstueck ein leeres Loch ist, waere schlechter als eine mit einem
+         Bild -- und ein Pruefer wie ein Crawler sieht genau das zuerst. -->
+    <div id="live" class="live">
+      <img class="live-standbild" src="../bilder/feed.webp" alt="生きたモザイクとして見るメンプールと、その横に直近のブロック。色は経過時間、手数料、トランザクション種別から選べます。" width="1280" height="800">
+    </div>
+  </section>
+
+  <section id="was">
+    <h2>概要</h2>
+    <p>OrangeDeck はビットコインのメンプールを可視化するアプリです。メンプールを実際の動きどおりに描きます。承認待ちのトランザクションはそれぞれ1つの四角形です。積み上がり、マイニングされ、置き換えられていく様子を、数字を読む代わりに目で見られます。</p><p>そのまわりに画面がもう5つあります。壁掛けタブレット向けのブロック高の時計、自分の Bitaxe とネットワークのマイニング数値、ブロックエクスプローラ、ローソク足と累積出来高デルタと清算を表示する市場タブ、そして閲覧専用のアドレスです。</p>
+  </section>
+
+  <section id="ansichten">
+    <h2>6つの画面</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>フィード</b><span class="txt">生きたモザイクとして見るメンプールと、その横に直近のブロック。色は経過時間、手数料、トランザクション種別から選べます。</span></li><li><span class="nr">02</span><b>時計</b><span class="txt">ブロック高、手数料、価格、ハッシュレート、半減期までのカウントダウンを、大きな文字で操作ボタンなしに表示します。壁掛けのタブレット向けです。</span></li><li><span class="nr">03</span><b>マイニング</b><span class="txt">Bitaxe モニターです。自分のマイナーのハッシュレート、ネットワーク難易度に対する最高シェア、温度、電力を表示します。横にはネットワークのハッシュレート、難易度、次の難易度調整が並びます。</span></li><li><span class="nr">04</span><b>エクスプローラ</b><span class="txt">ブロック高、ハッシュ、txid、アドレスで検索できます。ブロックとその中身をたどり、どのトランザクションが何を置き換えたかも確認できます。</span></li><li><span class="nr">05</span><b>市場</b><span class="txt">価格をローソク足または折れ線で、出来高、累積出来高デルタ、清算とあわせて表示します。複数の取引所のデータをまとめています。</span></li><li><span class="nr">06</span><b>ウォレット</b><span class="txt">自分のアドレスや xpub を閲覧専用で表示します。自分のトランザクションは山の中にある間、強調表示されます。Linux パソコン上の OrangeDeck サービスが必要で、スマートフォンと Windows からはホームネットワーク経由で利用します。</span></li></ul>
+  </section>
+
+  <section id="bilder">
+    <h2>スクリーンショット</h2>
+    <div class="galerie"><figure><a href="../bilder/uhr.webp"><img src="../bilder/uhr.webp" alt="時計：ブロック高、手数料、価格、次の難易度調整。" width="1280" height="800" loading="lazy"></a><figcaption>時計：ブロック高、手数料、価格、次の難易度調整。</figcaption></figure><figure><a href="../bilder/mining.webp"><img src="../bilder/mining.webp" alt="マイニング：1年分のネットワークのハッシュレートと難易度。" width="1280" height="800" loading="lazy"></a><figcaption>マイニング：1年分のネットワークのハッシュレートと難易度。</figcaption></figure><figure><a href="../bilder/explorer.webp"><img src="../bilder/explorer.webp" alt="エクスプローラ：予測ブロックと承認済みブロック、次のブロックをタイルで表示。" width="1280" height="800" loading="lazy"></a><figcaption>エクスプローラ：予測ブロックと承認済みブロック、次のブロックをタイルで表示。</figcaption></figure><figure><a href="../bilder/markt.webp"><img src="../bilder/markt.webp" alt="市場：Binance と Bybit のローソク足と出来高。" width="1280" height="800" loading="lazy"></a><figcaption>市場：Binance と Bybit のローソク足と出来高。</figcaption></figure></div>
+  </section>
+
+  <section id="einsatz">
+    <h2>用途</h2>
+    <ul class="karten verweise"><li><a href="bitaxe/"><b>Bitaxe モニター</b><span class="txt">自分のマイナーのハッシュレート、最高シェア、温度を、ネットワークの数値と並べて表示します。</span></a></li><li><a href="wall-display/"><b>壁掛けディスプレイ</b><span class="txt">ブロック高、手数料、価格を大きな数字で。古いタブレットにどうぞ。</span></a></li><li><a href="dankmaterialshell/"><b>DankMaterialShell</b><span class="txt">DMS 用のバーのピル、コントロールセンターのタイル、デスクトップウィジェット。</span></a></li></ul>
+  </section>
+
+  <section id="wo">
+    <h2>動作環境</h2>
+    <ul class="karten schlicht"><li><b>Linux デスクトップ全般</b><span class="txt">普通のウィンドウとして動きます。Wayland に対応し、X11 にも切り替えられます。</span></li><li><b>ウィジェットやバーとして</b><span class="txt">niri、sway、Hyprland、river、labwc で layer-shell を使います。</span></li><li><b>DankMaterialShell の中で</b><span class="txt">DMS のプラグイン一覧に載っています。ダッシュボードのタブ、バーのピル、コントロールセンターのタイル、デスクトップウィジェットとして使えます。</span></li><li><b>Windows</b><span class="txt">ZIP を展開して起動するだけです。画面は同じで、ウォレットは同じネットワーク内の Linux パソコンで動くサービスから取得します。</span></li><li><b>macOS</b><span class="txt">ビルドはできますが、まだ試していません。今のところパッケージはありません。</span></li><li><b>Android</b><span class="txt">スマートフォンでもタブレットでも使えます。画面ごとにホーム画面のショートカットがあります。</span></li></ul>
+  </section>
+
+  <section id="quellen">
+    <h2>数値の出どころ</h2>
+    <ul class="karten schlicht"><li><b>ブロック、メンプール、手数料、ハッシュレート</b><span class="txt">mempool.space の公開 WebSocket、または自分の mempool インスタンスです。切り替えは設定1つです。</span></li><li><b>価格と約定</b><span class="txt">Binance、Bybit、OKX の公開ストリームです。</span></li><li><b>清算</b><span class="txt">Bybit と OKX です。ヒートマップは Binance の建玉から作ったモデルで、画面上でもそう表示しています。</span></li><li><b>自分のマイナー</b><span class="txt">デバイスのローカル API（AxeOS または cgminer）です。問い合わせはホームネットワークの外に出ません。</span></li><li><b>監視中のアドレス</b><span class="txt">同じ mempool インスタンスへの残高の問い合わせです。鍵は使わず、それ以外に端末から出るものはありません。</span></li></ul>
+  </section>
+
+  <section id="warum">
+    <h2>OrangeDeck の特徴</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>表示するだけのアプリです</b><span class="txt">秘密鍵を知らず、署名もできず、署名できるライブラリも含んでいません。閲覧専用は文字どおり閲覧専用です。</span></li><li><span class="nr">02</span><b>自前のサーバーはありません</b><span class="txt">通信先は mempool.space か、自分のノードです。利用状況の集計も、クラッシュレポートも、アカウントもありません。</span></li><li><span class="nr">03</span><b>推測ではなく計測</b><span class="txt">清算ヒートマップのように、数値が計測ではなくモデルに基づく場合は、画面上でそう明示し、前提も書き出しています。</span></li><li><span class="nr">04</span><b>1つのコードで5つの環境</b><span class="txt">ウィンドウ、ウィジェット、パネル、スマートフォンを同じ QML で描いています。1か所で直した不具合は、すべての環境で直ります。</span></li><li><span class="nr">05</span><b>中身を読めます</b><span class="txt">MIT ライセンスで、難読化はしていません。変更の理由はコミットメッセージに残してあります。</span></li></ul>
+  </section>
+
+  <section id="holen">
+    <h2>入手する</h2>
+    <div class="knopfreihe"><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip"><b>Windows</b><span>バージョン 0.2.13。Windows 10 と 11（64ビット）用の ZIP です。展開して orangedeck-app.exe を起動してください。署名していないため、初回起動時に SmartScreen の確認が出ます。</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak"><b>Linux</b><span>バージョン 0.2.13。Flatpak バンドルです：flatpak install --user orangedeck-0.2.13.flatpak。ランタイムは Flathub から入ります。</span></a><a class="knopf" href="https://github.com/orangedeck-dev/dms-plugin"><b>DankMaterialShell</b><span>DMS のプラグイン一覧から入れられます：dms plugins install orangedeck。単体で動き、アプリが起動していればアプリのデータを使います。</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"><b>Android APK</b><span>バージョン 0.2.13。Android 9 以降、64ビット ARM 用です。署名済みで、フィンガープリントはリリースノートに記載しています。</span></a><a class="knopf" href="https://fdroid.orangedeck.dev/repo/"><b>F-Droid</b><span>OrangeDeck 独自のリポジトリです。F-Droid、Droid-ify、Neo Store に一度追加すれば、更新は自動で届きます。</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>Obtainium</b><span>新しいバージョンを GitHub のリリースから直接取得します。ソースとしてリポジトリのアドレスを追加してください。</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases"><b>すべてのバージョン</b><span>リリースノート、チェックサム、過去のバージョンは GitHub にあります。</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>ソースコード</b><span>自分でビルドできます。MIT ライセンスです。</span></a></div>
+  </section>
+
+  <section id="faq">
+    <h2>よくある質問</h2>
+    <div class="fragen"><details><summary>鍵は必要ですか？</summary><p>いいえ。このアプリは何にも署名できません。監視するアドレスはアドレスか xpub で入力し、残高の問い合わせ以外で端末の外に出ることはありません。</p></details><details><summary>データはどこから来ますか？</summary><p>標準では mempool.space から、または自分の mempool インスタンスから取得します。切り替えは設定1つです。市場データは取引所の公開フィードから取得します。</p></details><details><summary>どこかにデータを送信しますか？</summary><p>いいえ。自前のサーバーはなく、アクセス解析もクラッシュレポートもありません。</p></details><details><summary>料金はかかりますか？</summary><p>かかりません。MIT ライセンスで、有料プランもありません。</p></details><details><summary>対応している言語は？</summary><p>13言語です。英語、ドイツ語、スペイン語、フランス語、イタリア語、ポルトガル語（ポルトガルとブラジル）、オランダ語、ロシア語、日本語、中国語、ポーランド語、チェコ語に対応しています。起動時はシステムの言語で表示され、数値と日付の書式は設定で選んだ言語に従います。</p></details><details><summary>清算ヒートマップは実データですか？</summary><p>いいえ。画面上でもそう表示しています。他人のポジションを公開している人はいないため、前提を明記したモデルです。</p></details><details><summary>壁掛けのタブレットで使えますか？</summary><p>そのための画面が時計です。大きな数字だけで、操作ボタンはありません。Android 版には時計を直接開くショートカットがあります。</p></details></div>
+  </section>
+
+  <!-- Hier kommt spaeter der Spendenteil hin: eine wechselnde Adresse, damit
+       sich Zahlungen nicht einer einzigen zuordnen lassen. Braucht einen xpub
+       und eine Ableitung, also mehr als eine statische Seite -- deshalb
+       bewusst noch nicht drin. -->
+
+  <footer>
+    <p class="fuss-tat"><a class="tat" href="#holen">試してみる</a></p>
+    <p class="klein">OrangeDeck についてもっと見る</p>
+    <nav class="sprachen"><a href="bitaxe/">Bitaxe モニター</a><a href="wall-display/">壁掛けディスプレイ</a><a href="dankmaterialshell/">DankMaterialShell</a><a href="changelog/">更新内容</a></nav>
+    <p>OrangeDeck は MIT ライセンスです。 タイルの配置と配色モデルは bitfeed（MIT、mononaut）から移植しています。</p>
+    <p><a href="https://github.com/orangedeck-dev/orangedeck">github.com/orangedeck-dev/orangedeck</a></p>
+    <p class="klein" id="sprache">言語</p>
+    <nav class="sprachen"><a href="../de/" hreflang="de" lang="de">Deutsch</a><a href="../en/" hreflang="en" lang="en">English</a><a href="../es/" hreflang="es" lang="es">Español</a><a href="../fr/" hreflang="fr" lang="fr">Français</a><a href="../it/" hreflang="it" lang="it">Italiano</a><a href="../pt-pt/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../nl/" hreflang="nl" lang="nl">Nederlands</a><a href="../ru/" hreflang="ru" lang="ru">Русский</a><a href="../ja/" hreflang="ja" lang="ja" aria-current="true">日本語</a><a href="../zh/" hreflang="zh" lang="zh">中文</a><a href="../pt-br/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../pl/" hreflang="pl" lang="pl">Polski</a><a href="../cs/" hreflang="cs" lang="cs">Čeština</a></nav>
+  </footer>
+</div>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/","inLanguage":"ja"},{"@context":"https://schema.org","@type":"SoftwareApplication","@id":"https://orangedeck.dev/#app","name":"OrangeDeck","url":"https://orangedeck.dev/ja/","inLanguage":"ja","description":"OrangeDeck は、ビットコインのメンプールを生きたタイルのモザイクとして描く、デスクトップと Android 向けの無料アプリです。メンプールのフィード、ブロック高の時計、マイニング数値、ブロックエクスプローラ、市場データ、閲覧専用のアドレスという6つの画面を1つのウィンドウにまとめています。Linux、Windows、Android で動き、DankMaterialShell のプラグインとしても使えます。13言語に対応し、MIT ライセンスで、アカウントは不要です。","applicationCategory":"UtilityApplication","operatingSystem":"Linux, Windows, Android","softwareVersion":"0.2.13","datePublished":"2026-09-12","dateModified":"2026-09-25","downloadUrl":["https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"],"releaseNotes":"https://orangedeck.dev/ja/changelog/","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"image":"https://orangedeck.dev/bilder/vorschau-ja.png","screenshot":["https://orangedeck.dev/bilder/feed.webp","https://orangedeck.dev/bilder/uhr.webp","https://orangedeck.dev/bilder/mining.webp","https://orangedeck.dev/bilder/explorer.webp","https://orangedeck.dev/bilder/markt.webp"],"codeRepository":"https://github.com/orangedeck-dev/orangedeck","sameAs":["https://github.com/orangedeck-dev/orangedeck","https://github.com/orangedeck-dev/dms-plugin","https://fdroid.orangedeck.dev/repo/","https://github.com/AvengeMedia/dms-plugin-registry/blob/master/plugins/orangedeck-dev-orangedeck.json"],"author":{"@type":"Person","name":"Satoshoe","url":"https://github.com/satoshoe-dev"},"featureList":["フィード","時計","マイニング","エクスプローラ","市場","ウォレット"]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ja","mainEntity":[{"@type":"Question","name":"鍵は必要ですか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。このアプリは何にも署名できません。監視するアドレスはアドレスか xpub で入力し、残高の問い合わせ以外で端末の外に出ることはありません。"}},{"@type":"Question","name":"データはどこから来ますか？","acceptedAnswer":{"@type":"Answer","text":"標準では mempool.space から、または自分の mempool インスタンスから取得します。切り替えは設定1つです。市場データは取引所の公開フィードから取得します。"}},{"@type":"Question","name":"どこかにデータを送信しますか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。自前のサーバーはなく、アクセス解析もクラッシュレポートもありません。"}},{"@type":"Question","name":"料金はかかりますか？","acceptedAnswer":{"@type":"Answer","text":"かかりません。MIT ライセンスで、有料プランもありません。"}},{"@type":"Question","name":"対応している言語は？","acceptedAnswer":{"@type":"Answer","text":"13言語です。英語、ドイツ語、スペイン語、フランス語、イタリア語、ポルトガル語（ポルトガルとブラジル）、オランダ語、ロシア語、日本語、中国語、ポーランド語、チェコ語に対応しています。起動時はシステムの言語で表示され、数値と日付の書式は設定で選んだ言語に従います。"}},{"@type":"Question","name":"清算ヒートマップは実データですか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。画面上でもそう表示しています。他人のポジションを公開している人はいないため、前提を明記したモデルです。"}},{"@type":"Question","name":"壁掛けのタブレットで使えますか？","acceptedAnswer":{"@type":"Answer","text":"そのための画面が時計です。大きな数字だけで、操作ボタンはありません。Android 版には時計を直接開くショートカットがあります。"}}]}]</script>
+<script>window.ORANGEDECK_LIVE = {"reiter":["フィード","時計","マイニング","エクスプローラ","市場","ウォレット"],"live":"ライブ","beispiel":"例","beispielHinweis":"他人のマイナーやウォレットをここから問い合わせることはできません。そのため、この2つの画面には架空の数値を表示しています。アプリではあなた自身の数値が表示されます。","quelle":"メンプールからライブ表示","block":"ブロック","vorMin":"{0} 分前","gebuehr":"手数料","kurs":"価格","mempool":"メンプール","hashrate":"ハッシュレート","moscow":"モスクワタイム","schwierigkeit":"難易度","halving":"半減期","bloecke":"ブロック","txn":"件のトランザクション","beste":"最高シェア","temperatur":"温度","leistung":"電力","guthaben":"残高","adressen":"アドレス","unbestaetigt":"未承認","gerechnet":"難易度から算出","verbindet":"接続中 …"};</script>
+<script src="../mondrian.js"></script>
+<script src="../colors.js"></script>
+<script src="../live.js" defer></script>
+</body>
+</html>

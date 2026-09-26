@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh" dir="ltr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>适用于 Linux、Windows 和 Android 的 Bitaxe 监控 | OrangeDeck</title>
+<meta name="description" content="监控你的 Bitaxe 或任何 AxeOS、cgminer 矿机：算力、最佳份额与全网难度的对比、温度和功率。本地运行，免费，无需账户。">
+<meta property="og:title" content="适用于 Linux、Windows 和 Android 的 Bitaxe 监控 | OrangeDeck">
+<meta property="og:description" content="监控你的 Bitaxe 或任何 AxeOS、cgminer 矿机：算力、最佳份额与全网难度的对比、温度和功率。本地运行，免费，无需账户。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orangedeck.dev/zh/bitaxe/">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="it_IT">
+<meta property="og:locale:alternate" content="pt_PT">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="pl_PL">
+<meta property="og:locale:alternate" content="cs_CZ">
+<meta property="og:site_name" content="OrangeDeck">
+<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau-zh.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="适用于 Linux、Windows 和 Android 的 Bitaxe 监控 | OrangeDeck">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="适用于 Linux、Windows 和 Android 的 Bitaxe 监控 | OrangeDeck">
+<meta name="twitter:description" content="监控你的 Bitaxe 或任何 AxeOS、cgminer 矿机：算力、最佳份额与全网难度的对比、温度和功率。本地运行，免费，无需账户。">
+<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-zh.png">
+<link rel="canonical" href="https://orangedeck.dev/zh/bitaxe/">
+<link rel="icon" href="../../bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../stil.css">
+<link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/">
+<link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/">
+<link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/">
+<link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/">
+<link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/">
+<link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/">
+<link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/">
+<link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/">
+<link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/">
+<link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/">
+<link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/">
+<link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/">
+<link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/">
+<link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/">
+<body>
+<div class="kopfleiste"><div class="mitte kopf">
+  <a class="marke" href="../#"><img src="../../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
+  <nav class="nav"><a href="../#was">简介</a><a href="../#ansichten">视图</a><a href="../#wo">运行平台</a><a href="../#warum">特点</a><a href="../#faq">常见问题</a></nav>
+  <nav class="sprachen"><a href="#sprache" aria-current="true">ZH</a></nav>
+</div></div>
+
+<div class="mitte">
+  <header class="hero unter">
+    <p class="pfad"><a href="../">概览</a> › Bitaxe 监控</p>
+    <h1>内存池旁边的 Bitaxe 监控</h1>
+  </header>
+
+  <section class="text">
+    <p>OrangeDeck 的挖矿视图通过本地 API 读取你的矿机，显示算力、最佳份额、温度、功率和风扇转速。它能识别 Bitaxe、NerdAxe 等 AxeOS 设备，以及所有支持 cgminer API 的设备，例如 Antminer、Avalon 或 Whatsminer。</p><p>唯一需要设置的是地址，多台矿机填在同一个输入框里，用竖线分隔。请求只发往你家庭网络中的设备，不会发往别处。没有云账户，也不需要登录矿池。</p><p>最佳份额会与当前全网难度对比，视图还会按你的算力计算出块概率，分别给出每天的概率和平均间隔。对单台 Bitaxe 来说，这个间隔非常长，OrangeDeck 会如实显示这个数字。</p><p>设备旁边是全网数据：从 30 天前一直到 2009 年的算力和难度、下次难度调整、平均出块时间，以及上一个区块的矿池。</p><p>这个视图也能作为小部件运行：在 Linux 上是桌面上的 layer-shell 图层，在 Windows 上是无边框窗口，在 Android 上是主屏幕小部件。</p>
+    <figure class="einzelbild"><img src="../../bilder/mining.webp" alt="挖矿视图，显示一年内的全网算力和难度。" width="1280" height="800" loading="lazy"></figure>
+    <p><a class="tat" href="../#holen">下载</a></p>
+  </section>
+
+  <section>
+    <h2>常见问题</h2>
+    <div class="fragen"><details><summary>OrangeDeck 支持哪些矿机？</summary><p>Bitaxe、NerdAxe 等 AxeOS 设备，以及支持 cgminer API 的矿机，例如 Antminer、Avalon 和 Whatsminer。</p></details><details><summary>矿机数据会离开我的网络吗？</summary><p>不会。OrangeDeck 直接访问设备的本地地址，不经过任何服务器。</p></details><details><summary>可以同时监控多台矿机吗？</summary><p>可以。在设置中输入地址，用竖线分隔，例如 http://192.168.1.42|http://192.168.1.43。</p></details></div>
+  </section>
+
+  <footer>
+    <p class="fuss-tat"><a class="tat" href="../#holen">试一试</a></p>
+    <p class="klein">关于 OrangeDeck 的更多内容</p>
+    <nav class="sprachen"><a href="../bitaxe/">Bitaxe 监控</a><a href="../wall-display/">挂墙显示</a><a href="../dankmaterialshell/">DankMaterialShell</a><a href="../changelog/">更新内容</a></nav>
+    <p>OrangeDeck 采用 MIT 许可证。 方块排布和配色模型移植自 bitfeed（MIT，mononaut）。</p>
+    <p><a href="https://github.com/orangedeck-dev/orangedeck">github.com/orangedeck-dev/orangedeck</a></p>
+    <p class="klein" id="sprache">语言</p>
+    <nav class="sprachen"><a href="../../de/bitaxe/" hreflang="de" lang="de">Deutsch</a><a href="../../en/bitaxe/" hreflang="en" lang="en">English</a><a href="../../es/bitaxe/" hreflang="es" lang="es">Español</a><a href="../../fr/bitaxe/" hreflang="fr" lang="fr">Français</a><a href="../../it/bitaxe/" hreflang="it" lang="it">Italiano</a><a href="../../pt-pt/bitaxe/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../../nl/bitaxe/" hreflang="nl" lang="nl">Nederlands</a><a href="../../ru/bitaxe/" hreflang="ru" lang="ru">Русский</a><a href="../../ja/bitaxe/" hreflang="ja" lang="ja">日本語</a><a href="../../zh/bitaxe/" hreflang="zh" lang="zh" aria-current="true">中文</a><a href="../../pt-br/bitaxe/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../../pl/bitaxe/" hreflang="pl" lang="pl">Polski</a><a href="../../cs/bitaxe/" hreflang="cs" lang="cs">Čeština</a></nav>
+  </footer>
+</div>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"内存池旁边的 Bitaxe 监控","description":"监控你的 Bitaxe 或任何 AxeOS、cgminer 矿机：算力、最佳份额与全网难度的对比、温度和功率。本地运行，免费，无需账户。","url":"https://orangedeck.dev/zh/bitaxe/","inLanguage":"zh","isPartOf":{"@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/"},"about":{"@id":"https://orangedeck.dev/#app"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"概览","item":"https://orangedeck.dev/zh/"},{"@type":"ListItem","position":2,"name":"Bitaxe 监控","item":"https://orangedeck.dev/zh/bitaxe/"}]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"zh","mainEntity":[{"@type":"Question","name":"OrangeDeck 支持哪些矿机？","acceptedAnswer":{"@type":"Answer","text":"Bitaxe、NerdAxe 等 AxeOS 设备，以及支持 cgminer API 的矿机，例如 Antminer、Avalon 和 Whatsminer。"}},{"@type":"Question","name":"矿机数据会离开我的网络吗？","acceptedAnswer":{"@type":"Answer","text":"不会。OrangeDeck 直接访问设备的本地地址，不经过任何服务器。"}},{"@type":"Question","name":"可以同时监控多台矿机吗？","acceptedAnswer":{"@type":"Answer","text":"可以。在设置中输入地址，用竖线分隔，例如 http://192.168.1.42|http://192.168.1.43。"}}]}]</script>
+
+</body>
+</html>

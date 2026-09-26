@@ -7,13 +7,15 @@
 <link rel="stylesheet" href="stil.css">
 <link rel="canonical" href="https://orangedeck.dev/en/">
 <script>
-  var da = ["de","en"];
+  var da = ["de","en","es","fr","it","pt-pt","nl","ru","ja","zh","pt-br","pl","cs"];
   var w = (navigator.languages || [navigator.language || "en"]);
   var ziel = "en";
   for (var i = 0; i < w.length && ziel === "en"; i++) {
     var l = String(w[i]).toLowerCase();
     if (da.indexOf(l) >= 0) { ziel = l; break; }
     var k = l.split("-")[0];
+    // Portugiesisch gibt es zweimal; ohne Land ist es das europaeische.
+    if (k === "pt") k = "pt-pt";
     if (da.indexOf(k) >= 0) { ziel = k; break; }
   }
   location.replace(ziel + "/");
@@ -21,7 +23,7 @@
 <body>
 <div class="mitte"><header>
   <div class="marke"><img src="bilder/symbol.svg" alt="" width="72" height="72"><h1>OrangeDeck</h1></div>
-  <noscript><p class="unterzeile"><a href="de/">Deutsch</a> <a href="en/">English</a></p></noscript>
+  <noscript><p class="unterzeile"><a href="de/">Deutsch</a> <a href="en/">English</a> <a href="es/">Español</a> <a href="fr/">Français</a> <a href="it/">Italiano</a> <a href="pt-pt/">Português (PT)</a> <a href="nl/">Nederlands</a> <a href="ru/">Русский</a> <a href="ja/">日本語</a> <a href="zh/">中文</a> <a href="pt-br/">Português (BR)</a> <a href="pl/">Polski</a> <a href="cs/">Čeština</a></p></noscript>
 </header></div>
 </body>
 </html>

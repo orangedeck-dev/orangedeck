@@ -5,14 +5,1170 @@
     <loc>https://orangedeck.dev/de/</loc>
     <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-26</lastmod>
   </url>
   <url>
     <loc>https://orangedeck.dev/en/</loc>
     <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/es/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/it/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-pt/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/nl/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ru/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ja/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-br/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pl/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/cs/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/de/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/en/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/es/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/fr/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/it/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-pt/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/nl/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ru/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ja/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/zh/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-br/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pl/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/cs/bitaxe/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/bitaxe/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/bitaxe/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/de/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/en/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/es/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/fr/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/it/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-pt/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/nl/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ru/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ja/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/zh/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-br/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pl/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/cs/wall-display/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/de/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/en/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/es/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/fr/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/it/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-pt/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/nl/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ru/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ja/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/zh/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-br/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pl/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/cs/dankmaterialshell/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/de/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/en/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/es/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/fr/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/it/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-pt/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/nl/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ru/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/ja/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/zh/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pt-br/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/pl/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
+  </url>
+  <url>
+    <loc>https://orangedeck.dev/cs/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/changelog/"/>
+    <lastmod>2026-09-26</lastmod>
   </url>
 </urlset>

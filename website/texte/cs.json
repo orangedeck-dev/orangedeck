@@ -1,0 +1,389 @@
+{
+  "code": "cs",
+  "name": "Čeština",
+  "richtung": "ltr",
+  "repo": "https://github.com/orangedeck-dev/orangedeck",
+  "titel": "OrangeDeck: mempool bitcoinu živě, výška bloku a monitor Bitaxe",
+  "beschreibung": "Vizualizace mempoolu bitcoinu pro Linux, Windows a Android s hodinami výšky bloku, monitorem Bitaxe, průzkumníkem bloků a tržními daty. Zdarma a open source.",
+  "nav": [
+    [
+      "Co to je",
+      "#was"
+    ],
+    [
+      "Zobrazení",
+      "#ansichten"
+    ],
+    [
+      "Kde běží",
+      "#wo"
+    ],
+    [
+      "Proč",
+      "#warum"
+    ],
+    [
+      "Otázky",
+      "#faq"
+    ]
+  ],
+  "hero_titel": "Mempool bitcoinu živě",
+  "hero_text": "Čekající transakce padají na hromadu jako mozaika dlaždic. Velikost se řídí tím, kolik přesouvají, barva stářím, poplatkem nebo typem. Potvrzené odlétají do bloku. Vidíte, jak síť dýchá.",
+  "hero_cta1": "Stáhnout",
+  "hero_cta1_ziel": "#holen",
+  "hero_cta2": "Zdrojový kód",
+  "hero_cta2_ziel": "https://github.com/orangedeck-dev/orangedeck",
+  "badges": [
+    "Licence MIT",
+    "Bez účtu, bez telemetrie",
+    "Jen ke sledování, bez klíčů",
+    "Šest zobrazení, pět prostředí"
+  ],
+  "was_titel": "Co to je",
+  "was": [
+    "OrangeDeck je vizualizace mempoolu bitcoinu. Kreslí mempool tak, jak se skutečně chová: každá čekající transakce je čtverec. Čtverce se hromadí, jsou vytěženy, bývají nahrazeny a vy to vidíte na vlastní oči, místo abyste četli číslo.",
+    "Kolem toho je dalších pět zobrazení: hodiny výšky bloku pro tablet na zdi, těžební údaje z vlastního Bitaxe i ze sítě, průzkumník bloků, tržní karta se svíčkami, kumulativní deltou objemu a likvidacemi a adresy jen ke sledování."
+  ],
+  "ansichten_titel": "Šest zobrazení",
+  "ansichten": [
+    [
+      "Kanál",
+      "Mempool jako živá mozaika, vedle ní poslední blok. Barva podle stáří, poplatku nebo typu transakce."
+    ],
+    [
+      "Hodiny",
+      "Výška bloku, poplatky, kurz, hashrate a odpočet do halvingu, velké a bez ovládacích prvků. Pro tablet na zdi."
+    ],
+    [
+      "Těžba",
+      "Monitor Bitaxe: hashrate, nejlepší sdílení proti obtížnosti sítě, teplota a příkon vlastního těžaře. Vedle toho síť: hashrate, obtížnost a příští úprava."
+    ],
+    [
+      "Průzkumník",
+      "Hledání podle výšky, hashe, txid nebo adresy. Procházejte bloky a jejich obsah a podívejte se, která transakce kterou nahradila."
+    ],
+    [
+      "Trh",
+      "Kurz jako svíčky nebo čára, objem, kumulativní delta objemu a likvidace, souhrnně z více burz."
+    ],
+    [
+      "Peněženka",
+      "Vlastní adresy nebo xpub, jen ke sledování. Vaše transakce jsou zvýrazněné, dokud leží na hromadě. Potřebuje službu OrangeDeck na počítači s Linuxem; telefony a Windows se k ní připojí přes domácí síť."
+    ]
+  ],
+  "wo_titel": "Kde běží",
+  "wo": [
+    [
+      "Libovolná plocha v Linuxu",
+      "Obyčejné okno. Wayland, v případě potřeby X11."
+    ],
+    [
+      "Jako widget nebo lišta",
+      "Layer-shell v niri, sway, Hyprland, river, labwc."
+    ],
+    [
+      "V DankMaterialShell",
+      "Je v katalogu pluginů DMS. Jako karta dashboardu, pilulka na liště, dlaždice ovládacího centra nebo widget na plochu."
+    ],
+    [
+      "Windows",
+      "ZIP: rozbalit a spustit. Stejná zobrazení; peněženku obsluhuje služba na počítači s Linuxem ve stejné síti."
+    ],
+    [
+      "macOS",
+      "Dá se sestavit, ale zatím nebyl vyzkoušen. Balíček zatím není."
+    ],
+    [
+      "Android",
+      "Telefon nebo tablet. Každé zobrazení má vlastního zástupce na domovské obrazovce."
+    ]
+  ],
+  "warum_titel": "Proč OrangeDeck",
+  "warum": [
+    [
+      "Jen zobrazuje, nic jiného",
+      "Nezná žádný soukromý klíč, neumí podepisovat a neobsahuje knihovnu, která by to uměla. Jen ke sledování znamená jen ke sledování."
+    ],
+    [
+      "Žádný náš server",
+      "Komunikuje s mempool.space nebo s vaším vlastním uzlem. Nesbírá statistiky, neposílá hlášení o pádech a nepotřebuje účet."
+    ],
+    [
+      "Změřeno, ne odhadnuto",
+      "Kde číslo pochází z modelu, a ne z měření, jako u teplotní mapy likvidací, stojí to přímo na obrazovce i s vypsanými předpoklady."
+    ],
+    [
+      "Jeden kód, pět prostředí",
+      "Stejné QML kreslí okno, widget, panel i telefon. Co se opraví na jednom místě, je opravené všude."
+    ],
+    [
+      "Otevřený ke čtení",
+      "Licence MIT, žádné zamlžování kódu a zdůvodnění jsou zapsaná v popisech commitů."
+    ]
+  ],
+  "holen_titel": "Stáhnout",
+  "holen": [
+    [
+      "Windows",
+      "Verze {v}. ZIP pro Windows 10 a 11, 64bit: rozbalte a spusťte orangedeck-app.exe. Není podepsaný, proto se při prvním spuštění SmartScreen zeptá.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-windows-x86_64.zip"
+    ],
+    [
+      "Linux",
+      "Verze {v}. Balíček Flatpak: flatpak install --user orangedeck-{v}.flatpak. Runtime se stáhne z Flathubu.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
+    ],
+    [
+      "DankMaterialShell",
+      "Z katalogu pluginů DMS: dms plugins install orangedeck. Běží samostatně, a když je spuštěná aplikace, používá její data.",
+      "https://github.com/orangedeck-dev/dms-plugin"
+    ],
+    [
+      "APK pro Android",
+      "Verze {v}. Pro Android 9 nebo novější, 64bitový ARM. Podepsané, otisk je uvedený v poznámkách k vydání.",
+      "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}-arm64-v8a.apk"
+    ],
+    [
+      "F-Droid",
+      "Vlastní repozitář OrangeDeck. Přidejte ho jednou do F-Droid, Droid-ify nebo Neo Store a aktualizace přijdou samy.",
+      "https://fdroid.orangedeck.dev/repo/"
+    ],
+    [
+      "Obtainium",
+      "Stahuje každou novou verzi přímo z vydání na GitHubu. Jako zdroj zadejte adresu repozitáře.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ],
+    [
+      "Všechny verze",
+      "Poznámky k vydáním, kontrolní součty a starší verze na GitHubu.",
+      "https://github.com/orangedeck-dev/orangedeck/releases"
+    ],
+    [
+      "Zdrojový kód",
+      "Sestavte si sami. MIT.",
+      "https://github.com/orangedeck-dev/orangedeck"
+    ]
+  ],
+  "faq_titel": "Otázky",
+  "faq": [
+    [
+      "Potřebuje moje klíče?",
+      "Ne. Nedokáže nic podepsat. Sledované adresy se zadávají jako adresy nebo xpub a váš počítač opouštějí jen jako dotaz na zůstatek."
+    ],
+    [
+      "Odkud pocházejí data?",
+      "Standardně z mempool.space, nebo z vaší vlastní instance mempool. Je to jedno nastavení. Tržní data pocházejí z veřejných kanálů burz."
+    ],
+    [
+      "Posílá něco domů?",
+      "Ne. Nemáme žádný server, žádnou analytiku ani hlášení o pádech."
+    ],
+    [
+      "Kolik to stojí?",
+      "Nic. Licence MIT, žádná placená verze."
+    ],
+    [
+      "Jakými jazyky mluví?",
+      "Třinácti: angličtinou, němčinou, španělštinou, francouzštinou, italštinou, portugalštinou (Portugalsko a Brazílie), nizozemštinou, ruštinou, japonštinou, čínštinou, polštinou a češtinou. Spouští se v jazyce systému a čísla a data se řídí jazykem, který zvolíte v nastavení."
+    ],
+    [
+      "Jsou v teplotní mapě likvidací skutečná data?",
+      "Ne, a na obrazovce to stojí. Cizí pozice nikdo nezveřejňuje; je to model s vypsanými předpoklady."
+    ],
+    [
+      "Můžu ho mít na tabletu na zdi?",
+      "K tomu slouží zobrazení „Hodiny“: velká čísla, žádné ovládání. Verze pro Android má zástupce, který ho otevře přímo."
+    ]
+  ],
+  "fuss_cta": "Vyzkoušet",
+  "fuss_herkunft": "Skládání dlaždic a barevný model převzaty z bitfeed (MIT, mononaut).",
+  "fuss_lizenz": "OrangeDeck je pod licencí MIT.",
+  "sprache_waehlen": "Jazyk",
+  "live": {
+    "reiter": [
+      "Kanál",
+      "Hodiny",
+      "Těžba",
+      "Průzkumník",
+      "Trh",
+      "Peněženka"
+    ],
+    "live": "ŽIVĚ",
+    "beispiel": "UKÁZKA",
+    "beispielHinweis": "Cizího těžaře ani cizí peněženku odsud nelze dotazovat. Tato dvě zobrazení proto ukazují vymyšlená čísla. Aplikace ukáže ta vaše.",
+    "quelle": "Živě z mempoolu",
+    "block": "Blok",
+    "vorMin": "před {0} min",
+    "gebuehr": "Poplatek",
+    "kurs": "Kurz",
+    "mempool": "Mempool",
+    "hashrate": "Hashrate",
+    "moscow": "Moscow Time",
+    "schwierigkeit": "Obtížnost",
+    "halving": "Halving",
+    "bloecke": "Bloky",
+    "txn": "transakcí",
+    "beste": "Nejlepší sdílení",
+    "temperatur": "Teplota",
+    "leistung": "Příkon",
+    "guthaben": "Zůstatek",
+    "adressen": "Adresy",
+    "unbestaetigt": "nepotvrzeno",
+    "gerechnet": "odvozeno z obtížnosti",
+    "verbindet": "připojování …"
+  },
+  "seo_kurz": "OrangeDeck je bezplatná aplikace pro počítač a Android, která kreslí mempool bitcoinu jako živou mozaiku dlaždic. V jednom okně spojuje šest zobrazení: kanál mempoolu, hodiny výšky bloku, těžební údaje, průzkumník bloků, tržní data a adresy jen ke sledování. Běží na Linuxu, Windows a Androidu a také jako plugin DankMaterialShell, mluví třinácti jazyky, má licenci MIT a nevyžaduje účet.",
+  "bilder_titel": "Snímky obrazovky",
+  "bilder": [
+    [
+      "uhr",
+      "Hodiny: výška bloku, poplatky, kurz a příští úprava obtížnosti."
+    ],
+    [
+      "mining",
+      "Těžba: hashrate a obtížnost sítě za poslední rok."
+    ],
+    [
+      "explorer",
+      "Průzkumník: očekávané a potvrzené bloky, další blok jako dlaždice."
+    ],
+    [
+      "markt",
+      "Trh: svíčky a objem z Binance a Bybit."
+    ]
+  ],
+  "vorschau_fuss": [
+    "Linux · Windows · Android · DankMaterialShell",
+    "Licence MIT, bez účtu"
+  ],
+  "hero_fassung": "Verze {v} z {datum}",
+  "neu_link": "Co je nového",
+  "quellen_titel": "Odkud čísla pocházejí",
+  "quellen": [
+    [
+      "Bloky, mempool, poplatky, hashrate",
+      "Veřejný WebSocket mempool.space, nebo vaše vlastní instance mempool. Je to jedno nastavení."
+    ],
+    [
+      "Kurz a obchody",
+      "Veřejné streamy Binance, Bybit a OKX."
+    ],
+    [
+      "Likvidace",
+      "Bybit a OKX. Teplotní mapa je model sestavený z open interest na Binance a na obrazovce to stojí."
+    ],
+    [
+      "Vlastní těžař",
+      "Lokální API zařízení, AxeOS nebo cgminer. Dotaz zůstává v domácí síti."
+    ],
+    [
+      "Sledované adresy",
+      "Dotazy na zůstatek u stejné instance mempool. Žádné klíče a nic jiného zařízení neopouští."
+    ]
+  ],
+  "einsatz_titel": "K čemu se hodí",
+  "zurueck": "Přehled",
+  "mehr_titel": "Více o OrangeDeck",
+  "alte_fassungen": "Starší verze, kontrolní součty a úplné poznámky k vydáním jsou na GitHubu.",
+  "nur_englisch": "Poznámky ke každé verzi jsou v angličtině.",
+  "unterseiten": [
+    {
+      "slug": "bitaxe",
+      "name": "Monitor Bitaxe",
+      "karte": "Hashrate, nejlepší sdílení a teplota vlastního těžaře, vedle údajů sítě.",
+      "titel": "Monitor Bitaxe pro Linux, Windows a Android | OrangeDeck",
+      "beschreibung": "Sledujte svůj Bitaxe nebo jakékoli zařízení s AxeOS či cgminer: hashrate, nejlepší sdílení proti obtížnosti sítě, teplota a příkon. Lokálně, zdarma, bez účtu.",
+      "h1": "Monitor Bitaxe vedle mempoolu",
+      "text": [
+        "Zobrazení „Těžba“ v OrangeDeck čte těžaře přes jeho lokální API a ukazuje hashrate, nejlepší sdílení, teplotu, příkon a otáčky ventilátoru. Rozpozná zařízení s AxeOS, jako jsou Bitaxe a NerdAxe, a vše, co mluví API cgminer, například Antminer, Avalon nebo Whatsminer.",
+        "Jediným nastavením je adresa a více těžařů se zadává do stejného pole, oddělených svislou čarou. Dotaz jde k zařízení ve vaší domácí síti a nikam jinam. Žádný cloudový účet ani přihlašování do poolu.",
+        "Nejlepší sdílení se porovnává s aktuální obtížností sítě a zobrazení spočítá šanci na nalezení bloku při vašem hashrate, za den i jako průměrný interval. U jediného Bitaxe je ten interval velmi dlouhý a OrangeDeck ukáže číslo takové, jaké je.",
+        "Vedle zařízení je síť: hashrate a obtížnost od posledních 30 dní až zpět do roku 2009, příští úprava obtížnosti, průměrná doba bloku a pool posledního bloku.",
+        "Zobrazení běží i jako widget: na Linuxu jako vrstva layer-shell na ploše, na Windows jako okno bez rámečku a na Androidu jako widget domovské obrazovky."
+      ],
+      "bild": "mining",
+      "bild_alt": "Zobrazení „Těžba“ s hashrate a obtížností sítě za poslední rok.",
+      "faq": [
+        [
+          "Které těžaře OrangeDeck podporuje?",
+          "Zařízení s AxeOS, jako jsou Bitaxe a NerdAxe, a těžaře s API cgminer, například Antminer, Avalon a Whatsminer."
+        ],
+        [
+          "Opouštějí data těžaře moji síť?",
+          "Ne. OrangeDeck se ptá zařízení přímo na jeho lokální adrese. Nic nejde přes server."
+        ],
+        [
+          "Můžu sledovat více těžařů?",
+          "Ano. Zadejte adresy v nastavení oddělené svislou čarou, například http://192.168.1.42|http://192.168.1.43."
+        ]
+      ]
+    },
+    {
+      "slug": "wall-display",
+      "name": "Displej na zeď",
+      "karte": "Výška bloku, poplatky a kurz velkými číslicemi, pro starý tablet.",
+      "titel": "Výška bloku bitcoinu na tabletu na zdi | OrangeDeck",
+      "beschreibung": "Starý tablet s Androidem jako displej výšky bloku bitcoinu: výška bloku, poplatky, kurz, Moscow Time a odpočet do halvingu velkým písmem. Zdarma, bez účtu.",
+      "h1": "Displej výšky bloku na zeď",
+      "text": [
+        "Zobrazení „Hodiny“ ukazuje aktuální výšku bloku velkými číslicemi a pod ní poplatek, kurz, Moscow Time, velikost mempoolu a hashrate. Pruh odpočítává čas do příští úpravy obtížnosti, čára do halvingu.",
+        "Na obrazovce nejsou žádné ovládací prvky, takže se dobře čte i z druhého konce místnosti. Co stojí velké uprostřed, se dá změnit v nastavení, a když zvolíte víc hodnot, střídají se.",
+        "Na Androidu zůstává obrazovka zapnutá, dokud OrangeDeck běží na celou obrazovku. Není k tomu potřeba žádné oprávnění a na pozadí aplikace nic neudržuje vzhůru. Verze pro Android má zástupce na domovské obrazovce, který otevře přímo hodiny.",
+        "Postačí jakýkoli telefon nebo tablet s Androidem 9 nebo novějším a 64bitovým procesorem ARM. Na počítači běží stejné zobrazení jako widget, například v rohu druhého monitoru.",
+        "Kurz a Moscow Time se řídí zvolenou měnou: euro, americký dolar, libra, švýcarský frank, kanadský nebo australský dolar, nebo jen."
+      ],
+      "bild": "uhr",
+      "bild_alt": "Zobrazení „Hodiny“ s výškou bloku, poplatkem, kurzem, Moscow Time, mempoolem a hashrate.",
+      "faq": [
+        [
+          "Zůstává obrazovka zapnutá?",
+          "Ano, na Androidu, dokud je aplikace na celou obrazovku. Když celou obrazovku opustíte nebo přepnete na jinou aplikaci, platí zase běžný časový limit obrazovky."
+        ],
+        [
+          "Které tablety fungují?",
+          "Android 9 nebo novější s 64bitovým procesorem ARM. To zahrnuje většinu tabletů z posledních let."
+        ],
+        [
+          "Potřebuji vlastní uzel?",
+          "Ne. Čísla pocházejí z mempool.space. Pokud provozujete vlastní instanci mempool, zadejte její adresu a hodiny ji použijí."
+        ]
+      ]
+    },
+    {
+      "slug": "dankmaterialshell",
+      "name": "DankMaterialShell",
+      "karte": "Pilulka na liště, dlaždice ovládacího centra a widget na plochu pro DMS.",
+      "titel": "Bitcoinový dashboard pro DankMaterialShell | OrangeDeck",
+      "beschreibung": "Plugin OrangeDeck pro DankMaterialShell: mempool, hodiny výšky bloku, těžba, průzkumník a trh na liště a k tomu widget na plochu. Instalace jedním příkazem.",
+      "h1": "OrangeDeck v DankMaterialShell",
+      "text": [
+        "OrangeDeck je v katalogu pluginů DankMaterialShell pod názvem OrangeDeck Bitcoin Dashboard. Nainstaluje se jedním příkazem: dms plugins install orangedeck.",
+        "Na liště sedí jako pilulka s počtem čekajících transakcí. Kliknutí otevře vyskakovací okno se stejnými zobrazeními jako v aplikaci: Kanál, Hodiny, Těžba, Průzkumník a Trh. K tomu je tu dlaždice ovládacího centra a widget na plochu.",
+        "Plugin funguje bez aplikace a data si sám stahuje z mempool.space. Pokud je aplikace OrangeDeck nainstalovaná a běží její služba, plugin použije ji, takže všechna okna sdílejí jedno připojení.",
+        "Řídí se jazykem DankMaterialShell a mluví stejnými třinácti jazyky jako aplikace."
+      ],
+      "bild": "dms",
+      "bild_alt": "Vyskakovací okno OrangeDeck v liště DankMaterialShell s kanálem mempoolu.",
+      "faq": [
+        [
+          "Jaká verze DMS je potřeba?",
+          "DankMaterialShell 1.5.0 nebo novější, na jakémkoli kompozitoru, který DMS podporuje."
+        ],
+        [
+          "Potřebuji k tomu i aplikaci OrangeDeck?",
+          "Ne. Plugin si vše stáhne sám. Když běží aplikace a její služba, sdílí jejich připojení."
+        ],
+        [
+          "Kde je zdrojový kód?",
+          "Ve vlastním repozitáři github.com/orangedeck-dev/dms-plugin, generovaném z hlavního projektu. Licence MIT."
+        ]
+      ]
+    }
+  ],
+  "neu": {
+    "titel": "Co je nového v OrangeDeck: historie verzí",
+    "beschreibung": "Historie verzí OrangeDeck, vizualizace mempoolu bitcoinu: co se v každé verzi změnilo, s daty.",
+    "h1": "Co je nového",
+    "text": "Každá verze s datem, nejnovější nahoře."
+  }
+}

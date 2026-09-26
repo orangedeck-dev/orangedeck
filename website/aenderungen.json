@@ -1,0 +1,92 @@
+[
+  {
+    "v": "0.2.13",
+    "datum": "2026-09-25",
+    "en": [
+      "Numbers and dates follow the language of the interface. English writes dates as 2026-09-25.",
+      "The fee rate in the details of a mempool tile is calculated from the size and fee shown above it.",
+      "The price axis in the market view is no longer cut off at the right edge.",
+      "On Linux the window shows its icon in the title bar and the taskbar."
+    ],
+    "de": [
+      "Zahlen und Datum folgen der Sprache der Oberfläche. Englisch schreibt das Datum als 2026-09-25.",
+      "Die Gebührenrate in den Details einer Mempool-Kachel wird aus der Größe und der Gebühr darüber berechnet.",
+      "Die Preisachse im Markt ist am rechten Rand nicht mehr abgeschnitten.",
+      "Unter Linux zeigt das Fenster sein Symbol in Titelleiste und Taskleiste."
+    ]
+  },
+  {
+    "v": "0.2.12",
+    "datum": "2026-09-19",
+    "en": [
+      "Android widgets keep their last values when a fetch fails and show the time they are from.",
+      "A tap on a mempool tile shows its details, a second tap opens the transaction in the explorer.",
+      "The Android package is 24 MB instead of 57 MB.",
+      "The settings of the DankMaterialShell plugin speak all thirteen languages."
+    ],
+    "de": [
+      "Android-Widgets behalten ihre letzten Werte, wenn eine Abfrage scheitert, und zeigen, von wann sie sind.",
+      "Ein Tipp auf eine Mempool-Kachel zeigt ihre Details, ein zweiter öffnet die Transaktion im Explorer.",
+      "Das Android-Paket ist 24 MB groß statt 57 MB.",
+      "Die Einstellungen des DankMaterialShell-Plugins sprechen alle dreizehn Sprachen."
+    ]
+  },
+  {
+    "v": "0.2.11",
+    "datum": "2026-09-18",
+    "en": [
+      "Android widgets catch up as soon as the network is back.",
+      "The liquidation view no longer stays blank over long ranges.",
+      "Tables can be read with the keyboard."
+    ],
+    "de": [
+      "Android-Widgets holen nach, sobald das Netz wieder da ist.",
+      "Die Liquidationsansicht bleibt über lange Zeiträume nicht mehr leer.",
+      "Tabellen lassen sich mit der Tastatur lesen."
+    ]
+  },
+  {
+    "v": "0.2.10",
+    "datum": "2026-09-16",
+    "en": [
+      "Android widgets draw their last known values immediately.",
+      "The market shows long and short as soon as the first exchange answers.",
+      "The comma key opens the settings."
+    ],
+    "de": [
+      "Android-Widgets zeigen sofort ihre letzten bekannten Werte.",
+      "Der Markt zeigt Long und Short, sobald die erste Börse antwortet.",
+      "Die Komma-Taste öffnet die Einstellungen."
+    ]
+  },
+  {
+    "v": "0.2.9",
+    "datum": "2026-09-14",
+    "en": [
+      "The first Windows build, a ZIP without installation, with desktop widgets.",
+      "The market works without a service and fetches straight from Binance, Bybit and OKX.",
+      "The watch-only wallet on phones, tablets and Windows, through a service on another computer.",
+      "The settings open from a gear button."
+    ],
+    "de": [
+      "Der erste Windows-Bau, ein ZIP ohne Installation, mit Desktop-Widgets.",
+      "Der Markt kommt ohne Dienst aus und holt direkt von Binance, Bybit und OKX.",
+      "Die Wallet zum Beobachten auf Telefon, Tablet und Windows, über einen Dienst auf einem anderen Rechner.",
+      "Die Einstellungen öffnen sich über ein Zahnrad."
+    ]
+  },
+  {
+    "v": "0.2.8",
+    "datum": "2026-09-12",
+    "en": [
+      "The first release, for Android: feed, clock, mining and explorer.",
+      "Ten home screen widgets for block height, mempool, price, miner and the mining network.",
+      "The clock in fullscreen keeps the screen on, for an old phone or tablet on the wall."
+    ],
+    "de": [
+      "Die erste Auslieferung, für Android: Feed, Uhr, Mining und Explorer.",
+      "Zehn Widgets für den Startbildschirm: Blockhöhe, Mempool, Kurs, Miner und das Mining-Netz.",
+      "Die Uhr im Vollbild hält den Bildschirm an, für ein altes Telefon oder Tablet an der Wand."
+    ]
+  }
+]

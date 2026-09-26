@@ -1,34 +1,54 @@
 # OrangeDeck
 
-> The Bitcoin mempool as a living tile mosaic, plus a block height clock, Bitaxe figures and a block explorer. Linux, Windows and Android. MIT.
+> Bitcoin mempool visualizer for Linux, Windows and Android, with a block height clock, Bitaxe monitor, block explorer and market data. Free and open source.
 
 OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, mining figures, block explorer, market data and watch-only addresses. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.
+
+Current version: 0.2.13, released 2026-09-25. Website: https://orangedeck.dev/en/
 
 ## Six views
 
 - **Feed**: The mempool as a living mosaic, with the last block beside it. Colour by age, fee or transaction type.
 - **Clock**: Block height, fees, price, hashrate and the halving countdown, large and without controls. For a tablet on the wall.
-- **Mining**: Your own Bitaxe with hashrate, best share against the network difficulty, temperature and power. Beside it the network: hashrate, difficulty and the next adjustment.
+- **Mining**: A Bitaxe monitor: hashrate, best share against the network difficulty, temperature and power of your own miner. Beside it the network with hashrate, difficulty and the next adjustment.
 - **Explorer**: Search by height, hash, txid or address. Browse blocks and their contents, see what replaced what.
 - **Market**: Price as candles or a line, volume, cumulative volume delta and liquidations, aggregated across exchanges.
-- **Wallet**: Your own addresses or an xpub, watch-only. Your transactions are highlighted while they sit in the heap. Linux only for now.
+- **Wallet**: Your own addresses or an xpub, watch-only. Your transactions are highlighted while they sit in the heap. Needs the OrangeDeck service on a Linux computer; phones and Windows reach it over the home network.
 
 ## Where it runs
 
 - **Any Linux desktop**: An ordinary window. Wayland with an X11 fallback.
 - **As a widget or bar**: Layer-shell on niri, sway, Hyprland, river, labwc.
 - **Inside DankMaterialShell**: Listed in the DMS plugin directory. As a dashboard tab, a bar pill, a control center tile or a desktop widget.
-- **Windows**: A ZIP, unzip and run. The same views, the wallet exists on Linux only.
+- **Windows**: A ZIP, unzip and run. The same views; the wallet comes from a service on a Linux computer in the same network.
 - **macOS**: Builds, but has not been tested yet. There is no package so far.
 - **Android**: Phone or tablet. Each view has its own home screen shortcut.
 
-## Data sources
+## Where the numbers come from
 
-- Blocks, mempool, fees, hashrate: wss://mempool.space/api/v1/ws, or your own instance
-- Price and trades: Binance, Bybit, OKX public streams
-- Liquidations: Bybit, OKX
-- Open interest (heatmap model): Binance futures data
-- Your own miner: http://<bitaxe>/api/system/info, never leaves the home network
+- **Blocks, mempool, fees, hashrate**: The public WebSocket of mempool.space, or your own mempool instance. That is one setting.
+- **Price and trades**: The public streams of Binance, Bybit and OKX.
+- **Liquidations**: Bybit and OKX. The heatmap is a model built from Binance open interest, and it says so on screen.
+- **Your own miner**: The local API of the device, AxeOS or cgminer. The request stays in your home network.
+- **Watched addresses**: Balance queries to the same mempool instance. No keys, and nothing else leaves the device.
+
+## Get it
+
+- **Windows**: Version 0.2.13. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip
+- **Linux**: Version 0.2.13. Flatpak bundle: flatpak install --user orangedeck-0.2.13.flatpak. The runtime comes from Flathub. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak
+- **DankMaterialShell**: From the DMS plugin directory: dms plugins install orangedeck. Runs on its own and uses the app's data when the app is running. https://github.com/orangedeck-dev/dms-plugin
+- **Android APK**: Version 0.2.13. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk
+- **F-Droid**: OrangeDeck's own repository. Add it once in F-Droid, Droid-ify or Neo Store, and updates arrive by themselves. https://fdroid.orangedeck.dev/repo/
+- **Obtainium**: Takes every new version straight from the GitHub releases. Add the repository address as the source. https://github.com/orangedeck-dev/orangedeck
+- **All versions**: Release notes, checksums and older versions on GitHub. https://github.com/orangedeck-dev/orangedeck/releases
+- **Source**: Build it yourself. MIT. https://github.com/orangedeck-dev/orangedeck
+
+## More about OrangeDeck
+
+- [A Bitaxe monitor next to the mempool](https://orangedeck.dev/en/bitaxe/): Watch your Bitaxe or any AxeOS or cgminer device: hashrate, best share against the network difficulty, temperature and power. Local, free, no account.
+- [A block height display for the wall](https://orangedeck.dev/en/wall-display/): Turn an old Android tablet into a Bitcoin block height display: block height, fees, price, Moscow time and the halving countdown in large figures. Free, no account.
+- [OrangeDeck in DankMaterialShell](https://orangedeck.dev/en/dankmaterialshell/): OrangeDeck as a DankMaterialShell plugin: mempool feed, block height clock, mining, explorer and market in a bar popout, plus a desktop widget. One command to install.
+- [What's new](https://orangedeck.dev/en/changelog/): Release history of OrangeDeck, the Bitcoin mempool visualizer: what changed in each version, with dates.
 
 ## Questions
 
@@ -59,6 +79,42 @@ No, and it says so on screen. Nobody publishes other people's positions; it is a
 ### Can I run it on a tablet on the wall?
 
 That is what the clock view is for: large figures, no controls. The Android build carries a shortcut straight into it.
+
+### Which miners does OrangeDeck support?
+
+AxeOS devices such as the Bitaxe and NerdAxe, and miners with the cgminer API, for example Antminer, Avalon and Whatsminer.
+
+### Does the miner data leave my network?
+
+No. OrangeDeck asks the device directly at its local address. Nothing goes through a server.
+
+### Can I watch several miners?
+
+Yes. Enter the addresses in the settings, separated by a vertical bar, for example http://192.168.1.42|http://192.168.1.43.
+
+### Does the screen stay on?
+
+Yes, on Android while the app is in fullscreen. When you leave fullscreen or switch apps, the normal screen timeout applies again.
+
+### Which tablets work?
+
+Android 9 or newer with a 64-bit ARM processor. That covers most tablets from the last years.
+
+### Do I need my own node?
+
+No. The numbers come from mempool.space. If you run your own mempool instance, enter its address and the clock uses that.
+
+### Which DMS version is needed?
+
+DankMaterialShell 1.5.0 or newer, on any compositor that DMS supports.
+
+### Do I need the OrangeDeck app as well?
+
+No. The plugin fetches everything itself. With the app and its service running, it shares their connection.
+
+### Where is the source?
+
+In its own repository, github.com/orangedeck-dev/dms-plugin, generated from the main project. MIT licensed.
 
 ## Origin
 

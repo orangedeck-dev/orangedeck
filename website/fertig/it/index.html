@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="it" dir="ltr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OrangeDeck: mempool Bitcoin dal vivo, altezza di blocco e Bitaxe</title>
+<meta name="description" content="Visualizzatore del mempool Bitcoin per Linux, Windows e Android: orologio dell’altezza di blocco, monitor Bitaxe, block explorer, mercato. Libero e gratuito.">
+<meta property="og:title" content="OrangeDeck: mempool Bitcoin dal vivo, altezza di blocco e Bitaxe">
+<meta property="og:description" content="Visualizzatore del mempool Bitcoin per Linux, Windows e Android: orologio dell’altezza di blocco, monitor Bitaxe, block explorer, mercato. Libero e gratuito.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orangedeck.dev/it/">
+<meta property="og:locale" content="it_IT">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="pt_PT">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="pl_PL">
+<meta property="og:locale:alternate" content="cs_CZ">
+<meta property="og:site_name" content="OrangeDeck">
+<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau-it.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="OrangeDeck: mempool Bitcoin dal vivo, altezza di blocco e Bitaxe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OrangeDeck: mempool Bitcoin dal vivo, altezza di blocco e Bitaxe">
+<meta name="twitter:description" content="Visualizzatore del mempool Bitcoin per Linux, Windows e Android: orologio dell’altezza di blocco, monitor Bitaxe, block explorer, mercato. Libero e gratuito.">
+<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-it.png">
+<link rel="canonical" href="https://orangedeck.dev/it/">
+<link rel="icon" href="../bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../stil.css">
+<link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/">
+<link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/">
+<link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/">
+<link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/">
+<link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/">
+<link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/">
+<link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/">
+<link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/">
+<link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/">
+<link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/">
+<link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/">
+<link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/">
+<link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/">
+<link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/">
+<body>
+<div class="kopfleiste"><div class="mitte kopf">
+  <a class="marke" href="#"><img src="../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
+  <nav class="nav"><a href="#was">Che cos’è</a><a href="#ansichten">Viste</a><a href="#wo">Dove funziona</a><a href="#warum">Perché</a><a href="#faq">FAQ</a></nav>
+  <nav class="sprachen"><a href="#sprache" aria-current="true">IT</a></nav>
+</div></div>
+
+<div class="mitte">
+  <header class="hero">
+    <h1>Il mempool Bitcoin dal vivo</h1>
+    <p class="fuehrend">Le transazioni in attesa cadono su un mucchio come un mosaico di tessere, grandi quanto il valore che spostano e colorate per età, commissione o tipo. Quelle confermate volano nel blocco. Si guarda la rete respirare.</p>
+    <div class="knopfreihe">
+      <a class="tat" href="#holen">Scarica</a>
+      <a class="tat zweit" href="https://github.com/orangedeck-dev/orangedeck">Leggi il codice</a>
+    </div>
+    <div class="badges"><span class="badge">Licenza MIT</span><span class="badge">Nessun account, nessuna telemetria</span><span class="badge">Sola lettura, nessuna chiave</span><span class="badge">Sei viste, cinque ambienti</span></div>
+    <p class="fassung">Versione 0.2.13 del 2026-09-25 · <a href="changelog/">Novità</a></p>
+  </header>
+
+  <section class="schau">
+    <!-- **Das Standbild steht darunter, nicht daneben.** `live.js` blendet es
+         erst aus, wenn die ersten Transaktionen angekommen sind; ohne
+         JavaScript, ohne Verbindung zu mempool.space und bei
+         `prefers-reduced-motion` bleibt es liegen. Eine Seite, deren
+         Herzstueck ein leeres Loch ist, waere schlechter als eine mit einem
+         Bild -- und ein Pruefer wie ein Crawler sieht genau das zuerst. -->
+    <div id="live" class="live">
+      <img class="live-standbild" src="../bilder/feed.webp" alt="Il mempool come un mosaico vivo, con l’ultimo blocco accanto. Colori per età, commissione o tipo di transazione." width="1280" height="800">
+    </div>
+  </section>
+
+  <section id="was">
+    <h2>Che cos’è</h2>
+    <p>OrangeDeck è un visualizzatore del mempool Bitcoin. Disegna il mempool come si comporta davvero: ogni transazione in attesa è un quadrato. Si accumula, viene minata, viene sostituita, e la si vede succedere invece di leggere un numero.</p><p>Intorno ci sono altre cinque viste: un orologio dell’altezza di blocco per un tablet appeso al muro, i dati di mining del proprio Bitaxe e della rete, un block explorer, una scheda di mercato con candele, delta del volume cumulativo e liquidazioni, e indirizzi in sola lettura.</p>
+  </section>
+
+  <section id="ansichten">
+    <h2>Sei viste</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>Feed</b><span class="txt">Il mempool come un mosaico vivo, con l’ultimo blocco accanto. Colori per età, commissione o tipo di transazione.</span></li><li><span class="nr">02</span><b>Orologio</b><span class="txt">Altezza di blocco, commissioni, prezzo, hashrate e conto alla rovescia per l’halving, in grande e senza comandi. Per un tablet appeso al muro.</span></li><li><span class="nr">03</span><b>Mining</b><span class="txt">Un monitor per Bitaxe: hashrate, miglior share rispetto alla difficoltà di rete, temperatura e potenza del proprio miner. Accanto la rete, con hashrate, difficoltà e il prossimo aggiustamento.</span></li><li><span class="nr">04</span><b>Explorer</b><span class="txt">Ricerca per altezza, hash, txid o indirizzo. Sfoglia i blocchi e il loro contenuto, vedi cosa ha sostituito cosa.</span></li><li><span class="nr">05</span><b>Mercato</b><span class="txt">Prezzo a candele o a linea, volume, delta del volume cumulativo e liquidazioni, aggregati da più exchange.</span></li><li><span class="nr">06</span><b>Portafoglio</b><span class="txt">I propri indirizzi o una xpub, in sola lettura. Le proprie transazioni restano evidenziate finché sono nel mucchio. Serve il servizio OrangeDeck su un computer Linux; telefoni e Windows lo raggiungono attraverso la rete di casa.</span></li></ul>
+  </section>
+
+  <section id="bilder">
+    <h2>Schermate</h2>
+    <div class="galerie"><figure><a href="../bilder/uhr.webp"><img src="../bilder/uhr.webp" alt="Orologio: altezza di blocco, commissioni, prezzo e il prossimo aggiustamento della difficoltà." width="1280" height="800" loading="lazy"></a><figcaption>Orologio: altezza di blocco, commissioni, prezzo e il prossimo aggiustamento della difficoltà.</figcaption></figure><figure><a href="../bilder/mining.webp"><img src="../bilder/mining.webp" alt="Mining: hashrate e difficoltà della rete nell’arco di un anno." width="1280" height="800" loading="lazy"></a><figcaption>Mining: hashrate e difficoltà della rete nell’arco di un anno.</figcaption></figure><figure><a href="../bilder/explorer.webp"><img src="../bilder/explorer.webp" alt="Explorer: blocchi previsti e confermati, il prossimo blocco come tessere." width="1280" height="800" loading="lazy"></a><figcaption>Explorer: blocchi previsti e confermati, il prossimo blocco come tessere.</figcaption></figure><figure><a href="../bilder/markt.webp"><img src="../bilder/markt.webp" alt="Mercato: candele e volume da Binance e Bybit." width="1280" height="800" loading="lazy"></a><figcaption>Mercato: candele e volume da Binance e Bybit.</figcaption></figure></div>
+  </section>
+
+  <section id="einsatz">
+    <h2>Pensato per</h2>
+    <ul class="karten verweise"><li><a href="bitaxe/"><b>Monitor Bitaxe</b><span class="txt">Hashrate, miglior share e temperatura del proprio miner, accanto alla rete.</span></a></li><li><a href="wall-display/"><b>Display da parete</b><span class="txt">Altezza di blocco, commissioni e prezzo in cifre grandi, per un vecchio tablet.</span></a></li><li><a href="dankmaterialshell/"><b>DankMaterialShell</b><span class="txt">Una pillola nella barra, un riquadro del centro di controllo e un widget da scrivania per DMS.</span></a></li></ul>
+  </section>
+
+  <section id="wo">
+    <h2>Dove funziona</h2>
+    <ul class="karten schlicht"><li><b>Qualsiasi desktop Linux</b><span class="txt">Una finestra normale. Wayland, con X11 come ripiego.</span></li><li><b>Come widget o barra</b><span class="txt">Layer-shell su niri, sway, Hyprland, river, labwc.</span></li><li><b>Dentro DankMaterialShell</b><span class="txt">Presente nella directory dei plugin DMS. Come scheda della dashboard, pillola nella barra, riquadro del centro di controllo o widget da scrivania.</span></li><li><b>Windows</b><span class="txt">Uno ZIP: si estrae e si avvia. Le stesse viste; il portafoglio arriva da un servizio su un computer Linux nella stessa rete.</span></li><li><b>macOS</b><span class="txt">Si compila, ma non è ancora stato testato. Per ora non c’è un pacchetto.</span></li><li><b>Android</b><span class="txt">Telefono o tablet. Ogni vista ha la sua scorciatoia nella schermata Home.</span></li></ul>
+  </section>
+
+  <section id="quellen">
+    <h2>Da dove vengono i numeri</h2>
+    <ul class="karten schlicht"><li><b>Blocchi, mempool, commissioni, hashrate</b><span class="txt">Il WebSocket pubblico di mempool.space, oppure la propria istanza di mempool. È una sola impostazione.</span></li><li><b>Prezzo e scambi</b><span class="txt">I flussi pubblici di Binance, Bybit e OKX.</span></li><li><b>Liquidazioni</b><span class="txt">Bybit e OKX. La mappa di calore è un modello costruito sull’open interest di Binance, e lo schermo lo dice.</span></li><li><b>Il proprio miner</b><span class="txt">L’API locale del dispositivo, AxeOS o cgminer. La richiesta resta nella rete di casa.</span></li><li><b>Indirizzi osservati</b><span class="txt">Richieste del saldo alla stessa istanza di mempool. Nessuna chiave, e nient’altro lascia il dispositivo.</span></li></ul>
+  </section>
+
+  <section id="warum">
+    <h2>Perché OrangeDeck</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>Serve a guardare, e basta</b><span class="txt">Non conosce alcuna chiave privata, non può firmare e non include librerie che potrebbero farlo. Sola lettura significa sola lettura.</span></li><li><span class="nr">02</span><b>Nessun server nostro</b><span class="txt">Parla con mempool.space o con il proprio nodo. Nessun conteggio, nessun rapporto sugli arresti anomali, nessun account.</span></li><li><span class="nr">03</span><b>Misurato, non indovinato</b><span class="txt">Quando un numero è un modello e non una misura, come nella mappa di calore delle liquidazioni, lo schermo lo dice, con le ipotesi scritte per esteso.</span></li><li><span class="nr">04</span><b>Un solo codice, cinque ambienti</b><span class="txt">Lo stesso QML disegna la finestra, il widget, il pannello e il telefono. Ciò che si corregge in un punto è corretto ovunque.</span></li><li><span class="nr">05</span><b>Da leggere</b><span class="txt">Licenza MIT, niente offuscato, e le motivazioni stanno nei messaggi di commit invece di andare perse.</span></li></ul>
+  </section>
+
+  <section id="holen">
+    <h2>Scarica</h2>
+    <div class="knopfreihe"><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip"><b>Windows</b><span>Versione 0.2.13. ZIP per Windows 10 e 11, 64 bit: estrai e avvia orangedeck-app.exe. Non firmato, al primo avvio SmartScreen chiede conferma.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak"><b>Linux</b><span>Versione 0.2.13. Pacchetto Flatpak: flatpak install --user orangedeck-0.2.13.flatpak. Il runtime arriva da Flathub.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/dms-plugin"><b>DankMaterialShell</b><span>Dalla directory dei plugin DMS: dms plugins install orangedeck. Funziona da solo e usa i dati dell’app quando l’app è in esecuzione.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"><b>APK Android</b><span>Versione 0.2.13. Per Android 9 o successivo, ARM a 64 bit. Firmato, l’impronta è nelle note di rilascio.</span></a><a class="knopf" href="https://fdroid.orangedeck.dev/repo/"><b>F-Droid</b><span>Il repository di OrangeDeck. Aggiungilo una volta in F-Droid, Droid-ify o Neo Store, e gli aggiornamenti arrivano da soli.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>Obtainium</b><span>Prende ogni nuova versione direttamente dalle release su GitHub. Come fonte indica l’indirizzo del repository.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases"><b>Tutte le versioni</b><span>Note di rilascio, checksum e versioni precedenti su GitHub.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>Codice sorgente</b><span>Da compilare da sé. MIT.</span></a></div>
+  </section>
+
+  <section id="faq">
+    <h2>Domande</h2>
+    <div class="fragen"><details><summary>Ha bisogno delle mie chiavi?</summary><p>No. Non può firmare nulla. Gli indirizzi osservati si inseriscono come indirizzi o come xpub e lasciano il computer solo sotto forma di richiesta del saldo.</p></details><details><summary>Da dove vengono i dati?</summary><p>Da mempool.space come impostazione predefinita, oppure dalla propria istanza di mempool. È una sola impostazione. I dati di mercato vengono dai feed pubblici degli exchange.</p></details><details><summary>Manda dati a casa?</summary><p>No. Non c’è nessun server nostro, nessuna statistica d’uso e nessun rapporto sugli arresti anomali.</p></details><details><summary>Quanto costa?</summary><p>Niente. Ha licenza MIT e non esiste una versione a pagamento.</p></details><details><summary>Quali lingue parla?</summary><p>Tredici: inglese, tedesco, spagnolo, francese, italiano, portoghese (Portogallo e Brasile), olandese, russo, giapponese, cinese, polacco e ceco. Si avvia nella lingua di sistema, e numeri e date seguono la lingua scelta nelle impostazioni.</p></details><details><summary>La mappa di calore delle liquidazioni mostra dati reali?</summary><p>No, e lo schermo lo dice. Nessuno pubblica le posizioni degli altri; è un modello con le ipotesi scritte per esteso.</p></details><details><summary>Posso usarlo su un tablet appeso al muro?</summary><p>La vista Orologio serve proprio a questo: numeri grandi, nessun comando. La versione Android contiene una scorciatoia che la apre direttamente.</p></details></div>
+  </section>
+
+  <!-- Hier kommt spaeter der Spendenteil hin: eine wechselnde Adresse, damit
+       sich Zahlungen nicht einer einzigen zuordnen lassen. Braucht einen xpub
+       und eine Ableitung, also mehr als eine statische Seite -- deshalb
+       bewusst noch nicht drin. -->
+
+  <footer>
+    <p class="fuss-tat"><a class="tat" href="#holen">Provalo</a></p>
+    <p class="klein">Altro su OrangeDeck</p>
+    <nav class="sprachen"><a href="bitaxe/">Monitor Bitaxe</a><a href="wall-display/">Display da parete</a><a href="dankmaterialshell/">DankMaterialShell</a><a href="changelog/">Novità</a></nav>
+    <p>OrangeDeck è rilasciato con licenza MIT. Disposizione delle tessere e modello dei colori ripresi da bitfeed (MIT, mononaut).</p>
+    <p><a href="https://github.com/orangedeck-dev/orangedeck">github.com/orangedeck-dev/orangedeck</a></p>
+    <p class="klein" id="sprache">Lingua</p>
+    <nav class="sprachen"><a href="../de/" hreflang="de" lang="de">Deutsch</a><a href="../en/" hreflang="en" lang="en">English</a><a href="../es/" hreflang="es" lang="es">Español</a><a href="../fr/" hreflang="fr" lang="fr">Français</a><a href="../it/" hreflang="it" lang="it" aria-current="true">Italiano</a><a href="../pt-pt/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../nl/" hreflang="nl" lang="nl">Nederlands</a><a href="../ru/" hreflang="ru" lang="ru">Русский</a><a href="../ja/" hreflang="ja" lang="ja">日本語</a><a href="../zh/" hreflang="zh" lang="zh">中文</a><a href="../pt-br/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../pl/" hreflang="pl" lang="pl">Polski</a><a href="../cs/" hreflang="cs" lang="cs">Čeština</a></nav>
+  </footer>
+</div>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/","inLanguage":"it"},{"@context":"https://schema.org","@type":"SoftwareApplication","@id":"https://orangedeck.dev/#app","name":"OrangeDeck","url":"https://orangedeck.dev/it/","inLanguage":"it","description":"OrangeDeck è un’applicazione gratuita per desktop e Android che disegna il mempool Bitcoin come un mosaico di tessere vivo. Riunisce sei viste in una sola finestra: feed del mempool, orologio dell’altezza di blocco, dati di mining, block explorer, dati di mercato e indirizzi in sola lettura. Funziona su Linux, Windows e Android e come plugin di DankMaterialShell, parla tredici lingue, ha licenza MIT e non richiede alcun account.","applicationCategory":"UtilityApplication","operatingSystem":"Linux, Windows, Android","softwareVersion":"0.2.13","datePublished":"2026-09-12","dateModified":"2026-09-25","downloadUrl":["https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"],"releaseNotes":"https://orangedeck.dev/it/changelog/","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"image":"https://orangedeck.dev/bilder/vorschau-it.png","screenshot":["https://orangedeck.dev/bilder/feed.webp","https://orangedeck.dev/bilder/uhr.webp","https://orangedeck.dev/bilder/mining.webp","https://orangedeck.dev/bilder/explorer.webp","https://orangedeck.dev/bilder/markt.webp"],"codeRepository":"https://github.com/orangedeck-dev/orangedeck","sameAs":["https://github.com/orangedeck-dev/orangedeck","https://github.com/orangedeck-dev/dms-plugin","https://fdroid.orangedeck.dev/repo/","https://github.com/AvengeMedia/dms-plugin-registry/blob/master/plugins/orangedeck-dev-orangedeck.json"],"author":{"@type":"Person","name":"Satoshoe","url":"https://github.com/satoshoe-dev"},"featureList":["Feed","Orologio","Mining","Explorer","Mercato","Portafoglio"]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"it","mainEntity":[{"@type":"Question","name":"Ha bisogno delle mie chiavi?","acceptedAnswer":{"@type":"Answer","text":"No. Non può firmare nulla. Gli indirizzi osservati si inseriscono come indirizzi o come xpub e lasciano il computer solo sotto forma di richiesta del saldo."}},{"@type":"Question","name":"Da dove vengono i dati?","acceptedAnswer":{"@type":"Answer","text":"Da mempool.space come impostazione predefinita, oppure dalla propria istanza di mempool. È una sola impostazione. I dati di mercato vengono dai feed pubblici degli exchange."}},{"@type":"Question","name":"Manda dati a casa?","acceptedAnswer":{"@type":"Answer","text":"No. Non c’è nessun server nostro, nessuna statistica d’uso e nessun rapporto sugli arresti anomali."}},{"@type":"Question","name":"Quanto costa?","acceptedAnswer":{"@type":"Answer","text":"Niente. Ha licenza MIT e non esiste una versione a pagamento."}},{"@type":"Question","name":"Quali lingue parla?","acceptedAnswer":{"@type":"Answer","text":"Tredici: inglese, tedesco, spagnolo, francese, italiano, portoghese (Portogallo e Brasile), olandese, russo, giapponese, cinese, polacco e ceco. Si avvia nella lingua di sistema, e numeri e date seguono la lingua scelta nelle impostazioni."}},{"@type":"Question","name":"La mappa di calore delle liquidazioni mostra dati reali?","acceptedAnswer":{"@type":"Answer","text":"No, e lo schermo lo dice. Nessuno pubblica le posizioni degli altri; è un modello con le ipotesi scritte per esteso."}},{"@type":"Question","name":"Posso usarlo su un tablet appeso al muro?","acceptedAnswer":{"@type":"Answer","text":"La vista Orologio serve proprio a questo: numeri grandi, nessun comando. La versione Android contiene una scorciatoia che la apre direttamente."}}]}]</script>
+<script>window.ORANGEDECK_LIVE = {"reiter":["Feed","Orologio","Mining","Explorer","Mercato","Portafoglio"],"live":"LIVE","beispiel":"ESEMPIO","beispielHinweis":"Da qui non si può interrogare il miner né il portafoglio di un estraneo. Queste due viste mostrano quindi numeri inventati. L’applicazione mostra i tuoi.","quelle":"Dal vivo dal mempool","block":"Blocco","vorMin":"{0} min fa","gebuehr":"Commissione","kurs":"Prezzo","mempool":"Mempool","hashrate":"Hashrate","moscow":"Moscow Time","schwierigkeit":"Difficoltà","halving":"Halving","bloecke":"Blocchi","txn":"transazioni","beste":"Miglior share","temperatur":"Temperatura","leistung":"Potenza","guthaben":"Saldo","adressen":"Indirizzi","unbestaetigt":"non confermate","gerechnet":"calcolato dalla difficoltà","verbindet":"connessione …"};</script>
+<script src="../mondrian.js"></script>
+<script src="../colors.js"></script>
+<script src="../live.js" defer></script>
+</body>
+</html>

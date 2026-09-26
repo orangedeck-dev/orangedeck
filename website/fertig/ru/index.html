@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ru" dir="ltr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OrangeDeck: мемпул биткоина вживую, высота блока и монитор Bitaxe</title>
+<meta name="description" content="Визуализатор мемпула биткоина для Linux, Windows и Android: часы высоты блока, монитор Bitaxe, обозреватель блоков и рынок. Бесплатно, открытый код.">
+<meta property="og:title" content="OrangeDeck: мемпул биткоина вживую, высота блока и монитор Bitaxe">
+<meta property="og:description" content="Визуализатор мемпула биткоина для Linux, Windows и Android: часы высоты блока, монитор Bitaxe, обозреватель блоков и рынок. Бесплатно, открытый код.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orangedeck.dev/ru/">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="it_IT">
+<meta property="og:locale:alternate" content="pt_PT">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="pl_PL">
+<meta property="og:locale:alternate" content="cs_CZ">
+<meta property="og:site_name" content="OrangeDeck">
+<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau-ru.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="OrangeDeck: мемпул биткоина вживую, высота блока и монитор Bitaxe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OrangeDeck: мемпул биткоина вживую, высота блока и монитор Bitaxe">
+<meta name="twitter:description" content="Визуализатор мемпула биткоина для Linux, Windows и Android: часы высоты блока, монитор Bitaxe, обозреватель блоков и рынок. Бесплатно, открытый код.">
+<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-ru.png">
+<link rel="canonical" href="https://orangedeck.dev/ru/">
+<link rel="icon" href="../bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../stil.css">
+<link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/">
+<link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/">
+<link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/">
+<link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/">
+<link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/">
+<link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/">
+<link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/">
+<link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/">
+<link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/">
+<link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/">
+<link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/">
+<link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/">
+<link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/">
+<link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/">
+<body>
+<div class="kopfleiste"><div class="mitte kopf">
+  <a class="marke" href="#"><img src="../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
+  <nav class="nav"><a href="#was">Что это</a><a href="#ansichten">Виды</a><a href="#wo">Где работает</a><a href="#warum">Зачем</a><a href="#faq">Вопросы</a></nav>
+  <nav class="sprachen"><a href="#sprache" aria-current="true">RU</a></nav>
+</div></div>
+
+<div class="mitte">
+  <header class="hero">
+    <h1>Мемпул биткоина вживую</h1>
+    <p class="fuehrend">Ожидающие транзакции падают в кучу мозаикой из плиток. Размер плитки зависит от того, сколько она переводит, а цвет показывает возраст, комиссию или тип. Подтверждённые улетают в блок. Видно, как дышит сеть.</p>
+    <div class="knopfreihe">
+      <a class="tat" href="#holen">Скачать</a>
+      <a class="tat zweit" href="https://github.com/orangedeck-dev/orangedeck">Исходный код</a>
+    </div>
+    <div class="badges"><span class="badge">Лицензия MIT</span><span class="badge">Без аккаунта и телеметрии</span><span class="badge">Только просмотр, без ключей</span><span class="badge">Шесть видов, пять сред</span></div>
+    <p class="fassung">Версия 0.2.13 от 2026-09-25 · <a href="changelog/">Что нового</a></p>
+  </header>
+
+  <section class="schau">
+    <!-- **Das Standbild steht darunter, nicht daneben.** `live.js` blendet es
+         erst aus, wenn die ersten Transaktionen angekommen sind; ohne
+         JavaScript, ohne Verbindung zu mempool.space und bei
+         `prefers-reduced-motion` bleibt es liegen. Eine Seite, deren
+         Herzstueck ein leeres Loch ist, waere schlechter als eine mit einem
+         Bild -- und ein Pruefer wie ein Crawler sieht genau das zuerst. -->
+    <div id="live" class="live">
+      <img class="live-standbild" src="../bilder/feed.webp" alt="Мемпул как живая мозаика, рядом последний блок. Цвет по возрасту, комиссии или типу транзакции." width="1280" height="800">
+    </div>
+  </section>
+
+  <section id="was">
+    <h2>Что это</h2>
+    <p>OrangeDeck служит визуализатором мемпула биткоина. Он рисует мемпул таким, каким тот ведёт себя на деле: каждая ожидающая транзакция изображена квадратом. Квадраты копятся, попадают в блок, вытесняются замещающими транзакциями, и вы видите всё это своими глазами, а не читаете цифру.</p><p>Рядом с ним ещё пять видов: часы высоты блока для планшета на стене, данные майнинга с вашего Bitaxe и по всей сети, обозреватель блоков, вкладка рынка со свечами, кумулятивной дельтой объёма и ликвидациями, а также адреса только для наблюдения.</p>
+  </section>
+
+  <section id="ansichten">
+    <h2>Шесть видов</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>Лента</b><span class="txt">Мемпул как живая мозаика, рядом последний блок. Цвет по возрасту, комиссии или типу транзакции.</span></li><li><span class="nr">02</span><b>Часы</b><span class="txt">Высота блока, комиссии, курс, хешрейт и отсчёт до халвинга, крупно и без элементов управления. Для планшета на стене.</span></li><li><span class="nr">03</span><b>Майнинг</b><span class="txt">Монитор Bitaxe: хешрейт, лучший шар относительно сложности сети, температура и мощность вашего майнера. Рядом сеть: хешрейт, сложность и следующая корректировка.</span></li><li><span class="nr">04</span><b>Обозреватель</b><span class="txt">Поиск по высоте, хешу, txid или адресу. Листайте блоки и их содержимое, смотрите, какая транзакция какую заменила.</span></li><li><span class="nr">05</span><b>Рынок</b><span class="txt">Курс свечами или линией, объём, кумулятивная дельта объёма и ликвидации, сведённые по нескольким биржам.</span></li><li><span class="nr">06</span><b>Кошелёк</b><span class="txt">Ваши адреса или xpub, только для наблюдения. Ваши транзакции подсвечены, пока лежат в куче. Нужна служба OrangeDeck на компьютере с Linux; телефоны и Windows подключаются к ней по домашней сети.</span></li></ul>
+  </section>
+
+  <section id="bilder">
+    <h2>Скриншоты</h2>
+    <div class="galerie"><figure><a href="../bilder/uhr.webp"><img src="../bilder/uhr.webp" alt="Часы: высота блока, комиссии, курс и следующая корректировка сложности." width="1280" height="800" loading="lazy"></a><figcaption>Часы: высота блока, комиссии, курс и следующая корректировка сложности.</figcaption></figure><figure><a href="../bilder/mining.webp"><img src="../bilder/mining.webp" alt="Майнинг: хешрейт и сложность сети за год." width="1280" height="800" loading="lazy"></a><figcaption>Майнинг: хешрейт и сложность сети за год.</figcaption></figure><figure><a href="../bilder/explorer.webp"><img src="../bilder/explorer.webp" alt="Обозреватель: ожидаемые и подтверждённые блоки, следующий блок плитками." width="1280" height="800" loading="lazy"></a><figcaption>Обозреватель: ожидаемые и подтверждённые блоки, следующий блок плитками.</figcaption></figure><figure><a href="../bilder/markt.webp"><img src="../bilder/markt.webp" alt="Рынок: свечи и объём с Binance и Bybit." width="1280" height="800" loading="lazy"></a><figcaption>Рынок: свечи и объём с Binance и Bybit.</figcaption></figure></div>
+  </section>
+
+  <section id="einsatz">
+    <h2>Для чего подходит</h2>
+    <ul class="karten verweise"><li><a href="bitaxe/"><b>Монитор Bitaxe</b><span class="txt">Хешрейт, лучший шар и температура вашего майнера рядом с данными сети.</span></a></li><li><a href="wall-display/"><b>Настенный дисплей</b><span class="txt">Высота блока, комиссии и курс крупными цифрами, для старого планшета.</span></a></li><li><a href="dankmaterialshell/"><b>DankMaterialShell</b><span class="txt">Значок на панели, плитка центра управления и виджет рабочего стола для DMS.</span></a></li></ul>
+  </section>
+
+  <section id="wo">
+    <h2>Где работает</h2>
+    <ul class="karten schlicht"><li><b>Любой рабочий стол Linux</b><span class="txt">Обычное окно. Wayland, при необходимости X11.</span></li><li><b>Как виджет или панель</b><span class="txt">Layer-shell в niri, sway, Hyprland, river, labwc.</span></li><li><b>Внутри DankMaterialShell</b><span class="txt">Есть в каталоге плагинов DMS. Как вкладка дашборда, значок на панели, плитка центра управления или виджет рабочего стола.</span></li><li><b>Windows</b><span class="txt">ZIP-архив: распаковать и запустить. Те же виды; кошелёк получает данные от службы на компьютере с Linux в той же сети.</span></li><li><b>macOS</b><span class="txt">Собирается, но пока не проверялся. Готового пакета нет.</span></li><li><b>Android</b><span class="txt">Телефон или планшет. У каждого вида свой ярлык на главном экране.</span></li></ul>
+  </section>
+
+  <section id="quellen">
+    <h2>Откуда берутся цифры</h2>
+    <ul class="karten schlicht"><li><b>Блоки, мемпул, комиссии, хешрейт</b><span class="txt">Публичный WebSocket mempool.space или ваш собственный экземпляр mempool. Это одна настройка.</span></li><li><b>Курс и сделки</b><span class="txt">Публичные потоки Binance, Bybit и OKX.</span></li><li><b>Ликвидации</b><span class="txt">Bybit и OKX. Тепловая карта построена как модель по открытому интересу на Binance, и на экране об этом сказано.</span></li><li><b>Ваш майнер</b><span class="txt">Локальный API устройства, AxeOS или cgminer. Запрос не покидает домашнюю сеть.</span></li><li><b>Отслеживаемые адреса</b><span class="txt">Запросы баланса к тому же экземпляру mempool. Никаких ключей, и больше ничего с устройства не уходит.</span></li></ul>
+  </section>
+
+  <section id="warum">
+    <h2>Почему OrangeDeck</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>Он только показывает, и ничего больше</b><span class="txt">Он не знает ни одного закрытого ключа, не умеет подписывать и не содержит библиотек, которые бы это умели. Только просмотр значит только просмотр.</span></li><li><span class="nr">02</span><b>Никаких наших серверов</b><span class="txt">Он обращается к mempool.space или к вашему собственному узлу. Нет ни статистики, ни отчётов о сбоях, ни аккаунта.</span></li><li><span class="nr">03</span><b>Измерено, а не угадано</b><span class="txt">Если число получено из модели, а не измерено, как в тепловой карте ликвидаций, об этом написано прямо на экране вместе с допущениями.</span></li><li><span class="nr">04</span><b>Одна кодовая база, пять сред</b><span class="txt">Один и тот же QML рисует окно, виджет, панель и телефон. Что исправлено в одном месте, исправлено везде.</span></li><li><span class="nr">05</span><b>Код открыт для чтения</b><span class="txt">Лицензия MIT, без обфускации, а объяснения решений сохранены в сообщениях коммитов.</span></li></ul>
+  </section>
+
+  <section id="holen">
+    <h2>Скачать</h2>
+    <div class="knopfreihe"><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip"><b>Windows</b><span>Версия 0.2.13. ZIP для Windows 10 и 11, 64 бит: распакуйте и запустите orangedeck-app.exe. Без подписи, поэтому при первом запуске SmartScreen задаст вопрос.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak"><b>Linux</b><span>Версия 0.2.13. Пакет Flatpak: flatpak install --user orangedeck-0.2.13.flatpak. Среда выполнения берётся с Flathub.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/dms-plugin"><b>DankMaterialShell</b><span>Из каталога плагинов DMS: dms plugins install orangedeck. Работает самостоятельно, а если приложение запущено, берёт данные у него.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"><b>APK для Android</b><span>Версия 0.2.13. Для Android 9 и новее, 64-битный ARM. Подписан, отпечаток указан в примечаниях к выпуску.</span></a><a class="knopf" href="https://fdroid.orangedeck.dev/repo/"><b>F-Droid</b><span>Собственный репозиторий OrangeDeck. Добавьте его один раз в F-Droid, Droid-ify или Neo Store, и обновления будут приходить сами.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>Obtainium</b><span>Берёт каждую новую версию прямо из выпусков на GitHub. Укажите адрес репозитория как источник.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases"><b>Все версии</b><span>Примечания к выпускам, контрольные суммы и старые версии на GitHub.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>Исходный код</b><span>Соберите сами. MIT.</span></a></div>
+  </section>
+
+  <section id="faq">
+    <h2>Вопросы</h2>
+    <div class="fragen"><details><summary>Нужны ли ему мои ключи?</summary><p>Нет. Он ничего не умеет подписывать. Отслеживаемые адреса вводятся как адреса или xpub и покидают ваш компьютер только в виде запроса баланса.</p></details><details><summary>Откуда берутся данные?</summary><p>По умолчанию с mempool.space или с вашего собственного экземпляра mempool. Это одна настройка. Рыночные данные приходят из публичных потоков бирж.</p></details><details><summary>Он что-нибудь отправляет разработчику?</summary><p>Нет. Нашего сервера нет, аналитики и отчётов о сбоях тоже.</p></details><details><summary>Сколько это стоит?</summary><p>Ничего. Лицензия MIT, платной версии нет.</p></details><details><summary>На каких языках он работает?</summary><p>На тринадцати: английском, немецком, испанском, французском, итальянском, португальском (Португалия и Бразилия), нидерландском, русском, японском, китайском, польском и чешском. Он запускается на языке системы, а числа и даты оформляются по языку, выбранному в настройках.</p></details><details><summary>Тепловая карта ликвидаций показывает реальные данные?</summary><p>Нет, и об этом сказано на экране. Чужие позиции никто не публикует; это модель, и её допущения расписаны.</p></details><details><summary>Можно ли держать его на планшете на стене?</summary><p>Для этого и сделан вид «Часы»: крупные цифры, никаких элементов управления. В сборке для Android есть ярлык, который открывает его сразу.</p></details></div>
+  </section>
+
+  <!-- Hier kommt spaeter der Spendenteil hin: eine wechselnde Adresse, damit
+       sich Zahlungen nicht einer einzigen zuordnen lassen. Braucht einen xpub
+       und eine Ableitung, also mehr als eine statische Seite -- deshalb
+       bewusst noch nicht drin. -->
+
+  <footer>
+    <p class="fuss-tat"><a class="tat" href="#holen">Попробовать</a></p>
+    <p class="klein">Ещё об OrangeDeck</p>
+    <nav class="sprachen"><a href="bitaxe/">Монитор Bitaxe</a><a href="wall-display/">Настенный дисплей</a><a href="dankmaterialshell/">DankMaterialShell</a><a href="changelog/">Что нового</a></nav>
+    <p>OrangeDeck распространяется по лицензии MIT. Раскладка плиток и цветовая модель перенесены из bitfeed (MIT, mononaut).</p>
+    <p><a href="https://github.com/orangedeck-dev/orangedeck">github.com/orangedeck-dev/orangedeck</a></p>
+    <p class="klein" id="sprache">Язык</p>
+    <nav class="sprachen"><a href="../de/" hreflang="de" lang="de">Deutsch</a><a href="../en/" hreflang="en" lang="en">English</a><a href="../es/" hreflang="es" lang="es">Español</a><a href="../fr/" hreflang="fr" lang="fr">Français</a><a href="../it/" hreflang="it" lang="it">Italiano</a><a href="../pt-pt/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../nl/" hreflang="nl" lang="nl">Nederlands</a><a href="../ru/" hreflang="ru" lang="ru" aria-current="true">Русский</a><a href="../ja/" hreflang="ja" lang="ja">日本語</a><a href="../zh/" hreflang="zh" lang="zh">中文</a><a href="../pt-br/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../pl/" hreflang="pl" lang="pl">Polski</a><a href="../cs/" hreflang="cs" lang="cs">Čeština</a></nav>
+  </footer>
+</div>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/","inLanguage":"ru"},{"@context":"https://schema.org","@type":"SoftwareApplication","@id":"https://orangedeck.dev/#app","name":"OrangeDeck","url":"https://orangedeck.dev/ru/","inLanguage":"ru","description":"OrangeDeck представляет собой бесплатное приложение для компьютера и Android, которое рисует мемпул биткоина живой мозаикой из плиток. В одном окне собраны шесть видов: лента мемпула, часы высоты блока, данные майнинга, обозреватель блоков, рыночные данные и адреса только для наблюдения. Приложение работает в Linux, Windows и Android, а также как плагин DankMaterialShell, говорит на тринадцати языках, распространяется по лицензии MIT и не требует аккаунта.","applicationCategory":"UtilityApplication","operatingSystem":"Linux, Windows, Android","softwareVersion":"0.2.13","datePublished":"2026-09-12","dateModified":"2026-09-25","downloadUrl":["https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"],"releaseNotes":"https://orangedeck.dev/ru/changelog/","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"image":"https://orangedeck.dev/bilder/vorschau-ru.png","screenshot":["https://orangedeck.dev/bilder/feed.webp","https://orangedeck.dev/bilder/uhr.webp","https://orangedeck.dev/bilder/mining.webp","https://orangedeck.dev/bilder/explorer.webp","https://orangedeck.dev/bilder/markt.webp"],"codeRepository":"https://github.com/orangedeck-dev/orangedeck","sameAs":["https://github.com/orangedeck-dev/orangedeck","https://github.com/orangedeck-dev/dms-plugin","https://fdroid.orangedeck.dev/repo/","https://github.com/AvengeMedia/dms-plugin-registry/blob/master/plugins/orangedeck-dev-orangedeck.json"],"author":{"@type":"Person","name":"Satoshoe","url":"https://github.com/satoshoe-dev"},"featureList":["Лента","Часы","Майнинг","Обозреватель","Рынок","Кошелёк"]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ru","mainEntity":[{"@type":"Question","name":"Нужны ли ему мои ключи?","acceptedAnswer":{"@type":"Answer","text":"Нет. Он ничего не умеет подписывать. Отслеживаемые адреса вводятся как адреса или xpub и покидают ваш компьютер только в виде запроса баланса."}},{"@type":"Question","name":"Откуда берутся данные?","acceptedAnswer":{"@type":"Answer","text":"По умолчанию с mempool.space или с вашего собственного экземпляра mempool. Это одна настройка. Рыночные данные приходят из публичных потоков бирж."}},{"@type":"Question","name":"Он что-нибудь отправляет разработчику?","acceptedAnswer":{"@type":"Answer","text":"Нет. Нашего сервера нет, аналитики и отчётов о сбоях тоже."}},{"@type":"Question","name":"Сколько это стоит?","acceptedAnswer":{"@type":"Answer","text":"Ничего. Лицензия MIT, платной версии нет."}},{"@type":"Question","name":"На каких языках он работает?","acceptedAnswer":{"@type":"Answer","text":"На тринадцати: английском, немецком, испанском, французском, итальянском, португальском (Португалия и Бразилия), нидерландском, русском, японском, китайском, польском и чешском. Он запускается на языке системы, а числа и даты оформляются по языку, выбранному в настройках."}},{"@type":"Question","name":"Тепловая карта ликвидаций показывает реальные данные?","acceptedAnswer":{"@type":"Answer","text":"Нет, и об этом сказано на экране. Чужие позиции никто не публикует; это модель, и её допущения расписаны."}},{"@type":"Question","name":"Можно ли держать его на планшете на стене?","acceptedAnswer":{"@type":"Answer","text":"Для этого и сделан вид «Часы»: крупные цифры, никаких элементов управления. В сборке для Android есть ярлык, который открывает его сразу."}}]}]</script>
+<script>window.ORANGEDECK_LIVE = {"reiter":["Лента","Часы","Майнинг","Обозреватель","Рынок","Кошелёк"],"live":"ОНЛАЙН","beispiel":"ПРИМЕР","beispielHinweis":"Отсюда нельзя опросить ни чужой майнер, ни чужой кошелёк. Поэтому эти два вида показывают вымышленные цифры. Приложение покажет ваши.","quelle":"Прямо из мемпула","block":"Блок","vorMin":"{0} мин назад","gebuehr":"Комиссия","kurs":"Курс","mempool":"Мемпул","hashrate":"Хешрейт","moscow":"Moscow Time","schwierigkeit":"Сложность","halving":"Халвинг","bloecke":"Блоки","txn":"транзакций","beste":"Лучший шар","temperatur":"Температура","leistung":"Мощность","guthaben":"Баланс","adressen":"Адреса","unbestaetigt":"не подтверждено","gerechnet":"рассчитано по сложности","verbindet":"подключение …"};</script>
+<script src="../mondrian.js"></script>
+<script src="../colors.js"></script>
+<script src="../live.js" defer></script>
+</body>
+</html>

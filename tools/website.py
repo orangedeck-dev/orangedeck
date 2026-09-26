@@ -12,14 +12,15 @@ weitere Sprache **eine Datei** in `website/texte/`, sonst nichts.
 
 Ausgegeben wird nach `website/fertig/`:
 
-    fertig/index.html      leitet nach der Browsersprache weiter
-    fertig/en/index.html   je Sprache eine Seite
-    fertig/de/index.html
-    fertig/stil.css, fertig/bilder/...
+    fertig/index.html               leitet nach der Browsersprache weiter
+    fertig/<code>/index.html        je Sprache die Startseite
+    fertig/<code>/<slug>/index.html die Unterseiten aus "unterseiten"
+    fertig/<code>/changelog/        was ist neu, aus website/aenderungen.json
+    fertig/stil.css, fertig/bilder/..., _headers, sitemap.xml, llms.txt
 
 Das Verzeichnis ist der Ausgabeordner fuer Cloudflare Pages.
 """
-import argparse, html, json, pathlib, re, shutil
+import argparse, datetime, html, json, pathlib, re, shutil
 
 WURZEL = pathlib.Path(__file__).resolve().parent.parent
 QUELLE = WURZEL / "website"
@@ -56,44 +57,70 @@ def e(s):
     return html.escape(s, quote=True)
 
 
-def seite(d, alle):
-    """Aufbau nach shopatch.com: Kopf mit Navigation und Sprachwahl, Hero mit
-    zwei Handlungsaufforderungen und Kennzahlen, dann nummerierte Karten,
-    Merkmale, Gruende, Fragen, Fuss."""
-    nav = "".join('<a href="%s">%s</a>' % (e(z), e(t)) for t, z in d["nav"])
-    # Zwei Formen derselben Wahl: oben das Kuerzel, unten der Name.
-    # **Ausgeschrieben passt es nicht.** Zwei Sprachen gehen noch; bei den
-    # dreizehn, die die Anwendung spricht, waere die Kopfleiste gesprengt.
-    # Im Fuss ist Platz, dort steht der Name.
-    def wahlliste(lang):
-        return "".join(
-            '<a href="../%s/" hreflang="%s"%s>%s</a>'
-            % (a["code"], a["code"],
-               ' aria-current="true"' if a["code"] == d["code"] else "",
-               e(a["code"].upper() if lang else a["name"]))
+# og:locale will Sprache und Land ("de_DE"), hreflang nimmt die Codes aus
+# ORDNUNG, wie sie sind.
+LOCALE = {"de": "de_DE", "en": "en_US", "es": "es_ES", "fr": "fr_FR", "it": "it_IT",
+          "pt-pt": "pt_PT", "nl": "nl_NL", "ru": "ru_RU", "ja": "ja_JP", "zh": "zh_CN",
+          "pt-br": "pt_BR", "pl": "pl_PL", "cs": "cs_CZ"}
+
+SEITE = "https://orangedeck.dev"
+APP_ID = SEITE + "/#app"
+# Wo OrangeDeck sonst noch steht. Fuer Suchmaschinen und KI-Systeme ist das
+# die Verknuepfung, an der sie festmachen, dass all das dasselbe Projekt ist.
+ANDERSWO = ["https://github.com/orangedeck-dev/orangedeck",
+            "https://github.com/orangedeck-dev/dms-plugin",
+            "https://fdroid.orangedeck.dev/repo/",
+            "https://github.com/AvengeMedia/dms-plugin-registry/blob/master/plugins/orangedeck-dev-orangedeck.json"]
+
+
+def aenderungen():
+    return json.loads((QUELLE / "aenderungen.json").read_text(encoding="utf-8"))
+
+
+def datum(iso, code):
+    """Deutsch schreibt 25.09.2026, alle anderen ISO wie die Anwendung auf
+    Englisch: da verwechselt niemand Tag und Monat."""
+    if code == "de":
+        j, m, t = iso.split("-")
+        return "%s.%s.%s" % (t, m, j)
+    return iso
+
+
+def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
+    """Kopf, Leiste und Fuss, gleich fuer jede Seite.
+
+    `pfad` ist der Teil nach dem Sprachcode ("" fuer die Startseite,
+    "bitaxe/" fuer eine Unterseite), `tiefe` die Zahl der Ordner unter der
+    Wurzel. Die Verweise bleiben relativ, damit die fertige Seite auch als
+    Datei im Browser aufgeht."""
+    auf = "../" * tiefe
+    start = "" if not pfad else "../"
+    nav = "".join('<a href="%s%s">%s</a>' % (start, e(z), e(t)) for t, z in d["nav"])
+    # **Bei dreizehn Sprachen passt die Wahl nicht mehr in die Kopfleiste.**
+    # Oben steht dann nur das eigene Kuerzel und springt zur Liste im Fuss.
+    if len(alle) > 3:
+        wahl_kurz = '<a href="#sprache" aria-current="true">%s</a>' % e(d["code"].upper())
+    else:
+        wahl_kurz = "".join(
+            '<a href="%s%s/%s" hreflang="%s"%s>%s</a>'
+            % (auf, a["code"], pfad, a["code"],
+               ' aria-current="true"' if a["code"] == d["code"] else "", e(a["code"].upper()))
             for a in alle)
-    wahl_kurz, wahl_lang = wahlliste(True), wahlliste(False)
-    badges = "".join('<span class="badge">%s</span>' % e(b) for b in d["badges"])
-    absaetze = "".join("<p>%s</p>" % e(t) for t in d["was"])
-    ansichten = "".join(
-        '<li><span class="nr">%02d</span><b>%s</b><span class="txt">%s</span></li>'
-        % (i + 1, e(n), e(t)) for i, (n, t) in enumerate(d["ansichten"]))
-    wo = "".join('<li><b>%s</b><span class="txt">%s</span></li>' % (e(n), e(t))
-                 for n, t in d["wo"])
-    warum = "".join(
-        '<li><span class="nr">%02d</span><b>%s</b><span class="txt">%s</span></li>'
-        % (i + 1, e(n), e(t)) for i, (n, t) in enumerate(d["warum"]))
-    holen = "".join(
-        ('<a class="knopf" href="%s"><b>%s</b><span>%s</span></a>'
-         % (e(u.replace("{v}", FASSUNG)), e(n), e(t.replace("{v}", FASSUNG))))
-        if u else ('<div class="knopf wartet"><b>%s</b><span>%s</span></div>' % (e(n), e(t)))
-        for n, t, u in d["holen"])
-    bilder = "".join(
-        '<figure><a href="../bilder/%s.webp"><img src="../bilder/%s.webp" alt="%s" '
-        'width="%d" height="%d" loading="lazy"></a><figcaption>%s</figcaption></figure>'
-        % (n, n, e(u), BILD_B, BILD_H, e(u)) for n, u in d["bilder"])
-    faq = "".join("<details><summary>%s</summary><p>%s</p></details>"
-                  % (e(f), e(a)) for f, a in d["faq"])
+    wahl_lang = "".join(
+        '<a href="%s%s/%s" hreflang="%s" lang="%s"%s>%s</a>'
+        % (auf, a["code"], pfad, a["code"], a["code"],
+           ' aria-current="true"' if a["code"] == d["code"] else "", e(a["name"]))
+        for a in alle)
+    mehr = "".join('<a href="%s%s/">%s</a>' % (start, u["slug"], e(u["name"]))
+                   for u in d["unterseiten"])
+    mehr += '<a href="%schangelog/">%s</a>' % (start, e(d["neu_link"]))
+    url = "%s/%s/%s" % (SEITE, d["code"], pfad)
+    alternativen = "\n".join(
+        '<link rel="alternate" hreflang="%s" href="%s/%s/%s">' % (a["code"], SEITE, a["code"], pfad)
+        for a in alle) + '\n<link rel="alternate" hreflang="x-default" href="%s/en/%s">' % (SEITE, pfad)
+    vorschau = "%s/bilder/vorschau-%s.png" % (SEITE, d["code"] if (QUELLE / "bilder" / ("vorschau-%s.png" % d["code"])).exists() else "en")
+    andere = "\n".join('<meta property="og:locale:alternate" content="%s">' % LOCALE[a["code"]]
+                       for a in alle if a["code"] != d["code"])
     return """<!doctype html>
 <html lang="%(code)s" dir="%(richtung)s">
 <meta charset="utf-8">
@@ -103,30 +130,96 @@ def seite(d, alle):
 <meta property="og:title" content="%(titel)s">
 <meta property="og:description" content="%(beschreibung)s">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://orangedeck.dev/%(code)s/">
-<meta property="og:locale" content="%(code)s">
+<meta property="og:url" content="%(url)s">
+<meta property="og:locale" content="%(locale)s">
+%(andere)s
 <meta property="og:site_name" content="OrangeDeck">
-<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau-%(code)s.png">
+<meta property="og:image" content="%(vorschau)s">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="%(titel)s">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="%(titel)s">
 <meta name="twitter:description" content="%(beschreibung)s">
-<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-%(code)s.png">
-<link rel="canonical" href="https://orangedeck.dev/%(code)s/">
-<link rel="icon" href="../bilder/symbol.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../stil.css">
+<meta name="twitter:image" content="%(vorschau)s">
+<link rel="canonical" href="%(url)s">
+<link rel="icon" href="%(auf)sbilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="%(auf)sstil.css">
 %(alternativen)s
 <body>
 <div class="kopfleiste"><div class="mitte kopf">
-  <a class="marke" href="#"><img src="../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
+  <a class="marke" href="%(start)s#"><img src="%(auf)sbilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav">%(nav)s</nav>
   <nav class="sprachen">%(wahl_kurz)s</nav>
 </div></div>
 
 <div class="mitte">
-  <header class="hero">
+%(inhalt)s
+
+  <footer>
+    <p class="fuss-tat"><a class="tat" href="%(start)s#holen">%(fuss_cta)s</a></p>
+    <p class="klein">%(mehr_titel)s</p>
+    <nav class="sprachen">%(mehr)s</nav>
+    <p>%(fuss_lizenz)s %(fuss_herkunft)s</p>
+    <p><a href="%(repo)s">github.com/orangedeck-dev/orangedeck</a></p>
+    <p class="klein" id="sprache">%(sprache_waehlen)s</p>
+    <nav class="sprachen">%(wahl_lang)s</nav>
+  </footer>
+</div>
+<script type="application/ld+json">%(ld)s</script>
+%(skripte)s
+</body>
+</html>
+""" % {"code": d["code"], "richtung": d["richtung"], "titel": e(titel),
+       "beschreibung": e(beschreibung), "url": url, "locale": LOCALE[d["code"]],
+       "andere": andere, "vorschau": vorschau, "auf": auf, "start": start or "",
+       "alternativen": alternativen, "nav": nav, "wahl_kurz": wahl_kurz,
+       "wahl_lang": wahl_lang, "mehr": mehr, "mehr_titel": e(d["mehr_titel"]),
+       "inhalt": inhalt, "fuss_cta": e(d["fuss_cta"]), "fuss_lizenz": e(d["fuss_lizenz"]),
+       "fuss_herkunft": e(d["fuss_herkunft"]), "repo": e(d["repo"]),
+       "sprache_waehlen": e(d["sprache_waehlen"]),
+       "ld": json.dumps(ld, ensure_ascii=False, separators=(",", ":")),
+       "skripte": "" if pfad else (
+           '<script>window.ORANGEDECK_LIVE = %s;</script>\n'
+           '<script src="../mondrian.js"></script>\n'
+           '<script src="../colors.js"></script>\n'
+           '<script src="../live.js" defer></script>'
+           % json.dumps(d.get("live", {}), ensure_ascii=False, separators=(",", ":")))}
+
+
+def seite(d, alle):
+    """Die Startseite. Aufbau nach shopatch.com: Kopf mit Navigation und
+    Sprachwahl, Hero mit zwei Handlungsaufforderungen und Kennzahlen, dann
+    nummerierte Karten, Merkmale, Gruende, Fragen, Fuss."""
+    neueste = aenderungen()[0]
+    badges = "".join('<span class="badge">%s</span>' % e(b) for b in d["badges"])
+    absaetze = "".join("<p>%s</p>" % e(t) for t in d["was"])
+    ansichten = "".join(
+        '<li><span class="nr">%02d</span><b>%s</b><span class="txt">%s</span></li>'
+        % (i + 1, e(n), e(t)) for i, (n, t) in enumerate(d["ansichten"]))
+    wo = "".join('<li><b>%s</b><span class="txt">%s</span></li>' % (e(n), e(t))
+                 for n, t in d["wo"])
+    einsatz = "".join(
+        '<li><a href="%s/"><b>%s</b><span class="txt">%s</span></a></li>'
+        % (u["slug"], e(u["name"]), e(u["karte"])) for u in d["unterseiten"])
+    quellen = "".join('<li><b>%s</b><span class="txt">%s</span></li>' % (e(n), e(t))
+                      for n, t in d["quellen"])
+    warum = "".join(
+        '<li><span class="nr">%02d</span><b>%s</b><span class="txt">%s</span></li>'
+        % (i + 1, e(n), e(t)) for i, (n, t) in enumerate(d["warum"]))
+    holen = "".join(
+        '<a class="knopf" href="%s"><b>%s</b><span>%s</span></a>'
+        % (e(u.replace("{v}", FASSUNG)), e(n), e(t.replace("{v}", FASSUNG)))
+        for n, t, u in d["holen"])
+    bilder = "".join(
+        '<figure><a href="../bilder/%s.webp"><img src="../bilder/%s.webp" alt="%s" '
+        'width="%d" height="%d" loading="lazy"></a><figcaption>%s</figcaption></figure>'
+        % (n, n, e(u), BILD_B, BILD_H, e(u)) for n, u in d["bilder"])
+    faq = "".join("<details><summary>%s</summary><p>%s</p></details>"
+                  % (e(f), e(a)) for f, a in d["faq"])
+    fassung = e(d["hero_fassung"].replace("{v}", FASSUNG)
+                .replace("{datum}", datum(neueste["datum"], d["code"])))
+    inhalt = """  <header class="hero">
     <h1>%(hero_titel)s</h1>
     <p class="fuehrend">%(hero_text)s</p>
     <div class="knopfreihe">
@@ -134,6 +227,7 @@ def seite(d, alle):
       <a class="tat zweit" href="%(cta2z)s">%(cta2)s</a>
     </div>
     <div class="badges">%(badges)s</div>
+    <p class="fassung">%(fassung)s · <a href="changelog/">%(neu_link)s</a></p>
   </header>
 
   <section class="schau">
@@ -163,9 +257,19 @@ def seite(d, alle):
     <div class="galerie">%(bilder)s</div>
   </section>
 
+  <section id="einsatz">
+    <h2>%(einsatz_titel)s</h2>
+    <ul class="karten verweise">%(einsatz)s</ul>
+  </section>
+
   <section id="wo">
     <h2>%(wo_titel)s</h2>
     <ul class="karten schlicht">%(wo)s</ul>
+  </section>
+
+  <section id="quellen">
+    <h2>%(quellen_titel)s</h2>
+    <ul class="karten schlicht">%(quellen)s</ul>
   </section>
 
   <section id="warum">
@@ -186,49 +290,133 @@ def seite(d, alle):
   <!-- Hier kommt spaeter der Spendenteil hin: eine wechselnde Adresse, damit
        sich Zahlungen nicht einer einzigen zuordnen lassen. Braucht einen xpub
        und eine Ableitung, also mehr als eine statische Seite -- deshalb
-       bewusst noch nicht drin. -->
+       bewusst noch nicht drin. -->""" % {
+        "hero_titel": e(d["hero_titel"]), "hero_text": e(d["hero_text"]),
+        "cta1": e(d["hero_cta1"]), "cta1z": e(d["hero_cta1_ziel"]),
+        "cta2": e(d["hero_cta2"]), "cta2z": e(d["hero_cta2_ziel"]),
+        "badges": badges, "fassung": fassung, "neu_link": e(d["neu_link"]),
+        "feed_alt": e(d["ansichten"][0][1]),
+        "was_titel": e(d["was_titel"]), "absaetze": absaetze,
+        "ansichten_titel": e(d["ansichten_titel"]), "ansichten": ansichten,
+        "bilder_titel": e(d["bilder_titel"]), "bilder": bilder,
+        "einsatz_titel": e(d["einsatz_titel"]), "einsatz": einsatz,
+        "wo_titel": e(d["wo_titel"]), "wo": wo,
+        "quellen_titel": e(d["quellen_titel"]), "quellen": quellen,
+        "warum_titel": e(d["warum_titel"]), "warum": warum,
+        "holen_titel": e(d["holen_titel"]), "holen": holen,
+        "faq_titel": e(d["faq_titel"]), "faq": faq}
+    return rahmen(d, alle, "", d["titel"], d["beschreibung"], inhalt, ldjson(d), 1)
 
-  <footer>
-    <p class="fuss-tat"><a class="tat" href="#holen">%(fuss_cta)s</a></p>
-    <p>%(fuss_lizenz)s %(fuss_herkunft)s</p>
-    <p><a href="%(repo)s">github.com/orangedeck-dev/orangedeck</a></p>
-    <p class="klein">%(sprache_waehlen)s</p>
-    <nav class="sprachen">%(wahl_lang)s</nav>
-  </footer>
-</div>
-<script type="application/ld+json">%(ldjson)s</script>
-<script>window.ORANGEDECK_LIVE = %(live_json)s;</script>
-<script src="../mondrian.js"></script>
-<script src="../colors.js"></script>
-<script src="../live.js" defer></script>
-</body>
-</html>
-""" % {"code": d["code"], "richtung": d["richtung"], "titel": e(d["titel"]),
-       "beschreibung": e(d["beschreibung"]), "nav": nav, "wahl_kurz": wahl_kurz, "wahl_lang": wahl_lang,
-       "hero_titel": e(d["hero_titel"]), "hero_text": e(d["hero_text"]),
-       "cta1": e(d["hero_cta1"]), "cta1z": e(d["hero_cta1_ziel"]),
-       "cta2": e(d["hero_cta2"]), "cta2z": e(d["hero_cta2_ziel"]),
-       "badges": badges, "was_titel": e(d["was_titel"]), "absaetze": absaetze,
-       "ansichten_titel": e(d["ansichten_titel"]), "ansichten": ansichten,
-       "wo_titel": e(d["wo_titel"]), "wo": wo,
-       "warum_titel": e(d["warum_titel"]), "warum": warum,
-       "holen_titel": e(d["holen_titel"]), "holen": holen,
-       "faq_titel": e(d["faq_titel"]), "faq": faq,
-       "bilder_titel": e(d["bilder_titel"]), "bilder": bilder,
-       "fuss_cta": e(d["fuss_cta"]), "fuss_lizenz": e(d["fuss_lizenz"]),
-       "fuss_herkunft": e(d["fuss_herkunft"]), "repo": e(d["repo"]),
-       "sprache_waehlen": e(d["sprache_waehlen"]),
-       # Die Beschriftungen des bewegten Kopfes gehen als JSON hinein --
-       # `live.js` traegt selbst keinen Text, sonst waere es die vierzehnte
-       # Sprachdatei.
-       "live_json": json.dumps(d.get("live", {}), ensure_ascii=False,
-                               separators=(",", ":")),
-       "feed_alt": e(d["ansichten"][0][1]),
-       "ldjson": ldjson(d),
-       "alternativen": "\n".join(
-           '<link rel="alternate" hreflang="%s" href="https://orangedeck.dev/%s/">'
-           % (a["code"], a["code"]) for a in alle)
-       + '\n<link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/">'}
+
+def pfadleiste(d, name, pfad):
+    """BreadcrumbList: Uebersicht > diese Seite."""
+    return {"@context": "https://schema.org", "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": d["zurueck"],
+                 "item": "%s/%s/" % (SEITE, d["code"])},
+                {"@type": "ListItem", "position": 2, "name": name,
+                 "item": "%s/%s/%s" % (SEITE, d["code"], pfad)}]}
+
+
+def webseite(d, u, pfad):
+    return {"@context": "https://schema.org", "@type": "WebPage",
+            "name": u["h1"], "description": u["beschreibung"],
+            "url": "%s/%s/%s" % (SEITE, d["code"], pfad), "inLanguage": d["code"],
+            "isPartOf": {"@type": "WebSite", "name": "OrangeDeck", "url": SEITE + "/"},
+            "about": {"@id": APP_ID}}
+
+
+def unterseite(d, alle, u):
+    """Eine Seite je Anliegen, nach dem jemand sucht: Bitaxe-Monitor, Anzeige
+    fuer die Wand, DankMaterialShell. Eine einzelne Startseite rankt nur fuer
+    wenige Begriffe, und eine Frage mit eigener Seite laesst sich zitieren."""
+    pfad = u["slug"] + "/"
+    text = "".join("<p>%s</p>" % e(t) for t in u["text"])
+    faq = "".join("<details><summary>%s</summary><p>%s</p></details>"
+                  % (e(f), e(a)) for f, a in u["faq"])
+    inhalt = """  <header class="hero unter">
+    <p class="pfad"><a href="../">%(zurueck)s</a> › %(name)s</p>
+    <h1>%(h1)s</h1>
+  </header>
+
+  <section class="text">
+    %(text)s
+    <figure class="einzelbild"><img src="../../bilder/%(bild)s.webp" alt="%(alt)s" width="1280" height="800" loading="lazy"></figure>
+    <p><a class="tat" href="../#holen">%(cta)s</a></p>
+  </section>
+
+  <section>
+    <h2>%(faq_titel)s</h2>
+    <div class="fragen">%(faq)s</div>
+  </section>""" % {"zurueck": e(d["zurueck"]), "name": e(u["name"]), "h1": e(u["h1"]),
+                   "text": text, "bild": u["bild"], "alt": e(u["bild_alt"]),
+                   "cta": e(d["hero_cta1"]), "faq_titel": e(d["faq_titel"]), "faq": faq}
+    ld = [webseite(d, u, pfad), pfadleiste(d, u["name"], pfad),
+          {"@context": "https://schema.org", "@type": "FAQPage", "inLanguage": d["code"],
+           "mainEntity": [{"@type": "Question", "name": f,
+                           "acceptedAnswer": {"@type": "Answer", "text": a}}
+                          for f, a in u["faq"]]}]
+    return rahmen(d, alle, pfad, u["titel"], u["beschreibung"], inhalt, ld, 2)
+
+
+def neuseite(d, alle):
+    """Was ist neu: jede Fassung mit Datum. Zeigt Suchmaschinen und Lesern,
+    dass das Projekt lebt. Die Eintraege stehen in `website/aenderungen.json`,
+    auf Deutsch und Englisch; die anderen Sprachen zeigen die englischen und
+    sagen das dazu."""
+    n = d["neu"]
+    pfad = "changelog/"
+    teile = []
+    for a in aenderungen():
+        eigene = a.get(d["code"])
+        punkte = eigene or a["en"]
+        sprache = "" if eigene else ' lang="en"'
+        teile.append('<article><h2>%s <span class="datum">%s</span></h2><ul class="klar"%s>%s</ul></article>'
+                     % (e(a["v"]), e(datum(a["datum"], d["code"])), sprache,
+                        "".join("<li>%s</li>" % e(p) for p in punkte)))
+    hinweis = ("<p>%s</p>" % e(d["nur_englisch"])) if d.get("nur_englisch") else ""
+    inhalt = """  <header class="hero unter">
+    <p class="pfad"><a href="../">%(zurueck)s</a> › %(h1)s</p>
+    <h1>%(h1)s</h1>
+    <p class="fuehrend">%(text)s</p>
+    %(hinweis)s
+  </header>
+
+  <section class="aenderungen">
+    %(teile)s
+    <p><a href="https://github.com/orangedeck-dev/orangedeck/releases">%(alte)s</a></p>
+  </section>""" % {"zurueck": e(d["zurueck"]), "h1": e(n["h1"]), "text": e(n["text"]),
+                   "hinweis": hinweis, "teile": "\n    ".join(teile),
+                   "alte": e(d["alte_fassungen"])}
+    ld = [webseite(d, {"h1": n["h1"], "beschreibung": n["beschreibung"]}, pfad),
+          pfadleiste(d, n["h1"], pfad)]
+    return rahmen(d, alle, pfad, n["titel"], n["beschreibung"], inhalt, ld, 2)
+
+
+def alle_pfade(d):
+    return [""] + [u["slug"] + "/" for u in d["unterseiten"]] + ["changelog/"]
+
+
+# Schluessel fuer IndexNow (Bing, Yandex, Seznam, Naver). Die Datei
+# <schluessel>.txt im Wurzelverzeichnis beweist, dass die Meldung von hier
+# kommt. Gemeldet wird mit tools/indexnow.py nach dem Veroeffentlichen.
+INDEXNOW = "2c40db6590d93768908899fec925fa1f"
+
+
+def kopfzeilen():
+    """`_headers` fuer Cloudflare Pages.
+
+    Ohne sie kam alles mit `max-age=0`, auch die Bilder, und jeder Besuch
+    lud sie neu. Bilder aendern ihren Namen nicht, wenn sie sich aendern,
+    deshalb eine Woche und nicht ein Jahr; CSS und Skripte eine Stunde.
+    """
+    return """/bilder/*
+  Cache-Control: public, max-age=604800
+/*.css
+  Cache-Control: public, max-age=3600
+/*.js
+  Cache-Control: public, max-age=3600
+"""
 
 
 def robots():
@@ -275,23 +463,27 @@ Sitemap: https://orangedeck.dev/sitemap.xml
 
 
 def sitemap(alle):
-    """Jede Sprachseite einmal, mit den Geschwistern daneben.
+    """Jede Seite in jeder Sprache einmal, mit den Geschwistern daneben.
 
     `xhtml:link` wiederholt, was im Kopf der Seite schon steht -- Google
     verlangt beides, sonst gilt die Sprachverknuepfung als unvollstaendig.
+    `lastmod` ist der Tag des Baus: gebaut wird nur, wenn sich etwas aendert.
     """
+    heute = datetime.date.today().isoformat()
     zeilen = ['<?xml version="1.0" encoding="UTF-8"?>',
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
               '        xmlns:xhtml="http://www.w3.org/1999/xhtml">']
-    for d in alle:
-        zeilen.append("  <url>")
-        zeilen.append("    <loc>https://orangedeck.dev/%s/</loc>" % d["code"])
-        for a in alle:
-            zeilen.append('    <xhtml:link rel="alternate" hreflang="%s" href="https://orangedeck.dev/%s/"/>'
-                          % (a["code"], a["code"]))
-        zeilen.append('    <xhtml:link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/"/>')
-        zeilen.append("    <changefreq>weekly</changefreq>")
-        zeilen.append("  </url>")
+    for pfad in alle_pfade(alle[0]):
+        for d in alle:
+            zeilen.append("  <url>")
+            zeilen.append("    <loc>%s/%s/%s</loc>" % (SEITE, d["code"], pfad))
+            for a in alle:
+                zeilen.append('    <xhtml:link rel="alternate" hreflang="%s" href="%s/%s/%s"/>'
+                              % (a["code"], SEITE, a["code"], pfad))
+            zeilen.append('    <xhtml:link rel="alternate" hreflang="x-default" href="%s/en/%s"/>'
+                          % (SEITE, pfad))
+            zeilen.append("    <lastmod>%s</lastmod>" % heute)
+            zeilen.append("  </url>")
     zeilen.append("</urlset>")
     return "\n".join(zeilen) + "\n"
 
@@ -302,25 +494,35 @@ def llmstxt(alle):
     Gedacht fuer Systeme, die eine Seite nicht rendern, sondern lesen. Was
     hier steht, ist dasselbe wie auf der Seite -- nur ohne Navigation,
     Bildunterschriften und Fusszeile dazwischen. **Keine zweite Wahrheit**:
-    steht hier etwas anderes als auf der Seite, ist eines von beidem falsch.
+    alles kommt aus derselben Textdatei wie die Seite, auch die Datenquellen.
     """
     d = next((x for x in alle if x["code"] == "en"), alle[0])
+    neueste = aenderungen()[0]
     z = ["# OrangeDeck", "", "> " + d["beschreibung"], "",
-         d.get("seo_kurz", ""), "", "## " + d["ansichten_titel"], ""]
+         d.get("seo_kurz", ""), "",
+         "Current version: %s, released %s. Website: %s/en/" % (FASSUNG, neueste["datum"], SEITE),
+         "", "## " + d["ansichten_titel"], ""]
     for n, t in d["ansichten"]:
         z.append("- **%s**: %s" % (n, t))
     z += ["", "## " + d["wo_titel"], ""]
     for n, t in d["wo"]:
         z.append("- **%s**: %s" % (n, t))
-    z += ["", "## Data sources", "",
-          "- Blocks, mempool, fees, hashrate: wss://mempool.space/api/v1/ws, or your own instance",
-          "- Price and trades: Binance, Bybit, OKX public streams",
-          "- Liquidations: Bybit, OKX",
-          "- Open interest (heatmap model): Binance futures data",
-          "- Your own miner: http://<bitaxe>/api/system/info, never leaves the home network",
-          "", "## " + d["faq_titel"], ""]
+    z += ["", "## " + d["quellen_titel"], ""]
+    for n, t in d["quellen"]:
+        z.append("- **%s**: %s" % (n, t))
+    z += ["", "## " + d["holen_titel"], ""]
+    for n, t, u in d["holen"]:
+        z.append("- **%s**: %s %s" % (n, t.replace("{v}", FASSUNG), u.replace("{v}", FASSUNG)))
+    z += ["", "## " + d["mehr_titel"], ""]
+    for u in d["unterseiten"]:
+        z.append("- [%s](%s/en/%s/): %s" % (u["h1"], SEITE, u["slug"], u["beschreibung"]))
+    z.append("- [%s](%s/en/changelog/): %s" % (d["neu"]["h1"], SEITE, d["neu"]["beschreibung"]))
+    z += ["", "## " + d["faq_titel"], ""]
     for f, a in d["faq"]:
         z += ["### " + f, "", a, ""]
+    for u in d["unterseiten"]:
+        for f, a in u["faq"]:
+            z += ["### " + f, "", a, ""]
     z += ["## Origin", "",
           "The tile packing and colour model are ports from bitfeed (MIT, mononaut).",
           "OrangeDeck itself is MIT licensed, copyright 2026 Satoshoe.",
@@ -358,7 +560,7 @@ def seite404(alle):
 
 
 def ldjson(d):
-    """Strukturierte Daten: was das Ding ist, und die Fragen mit Antworten.
+    """Strukturierte Daten: die Seite, das Programm, die Fragen mit Antworten.
 
     **Nicht fuer Google allein.** ChatGPT, Perplexity und die Uebersichten in
     der Suche zitieren, was sich zitieren laesst -- eine Frage mit einer
@@ -369,26 +571,38 @@ def ldjson(d):
     `applicationCategory` ist absichtlich `UtilityApplication` und nicht
     `FinanceApplication`: das Programm bewegt kein Geld, es sieht zu. Eine
     Kennzeichnung, die mehr verspricht, als das Programm tut, faellt spaeter
-    auf einen zurueck.
+    auf einen zurueck. Bewertungen stehen bewusst nicht drin: es gibt keine,
+    und erfundene waeren genau das.
     """
+    neueste = aenderungen()[0]
     frei = {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}
+    netz = {"@context": "https://schema.org", "@type": "WebSite", "name": "OrangeDeck",
+            "url": SEITE + "/", "inLanguage": d["code"]}
     anwendung = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
+        "@id": APP_ID,
         "name": "OrangeDeck",
-        "url": "https://orangedeck.dev/%s/" % d["code"],
+        "url": "%s/%s/" % (SEITE, d["code"]),
         "inLanguage": d["code"],
         "description": d.get("seo_kurz") or d["beschreibung"],
         "applicationCategory": "UtilityApplication",
         "operatingSystem": "Linux, Windows, Android",
+        "softwareVersion": FASSUNG,
+        "datePublished": aenderungen()[-1]["datum"],
+        "dateModified": neueste["datum"],
+        "downloadUrl": [u.replace("{v}", FASSUNG) for _, _, u in d["holen"]
+                        if "/releases/latest/download/" in u],
+        "releaseNotes": "%s/%s/changelog/" % (SEITE, d["code"]),
         "license": "https://opensource.org/licenses/MIT",
         "isAccessibleForFree": True,
         "offers": frei,
-        "image": "https://orangedeck.dev/bilder/vorschau-%s.png" % d["code"],
+        "image": "%s/bilder/vorschau-%s.png" % (SEITE, d["code"]),
         # Der Feed steht oben als Standbild, die Galerie zeigt die anderen.
-        "screenshot": ["https://orangedeck.dev/bilder/%s.webp" % n
+        "screenshot": ["%s/bilder/%s.webp" % (SEITE, n)
                        for n in ["feed"] + [n for n, _ in d["bilder"]]],
         "codeRepository": d["repo"],
+        "sameAs": ANDERSWO,
         "author": {"@type": "Person", "name": "Satoshoe",
                    "url": "https://github.com/satoshoe-dev"},
         "featureList": [n for n, _ in d["ansichten"]],
@@ -401,8 +615,7 @@ def ldjson(d):
                         "acceptedAnswer": {"@type": "Answer", "text": a}}
                        for f, a in d["faq"]],
     }
-    return json.dumps([anwendung, fragen], ensure_ascii=False,
-                      separators=(",", ":"))
+    return [netz, anwendung, fragen]
 
 
 def geteilt(quelle, ziel):
@@ -452,6 +665,8 @@ def weiche(alle):
     var l = String(w[i]).toLowerCase();
     if (da.indexOf(l) >= 0) { ziel = l; break; }
     var k = l.split("-")[0];
+    // Portugiesisch gibt es zweimal; ohne Land ist es das europaeische.
+    if (k === "pt") k = "pt-pt";
     if (da.indexOf(k) >= 0) { ziel = k; break; }
   }
   location.replace(ziel + "/");
@@ -479,11 +694,15 @@ def main():
     if tun and ZIEL.exists():
         shutil.rmtree(ZIEL)
     for d in alle:
-        p = ZIEL / d["code"] / "index.html"
-        if tun:
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(seite(d, alle), encoding="utf-8")
-        print("  %s %s" % ("schreibe" if tun else "wuerde", p.relative_to(WURZEL)))
+        seiten = [("", seite(d, alle))]
+        seiten += [(u["slug"] + "/", unterseite(d, alle, u)) for u in d["unterseiten"]]
+        seiten.append(("changelog/", neuseite(d, alle)))
+        for pfad, inhalt in seiten:
+            p = ZIEL / d["code"] / pfad / "index.html"
+            if tun:
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(inhalt, encoding="utf-8")
+            print("  %s %s" % ("schreibe" if tun else "wuerde", p.relative_to(WURZEL)))
     if tun:
         (ZIEL / "index.html").write_text(weiche(alle), encoding="utf-8")
         shutil.copy2(QUELLE / "stil.css", ZIEL / "stil.css")
@@ -492,6 +711,8 @@ def main():
         (ZIEL / "sitemap.xml").write_text(sitemap(alle), encoding="utf-8")
         (ZIEL / "llms.txt").write_text(llmstxt(alle), encoding="utf-8")
         (ZIEL / "404.html").write_text(seite404(alle), encoding="utf-8")
+        (ZIEL / "_headers").write_text(kopfzeilen(), encoding="utf-8")
+        (ZIEL / (INDEXNOW + ".txt")).write_text(INDEXNOW, encoding="utf-8")
         shutil.copytree(QUELLE / "bilder", ZIEL / "bilder")
         for name in ("mondrian.js", "colors.js"):
             geteilt(WURZEL / "ui" / "qml" / name, ZIEL / name)

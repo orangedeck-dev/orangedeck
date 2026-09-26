@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="cs" dir="ltr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OrangeDeck: mempool bitcoinu živě, výška bloku a monitor Bitaxe</title>
+<meta name="description" content="Vizualizace mempoolu bitcoinu pro Linux, Windows a Android s hodinami výšky bloku, monitorem Bitaxe, průzkumníkem bloků a tržními daty. Zdarma a open source.">
+<meta property="og:title" content="OrangeDeck: mempool bitcoinu živě, výška bloku a monitor Bitaxe">
+<meta property="og:description" content="Vizualizace mempoolu bitcoinu pro Linux, Windows a Android s hodinami výšky bloku, monitorem Bitaxe, průzkumníkem bloků a tržními daty. Zdarma a open source.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orangedeck.dev/cs/">
+<meta property="og:locale" content="cs_CZ">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="it_IT">
+<meta property="og:locale:alternate" content="pt_PT">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="pl_PL">
+<meta property="og:site_name" content="OrangeDeck">
+<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau-cs.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="OrangeDeck: mempool bitcoinu živě, výška bloku a monitor Bitaxe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OrangeDeck: mempool bitcoinu živě, výška bloku a monitor Bitaxe">
+<meta name="twitter:description" content="Vizualizace mempoolu bitcoinu pro Linux, Windows a Android s hodinami výšky bloku, monitorem Bitaxe, průzkumníkem bloků a tržními daty. Zdarma a open source.">
+<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-cs.png">
+<link rel="canonical" href="https://orangedeck.dev/cs/">
+<link rel="icon" href="../bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../stil.css">
+<link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/">
+<link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/">
+<link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/">
+<link rel="alternate" hreflang="fr" href="https://orangedeck.dev/fr/">
+<link rel="alternate" hreflang="it" href="https://orangedeck.dev/it/">
+<link rel="alternate" hreflang="pt-pt" href="https://orangedeck.dev/pt-pt/">
+<link rel="alternate" hreflang="nl" href="https://orangedeck.dev/nl/">
+<link rel="alternate" hreflang="ru" href="https://orangedeck.dev/ru/">
+<link rel="alternate" hreflang="ja" href="https://orangedeck.dev/ja/">
+<link rel="alternate" hreflang="zh" href="https://orangedeck.dev/zh/">
+<link rel="alternate" hreflang="pt-br" href="https://orangedeck.dev/pt-br/">
+<link rel="alternate" hreflang="pl" href="https://orangedeck.dev/pl/">
+<link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/">
+<link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/">
+<body>
+<div class="kopfleiste"><div class="mitte kopf">
+  <a class="marke" href="#"><img src="../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
+  <nav class="nav"><a href="#was">Co to je</a><a href="#ansichten">Zobrazení</a><a href="#wo">Kde běží</a><a href="#warum">Proč</a><a href="#faq">Otázky</a></nav>
+  <nav class="sprachen"><a href="#sprache" aria-current="true">CS</a></nav>
+</div></div>
+
+<div class="mitte">
+  <header class="hero">
+    <h1>Mempool bitcoinu živě</h1>
+    <p class="fuehrend">Čekající transakce padají na hromadu jako mozaika dlaždic. Velikost se řídí tím, kolik přesouvají, barva stářím, poplatkem nebo typem. Potvrzené odlétají do bloku. Vidíte, jak síť dýchá.</p>
+    <div class="knopfreihe">
+      <a class="tat" href="#holen">Stáhnout</a>
+      <a class="tat zweit" href="https://github.com/orangedeck-dev/orangedeck">Zdrojový kód</a>
+    </div>
+    <div class="badges"><span class="badge">Licence MIT</span><span class="badge">Bez účtu, bez telemetrie</span><span class="badge">Jen ke sledování, bez klíčů</span><span class="badge">Šest zobrazení, pět prostředí</span></div>
+    <p class="fassung">Verze 0.2.13 z 2026-09-25 · <a href="changelog/">Co je nového</a></p>
+  </header>
+
+  <section class="schau">
+    <!-- **Das Standbild steht darunter, nicht daneben.** `live.js` blendet es
+         erst aus, wenn die ersten Transaktionen angekommen sind; ohne
+         JavaScript, ohne Verbindung zu mempool.space und bei
+         `prefers-reduced-motion` bleibt es liegen. Eine Seite, deren
+         Herzstueck ein leeres Loch ist, waere schlechter als eine mit einem
+         Bild -- und ein Pruefer wie ein Crawler sieht genau das zuerst. -->
+    <div id="live" class="live">
+      <img class="live-standbild" src="../bilder/feed.webp" alt="Mempool jako živá mozaika, vedle ní poslední blok. Barva podle stáří, poplatku nebo typu transakce." width="1280" height="800">
+    </div>
+  </section>
+
+  <section id="was">
+    <h2>Co to je</h2>
+    <p>OrangeDeck je vizualizace mempoolu bitcoinu. Kreslí mempool tak, jak se skutečně chová: každá čekající transakce je čtverec. Čtverce se hromadí, jsou vytěženy, bývají nahrazeny a vy to vidíte na vlastní oči, místo abyste četli číslo.</p><p>Kolem toho je dalších pět zobrazení: hodiny výšky bloku pro tablet na zdi, těžební údaje z vlastního Bitaxe i ze sítě, průzkumník bloků, tržní karta se svíčkami, kumulativní deltou objemu a likvidacemi a adresy jen ke sledování.</p>
+  </section>
+
+  <section id="ansichten">
+    <h2>Šest zobrazení</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>Kanál</b><span class="txt">Mempool jako živá mozaika, vedle ní poslední blok. Barva podle stáří, poplatku nebo typu transakce.</span></li><li><span class="nr">02</span><b>Hodiny</b><span class="txt">Výška bloku, poplatky, kurz, hashrate a odpočet do halvingu, velké a bez ovládacích prvků. Pro tablet na zdi.</span></li><li><span class="nr">03</span><b>Těžba</b><span class="txt">Monitor Bitaxe: hashrate, nejlepší sdílení proti obtížnosti sítě, teplota a příkon vlastního těžaře. Vedle toho síť: hashrate, obtížnost a příští úprava.</span></li><li><span class="nr">04</span><b>Průzkumník</b><span class="txt">Hledání podle výšky, hashe, txid nebo adresy. Procházejte bloky a jejich obsah a podívejte se, která transakce kterou nahradila.</span></li><li><span class="nr">05</span><b>Trh</b><span class="txt">Kurz jako svíčky nebo čára, objem, kumulativní delta objemu a likvidace, souhrnně z více burz.</span></li><li><span class="nr">06</span><b>Peněženka</b><span class="txt">Vlastní adresy nebo xpub, jen ke sledování. Vaše transakce jsou zvýrazněné, dokud leží na hromadě. Potřebuje službu OrangeDeck na počítači s Linuxem; telefony a Windows se k ní připojí přes domácí síť.</span></li></ul>
+  </section>
+
+  <section id="bilder">
+    <h2>Snímky obrazovky</h2>
+    <div class="galerie"><figure><a href="../bilder/uhr.webp"><img src="../bilder/uhr.webp" alt="Hodiny: výška bloku, poplatky, kurz a příští úprava obtížnosti." width="1280" height="800" loading="lazy"></a><figcaption>Hodiny: výška bloku, poplatky, kurz a příští úprava obtížnosti.</figcaption></figure><figure><a href="../bilder/mining.webp"><img src="../bilder/mining.webp" alt="Těžba: hashrate a obtížnost sítě za poslední rok." width="1280" height="800" loading="lazy"></a><figcaption>Těžba: hashrate a obtížnost sítě za poslední rok.</figcaption></figure><figure><a href="../bilder/explorer.webp"><img src="../bilder/explorer.webp" alt="Průzkumník: očekávané a potvrzené bloky, další blok jako dlaždice." width="1280" height="800" loading="lazy"></a><figcaption>Průzkumník: očekávané a potvrzené bloky, další blok jako dlaždice.</figcaption></figure><figure><a href="../bilder/markt.webp"><img src="../bilder/markt.webp" alt="Trh: svíčky a objem z Binance a Bybit." width="1280" height="800" loading="lazy"></a><figcaption>Trh: svíčky a objem z Binance a Bybit.</figcaption></figure></div>
+  </section>
+
+  <section id="einsatz">
+    <h2>K čemu se hodí</h2>
+    <ul class="karten verweise"><li><a href="bitaxe/"><b>Monitor Bitaxe</b><span class="txt">Hashrate, nejlepší sdílení a teplota vlastního těžaře, vedle údajů sítě.</span></a></li><li><a href="wall-display/"><b>Displej na zeď</b><span class="txt">Výška bloku, poplatky a kurz velkými číslicemi, pro starý tablet.</span></a></li><li><a href="dankmaterialshell/"><b>DankMaterialShell</b><span class="txt">Pilulka na liště, dlaždice ovládacího centra a widget na plochu pro DMS.</span></a></li></ul>
+  </section>
+
+  <section id="wo">
+    <h2>Kde běží</h2>
+    <ul class="karten schlicht"><li><b>Libovolná plocha v Linuxu</b><span class="txt">Obyčejné okno. Wayland, v případě potřeby X11.</span></li><li><b>Jako widget nebo lišta</b><span class="txt">Layer-shell v niri, sway, Hyprland, river, labwc.</span></li><li><b>V DankMaterialShell</b><span class="txt">Je v katalogu pluginů DMS. Jako karta dashboardu, pilulka na liště, dlaždice ovládacího centra nebo widget na plochu.</span></li><li><b>Windows</b><span class="txt">ZIP: rozbalit a spustit. Stejná zobrazení; peněženku obsluhuje služba na počítači s Linuxem ve stejné síti.</span></li><li><b>macOS</b><span class="txt">Dá se sestavit, ale zatím nebyl vyzkoušen. Balíček zatím není.</span></li><li><b>Android</b><span class="txt">Telefon nebo tablet. Každé zobrazení má vlastního zástupce na domovské obrazovce.</span></li></ul>
+  </section>
+
+  <section id="quellen">
+    <h2>Odkud čísla pocházejí</h2>
+    <ul class="karten schlicht"><li><b>Bloky, mempool, poplatky, hashrate</b><span class="txt">Veřejný WebSocket mempool.space, nebo vaše vlastní instance mempool. Je to jedno nastavení.</span></li><li><b>Kurz a obchody</b><span class="txt">Veřejné streamy Binance, Bybit a OKX.</span></li><li><b>Likvidace</b><span class="txt">Bybit a OKX. Teplotní mapa je model sestavený z open interest na Binance a na obrazovce to stojí.</span></li><li><b>Vlastní těžař</b><span class="txt">Lokální API zařízení, AxeOS nebo cgminer. Dotaz zůstává v domácí síti.</span></li><li><b>Sledované adresy</b><span class="txt">Dotazy na zůstatek u stejné instance mempool. Žádné klíče a nic jiného zařízení neopouští.</span></li></ul>
+  </section>
+
+  <section id="warum">
+    <h2>Proč OrangeDeck</h2>
+    <ul class="karten"><li><span class="nr">01</span><b>Jen zobrazuje, nic jiného</b><span class="txt">Nezná žádný soukromý klíč, neumí podepisovat a neobsahuje knihovnu, která by to uměla. Jen ke sledování znamená jen ke sledování.</span></li><li><span class="nr">02</span><b>Žádný náš server</b><span class="txt">Komunikuje s mempool.space nebo s vaším vlastním uzlem. Nesbírá statistiky, neposílá hlášení o pádech a nepotřebuje účet.</span></li><li><span class="nr">03</span><b>Změřeno, ne odhadnuto</b><span class="txt">Kde číslo pochází z modelu, a ne z měření, jako u teplotní mapy likvidací, stojí to přímo na obrazovce i s vypsanými předpoklady.</span></li><li><span class="nr">04</span><b>Jeden kód, pět prostředí</b><span class="txt">Stejné QML kreslí okno, widget, panel i telefon. Co se opraví na jednom místě, je opravené všude.</span></li><li><span class="nr">05</span><b>Otevřený ke čtení</b><span class="txt">Licence MIT, žádné zamlžování kódu a zdůvodnění jsou zapsaná v popisech commitů.</span></li></ul>
+  </section>
+
+  <section id="holen">
+    <h2>Stáhnout</h2>
+    <div class="knopfreihe"><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip"><b>Windows</b><span>Verze 0.2.13. ZIP pro Windows 10 a 11, 64bit: rozbalte a spusťte orangedeck-app.exe. Není podepsaný, proto se při prvním spuštění SmartScreen zeptá.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak"><b>Linux</b><span>Verze 0.2.13. Balíček Flatpak: flatpak install --user orangedeck-0.2.13.flatpak. Runtime se stáhne z Flathubu.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/dms-plugin"><b>DankMaterialShell</b><span>Z katalogu pluginů DMS: dms plugins install orangedeck. Běží samostatně, a když je spuštěná aplikace, používá její data.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"><b>APK pro Android</b><span>Verze 0.2.13. Pro Android 9 nebo novější, 64bitový ARM. Podepsané, otisk je uvedený v poznámkách k vydání.</span></a><a class="knopf" href="https://fdroid.orangedeck.dev/repo/"><b>F-Droid</b><span>Vlastní repozitář OrangeDeck. Přidejte ho jednou do F-Droid, Droid-ify nebo Neo Store a aktualizace přijdou samy.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>Obtainium</b><span>Stahuje každou novou verzi přímo z vydání na GitHubu. Jako zdroj zadejte adresu repozitáře.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck/releases"><b>Všechny verze</b><span>Poznámky k vydáním, kontrolní součty a starší verze na GitHubu.</span></a><a class="knopf" href="https://github.com/orangedeck-dev/orangedeck"><b>Zdrojový kód</b><span>Sestavte si sami. MIT.</span></a></div>
+  </section>
+
+  <section id="faq">
+    <h2>Otázky</h2>
+    <div class="fragen"><details><summary>Potřebuje moje klíče?</summary><p>Ne. Nedokáže nic podepsat. Sledované adresy se zadávají jako adresy nebo xpub a váš počítač opouštějí jen jako dotaz na zůstatek.</p></details><details><summary>Odkud pocházejí data?</summary><p>Standardně z mempool.space, nebo z vaší vlastní instance mempool. Je to jedno nastavení. Tržní data pocházejí z veřejných kanálů burz.</p></details><details><summary>Posílá něco domů?</summary><p>Ne. Nemáme žádný server, žádnou analytiku ani hlášení o pádech.</p></details><details><summary>Kolik to stojí?</summary><p>Nic. Licence MIT, žádná placená verze.</p></details><details><summary>Jakými jazyky mluví?</summary><p>Třinácti: angličtinou, němčinou, španělštinou, francouzštinou, italštinou, portugalštinou (Portugalsko a Brazílie), nizozemštinou, ruštinou, japonštinou, čínštinou, polštinou a češtinou. Spouští se v jazyce systému a čísla a data se řídí jazykem, který zvolíte v nastavení.</p></details><details><summary>Jsou v teplotní mapě likvidací skutečná data?</summary><p>Ne, a na obrazovce to stojí. Cizí pozice nikdo nezveřejňuje; je to model s vypsanými předpoklady.</p></details><details><summary>Můžu ho mít na tabletu na zdi?</summary><p>K tomu slouží zobrazení „Hodiny“: velká čísla, žádné ovládání. Verze pro Android má zástupce, který ho otevře přímo.</p></details></div>
+  </section>
+
+  <!-- Hier kommt spaeter der Spendenteil hin: eine wechselnde Adresse, damit
+       sich Zahlungen nicht einer einzigen zuordnen lassen. Braucht einen xpub
+       und eine Ableitung, also mehr als eine statische Seite -- deshalb
+       bewusst noch nicht drin. -->
+
+  <footer>
+    <p class="fuss-tat"><a class="tat" href="#holen">Vyzkoušet</a></p>
+    <p class="klein">Více o OrangeDeck</p>
+    <nav class="sprachen"><a href="bitaxe/">Monitor Bitaxe</a><a href="wall-display/">Displej na zeď</a><a href="dankmaterialshell/">DankMaterialShell</a><a href="changelog/">Co je nového</a></nav>
+    <p>OrangeDeck je pod licencí MIT. Skládání dlaždic a barevný model převzaty z bitfeed (MIT, mononaut).</p>
+    <p><a href="https://github.com/orangedeck-dev/orangedeck">github.com/orangedeck-dev/orangedeck</a></p>
+    <p class="klein" id="sprache">Jazyk</p>
+    <nav class="sprachen"><a href="../de/" hreflang="de" lang="de">Deutsch</a><a href="../en/" hreflang="en" lang="en">English</a><a href="../es/" hreflang="es" lang="es">Español</a><a href="../fr/" hreflang="fr" lang="fr">Français</a><a href="../it/" hreflang="it" lang="it">Italiano</a><a href="../pt-pt/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../nl/" hreflang="nl" lang="nl">Nederlands</a><a href="../ru/" hreflang="ru" lang="ru">Русский</a><a href="../ja/" hreflang="ja" lang="ja">日本語</a><a href="../zh/" hreflang="zh" lang="zh">中文</a><a href="../pt-br/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../pl/" hreflang="pl" lang="pl">Polski</a><a href="../cs/" hreflang="cs" lang="cs" aria-current="true">Čeština</a></nav>
+  </footer>
+</div>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/","inLanguage":"cs"},{"@context":"https://schema.org","@type":"SoftwareApplication","@id":"https://orangedeck.dev/#app","name":"OrangeDeck","url":"https://orangedeck.dev/cs/","inLanguage":"cs","description":"OrangeDeck je bezplatná aplikace pro počítač a Android, která kreslí mempool bitcoinu jako živou mozaiku dlaždic. V jednom okně spojuje šest zobrazení: kanál mempoolu, hodiny výšky bloku, těžební údaje, průzkumník bloků, tržní data a adresy jen ke sledování. Běží na Linuxu, Windows a Androidu a také jako plugin DankMaterialShell, mluví třinácti jazyky, má licenci MIT a nevyžaduje účet.","applicationCategory":"UtilityApplication","operatingSystem":"Linux, Windows, Android","softwareVersion":"0.2.13","datePublished":"2026-09-12","dateModified":"2026-09-25","downloadUrl":["https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak","https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk"],"releaseNotes":"https://orangedeck.dev/cs/changelog/","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"image":"https://orangedeck.dev/bilder/vorschau-cs.png","screenshot":["https://orangedeck.dev/bilder/feed.webp","https://orangedeck.dev/bilder/uhr.webp","https://orangedeck.dev/bilder/mining.webp","https://orangedeck.dev/bilder/explorer.webp","https://orangedeck.dev/bilder/markt.webp"],"codeRepository":"https://github.com/orangedeck-dev/orangedeck","sameAs":["https://github.com/orangedeck-dev/orangedeck","https://github.com/orangedeck-dev/dms-plugin","https://fdroid.orangedeck.dev/repo/","https://github.com/AvengeMedia/dms-plugin-registry/blob/master/plugins/orangedeck-dev-orangedeck.json"],"author":{"@type":"Person","name":"Satoshoe","url":"https://github.com/satoshoe-dev"},"featureList":["Kanál","Hodiny","Těžba","Průzkumník","Trh","Peněženka"]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"cs","mainEntity":[{"@type":"Question","name":"Potřebuje moje klíče?","acceptedAnswer":{"@type":"Answer","text":"Ne. Nedokáže nic podepsat. Sledované adresy se zadávají jako adresy nebo xpub a váš počítač opouštějí jen jako dotaz na zůstatek."}},{"@type":"Question","name":"Odkud pocházejí data?","acceptedAnswer":{"@type":"Answer","text":"Standardně z mempool.space, nebo z vaší vlastní instance mempool. Je to jedno nastavení. Tržní data pocházejí z veřejných kanálů burz."}},{"@type":"Question","name":"Posílá něco domů?","acceptedAnswer":{"@type":"Answer","text":"Ne. Nemáme žádný server, žádnou analytiku ani hlášení o pádech."}},{"@type":"Question","name":"Kolik to stojí?","acceptedAnswer":{"@type":"Answer","text":"Nic. Licence MIT, žádná placená verze."}},{"@type":"Question","name":"Jakými jazyky mluví?","acceptedAnswer":{"@type":"Answer","text":"Třinácti: angličtinou, němčinou, španělštinou, francouzštinou, italštinou, portugalštinou (Portugalsko a Brazílie), nizozemštinou, ruštinou, japonštinou, čínštinou, polštinou a češtinou. Spouští se v jazyce systému a čísla a data se řídí jazykem, který zvolíte v nastavení."}},{"@type":"Question","name":"Jsou v teplotní mapě likvidací skutečná data?","acceptedAnswer":{"@type":"Answer","text":"Ne, a na obrazovce to stojí. Cizí pozice nikdo nezveřejňuje; je to model s vypsanými předpoklady."}},{"@type":"Question","name":"Můžu ho mít na tabletu na zdi?","acceptedAnswer":{"@type":"Answer","text":"K tomu slouží zobrazení „Hodiny“: velká čísla, žádné ovládání. Verze pro Android má zástupce, který ho otevře přímo."}}]}]</script>
+<script>window.ORANGEDECK_LIVE = {"reiter":["Kanál","Hodiny","Těžba","Průzkumník","Trh","Peněženka"],"live":"ŽIVĚ","beispiel":"UKÁZKA","beispielHinweis":"Cizího těžaře ani cizí peněženku odsud nelze dotazovat. Tato dvě zobrazení proto ukazují vymyšlená čísla. Aplikace ukáže ta vaše.","quelle":"Živě z mempoolu","block":"Blok","vorMin":"před {0} min","gebuehr":"Poplatek","kurs":"Kurz","mempool":"Mempool","hashrate":"Hashrate","moscow":"Moscow Time","schwierigkeit":"Obtížnost","halving":"Halving","bloecke":"Bloky","txn":"transakcí","beste":"Nejlepší sdílení","temperatur":"Teplota","leistung":"Příkon","guthaben":"Zůstatek","adressen":"Adresy","unbestaetigt":"nepotvrzeno","gerechnet":"odvozeno z obtížnosti","verbindet":"připojování …"};</script>
+<script src="../mondrian.js"></script>
+<script src="../colors.js"></script>
+<script src="../live.js" defer></script>
+</body>
+</html>
