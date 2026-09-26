@@ -110,7 +110,7 @@
     ],
     [
       "No server of ours",
-      "It talks to mempool.space, or through the service on Linux to your own node. There is no counting, no crash reports and no account."
+      "It talks to mempool.space or to the instance you choose, your own node included. There is no counting, no crash reports and no account."
     ],
     [
       "Measured, not guessed",
@@ -180,7 +180,7 @@
     ],
     [
       "Where does the data come from?",
-      "From mempool.space by default. On Linux, the OrangeDeck service can use your own mempool instance or another public one; that is one line in its configuration file. Market data comes from the exchanges' public feeds."
+      "From mempool.space by default. In the settings you can enter another public mempool instance or your own node; it then applies everywhere, including the widgets and the service. Market data comes from the exchanges' public feeds."
     ],
     [
       "Does it phone home?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Blocks, mempool, fees, hashrate",
-      "The public WebSocket of mempool.space. On Linux, the OrangeDeck service can use your own mempool instance or another public one instead."
+      "The public WebSocket of mempool.space, another public mempool instance or your own node. That is one field in the settings."
     ],
     [
       "Price and trades",
@@ -320,7 +320,7 @@
         ],
         [
           "Do I need my own node?",
-          "No. The numbers come from mempool.space. On Linux, the OrangeDeck service can use your own mempool instance instead."
+          "No. The numbers come from mempool.space. If you run your own mempool instance, enter its address in the settings and the clock uses that."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Candles or line, volume or CVD, time range, crosshair and trade tape, each one a setting."
     ],
     [
-      "Language, currency, look",
-      "Thirteen languages, seven currencies, window opacity and blur behind text."
+      "Language, currency, source",
+      "Thirteen languages, seven currencies and any mempool instance, your own node included."
     ]
   ]
 }

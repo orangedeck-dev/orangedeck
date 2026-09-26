@@ -110,7 +110,7 @@
     ],
     [
       "Kein Server von uns",
-      "Es spricht mit mempool.space oder, über den Dienst unter Linux, mit dem eigenen Node. Keine Zählung, keine Absturzberichte, kein Konto."
+      "Es spricht mit mempool.space oder mit der gewählten Instanz, auch dem eigenen Node. Keine Zählung, keine Absturzberichte, kein Konto."
     ],
     [
       "Gemessen statt geraten",
@@ -180,7 +180,7 @@
     ],
     [
       "Woher kommen die Daten?",
-      "Standardmäßig von mempool.space. Unter Linux kann der OrangeDeck-Dienst die eigene Mempool-Instanz oder eine andere öffentliche nehmen, das ist eine Zeile in seiner Konfigurationsdatei. Marktdaten kommen aus den öffentlichen Kanälen der Börsen."
+      "Standardmäßig von mempool.space. In den Einstellungen lässt sich eine andere öffentliche Mempool-Instanz oder der eigene Node eintragen; das gilt dann überall, auch in den Widgets und im Dienst. Marktdaten kommen aus den öffentlichen Kanälen der Börsen."
     ],
     [
       "Telefoniert es nach Hause?",
@@ -237,7 +237,7 @@
   "quellen": [
     [
       "Blöcke, Mempool, Gebühren, Hashrate",
-      "Der öffentliche WebSocket von mempool.space. Unter Linux kann der OrangeDeck-Dienst stattdessen die eigene Mempool-Instanz oder eine andere öffentliche nehmen."
+      "Der öffentliche WebSocket von mempool.space, einer anderen öffentlichen Mempool-Instanz oder des eigenen Nodes. Das ist ein Feld in den Einstellungen."
     ],
     [
       "Kurs und Trades",
@@ -320,7 +320,7 @@
         ],
         [
           "Brauche ich einen eigenen Node?",
-          "Nein. Die Zahlen kommen von mempool.space. Unter Linux kann der OrangeDeck-Dienst stattdessen die eigene Mempool-Instanz nehmen."
+          "Nein. Die Zahlen kommen von mempool.space. Wer eine eigene Mempool-Instanz betreibt, trägt ihre Adresse in den Einstellungen ein, und die Uhr nimmt diese."
         ]
       ]
     },
@@ -385,8 +385,8 @@
       "Kerzen oder Linie, Volumen oder CVD, Zeitraum, Fadenkreuz und Tradeband, jedes davon eine Einstellung."
     ],
     [
-      "Sprache, Währung, Aussehen",
-      "Dreizehn Sprachen, sieben Währungen, Deckkraft des Fensters und Unschärfe hinter Text."
+      "Sprache, Währung, Quelle",
+      "Dreizehn Sprachen, sieben Währungen und jede Mempool-Instanz, auch der eigene Node."
     ]
   ]
 }

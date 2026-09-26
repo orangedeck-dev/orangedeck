@@ -4,7 +4,7 @@
 
 OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, mining figures, block explorer, market data and watch-only addresses. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.
 
-Current version: 0.2.13, released 2026-09-25. Website: https://orangedeck.dev/en/
+Current version: 0.2.14, released 2026-09-26. Website: https://orangedeck.dev/en/
 
 ## Six views
 
@@ -24,7 +24,7 @@ Every tab can be switched off, and the ones that stay can be put in any order. I
 - **Every view in parts**: Header, footer, block details, legend, charts and bars can each be turned on or off. The clock lets you choose what stands large and whether values take turns.
 - **Tiles your way**: Colour the tiles by age, fee or type, size them by value or by vBytes, and make them larger or smaller.
 - **The market as you read it**: Candles or line, volume or CVD, time range, crosshair and trade tape, each one a setting.
-- **Language, currency, look**: Thirteen languages, seven currencies, window opacity and blur behind text.
+- **Language, currency, source**: Thirteen languages, seven currencies and any mempool instance, your own node included.
 
 ## Where it runs
 
@@ -37,7 +37,7 @@ Every tab can be switched off, and the ones that stay can be put in any order. I
 
 ## Where the numbers come from
 
-- **Blocks, mempool, fees, hashrate**: The public WebSocket of mempool.space. On Linux, the OrangeDeck service can use your own mempool instance or another public one instead.
+- **Blocks, mempool, fees, hashrate**: The public WebSocket of mempool.space, another public mempool instance or your own node. That is one field in the settings.
 - **Price and trades**: The public streams of Binance, Bybit and OKX.
 - **Liquidations**: Bybit and OKX. The heatmap is a model built from Binance open interest, and it says so on screen.
 - **Your own miner**: The local API of the device, AxeOS or cgminer. The request stays in your home network.
@@ -45,10 +45,10 @@ Every tab can be switched off, and the ones that stay can be put in any order. I
 
 ## Get it
 
-- **Windows**: Version 0.2.13. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-windows-x86_64.zip
-- **Linux**: Version 0.2.13. Flatpak bundle: flatpak install --user orangedeck-0.2.13.flatpak. The runtime comes from Flathub. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13.flatpak
+- **Windows**: Version 0.2.14. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.14-windows-x86_64.zip
+- **Linux**: Version 0.2.14. Flatpak bundle: flatpak install --user orangedeck-0.2.14.flatpak. The runtime comes from Flathub. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.14.flatpak
 - **DankMaterialShell**: From the DMS plugin directory: dms plugins install orangedeck. Runs on its own and uses the app's data when the app is running. https://github.com/orangedeck-dev/dms-plugin
-- **Android APK**: Version 0.2.13. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.13-arm64-v8a.apk
+- **Android APK**: Version 0.2.14. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.14-arm64-v8a.apk
 - **F-Droid**: OrangeDeck's own repository. Add it once in F-Droid, Droid-ify or Neo Store, and updates arrive by themselves. https://fdroid.orangedeck.dev/repo/
 - **Obtainium**: Takes every new version straight from the GitHub releases. Add the repository address as the source. https://github.com/orangedeck-dev/orangedeck
 - **All versions**: Release notes, checksums and older versions on GitHub. https://github.com/orangedeck-dev/orangedeck/releases
@@ -73,7 +73,7 @@ Yes. Every tab can be switched off in the settings and the others can be reorder
 
 ### Where does the data come from?
 
-From mempool.space by default. On Linux, the OrangeDeck service can use your own mempool instance or another public one; that is one line in its configuration file. Market data comes from the exchanges' public feeds.
+From mempool.space by default. In the settings you can enter another public mempool instance or your own node; it then applies everywhere, including the widgets and the service. Market data comes from the exchanges' public feeds.
 
 ### Does it phone home?
 
@@ -117,7 +117,7 @@ Android 9 or newer with a 64-bit ARM processor. That covers most tablets from th
 
 ### Do I need my own node?
 
-No. The numbers come from mempool.space. On Linux, the OrangeDeck service can use your own mempool instance instead.
+No. The numbers come from mempool.space. If you run your own mempool instance, enter its address in the settings and the clock uses that.
 
 ### Which DMS version is needed?
 
