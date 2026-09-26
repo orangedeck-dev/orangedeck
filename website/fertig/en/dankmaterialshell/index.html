@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-en.png">
 <link rel="canonical" href="https://orangedeck.dev/en/dankmaterialshell/">
 <link rel="icon" href="../../bilder/symbol.svg?v=25710465d0" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=fede13cd6e">
+<link rel="stylesheet" href="../../stil.css?v=a84bbc0daf">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/">
@@ -48,6 +48,8 @@
 <link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/dankmaterialshell/">
 <link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/dankmaterialshell/">
 <body>
+<div class="grundbild" aria-hidden="true" style="background-image:url('../../bilder/grund.webp')"></div>
+<div class="grundschleier" aria-hidden="true"></div>
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg?v=25710465d0" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav"><a href="../#was">What it is</a><a href="../#ansichten">Views</a><a href="../#einstellbar">Settings</a><a href="../#wo">Where it runs</a><a href="../#warum">Why</a><a href="../#faq">FAQ</a></nav>
@@ -78,10 +80,6 @@
         <p class="klein">More about OrangeDeck</p>
         <nav class="fuss-links"><a href="../bitaxe/">Bitaxe monitor</a><a href="../wall-display/">Wall display</a><a href="../dankmaterialshell/">DankMaterialShell</a><a href="../changelog/">What&#x27;s new</a></nav>
       </div>
-      <div id="sprache">
-        <p class="klein">Language</p>
-        <details class="sprachwahl oben"><summary>English</summary><ul><li><a href="../../de/dankmaterialshell/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/dankmaterialshell/" hreflang="en" lang="en" aria-current="true">English</a></li><li><a href="../../es/dankmaterialshell/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/dankmaterialshell/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/dankmaterialshell/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/dankmaterialshell/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/dankmaterialshell/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/dankmaterialshell/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/dankmaterialshell/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/dankmaterialshell/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/dankmaterialshell/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/dankmaterialshell/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/dankmaterialshell/" hreflang="cs" lang="cs">Čeština</a></li></ul></details>
-      </div>
     </div>
     <p>OrangeDeck is MIT licensed. Tile packing and colour model ported from <a href="https://github.com/bitfeed-project/bitfeed">bitfeed</a> (MIT, <a href="https://github.com/mononaut">mononaut</a>).</p>
     <div class="fuss-unten">
@@ -91,6 +89,32 @@
   </footer>
 </div>
 <script>
+  // **Roentgenblick.** Hinter der Seite liegt das Leiterplattenbild, davor
+  // ein Schleier in der Seitenfarbe mit 96 % Deckkraft. Um den Mauszeiger
+  // wird der Schleier durchsichtiger (Maske in stil.css, Lage ueber --mx
+  // und --my). Nur mit Maus und ohne Wunsch nach weniger Bewegung; sonst
+  // bleibt die ruhige Textur.
+  (function () {
+    var s = document.querySelector(".grundschleier");
+    if (!s || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var x = -999, y = -999, offen = false;
+    document.addEventListener("pointermove", function (e) {
+      x = e.clientX; y = e.clientY;
+      if (offen) return;
+      offen = true;
+      requestAnimationFrame(function () {
+        s.style.setProperty("--mx", x + "px");
+        s.style.setProperty("--my", y + "px");
+        offen = false;
+      });
+    }, { passive: true });
+    document.addEventListener("pointerleave", function () {
+      s.style.setProperty("--mx", "-999px");
+      s.style.setProperty("--my", "-999px");
+    });
+  })();
+
   // Die Sprachwahl (oben und im Fuss) schliesst bei einem Klick daneben
   // und mit Escape.
   document.addEventListener("click", function (e) {

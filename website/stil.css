@@ -329,3 +329,17 @@ footer .sprachen + p { margin-top: 1.4rem; }
 
 .fuss-unten { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; border-top: 1px solid var(--linie); padding-top: 1rem; margin-top: 1rem; }
 .fuss-unten .fuss-recht { margin: 0; }
+
+/* ---- Hintergrund in zwei Ebenen mit Roentgenblick (26.09.2026) ---------- */
+/* Unten das Leiterplattenbild, darueber der Schleier in der Seitenfarbe.
+   Die Maske macht den Schleier um den Zeiger durchsichtiger; ohne Zeiger
+   liegt der Kreis ausserhalb des Bildes. */
+.grundbild, .grundschleier { position: fixed; inset: 0; pointer-events: none; }
+.grundbild { z-index: -2; background-size: cover; background-position: center; }
+.grundschleier {
+  z-index: -1; background: var(--grund); opacity: 0.96;
+  --mx: -999px; --my: -999px; --r: 200px;
+  -webkit-mask-image: radial-gradient(circle var(--r) at var(--mx) var(--my), rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.6) 45%, #000 100%);
+          mask-image: radial-gradient(circle var(--r) at var(--mx) var(--my), rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.6) 45%, #000 100%);
+}
+body { position: relative; z-index: 0; }

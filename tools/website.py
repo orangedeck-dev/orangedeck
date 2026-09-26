@@ -243,6 +243,8 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
 <link rel="stylesheet" href="%(auf)sstil.css">
 %(alternativen)s
 <body>
+<div class="grundbild" aria-hidden="true" style="background-image:url('%(auf)sbilder/grund.webp')"></div>
+<div class="grundschleier" aria-hidden="true"></div>
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="%(start)s#"><img src="%(auf)sbilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav">%(nav)s</nav>
@@ -259,10 +261,6 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
         <p class="klein">%(mehr_titel)s</p>
         <nav class="fuss-links">%(mehr)s</nav>
       </div>
-      <div id="sprache">
-        <p class="klein">%(sprache_waehlen)s</p>
-        %(wahl_fuss)s
-      </div>
     </div>
     <p>%(fuss_lizenz)s %(fuss_herkunft)s</p>
     <div class="fuss-unten">
@@ -272,6 +270,32 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
   </footer>
 </div>
 <script>
+  // **Roentgenblick.** Hinter der Seite liegt das Leiterplattenbild, davor
+  // ein Schleier in der Seitenfarbe mit 96 %% Deckkraft. Um den Mauszeiger
+  // wird der Schleier durchsichtiger (Maske in stil.css, Lage ueber --mx
+  // und --my). Nur mit Maus und ohne Wunsch nach weniger Bewegung; sonst
+  // bleibt die ruhige Textur.
+  (function () {
+    var s = document.querySelector(".grundschleier");
+    if (!s || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var x = -999, y = -999, offen = false;
+    document.addEventListener("pointermove", function (e) {
+      x = e.clientX; y = e.clientY;
+      if (offen) return;
+      offen = true;
+      requestAnimationFrame(function () {
+        s.style.setProperty("--mx", x + "px");
+        s.style.setProperty("--my", y + "px");
+        offen = false;
+      });
+    }, { passive: true });
+    document.addEventListener("pointerleave", function () {
+      s.style.setProperty("--mx", "-999px");
+      s.style.setProperty("--my", "-999px");
+    });
+  })();
+
   // Die Sprachwahl (oben und im Fuss) schliesst bei einem Klick daneben
   // und mit Escape.
   document.addEventListener("click", function (e) {
