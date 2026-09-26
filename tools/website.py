@@ -20,7 +20,7 @@ Ausgegeben wird nach `website/fertig/`:
 
 Das Verzeichnis ist der Ausgabeordner fuer Cloudflare Pages.
 """
-import argparse, datetime, html, json, pathlib, re, shutil
+import argparse, datetime, html, json, pathlib, re, shutil, subprocess
 
 WURZEL = pathlib.Path(__file__).resolve().parent.parent
 QUELLE = WURZEL / "website"
@@ -71,6 +71,50 @@ ANDERSWO = ["https://github.com/orangedeck-dev/orangedeck",
             "https://github.com/orangedeck-dev/dms-plugin",
             "https://fdroid.orangedeck.dev/repo/",
             "https://github.com/AvengeMedia/dms-plugin-registry/blob/master/plugins/orangedeck-dev-orangedeck.json"]
+
+
+# Die Schluessel aus ui/qml/strings.js, die der bewegte Kopf braucht. Er
+# zeigt die Ansichten der Anwendung und soll dieselben Woerter tragen.
+LIVE_SCHLUESSEL = [
+    "tab.feed", "tab.clock", "tab.miner", "tab.explorer", "tab.market",
+    "block", "blockHeight", "lastBlock", "nextBlock", "fee", "hashrate", "difficulty",
+    "mempool", "price", "clock.moscow", "clock.remaining", "clock.halving",
+    "clock.diffLine", "duration.dayHour", "duration.min", "ago.min", "ago.now",
+    "in.min", "feed.movedValue", "feed.avgFee", "feed.mempoolLine", "feed.sizeValue",
+    "feed.ageScale", "feed.bytes", "feed.inMempool", "feed.nextBlockLine",
+    "txlist.count", "color.label", "color.age", "color.fee", "color.type",
+    "miner.paneDevice", "miner.paneNet", "net.nextAdj", "net.blockTime",
+    "net.lastBlock", "net.justNow", "chain.label", "proj.unchanged",
+    "explorer.browseAll", "explorer.inMempool", "search.placeholder",
+    "market.sub.price", "market.sub.liq", "market.sub.heat", "market.trades",
+    "market.candles", "market.line", "market.volume", "market.cvd", "market.24h",
+    "market.waiting"]
+
+
+def app_texte():
+    """Die Beschriftungen aus strings.js, je Sprache ein Woerterbuch.
+
+    strings.js ist JavaScript und traegt Kommentare und Zeilenumbrueche in
+    seinen Listen; statt es nachzubauen, laesst Node die Datei selbst laufen.
+    Leere Eintraege fallen auf Englisch zurueck, wie `t()` in der Anwendung.
+    """
+    quelle = (WURZEL / "ui" / "qml" / "strings.js").read_text(encoding="utf-8")
+    quelle = "\n".join(z for z in quelle.splitlines() if z.strip() != ".pragma library")
+    skript = quelle + """
+var aus = {};
+LANGS.forEach(function (l, i) {
+  var d = {};
+  %s.forEach(function (k) {
+    var z = S[k];
+    if (!z) throw new Error("strings.js kennt " + k + " nicht");
+    d[k] = z[i] || z[1];
+  });
+  aus[l] = d;
+});
+process.stdout.write(JSON.stringify(aus));
+""" % json.dumps(LIVE_SCHLUESSEL)
+    lauf = subprocess.run(["node", "-"], input=skript, capture_output=True, text=True, check=True)
+    return json.loads(lauf.stdout)
 
 
 def aenderungen():
@@ -184,7 +228,7 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
            '<script src="../mondrian.js"></script>\n'
            '<script src="../colors.js"></script>\n'
            '<script src="../live.js" defer></script>'
-           % json.dumps(d.get("live", {}), ensure_ascii=False, separators=(",", ":")))}
+           % json.dumps({"s": APP_TEXTE[d["code"]]}, ensure_ascii=False, separators=(",", ":")))}
 
 
 def seite(d, alle):
@@ -687,6 +731,8 @@ def main():
     ap.add_argument("--pruefen", action="store_true")
     args = ap.parse_args()
     tun = not args.pruefen
+    global APP_TEXTE
+    APP_TEXTE = app_texte()
     alle = sprachen()
     if not alle:
         raise SystemExit("Keine Sprachdateien unter website/texte/")

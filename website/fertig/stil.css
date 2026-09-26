@@ -125,9 +125,9 @@ footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
    liegen. Die bewegte Fassung wartet so lange versteckt in .live-huelle. */
 .live { position: relative; border: 1px solid var(--linie); border-radius: 12px; overflow: hidden; background: var(--grund-hell); }
 .live-standbild { width: 100%; height: auto; display: block; }
-.live.laeuft { aspect-ratio: 16 / 9; }
+.live.laeuft { aspect-ratio: 16 / 10; }
 .live.laeuft .live-standbild { display: none; }
-.live-huelle { display: none; height: 100%; }
+.live-huelle { display: none; position: relative; height: 100%; overflow: hidden; }
 .live.laeuft .live-huelle { display: block; }
 
 .live-reiter { display: flex; gap: 1.3rem; padding: 0.75rem 1rem 0; flex-wrap: wrap; }
@@ -185,7 +185,6 @@ footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
 .live-gedaempft { opacity: 0.7; }
 
 @media (max-width: 46rem) {
-  .live.laeuft { aspect-ratio: 4 / 3; }
   .live-bloecke { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .live-reiter { gap: 0.9rem; font-size: 0.82rem; }
 }
