@@ -286,12 +286,16 @@
 
   Kopf.prototype.zeigen = function (i, vonHand) {
     var ich = this;
-    // **Wer selbst wählt, bestimmt.** Nach einem Klick, einem Punkt, einer
-    // Pfeiltaste oder einem Wischer schaltet der Kopf nicht mehr von allein
-    // weiter; sonst wäre die gewählte Ansicht nach ein paar Sekunden wieder weg.
+    // **Von Hand geht zusätzlich.** Nach einem Klick, einem Punkt, einer
+    // Pfeiltaste oder einem Wischer läuft der Wechsel weiter, die Zeit bis zum
+    // nächsten Reiter fängt nur von vorn an. Sonst stünde die gewählte Ansicht
+    // vielleicht eine Sekunde da.
     if (vonHand) {
       this.blick = Date.now();
-      if (this.uhrwerk) { window.clearInterval(this.uhrwerk); this.uhrwerk = null; }
+      if (this.uhrwerk) {
+        window.clearInterval(this.uhrwerk);
+        this.uhrwerk = window.setInterval(function () { ich.weiter(); }, WECHSEL_MS);
+      }
     }
     this.seite = i;
     for (var k = 0; k < this.seiten.length; k++) {
@@ -337,8 +341,9 @@
     this.ws.onopen = function () {
       ich.ws.send(JSON.stringify({ action: "want", data: ["blocks", "stats", "mempool-blocks"] }));
       ich.ws.send(JSON.stringify({ action: "init" }));
-      // Der nächste Block mit seinen Transaktionen: füllt die Halde im Feed
-      // und die Kachelgrafik im Explorer.
+      // Der nächste Block mit seinen Transaktionen, für die Kachelgrafik im
+      // Explorer. Die Halde im Feed fängt leer an wie `resetPool()` in
+      // FeedCanvas.qml und füllt sich mit dem, was ankommt.
       ich.ws.send(JSON.stringify({ "track-mempool-block": 0 }));
     };
     this.ws.onmessage = function (ev) {
@@ -379,7 +384,6 @@
     if (p.blockTransactions) {
       n = this.stand.naechster = {};
       p.blockTransactions.forEach(function (x) { n[x[0]] = x; });
-      this.seiten[0].vorfuellen(p.blockTransactions);
     } else if (p.delta) {
       (p.delta.removed || []).forEach(function (id) { delete n[id]; });
       (p.delta.added || []).forEach(function (x) { n[x[0]] = x; });
@@ -497,18 +501,6 @@
     });
     var seite = 236, z = seite / Math.max(spalten, hoehe);
     this.block = { teile: teile, z: z, x: Math.round(640 - spalten * z / 2), unten: Math.round(302 + hoehe * z / 2) };
-  };
-  Feed.prototype.vorfuellen = function (liste) {
-    if (this.halde.length) return;
-    var jetzt = Date.now();
-    var alt = liste.slice().sort(function (a, b) { return (a[6] || 0) - (b[6] || 0); });
-    for (var i = 0; i < alt.length; i++) {
-      var r = window.txSize(alt[i][3], 5);
-      var p = this.lage.place(r);
-      if (p.y + r > ZEILEN - 1) { this.lage = this.neuGepackt(); break; }
-      p.t = alt[i][6] ? alt[i][6] * 1000 : jetzt - 600000;
-      this.halde.push(p);
-    }
   };
   Feed.prototype.neuGepackt = function () {
     var lage = new window.MondrianLayout(SPALTEN);
