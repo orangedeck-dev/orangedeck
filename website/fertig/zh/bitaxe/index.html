@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-zh.png">
 <link rel="canonical" href="https://orangedeck.dev/zh/bitaxe/">
 <link rel="icon" href="../../bilder/symbol.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=44de477254">
+<link rel="stylesheet" href="../../stil.css?v=190ff9a572">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/">
@@ -51,7 +51,7 @@
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav"><a href="../#was">简介</a><a href="../#ansichten">视图</a><a href="../#wo">运行平台</a><a href="../#warum">特点</a><a href="../#faq">常见问题</a></nav>
-  <nav class="sprachen"><a href="#sprache" aria-current="true">ZH</a></nav>
+  <nav class="sprachen"><details class="sprachwahl"><summary aria-label="语言">ZH</summary><ul><li><a href="../../de/bitaxe/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/bitaxe/" hreflang="en" lang="en">English</a></li><li><a href="../../es/bitaxe/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/bitaxe/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/bitaxe/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/bitaxe/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/bitaxe/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/bitaxe/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/bitaxe/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/bitaxe/" hreflang="zh" lang="zh" aria-current="true">中文</a></li><li><a href="../../pt-br/bitaxe/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/bitaxe/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/bitaxe/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
 </div></div>
 
 <div class="mitte">
@@ -81,6 +81,17 @@
     <nav class="sprachen"><a href="../../de/bitaxe/" hreflang="de" lang="de">Deutsch</a><a href="../../en/bitaxe/" hreflang="en" lang="en">English</a><a href="../../es/bitaxe/" hreflang="es" lang="es">Español</a><a href="../../fr/bitaxe/" hreflang="fr" lang="fr">Français</a><a href="../../it/bitaxe/" hreflang="it" lang="it">Italiano</a><a href="../../pt-pt/bitaxe/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../../nl/bitaxe/" hreflang="nl" lang="nl">Nederlands</a><a href="../../ru/bitaxe/" hreflang="ru" lang="ru">Русский</a><a href="../../ja/bitaxe/" hreflang="ja" lang="ja">日本語</a><a href="../../zh/bitaxe/" hreflang="zh" lang="zh" aria-current="true">中文</a><a href="../../pt-br/bitaxe/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../../pl/bitaxe/" hreflang="pl" lang="pl">Polski</a><a href="../../cs/bitaxe/" hreflang="cs" lang="cs">Čeština</a></nav>
   </footer>
 </div>
+<script>
+  // Die Sprachwahl schliesst bei einem Klick daneben und mit Escape.
+  document.addEventListener("click", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && !w.contains(e.target)) w.open = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && e.key === "Escape") { w.open = false; w.querySelector("summary").focus(); }
+  });
+</script>
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"内存池旁边的 Bitaxe 监控","description":"监控你的 Bitaxe 或任何 AxeOS、cgminer 矿机：算力、最佳份额与全网难度的对比、温度和功率。本地运行，免费，无需账户。","url":"https://orangedeck.dev/zh/bitaxe/","inLanguage":"zh","isPartOf":{"@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/"},"about":{"@id":"https://orangedeck.dev/#app"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"概览","item":"https://orangedeck.dev/zh/"},{"@type":"ListItem","position":2,"name":"Bitaxe 监控","item":"https://orangedeck.dev/zh/bitaxe/"}]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"zh","mainEntity":[{"@type":"Question","name":"OrangeDeck 支持哪些矿机？","acceptedAnswer":{"@type":"Answer","text":"Bitaxe、NerdAxe 等 AxeOS 设备，以及支持 cgminer API 的矿机，例如 Antminer、Avalon 和 Whatsminer。"}},{"@type":"Question","name":"矿机数据会离开我的网络吗？","acceptedAnswer":{"@type":"Answer","text":"不会。OrangeDeck 直接访问设备的本地地址，不经过任何服务器。"}},{"@type":"Question","name":"可以同时监控多台矿机吗？","acceptedAnswer":{"@type":"Answer","text":"可以。在设置中输入地址，用竖线分隔，例如 http://192.168.1.42|http://192.168.1.43。"}}]}]</script>
 
 </body>

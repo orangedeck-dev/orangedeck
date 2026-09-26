@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-es.png">
 <link rel="canonical" href="https://orangedeck.dev/es/changelog/">
 <link rel="icon" href="../../bilder/symbol.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=44de477254">
+<link rel="stylesheet" href="../../stil.css?v=190ff9a572">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/changelog/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/changelog/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/changelog/">
@@ -51,7 +51,7 @@
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav"><a href="../#was">Qué es</a><a href="../#ansichten">Vistas</a><a href="../#wo">Dónde funciona</a><a href="../#warum">Por qué</a><a href="../#faq">Preguntas</a></nav>
-  <nav class="sprachen"><a href="#sprache" aria-current="true">ES</a></nav>
+  <nav class="sprachen"><details class="sprachwahl"><summary aria-label="Idioma">ES</summary><ul><li><a href="../../de/changelog/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/changelog/" hreflang="en" lang="en">English</a></li><li><a href="../../es/changelog/" hreflang="es" lang="es" aria-current="true">Español</a></li><li><a href="../../fr/changelog/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/changelog/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/changelog/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/changelog/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/changelog/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/changelog/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/changelog/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/changelog/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/changelog/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/changelog/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
 </div></div>
 
 <div class="mitte">
@@ -82,6 +82,17 @@
     <nav class="sprachen"><a href="../../de/changelog/" hreflang="de" lang="de">Deutsch</a><a href="../../en/changelog/" hreflang="en" lang="en">English</a><a href="../../es/changelog/" hreflang="es" lang="es" aria-current="true">Español</a><a href="../../fr/changelog/" hreflang="fr" lang="fr">Français</a><a href="../../it/changelog/" hreflang="it" lang="it">Italiano</a><a href="../../pt-pt/changelog/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../../nl/changelog/" hreflang="nl" lang="nl">Nederlands</a><a href="../../ru/changelog/" hreflang="ru" lang="ru">Русский</a><a href="../../ja/changelog/" hreflang="ja" lang="ja">日本語</a><a href="../../zh/changelog/" hreflang="zh" lang="zh">中文</a><a href="../../pt-br/changelog/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../../pl/changelog/" hreflang="pl" lang="pl">Polski</a><a href="../../cs/changelog/" hreflang="cs" lang="cs">Čeština</a></nav>
   </footer>
 </div>
+<script>
+  // Die Sprachwahl schliesst bei einem Klick daneben und mit Escape.
+  document.addEventListener("click", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && !w.contains(e.target)) w.open = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && e.key === "Escape") { w.open = false; w.querySelector("summary").focus(); }
+  });
+</script>
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"Novedades","description":"Historial de versiones de OrangeDeck, el visualizador del mempool de Bitcoin: qué cambió en cada versión, con fechas.","url":"https://orangedeck.dev/es/changelog/","inLanguage":"es","isPartOf":{"@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/"},"about":{"@id":"https://orangedeck.dev/#app"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://orangedeck.dev/es/"},{"@type":"ListItem","position":2,"name":"Novedades","item":"https://orangedeck.dev/es/changelog/"}]}]</script>
 
 </body>

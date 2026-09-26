@@ -143,7 +143,15 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
     # **Bei dreizehn Sprachen passt die Wahl nicht mehr in die Kopfleiste.**
     # Oben steht dann nur das eigene Kuerzel und springt zur Liste im Fuss.
     if len(alle) > 3:
-        wahl_kurz = '<a href="#sprache" aria-current="true">%s</a>' % e(d["code"].upper())
+        # Aufklappliste ohne Skript: <details>. Fuehrt auf dieselbe Seite in
+        # der anderen Sprache, statt zur Liste ganz unten zu springen.
+        punkte = "".join(
+            '<li><a href="%s%s/%s" hreflang="%s" lang="%s"%s>%s</a></li>'
+            % (auf, a["code"], pfad, a["code"], a["code"],
+               ' aria-current="true"' if a["code"] == d["code"] else "", e(a["name"]))
+            for a in alle)
+        wahl_kurz = ('<details class="sprachwahl"><summary aria-label="%s">%s</summary>'
+                     '<ul>%s</ul></details>' % (e(d["sprache_waehlen"]), e(d["code"].upper()), punkte))
     else:
         wahl_kurz = "".join(
             '<a href="%s%s/%s" hreflang="%s"%s>%s</a>'
@@ -210,6 +218,17 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
     <nav class="sprachen">%(wahl_lang)s</nav>
   </footer>
 </div>
+<script>
+  // Die Sprachwahl schliesst bei einem Klick daneben und mit Escape.
+  document.addEventListener("click", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && !w.contains(e.target)) w.open = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && e.key === "Escape") { w.open = false; w.querySelector("summary").focus(); }
+  });
+</script>
 <script type="application/ld+json">%(ld)s</script>
 %(skripte)s
 </body>

@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-ru.png">
 <link rel="canonical" href="https://orangedeck.dev/ru/bitaxe/">
 <link rel="icon" href="../../bilder/symbol.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=44de477254">
+<link rel="stylesheet" href="../../stil.css?v=190ff9a572">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/bitaxe/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/bitaxe/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/bitaxe/">
@@ -51,7 +51,7 @@
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav"><a href="../#was">Что это</a><a href="../#ansichten">Виды</a><a href="../#wo">Где работает</a><a href="../#warum">Зачем</a><a href="../#faq">Вопросы</a></nav>
-  <nav class="sprachen"><a href="#sprache" aria-current="true">RU</a></nav>
+  <nav class="sprachen"><details class="sprachwahl"><summary aria-label="Язык">RU</summary><ul><li><a href="../../de/bitaxe/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/bitaxe/" hreflang="en" lang="en">English</a></li><li><a href="../../es/bitaxe/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/bitaxe/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/bitaxe/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/bitaxe/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/bitaxe/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/bitaxe/" hreflang="ru" lang="ru" aria-current="true">Русский</a></li><li><a href="../../ja/bitaxe/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/bitaxe/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/bitaxe/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/bitaxe/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/bitaxe/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
 </div></div>
 
 <div class="mitte">
@@ -81,6 +81,17 @@
     <nav class="sprachen"><a href="../../de/bitaxe/" hreflang="de" lang="de">Deutsch</a><a href="../../en/bitaxe/" hreflang="en" lang="en">English</a><a href="../../es/bitaxe/" hreflang="es" lang="es">Español</a><a href="../../fr/bitaxe/" hreflang="fr" lang="fr">Français</a><a href="../../it/bitaxe/" hreflang="it" lang="it">Italiano</a><a href="../../pt-pt/bitaxe/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../../nl/bitaxe/" hreflang="nl" lang="nl">Nederlands</a><a href="../../ru/bitaxe/" hreflang="ru" lang="ru" aria-current="true">Русский</a><a href="../../ja/bitaxe/" hreflang="ja" lang="ja">日本語</a><a href="../../zh/bitaxe/" hreflang="zh" lang="zh">中文</a><a href="../../pt-br/bitaxe/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../../pl/bitaxe/" hreflang="pl" lang="pl">Polski</a><a href="../../cs/bitaxe/" hreflang="cs" lang="cs">Čeština</a></nav>
   </footer>
 </div>
+<script>
+  // Die Sprachwahl schliesst bei einem Klick daneben und mit Escape.
+  document.addEventListener("click", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && !w.contains(e.target)) w.open = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && e.key === "Escape") { w.open = false; w.querySelector("summary").focus(); }
+  });
+</script>
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"Монитор Bitaxe рядом с мемпулом","description":"Следите за Bitaxe и любым майнером на AxeOS или cgminer: хешрейт, лучший шар против сложности сети, температура, мощность. Локально, бесплатно, без аккаунта.","url":"https://orangedeck.dev/ru/bitaxe/","inLanguage":"ru","isPartOf":{"@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/"},"about":{"@id":"https://orangedeck.dev/#app"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Обзор","item":"https://orangedeck.dev/ru/"},{"@type":"ListItem","position":2,"name":"Монитор Bitaxe","item":"https://orangedeck.dev/ru/bitaxe/"}]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ru","mainEntity":[{"@type":"Question","name":"Какие майнеры поддерживает OrangeDeck?","acceptedAnswer":{"@type":"Answer","text":"Устройства на AxeOS, такие как Bitaxe и NerdAxe, и майнеры с API cgminer, например Antminer, Avalon и Whatsminer."}},{"@type":"Question","name":"Уходят ли данные майнера за пределы моей сети?","acceptedAnswer":{"@type":"Answer","text":"Нет. OrangeDeck опрашивает устройство напрямую по его локальному адресу. Через сервер ничего не проходит."}},{"@type":"Question","name":"Можно следить за несколькими майнерами?","acceptedAnswer":{"@type":"Answer","text":"Да. Введите адреса в настройках через вертикальную черту, например http://192.168.1.42|http://192.168.1.43."}}]}]</script>
 
 </body>

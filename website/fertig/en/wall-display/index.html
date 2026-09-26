@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-en.png">
 <link rel="canonical" href="https://orangedeck.dev/en/wall-display/">
 <link rel="icon" href="../../bilder/symbol.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=44de477254">
+<link rel="stylesheet" href="../../stil.css?v=190ff9a572">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/">
@@ -51,7 +51,7 @@
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav"><a href="../#was">What it is</a><a href="../#ansichten">Views</a><a href="../#wo">Where it runs</a><a href="../#warum">Why</a><a href="../#faq">FAQ</a></nav>
-  <nav class="sprachen"><a href="#sprache" aria-current="true">EN</a></nav>
+  <nav class="sprachen"><details class="sprachwahl"><summary aria-label="Language">EN</summary><ul><li><a href="../../de/wall-display/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/wall-display/" hreflang="en" lang="en" aria-current="true">English</a></li><li><a href="../../es/wall-display/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/wall-display/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/wall-display/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/wall-display/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/wall-display/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/wall-display/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/wall-display/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/wall-display/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/wall-display/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/wall-display/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/wall-display/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
 </div></div>
 
 <div class="mitte">
@@ -81,6 +81,17 @@
     <nav class="sprachen"><a href="../../de/wall-display/" hreflang="de" lang="de">Deutsch</a><a href="../../en/wall-display/" hreflang="en" lang="en" aria-current="true">English</a><a href="../../es/wall-display/" hreflang="es" lang="es">Español</a><a href="../../fr/wall-display/" hreflang="fr" lang="fr">Français</a><a href="../../it/wall-display/" hreflang="it" lang="it">Italiano</a><a href="../../pt-pt/wall-display/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../../nl/wall-display/" hreflang="nl" lang="nl">Nederlands</a><a href="../../ru/wall-display/" hreflang="ru" lang="ru">Русский</a><a href="../../ja/wall-display/" hreflang="ja" lang="ja">日本語</a><a href="../../zh/wall-display/" hreflang="zh" lang="zh">中文</a><a href="../../pt-br/wall-display/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../../pl/wall-display/" hreflang="pl" lang="pl">Polski</a><a href="../../cs/wall-display/" hreflang="cs" lang="cs">Čeština</a></nav>
   </footer>
 </div>
+<script>
+  // Die Sprachwahl schliesst bei einem Klick daneben und mit Escape.
+  document.addEventListener("click", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && !w.contains(e.target)) w.open = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && e.key === "Escape") { w.open = false; w.querySelector("summary").focus(); }
+  });
+</script>
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"A block height display for the wall","description":"Turn an old Android tablet into a Bitcoin block height display: block height, fees, price, Moscow time and the halving countdown in large figures. Free, no account.","url":"https://orangedeck.dev/en/wall-display/","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/"},"about":{"@id":"https://orangedeck.dev/#app"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Overview","item":"https://orangedeck.dev/en/"},{"@type":"ListItem","position":2,"name":"Wall display","item":"https://orangedeck.dev/en/wall-display/"}]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"Does the screen stay on?","acceptedAnswer":{"@type":"Answer","text":"Yes, on Android while the app is in fullscreen. When you leave fullscreen or switch apps, the normal screen timeout applies again."}},{"@type":"Question","name":"Which tablets work?","acceptedAnswer":{"@type":"Answer","text":"Android 9 or newer with a 64-bit ARM processor. That covers most tablets from the last years."}},{"@type":"Question","name":"Do I need my own node?","acceptedAnswer":{"@type":"Answer","text":"No. The numbers come from mempool.space. If you run your own mempool instance, enter its address and the clock uses that."}}]}]</script>
 
 </body>

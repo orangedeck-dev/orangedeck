@@ -72,7 +72,7 @@ footer { border-top: 1px solid var(--linie); padding: 2rem 0 3rem; color: var(--
 .nav { display: flex; gap: 1.3rem; margin-left: auto; font-size: 0.94rem; }
 .nav a { color: var(--gedaempft); }
 .nav a:hover { color: var(--schrift); text-decoration: none; }
-.kopf .sprachen { display: flex; gap: 0.7rem; font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.kopf .sprachen { display: flex; gap: 0.7rem; margin-top: 0; font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.04em; }
 .kopf .sprachen a { color: var(--gedaempft); }
 .kopf .sprachen a[aria-current="true"] { color: var(--orange); }
 
@@ -219,3 +219,16 @@ footer .sprachen + p { margin-top: 1.4rem; }
 .live-punkte button:hover::before { background: var(--gedaempft); }
 .live-punkte button[aria-current="true"]::before { background: var(--orange); transform: scale(1.25); }
 .live-punkte button:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+/* Sprachwahl in der Kopfleiste als Aufklappliste */
+.sprachwahl { position: relative; }
+.sprachwahl summary { list-style: none; cursor: pointer; color: var(--orange); display: flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0; }
+.sprachwahl summary::-webkit-details-marker { display: none; }
+.sprachwahl summary::after { content: ""; width: 0.38em; height: 0.38em; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-0.15em); transition: transform 0.15s; }
+.sprachwahl[open] summary::after { transform: rotate(225deg) translateY(-0.1em); }
+.sprachwahl ul { position: absolute; right: 0; top: calc(100% + 0.6rem); list-style: none; margin: 0; padding: 0.4rem; min-width: 11rem;
+  background: var(--grund-hell); border: 1px solid var(--linie); border-radius: 10px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  text-transform: none; letter-spacing: 0; font-size: 0.92rem; max-height: 70vh; overflow-y: auto; z-index: 30; }
+.sprachwahl li a { display: block; padding: 0.4rem 0.7rem; border-radius: 6px; color: var(--schrift); }
+.sprachwahl li a:hover { background: rgba(255, 255, 255, 0.05); text-decoration: none; }
+.sprachwahl li a[aria-current="true"] { color: var(--orange); text-decoration: none; }

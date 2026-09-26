@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
   <rect width="256" height="256" rx="56.1" fill="#12101a"/>
-  <rect x="49.6" y="49.6" width="156.8" height="156.8" rx="4.9" fill="none" stroke="#f7941d" stroke-width="22.0" opacity="0.42"/>
   <rect x="59.8" y="59.8" width="89.8" height="89.8" rx="13.5" fill="#ff9b26"/>
   <rect x="153.1" y="59.8" width="43.2" height="43.2" rx="6.5" fill="#ffc452"/>
   <rect x="153.1" y="106.4" width="43.2" height="43.2" rx="6.5" fill="#ffaf3d"/>

@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-ru.png">
 <link rel="canonical" href="https://orangedeck.dev/ru/dankmaterialshell/">
 <link rel="icon" href="../../bilder/symbol.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=44de477254">
+<link rel="stylesheet" href="../../stil.css?v=190ff9a572">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/dankmaterialshell/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/dankmaterialshell/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/dankmaterialshell/">
@@ -51,7 +51,7 @@
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav"><a href="../#was">Что это</a><a href="../#ansichten">Виды</a><a href="../#wo">Где работает</a><a href="../#warum">Зачем</a><a href="../#faq">Вопросы</a></nav>
-  <nav class="sprachen"><a href="#sprache" aria-current="true">RU</a></nav>
+  <nav class="sprachen"><details class="sprachwahl"><summary aria-label="Язык">RU</summary><ul><li><a href="../../de/dankmaterialshell/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/dankmaterialshell/" hreflang="en" lang="en">English</a></li><li><a href="../../es/dankmaterialshell/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/dankmaterialshell/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/dankmaterialshell/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/dankmaterialshell/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/dankmaterialshell/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/dankmaterialshell/" hreflang="ru" lang="ru" aria-current="true">Русский</a></li><li><a href="../../ja/dankmaterialshell/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/dankmaterialshell/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/dankmaterialshell/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/dankmaterialshell/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/dankmaterialshell/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
 </div></div>
 
 <div class="mitte">
@@ -81,6 +81,17 @@
     <nav class="sprachen"><a href="../../de/dankmaterialshell/" hreflang="de" lang="de">Deutsch</a><a href="../../en/dankmaterialshell/" hreflang="en" lang="en">English</a><a href="../../es/dankmaterialshell/" hreflang="es" lang="es">Español</a><a href="../../fr/dankmaterialshell/" hreflang="fr" lang="fr">Français</a><a href="../../it/dankmaterialshell/" hreflang="it" lang="it">Italiano</a><a href="../../pt-pt/dankmaterialshell/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a><a href="../../nl/dankmaterialshell/" hreflang="nl" lang="nl">Nederlands</a><a href="../../ru/dankmaterialshell/" hreflang="ru" lang="ru" aria-current="true">Русский</a><a href="../../ja/dankmaterialshell/" hreflang="ja" lang="ja">日本語</a><a href="../../zh/dankmaterialshell/" hreflang="zh" lang="zh">中文</a><a href="../../pt-br/dankmaterialshell/" hreflang="pt-br" lang="pt-br">Português (BR)</a><a href="../../pl/dankmaterialshell/" hreflang="pl" lang="pl">Polski</a><a href="../../cs/dankmaterialshell/" hreflang="cs" lang="cs">Čeština</a></nav>
   </footer>
 </div>
+<script>
+  // Die Sprachwahl schliesst bei einem Klick daneben und mit Escape.
+  document.addEventListener("click", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && !w.contains(e.target)) w.open = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    var w = document.querySelector(".sprachwahl");
+    if (w && w.open && e.key === "Escape") { w.open = false; w.querySelector("summary").focus(); }
+  });
+</script>
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"OrangeDeck в DankMaterialShell","description":"Плагин OrangeDeck для DankMaterialShell: мемпул, часы высоты блока, майнинг, обозреватель и рынок на панели, плюс виджет. Установка одной командой.","url":"https://orangedeck.dev/ru/dankmaterialshell/","inLanguage":"ru","isPartOf":{"@type":"WebSite","name":"OrangeDeck","url":"https://orangedeck.dev/"},"about":{"@id":"https://orangedeck.dev/#app"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Обзор","item":"https://orangedeck.dev/ru/"},{"@type":"ListItem","position":2,"name":"DankMaterialShell","item":"https://orangedeck.dev/ru/dankmaterialshell/"}]},{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ru","mainEntity":[{"@type":"Question","name":"Какая версия DMS нужна?","acceptedAnswer":{"@type":"Answer","text":"DankMaterialShell 1.5.0 или новее, на любом композиторе, который поддерживает DMS."}},{"@type":"Question","name":"Нужно ли ещё и приложение OrangeDeck?","acceptedAnswer":{"@type":"Answer","text":"Нет. Плагин получает всё сам. Если приложение и его служба запущены, он пользуется их подключением."}},{"@type":"Question","name":"Где исходный код?","acceptedAnswer":{"@type":"Answer","text":"В отдельном репозитории github.com/orangedeck-dev/dms-plugin, который генерируется из основного проекта. Лицензия MIT."}}]}]</script>
 
 </body>
