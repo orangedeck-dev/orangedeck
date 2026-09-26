@@ -15,6 +15,19 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## MORGEN ALS ERSTES (27.09.2026): Spenden
+
+Plan und Quellen im Tagesabschluss
+`~/Schreibtisch/desktop-optik/STAND-2026-09-26.md`, Abschnitt 3a und 6.
+Kurz: eigene Spendenwallet in Phoenix (BOLT12-Angebot), dazu eine
+Silent-Payment-Adresse (Sparrow ab 2.5), DNSSEC fuer orangedeck.dev an,
+TXT `<name>.user._bitcoin-payment.orangedeck.dev` =
+`bitcoin:?lno=<BOLT12>&sp=<sp1>` (BIP353). Wahlweise Rueckfall als
+LNURL-Adresse per Pages Function auf Wallet of Satoshi. Danach
+Spendenabschnitt in 13 Sprachen, Datenschutz ergaenzen, Punkt
+"Spendenteil" in `website/README.md` abhaken. Name (spenden@, donate@,
+sats@) ist noch offen.
+
 ## NACHTRAG 26.09.2026 abends -- 0.2.15 ohne Wallet
 
 - **0.2.15 ist draussen** (Tag `v0.2.15` auf `6f24d30`, Release 22:13 UTC,
