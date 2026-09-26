@@ -15,6 +15,10 @@
       "#ansichten"
     ],
     [
+      "Ajustes",
+      "#einstellbar"
+    ],
+    [
       "Dónde funciona",
       "#wo"
     ],
@@ -106,7 +110,7 @@
     ],
     [
       "Ningún servidor propio",
-      "Habla con mempool.space o con tu propio nodo. No hay recuento de usuarios, ni informes de fallos, ni cuenta."
+      "Habla con mempool.space o, a través del servicio en Linux, con tu propio nodo. No hay recuento de usuarios, ni informes de fallos, ni cuenta."
     ],
     [
       "Medido, no supuesto",
@@ -171,8 +175,12 @@
       "No. No puede firmar nada. Las direcciones observadas se introducen como direcciones o como una xpub y no salen de tu equipo salvo en forma de consulta de saldo."
     ],
     [
+      "¿Puedo ocultar las pestañas que no uso?",
+      "Sí. En los ajustes se puede desactivar cada pestaña y reordenar las demás. Lo mismo vale para las partes de cada vista, hasta gráficos y barras sueltos."
+    ],
+    [
       "¿De dónde salen los datos?",
-      "Por defecto de mempool.space, o de tu propia instancia de mempool. Es un único ajuste. Los datos de mercado vienen de los canales públicos de los exchanges."
+      "Por defecto, de mempool.space. En Linux, el servicio de OrangeDeck puede usar tu propia instancia de mempool u otra pública; basta con una línea en su archivo de configuración. Los datos de mercado vienen de los canales públicos de los exchanges."
     ],
     [
       "¿Envía datos a algún sitio?",
@@ -229,7 +237,7 @@
   "quellen": [
     [
       "Bloques, mempool, comisiones, tasa de hash",
-      "El WebSocket público de mempool.space o tu propia instancia de mempool. Es un solo ajuste."
+      "El WebSocket público de mempool.space. En Linux, el servicio de OrangeDeck puede usar en su lugar tu propia instancia de mempool u otra pública."
     ],
     [
       "Precio y operaciones",
@@ -312,7 +320,7 @@
         ],
         [
           "¿Necesito un nodo propio?",
-          "No. Las cifras vienen de mempool.space. Si tienes tu propia instancia de mempool, introduce su dirección y el reloj la usará."
+          "No. Las cifras vienen de mempool.space. En Linux, el servicio de OrangeDeck puede usar en su lugar tu propia instancia de mempool."
         ]
       ]
     },
@@ -352,5 +360,33 @@
     "beschreibung": "Historial de versiones de OrangeDeck, el visualizador del mempool de Bitcoin: qué cambió en cada versión, con fechas.",
     "h1": "Novedades",
     "text": "Todas las versiones con su fecha, de la más reciente a la más antigua."
-  }
+  },
+  "einstellbar_titel": "Configúralo a tu manera",
+  "einstellbar_text": "Cada pestaña se puede desactivar, y las que quedan se pueden poner en el orden que quieras. En cada vista decides qué partes se muestran. OrangeDeck enseña solo lo que quieres ver.",
+  "einstellbar": [
+    [
+      "Solo tus pestañas",
+      "Desactiva las pestañas que no necesites, cambia el orden y elige con qué vista se abre."
+    ],
+    [
+      "Cambio automático",
+      "Las pestañas pueden cambiar solas cada cierto tiempo, entre 30 segundos y 10 minutos, y tú eliges cuáles entran en la rotación."
+    ],
+    [
+      "Cada vista por partes",
+      "El encabezado, el pie, los datos del bloque, la leyenda, los gráficos y las barras se activan o desactivan por separado. En el reloj eliges qué se ve en grande y si los valores se van alternando."
+    ],
+    [
+      "Celdas a tu gusto",
+      "Colorea las celdas por antigüedad, comisión o tipo, dales tamaño según el valor o los vBytes, y hazlas más grandes o más pequeñas."
+    ],
+    [
+      "El mercado como tú lo lees",
+      "Velas o línea, volumen o CVD, intervalo, retícula y cinta de operaciones, cada uno con su propio ajuste."
+    ],
+    [
+      "Idioma, moneda, aspecto",
+      "Trece idiomas, siete monedas, opacidad de la ventana y desenfoque tras el texto."
+    ]
+  ]
 }

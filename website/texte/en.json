@@ -15,6 +15,10 @@
       "#ansichten"
     ],
     [
+      "Settings",
+      "#einstellbar"
+    ],
+    [
       "Where it runs",
       "#wo"
     ],
@@ -106,7 +110,7 @@
     ],
     [
       "No server of ours",
-      "It talks to mempool.space or to your own node. There is no counting, no crash reports and no account."
+      "It talks to mempool.space, or through the service on Linux to your own node. There is no counting, no crash reports and no account."
     ],
     [
       "Measured, not guessed",
@@ -171,8 +175,12 @@
       "No. It cannot sign anything. Watched addresses are entered as addresses or an xpub and never leave your machine except as a balance query."
     ],
     [
+      "Can I hide the tabs I do not use?",
+      "Yes. Every tab can be switched off in the settings and the others can be reordered. The same goes for the parts inside each view, down to single charts and bars."
+    ],
+    [
       "Where does the data come from?",
-      "From mempool.space by default, or from your own mempool instance. That is a single setting. Market data comes from the exchanges' public feeds."
+      "From mempool.space by default. On Linux, the OrangeDeck service can use your own mempool instance or another public one; that is one line in its configuration file. Market data comes from the exchanges' public feeds."
     ],
     [
       "Does it phone home?",
@@ -229,7 +237,7 @@
   "quellen": [
     [
       "Blocks, mempool, fees, hashrate",
-      "The public WebSocket of mempool.space, or your own mempool instance. That is one setting."
+      "The public WebSocket of mempool.space. On Linux, the OrangeDeck service can use your own mempool instance or another public one instead."
     ],
     [
       "Price and trades",
@@ -312,7 +320,7 @@
         ],
         [
           "Do I need my own node?",
-          "No. The numbers come from mempool.space. If you run your own mempool instance, enter its address and the clock uses that."
+          "No. The numbers come from mempool.space. On Linux, the OrangeDeck service can use your own mempool instance instead."
         ]
       ]
     },
@@ -352,5 +360,33 @@
     "beschreibung": "Release history of OrangeDeck, the Bitcoin mempool visualizer: what changed in each version, with dates.",
     "h1": "What's new",
     "text": "Every version with its date, newest first."
-  }
+  },
+  "einstellbar_titel": "Set up the way you want it",
+  "einstellbar_text": "Every tab can be switched off, and the ones that stay can be put in any order. Inside each view you decide which parts are shown. OrangeDeck shows only what you want to see.",
+  "einstellbar": [
+    [
+      "Only your tabs",
+      "Switch off any tab you do not need, change the order and pick the view it opens with."
+    ],
+    [
+      "Switching on its own",
+      "Tabs can change by themselves every 30 seconds to 10 minutes, and you choose which ones take part."
+    ],
+    [
+      "Every view in parts",
+      "Header, footer, block details, legend, charts and bars can each be turned on or off. The clock lets you choose what stands large and whether values take turns."
+    ],
+    [
+      "Tiles your way",
+      "Colour the tiles by age, fee or type, size them by value or by vBytes, and make them larger or smaller."
+    ],
+    [
+      "The market as you read it",
+      "Candles or line, volume or CVD, time range, crosshair and trade tape, each one a setting."
+    ],
+    [
+      "Language, currency, look",
+      "Thirteen languages, seven currencies, window opacity and blur behind text."
+    ]
+  ]
 }

@@ -15,6 +15,10 @@
       "#ansichten"
     ],
     [
+      "Paramètres",
+      "#einstellbar"
+    ],
+    [
       "Où ça tourne",
       "#wo"
     ],
@@ -106,7 +110,7 @@
     ],
     [
       "Aucun serveur à nous",
-      "Il parle à mempool.space ou à votre propre nœud. Pas de comptage, pas de rapports de plantage, pas de compte."
+      "Il parle à mempool.space ou, via le service sous Linux, à votre propre nœud. Pas de comptage, pas de rapports de plantage, pas de compte."
     ],
     [
       "Mesuré, pas deviné",
@@ -171,8 +175,12 @@
       "Non. Il ne peut rien signer. Les adresses suivies sont saisies comme adresses ou comme xpub et ne quittent votre machine que sous forme de requête de solde."
     ],
     [
+      "Puis-je masquer les onglets dont je ne me sers pas ?",
+      "Oui. Dans les paramètres, chaque onglet peut être désactivé et les autres réordonnés. Il en va de même pour les parties de chaque vue, jusqu’aux graphiques et aux barres pris un par un."
+    ],
+    [
       "D’où viennent les données ?",
-      "De mempool.space par défaut, ou de votre propre instance mempool. C’est un seul réglage. Les données de marché viennent des flux publics des plateformes d’échange."
+      "De mempool.space par défaut. Sous Linux, le service OrangeDeck peut utiliser votre propre instance mempool ou une autre instance publique ; il suffit d’une ligne dans son fichier de configuration. Les données de marché viennent des flux publics des plateformes d’échange."
     ],
     [
       "Envoie-t-il des données quelque part ?",
@@ -229,7 +237,7 @@
   "quellen": [
     [
       "Blocs, mempool, frais, hashrate",
-      "Le WebSocket public de mempool.space, ou votre propre instance mempool. C’est un seul réglage."
+      "Le WebSocket public de mempool.space. Sous Linux, le service OrangeDeck peut utiliser à la place votre propre instance mempool ou une autre instance publique."
     ],
     [
       "Cours et transactions",
@@ -312,7 +320,7 @@
         ],
         [
           "Ai-je besoin de mon propre nœud ?",
-          "Non. Les chiffres viennent de mempool.space. Si vous faites tourner votre propre instance mempool, saisissez son adresse et l’horloge l’utilise."
+          "Non. Les chiffres viennent de mempool.space. Sous Linux, le service OrangeDeck peut utiliser votre propre instance mempool à la place."
         ]
       ]
     },
@@ -352,5 +360,33 @@
     "beschreibung": "Historique des versions d’OrangeDeck, le visualiseur de mempool Bitcoin : ce qui a changé dans chaque version, avec les dates.",
     "h1": "Nouveautés",
     "text": "Chaque version avec sa date, de la plus récente à la plus ancienne."
-  }
+  },
+  "einstellbar_titel": "Réglé comme vous le voulez",
+  "einstellbar_text": "Chaque onglet peut être désactivé, et ceux qui restent se rangent dans l’ordre de votre choix. Dans chaque vue, vous décidez quelles parties s’affichent. OrangeDeck montre seulement ce que vous voulez voir.",
+  "einstellbar": [
+    [
+      "Seulement vos onglets",
+      "Désactivez les onglets dont vous n’avez pas besoin, changez l’ordre et choisissez la vue qui s’ouvre au démarrage."
+    ],
+    [
+      "Changement automatique",
+      "Les onglets peuvent changer d’eux-mêmes à un intervalle de 30 secondes à 10 minutes, et vous choisissez lesquels en font partie."
+    ],
+    [
+      "Chaque vue en parties",
+      "En-tête, pied de page, détails du bloc, légende, graphiques et barres s’activent ou se désactivent un par un. Dans l’horloge, vous choisissez ce qui s’affiche en grand et si les valeurs se relaient."
+    ],
+    [
+      "Des tuiles à votre goût",
+      "Coloriez les tuiles selon l’âge, les frais ou le type, dimensionnez-les selon la valeur ou les vBytes, et rendez-les plus grandes ou plus petites."
+    ],
+    [
+      "Le marché comme vous le lisez",
+      "Chandelles ou courbe, volume ou CVD, période, réticule et bande des transactions, chacun avec son propre réglage."
+    ],
+    [
+      "Langue, devise, apparence",
+      "Treize langues, sept devises, opacité de la fenêtre et flou derrière le texte."
+    ]
+  ]
 }

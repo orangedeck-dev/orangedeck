@@ -15,6 +15,10 @@
       "#ansichten"
     ],
     [
+      "Instellingen",
+      "#einstellbar"
+    ],
+    [
       "Waar het draait",
       "#wo"
     ],
@@ -106,7 +110,7 @@
     ],
     [
       "Geen server van ons",
-      "Het praat met mempool.space of met je eigen node. Er wordt niets geteld, er zijn geen crashrapporten en er is geen account."
+      "Het praat met mempool.space, of via de dienst op Linux met je eigen node. Er wordt niets geteld, er zijn geen crashrapporten en er is geen account."
     ],
     [
       "Gemeten, niet geraden",
@@ -171,8 +175,12 @@
       "Nee. Het kan niets ondertekenen. Gevolgde adressen voer je in als adressen of als xpub, en ze verlaten je computer alleen als saldo-opvraag."
     ],
     [
+      "Kan ik tabbladen verbergen die ik niet gebruik?",
+      "Ja. Elk tabblad kun je in de instellingen uitzetten, en de rest kun je anders ordenen. Hetzelfde geldt voor de onderdelen binnen elke weergave, tot aan losse grafieken en balken."
+    ],
+    [
       "Waar komen de gegevens vandaan?",
-      "Standaard van mempool.space, of van je eigen mempool-instantie. Dat is één instelling. Marktgegevens komen uit de openbare feeds van de beurzen."
+      "Standaard van mempool.space. Op Linux kan de OrangeDeck-dienst je eigen mempool-instantie of een andere openbare gebruiken; dat is één regel in zijn configuratiebestand. Marktgegevens komen uit de openbare feeds van de beurzen."
     ],
     [
       "Stuurt het gegevens naar huis?",
@@ -229,7 +237,7 @@
   "quellen": [
     [
       "Blokken, mempool, kosten, hashrate",
-      "De openbare WebSocket van mempool.space, of je eigen mempool-instantie. Dat is één instelling."
+      "De openbare WebSocket van mempool.space. Op Linux kan de OrangeDeck-dienst in plaats daarvan je eigen mempool-instantie of een andere openbare gebruiken."
     ],
     [
       "Koers en transacties",
@@ -312,7 +320,7 @@
         ],
         [
           "Heb ik een eigen node nodig?",
-          "Nee. De cijfers komen van mempool.space. Draai je een eigen mempool-instantie, vul dan het adres daarvan in en de klok gebruikt die."
+          "Nee. De cijfers komen van mempool.space. Op Linux kan de OrangeDeck-dienst in plaats daarvan je eigen mempool-instantie gebruiken."
         ]
       ]
     },
@@ -352,5 +360,33 @@
     "beschreibung": "Versiegeschiedenis van OrangeDeck, de Bitcoin-mempoolvisualisatie: wat er in elke versie veranderd is, met datum.",
     "h1": "Wat is er nieuw",
     "text": "Elke versie met datum, de nieuwste eerst."
-  }
+  },
+  "einstellbar_titel": "Zo ingericht als jij wilt",
+  "einstellbar_text": "Elk tabblad kan uit, en de tabbladen die blijven zet je in elke volgorde die je wilt. Per weergave bepaal je welke onderdelen je ziet. OrangeDeck toont alleen wat je wilt zien.",
+  "einstellbar": [
+    [
+      "Alleen je eigen tabbladen",
+      "Zet uit wat je niet nodig hebt, verander de volgorde en kies met welke weergave de app start."
+    ],
+    [
+      "Wisselt vanzelf",
+      "Tabbladen kunnen om de 30 seconden tot 10 minuten vanzelf wisselen, en jij kiest welke meedoen."
+    ],
+    [
+      "Elke weergave in onderdelen",
+      "Kopregel, voettekst, blokgegevens, legenda, grafieken en balken zet je elk apart aan of uit. Bij de klok kies je wat groot staat en of waarden elkaar afwisselen."
+    ],
+    [
+      "Tegels naar keuze",
+      "Kleur de tegels naar leeftijd, kosten of type, laat de grootte afhangen van de waarde of van vBytes, en maak ze groter of kleiner."
+    ],
+    [
+      "De markt zoals jij hem leest",
+      "Kaarsen of lijn, volume of CVD, periode, draadkruis en transactielint stel je elk apart in."
+    ],
+    [
+      "Taal, valuta, uiterlijk",
+      "Dertien talen, zeven valuta, vensterdekking en vervaging achter de tekst."
+    ]
+  ]
 }

@@ -15,6 +15,10 @@
       "#ansichten"
     ],
     [
+      "Einstellbar",
+      "#einstellbar"
+    ],
+    [
       "Wo es läuft",
       "#wo"
     ],
@@ -106,7 +110,7 @@
     ],
     [
       "Kein Server von uns",
-      "Es spricht mit mempool.space oder mit dem eigenen Node. Keine Zählung, keine Absturzberichte, kein Konto."
+      "Es spricht mit mempool.space oder, über den Dienst unter Linux, mit dem eigenen Node. Keine Zählung, keine Absturzberichte, kein Konto."
     ],
     [
       "Gemessen statt geraten",
@@ -171,8 +175,12 @@
       "Nein. Es kann nichts unterschreiben. Beobachtete Adressen gibt man als Adresse oder xpub ein; sie verlassen den Rechner nur als Guthabenabfrage."
     ],
     [
+      "Kann ich Reiter ausblenden, die ich nicht brauche?",
+      "Ja. Jeder Reiter lässt sich in den Einstellungen ausschalten, die übrigen lassen sich umordnen. Dasselbe gilt für die Teile jeder Ansicht, bis hin zu einzelnen Kurven und Balken."
+    ],
+    [
       "Woher kommen die Daten?",
-      "Aus mempool.space oder aus der eigenen Instanz, das ist eine Einstellung. Marktdaten kommen aus den öffentlichen Kanälen der Börsen."
+      "Standardmäßig von mempool.space. Unter Linux kann der OrangeDeck-Dienst die eigene Mempool-Instanz oder eine andere öffentliche nehmen, das ist eine Zeile in seiner Konfigurationsdatei. Marktdaten kommen aus den öffentlichen Kanälen der Börsen."
     ],
     [
       "Telefoniert es nach Hause?",
@@ -229,7 +237,7 @@
   "quellen": [
     [
       "Blöcke, Mempool, Gebühren, Hashrate",
-      "Der öffentliche WebSocket von mempool.space oder die eigene Mempool-Instanz. Das ist eine Einstellung."
+      "Der öffentliche WebSocket von mempool.space. Unter Linux kann der OrangeDeck-Dienst stattdessen die eigene Mempool-Instanz oder eine andere öffentliche nehmen."
     ],
     [
       "Kurs und Trades",
@@ -312,7 +320,7 @@
         ],
         [
           "Brauche ich einen eigenen Node?",
-          "Nein. Die Zahlen kommen von mempool.space. Wer eine eigene Mempool-Instanz betreibt, trägt ihre Adresse ein, und die Uhr nimmt diese."
+          "Nein. Die Zahlen kommen von mempool.space. Unter Linux kann der OrangeDeck-Dienst stattdessen die eigene Mempool-Instanz nehmen."
         ]
       ]
     },
@@ -352,5 +360,33 @@
     "beschreibung": "Alle Fassungen von OrangeDeck, der Anzeige für den Bitcoin-Mempool: was sich wann geändert hat.",
     "h1": "Was ist neu",
     "text": "Jede Fassung mit Datum, die neueste zuerst."
-  }
+  },
+  "einstellbar_titel": "Nur das, was man sehen will",
+  "einstellbar_text": "Jeder Reiter lässt sich ausschalten, die übrigen stehen in beliebiger Reihenfolge. In jeder Ansicht lässt sich festlegen, welche Teile zu sehen sind. OrangeDeck zeigt nur, was man sehen will.",
+  "einstellbar": [
+    [
+      "Nur die eigenen Reiter",
+      "Was nicht gebraucht wird, wird abgeschaltet, der Rest lässt sich umordnen, und die Ansicht beim Start ist frei wählbar."
+    ],
+    [
+      "Wechsel von selbst",
+      "Die Reiter können alle 30 Sekunden bis 10 Minuten von allein wechseln, und es lässt sich wählen, welche dabei mitlaufen."
+    ],
+    [
+      "Jede Ansicht in Teilen",
+      "Kopf, Fuß, Blockdetails, Legende, Kurven und Balken lassen sich einzeln ein- und ausschalten. In der Uhr lässt sich wählen, was groß steht und ob sich Werte abwechseln."
+    ],
+    [
+      "Kacheln nach Wunsch",
+      "Gefärbt nach Alter, Gebühr oder Art, bemessen nach Wert oder vBytes, größer oder kleiner."
+    ],
+    [
+      "Der Markt, wie man ihn liest",
+      "Kerzen oder Linie, Volumen oder CVD, Zeitraum, Fadenkreuz und Tradeband, jedes davon eine Einstellung."
+    ],
+    [
+      "Sprache, Währung, Aussehen",
+      "Dreizehn Sprachen, sieben Währungen, Deckkraft des Fensters und Unschärfe hinter Text."
+    ]
+  ]
 }

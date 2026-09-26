@@ -15,6 +15,10 @@
       "#ansichten"
     ],
     [
+      "Nastavení",
+      "#einstellbar"
+    ],
+    [
       "Kde běží",
       "#wo"
     ],
@@ -106,7 +110,7 @@
     ],
     [
       "Žádný náš server",
-      "Komunikuje s mempool.space nebo s vaším vlastním uzlem. Nesbírá statistiky, neposílá hlášení o pádech a nepotřebuje účet."
+      "Komunikuje s mempool.space, nebo přes službu v Linuxu s vaším vlastním uzlem. Nesbírá statistiky, neposílá hlášení o pádech a nepotřebuje účet."
     ],
     [
       "Změřeno, ne odhadnuto",
@@ -171,8 +175,12 @@
       "Ne. Nedokáže nic podepsat. Sledované adresy se zadávají jako adresy nebo xpub a váš počítač opouštějí jen jako dotaz na zůstatek."
     ],
     [
+      "Mohu skrýt karty, které nepoužívám?",
+      "Ano. Každou kartu lze v nastavení vypnout a ostatní přeřadit. Totéž platí pro části uvnitř každého zobrazení, až po jednotlivé grafy a pruhy."
+    ],
+    [
       "Odkud pocházejí data?",
-      "Standardně z mempool.space, nebo z vaší vlastní instance mempool. Je to jedno nastavení. Tržní data pocházejí z veřejných kanálů burz."
+      "Standardně z mempool.space. V Linuxu může služba OrangeDeck používat vaši vlastní instanci mempool nebo jinou veřejnou, stačí k tomu jeden řádek v jejím konfiguračním souboru. Tržní data pocházejí z veřejných kanálů burz."
     ],
     [
       "Posílá něco domů?",
@@ -229,7 +237,7 @@
   "quellen": [
     [
       "Bloky, mempool, poplatky, hashrate",
-      "Veřejný WebSocket mempool.space, nebo vaše vlastní instance mempool. Je to jedno nastavení."
+      "Veřejný WebSocket mempool.space. V Linuxu může služba OrangeDeck místo něj používat vaši vlastní instanci mempool nebo jinou veřejnou."
     ],
     [
       "Kurz a obchody",
@@ -312,7 +320,7 @@
         ],
         [
           "Potřebuji vlastní uzel?",
-          "Ne. Čísla pocházejí z mempool.space. Pokud provozujete vlastní instanci mempool, zadejte její adresu a hodiny ji použijí."
+          "Ne. Čísla pocházejí z mempool.space. V Linuxu může služba OrangeDeck místo toho používat vaši vlastní instanci mempool."
         ]
       ]
     },
@@ -352,5 +360,33 @@
     "beschreibung": "Historie verzí OrangeDeck, vizualizace mempoolu bitcoinu: co se v každé verzi změnilo, s daty.",
     "h1": "Co je nového",
     "text": "Každá verze s datem, nejnovější nahoře."
-  }
+  },
+  "einstellbar_titel": "Nastavte si to po svém",
+  "einstellbar_text": "Každou kartu lze vypnout a ty, které zůstanou, seřadit v libovolném pořadí. V každém zobrazení sami určíte, které části jsou vidět. OrangeDeck ukazuje jen to, co chcete vidět.",
+  "einstellbar": [
+    [
+      "Jen vaše karty",
+      "Vypněte karty, které nepotřebujete, změňte pořadí a zvolte zobrazení, kterým se aplikace otevře."
+    ],
+    [
+      "Karty se střídají samy",
+      "Karty se mohou samy střídat po 30 sekundách až 10 minutách a vy vybíráte, které se do toho zapojí."
+    ],
+    [
+      "Každé zobrazení po částech",
+      "Záhlaví, zápatí, údaje o bloku, legendu, grafy a pruhy lze zapnout nebo vypnout jednotlivě. U hodin si vyberete, co bude velkým písmem a zda se hodnoty budou střídat."
+    ],
+    [
+      "Dlaždice podle vás",
+      "Dlaždice můžete obarvit podle stáří, poplatku nebo typu, jejich velikost odvodit od hodnoty nebo od vBytes a celé je zvětšit nebo zmenšit."
+    ],
+    [
+      "Trh tak, jak ho čtete",
+      "Svíčky nebo čára, objem nebo CVD, období, nitkový kříž a pás obchodů se nastavují každé zvlášť."
+    ],
+    [
+      "Jazyk, měna, vzhled",
+      "Třináct jazyků, sedm měn, krytí okna a rozostření za textem."
+    ]
+  ]
 }

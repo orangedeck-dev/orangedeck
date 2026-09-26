@@ -15,6 +15,10 @@
       "#ansichten"
     ],
     [
+      "Ustawienia",
+      "#einstellbar"
+    ],
+    [
       "Gdzie działa",
       "#wo"
     ],
@@ -106,7 +110,7 @@
     ],
     [
       "Żadnego naszego serwera",
-      "Łączy się z mempool.space albo z twoim własnym węzłem. Nie ma liczenia użytkowników, raportów o awariach ani konta."
+      "Łączy się z mempool.space albo, przez usługę w systemie Linux, z twoim własnym węzłem. Nie ma liczenia użytkowników, raportów o awariach ani konta."
     ],
     [
       "Zmierzone, nie zgadywane",
@@ -171,8 +175,12 @@
       "Nie. Nie potrafi niczego podpisać. Obserwowane adresy wpisuje się jako adresy lub xpub i opuszczają one komputer wyłącznie jako zapytanie o saldo."
     ],
     [
+      "Czy mogę ukryć karty, których nie używam?",
+      "Tak. Każdą kartę można wyłączyć w ustawieniach, a pozostałe ułożyć w innej kolejności. To samo dotyczy elementów wewnątrz każdego widoku, aż po pojedyncze wykresy i paski."
+    ],
+    [
       "Skąd pochodzą dane?",
-      "Domyślnie z mempool.space albo z twojej własnej instancji mempool. To jedno ustawienie. Dane rynkowe pochodzą z publicznych strumieni giełd."
+      "Domyślnie z mempool.space. W systemie Linux usługa OrangeDeck może korzystać z twojej własnej instancji mempool albo z innej publicznej; wystarczy jedna linijka w jej pliku konfiguracyjnym. Dane rynkowe pochodzą z publicznych strumieni giełd."
     ],
     [
       "Czy wysyła coś do autora?",
@@ -229,7 +237,7 @@
   "quellen": [
     [
       "Bloki, mempool, opłaty, hashrate",
-      "Publiczny WebSocket mempool.space albo twoja własna instancja mempool. To jedno ustawienie."
+      "Publiczny WebSocket mempool.space. W systemie Linux usługa OrangeDeck może zamiast tego korzystać z twojej własnej instancji mempool albo z innej publicznej."
     ],
     [
       "Kurs i transakcje",
@@ -312,7 +320,7 @@
         ],
         [
           "Czy potrzebuję własnego węzła?",
-          "Nie. Liczby pochodzą z mempool.space. Jeśli masz własną instancję mempool, wpisz jej adres, a zegar będzie z niej korzystał."
+          "Nie. Liczby pochodzą z mempool.space. W systemie Linux usługa OrangeDeck może zamiast tego korzystać z twojej własnej instancji mempool."
         ]
       ]
     },
@@ -352,5 +360,33 @@
     "beschreibung": "Historia wersji OrangeDeck, wizualizacji mempoolu Bitcoina: co zmieniło się w każdej wersji, z datami.",
     "h1": "Co nowego",
     "text": "Każda wersja z datą, od najnowszej."
-  }
+  },
+  "einstellbar_titel": "Ustawiasz tak, jak chcesz",
+  "einstellbar_text": "Każdą kartę można wyłączyć, a pozostałe ułożyć w dowolnej kolejności. W każdym widoku sam decydujesz, które elementy są widoczne. OrangeDeck pokazuje tylko to, co chcesz zobaczyć.",
+  "einstellbar": [
+    [
+      "Tylko twoje karty",
+      "Wyłącz karty, których nie potrzebujesz, zmień kolejność i wybierz widok, od którego aplikacja startuje."
+    ],
+    [
+      "Karty zmieniają się same",
+      "Karty mogą przełączać się same co 30 sekund do 10 minut, a ty wybierasz, które biorą w tym udział."
+    ],
+    [
+      "Każdy widok z wybranych elementów",
+      "Nagłówek, stopkę, dane bloku, legendę, wykresy i paski włączasz i wyłączasz osobno. W zegarze wybierasz, co jest pokazane dużo i czy wartości mają się zmieniać."
+    ],
+    [
+      "Kafelki po twojemu",
+      "Kafelki możesz barwić według wieku, opłaty lub typu, ich rozmiar uzależnić od wartości lub vBytes, a same kafelki powiększyć albo pomniejszyć."
+    ],
+    [
+      "Rynek tak, jak go czytasz",
+      "Świece albo linia, wolumen albo CVD, zakres, celownik i taśma transakcji: każde z nich ustawiasz osobno."
+    ],
+    [
+      "Język, waluta, wygląd",
+      "Trzynaście języków, siedem walut, krycie okna i rozmycie za tekstem."
+    ]
+  ]
 }

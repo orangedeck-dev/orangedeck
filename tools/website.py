@@ -262,6 +262,8 @@ def seite(d, alle):
         % (i + 1, e(n), e(t)) for i, (n, t) in enumerate(d["ansichten"]))
     wo = "".join('<li><b>%s</b><span class="txt">%s</span></li>' % (e(n), e(t))
                  for n, t in d["wo"])
+    einstellbar = "".join('<li><b>%s</b><span class="txt">%s</span></li>' % (e(n), e(t))
+                          for n, t in d["einstellbar"])
     einsatz = "".join(
         '<li><a href="%s/"><b>%s</b><span class="txt">%s</span></a></li>'
         % (u["slug"], e(u["name"]), e(u["karte"])) for u in d["unterseiten"])
@@ -315,6 +317,12 @@ def seite(d, alle):
     <ul class="karten">%(ansichten)s</ul>
   </section>
 
+  <section id="einstellbar">
+    <h2>%(einstellbar_titel)s</h2>
+    <p>%(einstellbar_text)s</p>
+    <ul class="karten schlicht">%(einstellbar)s</ul>
+  </section>
+
   <section id="bilder">
     <h2>%(bilder_titel)s</h2>
     <div class="galerie">%(bilder)s</div>
@@ -362,6 +370,8 @@ def seite(d, alle):
         "was_titel": e(d["was_titel"]), "absaetze": absaetze,
         "ansichten_titel": e(d["ansichten_titel"]), "ansichten": ansichten,
         "bilder_titel": e(d["bilder_titel"]), "bilder": bilder,
+        "einstellbar_titel": e(d["einstellbar_titel"]), "einstellbar_text": e(d["einstellbar_text"]),
+        "einstellbar": einstellbar,
         "einsatz_titel": e(d["einsatz_titel"]), "einsatz": einsatz,
         "wo_titel": e(d["wo_titel"]), "wo": wo,
         "quellen_titel": e(d["quellen_titel"]), "quellen": quellen,
@@ -566,6 +576,9 @@ def llmstxt(alle):
          "Current version: %s, released %s. Website: %s/en/" % (FASSUNG, neueste["datum"], SEITE),
          "", "## " + d["ansichten_titel"], ""]
     for n, t in d["ansichten"]:
+        z.append("- **%s**: %s" % (n, t))
+    z += ["", "## " + d["einstellbar_titel"], "", d["einstellbar_text"], ""]
+    for n, t in d["einstellbar"]:
         z.append("- **%s**: %s" % (n, t))
     z += ["", "## " + d["wo_titel"], ""]
     for n, t in d["wo"]:
