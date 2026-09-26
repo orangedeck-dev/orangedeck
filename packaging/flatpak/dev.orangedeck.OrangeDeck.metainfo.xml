@@ -207,6 +207,34 @@
        das Repo umgezogen ist, gehoert nicht hierher: es aendert nichts an der
        Anwendung. Das Datum ist vorlaeufig (19.09.2026). -->
   <releases>
+    <release version="0.2.14" date="2026-09-26">
+      <description>
+        <p>
+          A new field in the settings, Mempool instance, chooses where the data
+          comes from: mempool.space, another public instance such as
+          mempool.emzy.de, or your own node at home. It applies everywhere, in
+          direct mode, in the transaction details, in the Android widgets and
+          in the service on Linux.
+        </p>
+        <p xml:lang="de">
+          Ein neues Feld in den Einstellungen, Mempool-Instanz, bestimmt, woher
+          die Daten kommen: mempool.space, eine andere oeffentliche Instanz wie
+          mempool.emzy.de oder der eigene Node zu Hause. Es gilt ueberall, im
+          Direktbezug, in den Details einer Transaktion, in den Android-Widgets
+          und im Dienst unter Linux.
+        </p>
+        <p>
+          The service accepts the change only from the same computer, so no
+          other device on the network and no website in a browser can point it
+          somewhere else.
+        </p>
+        <p xml:lang="de">
+          Der Dienst nimmt die Aenderung nur vom selben Rechner an. Kein anderes
+          Geraet im Netz und keine Webseite im Browser kann ihn damit
+          woandershin lenken.
+        </p>
+      </description>
+    </release>
     <release version="0.2.13" date="2026-09-25">
       <description>
         <p>
