@@ -42,7 +42,7 @@
   "was_titel": "What it is",
   "was": [
     "OrangeDeck draws the Bitcoin mempool the way it actually behaves. Every waiting transaction is a square. It piles up, it gets mined, it gets replaced, and you see it happen instead of reading a number.",
-    "Around that sit five more views: a block height clock for a tablet on the wall, figures from your own miner, a block explorer, watch-only addresses, and a market tab with candles, cumulative volume delta and liquidations."
+    "Around that sit five more views: a block height clock for a tablet on the wall, mining figures from your own Bitaxe and from the network, a block explorer, a market tab with candles, cumulative volume delta and liquidations, and watch-only addresses."
   ],
   "ansichten_titel": "Six views",
   "ansichten": [
@@ -55,20 +55,20 @@
       "Block height, fees, price, hashrate and the halving countdown, large and without controls. For a tablet on the wall."
     ],
     [
-      "Miner",
-      "Hashrate and best difficulty from your own Bitaxe, held against the network difficulty."
+      "Mining",
+      "Your own Bitaxe with hashrate, best share against the network difficulty, temperature and power. Beside it the network: hashrate, difficulty and the next adjustment."
     ],
     [
       "Explorer",
       "Search by height, hash, txid or address. Browse blocks and their contents, see what replaced what."
     ],
     [
-      "Watch",
-      "Your own addresses, watch-only. Your transactions are highlighted while they sit in the heap."
+      "Market",
+      "Price as candles or a line, volume, cumulative volume delta and liquidations, aggregated across exchanges."
     ],
     [
-      "Market",
-      "Candles, cumulative volume delta and liquidations, aggregated across exchanges."
+      "Wallet",
+      "Your own addresses or an xpub, watch-only. Your transactions are highlighted while they sit in the heap. Linux only for now."
     ]
   ],
   "wo_titel": "Where it runs",
@@ -83,7 +83,7 @@
     ],
     [
       "Inside DankMaterialShell",
-      "As a dashboard tab, a panel pill or a desktop widget."
+      "Listed in the DMS plugin directory. As a dashboard tab, a bar pill, a control center tile or a desktop widget."
     ],
     [
       "Windows",
@@ -130,8 +130,13 @@
     ],
     [
       "Linux",
-      "Version {v}. Flatpak bundle, install with flatpak install --user. The runtime comes from Flathub.",
+      "Version {v}. Flatpak bundle: flatpak install --user orangedeck-{v}.flatpak. The runtime comes from Flathub.",
       "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
+    ],
+    [
+      "DankMaterialShell",
+      "From the DMS plugin directory: dms plugins install orangedeck. Runs on its own and uses the app's data when the app is running.",
+      "https://github.com/orangedeck-dev/dms-plugin"
     ],
     [
       "Android APK",
@@ -178,6 +183,10 @@
       "Nothing. It is MIT licensed and there is no paid tier."
     ],
     [
+      "Which languages does it speak?",
+      "Thirteen: English, German, Spanish, French, Italian, Portuguese (Portugal and Brazil), Dutch, Russian, Japanese, Chinese, Polish and Czech. It starts in the system language, and numbers and dates follow the language you pick in the settings."
+    ],
+    [
       "Is the liquidation heatmap real data?",
       "No, and it says so on screen. Nobody publishes other people's positions; it is a model with its assumptions written out."
     ],
@@ -193,10 +202,10 @@
   "live": {
     "reiter": [
       "Feed",
-      "Uhr",
-      "Miner",
+      "Clock",
+      "Mining",
       "Explorer",
-      "Markt",
+      "Market",
       "Wallet"
     ],
     "live": "LIVE",
@@ -223,5 +232,28 @@
     "gerechnet": "derived from difficulty",
     "verbindet": "connecting …"
   },
-  "seo_kurz": "OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, Bitaxe figures, block explorer, watch-only addresses and market data. It runs on Linux, Windows and Android, is MIT licensed and requires no account."
+  "seo_kurz": "OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines six views in one window: mempool feed, block height clock, mining figures, block explorer, market data and watch-only addresses. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.",
+  "bilder_titel": "Screenshots",
+  "bilder": [
+    [
+      "uhr",
+      "Clock: block height, fees, price and the next difficulty adjustment."
+    ],
+    [
+      "mining",
+      "Mining: network hashrate and difficulty over one year."
+    ],
+    [
+      "explorer",
+      "Explorer: projected and confirmed blocks, the next block as tiles."
+    ],
+    [
+      "markt",
+      "Market: candles and volume from Binance and Bybit."
+    ]
+  ],
+  "vorschau_fuss": [
+    "Linux · Windows · Android · DankMaterialShell",
+    "MIT licensed, no account"
+  ]
 }

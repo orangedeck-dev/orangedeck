@@ -42,7 +42,7 @@
   "was_titel": "Was es ist",
   "was": [
     "OrangeDeck zeichnet den Bitcoin-Mempool so, wie er sich tatsächlich verhält. Jede wartende Transaktion ist ein Quadrat. Sie häuft sich, sie wird geschürft, sie wird verdrängt, und man sieht es geschehen, statt eine Zahl zu lesen.",
-    "Darum herum liegen fünf weitere Ansichten: eine Blockuhr für das Tablet an der Wand, Kennzahlen des eigenen Schürfers, ein Blockforscher, beobachtete Adressen, und ein Markt-Reiter mit Kerzen, kumuliertem Volumendelta und Liquidationen."
+    "Darum herum liegen fünf weitere Ansichten: eine Blockuhr für das Tablet an der Wand, Mining-Zahlen des eigenen Bitaxe und des Netzes, ein Blockforscher, ein Markt-Reiter mit Kerzen, kumuliertem Volumendelta und Liquidationen sowie beobachtete Adressen."
   ],
   "ansichten_titel": "Sechs Ansichten",
   "ansichten": [
@@ -55,20 +55,20 @@
       "Blockhöhe, Gebühren, Kurs, Hashrate und Halving-Countdown, groß und ohne Bedienung. Für das Tablet an der Wand."
     ],
     [
-      "Miner",
-      "Hashrate und beste Schwierigkeit des eigenen Bitaxe, gegen die Netzschwierigkeit gehalten."
+      "Mining",
+      "Der eigene Bitaxe mit Hashrate, bester Freigabe gegen die Netzschwierigkeit, Temperatur und Leistung. Daneben das Netz: Hashrate, Schwierigkeit und die nächste Anpassung."
     ],
     [
       "Explorer",
       "Suche nach Höhe, Hash, TxID oder Adresse. Blöcke und ihr Inhalt zum Durchblättern, samt Verdrängungen."
     ],
     [
-      "Wallet",
-      "Eigene Adressen, nur beobachtet. Die eigenen Transaktionen stechen hervor, solange sie in der Halde liegen."
+      "Markt",
+      "Kurs als Kerzen oder Linie, Volumen, kumuliertes Volumendelta und Liquidationen, über Börsen hinweg zusammengeführt."
     ],
     [
-      "Markt",
-      "Kerzen, kumuliertes Volumendelta und Liquidationen, über Börsen hinweg verdichtet."
+      "Wallet",
+      "Eigene Adressen oder ein xpub, nur beobachtet. Die eigenen Transaktionen stechen hervor, solange sie in der Halde liegen. Vorerst nur unter Linux."
     ]
   ],
   "wo_titel": "Wo es läuft",
@@ -83,7 +83,7 @@
     ],
     [
       "In DankMaterialShell",
-      "Als Dashboard-Reiter, Leistenpille oder Desktop-Widget."
+      "Im Plugin-Verzeichnis von DMS. Als Dashboard-Reiter, Leistenpille, Kachel im Kontrollzentrum oder Desktop-Widget."
     ],
     [
       "Windows",
@@ -118,7 +118,7 @@
     ],
     [
       "Zum Nachlesen",
-      "MIT-lizenziert, nichts verschleiert, und die Begründungen stehen in den Commits statt verloren zu gehen."
+      "MIT-lizenziert, nichts verschleiert, und die Begründungen stehen in den Commits, statt verloren zu gehen."
     ]
   ],
   "holen_titel": "Download",
@@ -130,8 +130,13 @@
     ],
     [
       "Linux",
-      "Fassung {v}. Flatpak-Bündel, installieren mit flatpak install --user. Die Laufzeit kommt von Flathub.",
+      "Fassung {v}. Flatpak-Bündel: flatpak install --user orangedeck-{v}.flatpak. Die Laufzeit kommt von Flathub.",
       "https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-{v}.flatpak"
+    ],
+    [
+      "DankMaterialShell",
+      "Aus dem Plugin-Verzeichnis von DMS: dms plugins install orangedeck. Läuft für sich allein und nimmt die Daten der Anwendung, wenn sie läuft.",
+      "https://github.com/orangedeck-dev/dms-plugin"
     ],
     [
       "Android-APK",
@@ -178,6 +183,10 @@
       "Nichts. MIT-lizenziert, und es gibt keine bezahlte Stufe."
     ],
     [
+      "Welche Sprachen spricht es?",
+      "Dreizehn: Deutsch, Englisch, Spanisch, Französisch, Italienisch, Portugiesisch (Portugal und Brasilien), Niederländisch, Russisch, Japanisch, Chinesisch, Polnisch und Tschechisch. Es startet in der Systemsprache, und Zahlen und Datum folgen der Sprache, die man in den Einstellungen wählt."
+    ],
+    [
       "Ist die Liquidations-Heatmap echt?",
       "Nein, und sie sagt es auf dem Schirm. Niemand veröffentlicht fremde Positionen; sie ist ein Modell mit ausgeschriebenen Annahmen."
     ],
@@ -194,14 +203,14 @@
     "reiter": [
       "Feed",
       "Uhr",
-      "Miner",
+      "Mining",
       "Explorer",
       "Markt",
       "Wallet"
     ],
     "live": "LIVE",
     "beispiel": "BEISPIEL",
-    "beispielHinweis": "Kein fremder Schürfer und keine fremde Wallet lassen sich von hier aus abfragen. Diese beiden Ansichten zeigen deshalb erfundene Zahlen. Die Anwendung zeigt Ihre eigenen.",
+    "beispielHinweis": "Kein fremder Schürfer und keine fremde Wallet lassen sich von hier aus abfragen. Diese beiden Ansichten zeigen deshalb erfundene Zahlen. Die Anwendung zeigt die eigenen.",
     "quelle": "Live aus dem Mempool",
     "block": "Block",
     "vorMin": "vor {0} Min",
@@ -223,5 +232,28 @@
     "gerechnet": "aus der Schwierigkeit gerechnet",
     "verbindet": "verbindet …"
   },
-  "seo_kurz": "OrangeDeck ist eine freie Desktop- und Android-Anwendung, die den Bitcoin-Mempool als lebendige Kachelgrafik zeichnet. Sie vereint sechs Ansichten in einem Fenster: Mempool-Feed, Blockuhr, Bitaxe-Kennzahlen, Blockforscher, beobachtete Adressen und Marktdaten. Sie läuft auf Linux, Windows und Android, ist MIT-lizenziert und verlangt kein Konto."
+  "seo_kurz": "OrangeDeck ist eine freie Desktop- und Android-Anwendung, die den Bitcoin-Mempool als lebendige Kachelgrafik zeichnet. Sie vereint sechs Ansichten in einem Fenster: Mempool-Feed, Blockuhr, Mining-Zahlen, Blockforscher, Marktdaten und beobachtete Adressen. Sie läuft auf Linux, Windows und Android und als Plugin für DankMaterialShell, spricht dreizehn Sprachen, ist MIT-lizenziert und verlangt kein Konto.",
+  "bilder_titel": "Bilder",
+  "bilder": [
+    [
+      "uhr",
+      "Uhr: Blockhöhe, Gebühren, Kurs und die nächste Schwierigkeitsanpassung."
+    ],
+    [
+      "mining",
+      "Mining: Hashrate und Schwierigkeit des Netzes über ein Jahr."
+    ],
+    [
+      "explorer",
+      "Explorer: erwartete und bestätigte Blöcke, der nächste Block als Kacheln."
+    ],
+    [
+      "markt",
+      "Markt: Kerzen und Volumen von Binance und Bybit."
+    ]
+  ],
+  "vorschau_fuss": [
+    "Linux · Windows · Android · DankMaterialShell",
+    "MIT-lizenziert, ohne Konto"
+  ]
 }

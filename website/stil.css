@@ -94,6 +94,14 @@ footer { border-top: 1px solid var(--linie); padding: 2rem 0 3rem; color: var(--
 .karten b { display: block; margin-bottom: 0.35rem; font-size: 1.02rem; }
 .karten .txt { color: var(--gedaempft); font-size: 0.94rem; }
 
+/* Bilder der Anwendung: zwei Spalten, auf dem Telefon eine. Ein Klick
+   oeffnet das Bild in voller Groesse. */
+.galerie { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+.galerie figure { margin: 0; }
+.galerie img { width: 100%; height: auto; display: block; border: 1px solid var(--linie); border-radius: 10px; }
+.galerie figcaption { color: var(--gedaempft); font-size: 0.86rem; margin-top: 0.45rem; }
+@media (max-width: 46rem) { .galerie { grid-template-columns: 1fr; } }
+
 .fragen { max-width: 46rem; }
 .fragen details { border-bottom: 1px solid var(--linie); padding: 0.9rem 0; }
 .fragen summary { cursor: pointer; font-weight: 600; list-style: none; }
@@ -112,12 +120,15 @@ footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
 
 /* ---- Der bewegte Kopf (live.js) ---------------------------------------- */
 /* **Das Standbild ist die Grundlage, nicht der Ersatz.** Es steht im Markup
-   und wird erst weggenommen, wenn `live.js` wirklich laeuft -- ohne Skript,
-   ohne Netz und bei prefers-reduced-motion bleibt es liegen. */
+   und wird erst weggenommen, wenn die ersten Transaktionen angekommen sind.
+   Ohne Skript, ohne Verbindung und bei prefers-reduced-motion bleibt es
+   liegen. Die bewegte Fassung wartet so lange versteckt in .live-huelle. */
 .live { position: relative; border: 1px solid var(--linie); border-radius: 12px; overflow: hidden; background: var(--grund-hell); }
-.live-standbild { width: 100%; display: block; }
+.live-standbild { width: 100%; height: auto; display: block; }
 .live.laeuft { aspect-ratio: 16 / 9; }
 .live.laeuft .live-standbild { display: none; }
+.live-huelle { display: none; height: 100%; }
+.live.laeuft .live-huelle { display: block; }
 
 .live-reiter { display: flex; gap: 1.3rem; padding: 0.75rem 1rem 0; flex-wrap: wrap; }
 .live-reiter-knopf {

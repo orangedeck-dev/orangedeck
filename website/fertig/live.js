@@ -17,8 +17,12 @@
 // unter `ui/qml/` und werden von `tools/website.py` hierher kopiert; nur die
 // Zeile `.pragma library` fällt weg, die kennt allein QML.
 //
-// **Ohne JavaScript, ohne Netz oder bei `prefers-reduced-motion` passiert
-// nichts** -- dann bleibt das Standbild liegen, das darunter steht.
+// **Das Standbild bleibt liegen, bis Daten da sind.** Ohne JavaScript, bei
+// `prefers-reduced-motion` und solange der WebSocket nichts geliefert hat,
+// sieht man das Bild aus `bilder/`. Erst die erste Nachricht mit
+// Transaktionen schaltet um. Vorher wurde das Bild sofort entfernt, und wer
+// mempool.space nicht erreichte (Werbeblocker, Firmennetz, Ausfall), sah
+// einen leeren Kasten.
 (function () {
   "use strict";
 
@@ -70,11 +74,13 @@
     this.ws = null;
     this.seite = 0;
 
-    wirt.classList.add("laeuft");
-    wirt.textContent = "";
+    this.wirt = wirt;
+    this.laeuft = false;
+    this.huelle = el("div", "live-huelle");
+    wirt.appendChild(this.huelle);
 
-    // Reiterzeile -- dieselbe Reihenfolge wie in der Anwendung
-    var namen = t("reiter") || ["Feed", "Uhr", "Miner", "Explorer", "Markt", "Wallet"];
+    // Reiterzeile in derselben Reihenfolge wie in der Anwendung
+    var namen = T.reiter || ["Feed", "Clock", "Mining", "Explorer", "Market", "Wallet"];
     this.reiter = el("div", "live-reiter");
     this.knoepfe = [];
     namen.forEach(function (n, i) {
@@ -84,10 +90,10 @@
       ich.reiter.appendChild(b);
       ich.knoepfe.push(b);
     });
-    wirt.appendChild(this.reiter);
+    this.huelle.appendChild(this.reiter);
 
     this.buehne = el("div", "live-buehne");
-    wirt.appendChild(this.buehne);
+    this.huelle.appendChild(this.buehne);
 
     this.seiten = [new Feed(), new Uhr(), new Miner(), new Explorer(), new Markt(), new Wallet()];
     this.seiten.forEach(function (s) {
@@ -96,11 +102,7 @@
       ich.buehne.appendChild(s.wurzel);
     });
 
-    this.zeigen(0, false);
     this.verbinden();
-
-    this.uhrwerk = window.setInterval(function () { ich.weiter(); }, WECHSEL_MS);
-    this.takt = window.setInterval(function () { ich.auffrischen(); }, 1000);
 
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) ich.anhalten();
@@ -110,6 +112,16 @@
       window.addEventListener(n, function () { ich.blick = Date.now(); }, { passive: true });
     });
   }
+
+  // Erst jetzt verschwindet das Standbild, und erst jetzt laufen die Uhren.
+  Kopf.prototype.losgehen = function () {
+    var ich = this;
+    this.laeuft = true;
+    this.wirt.classList.add("laeuft");
+    this.zeigen(0, false);
+    this.uhrwerk = window.setInterval(function () { ich.weiter(); }, WECHSEL_MS);
+    this.takt = window.setInterval(function () { ich.auffrischen(); }, 1000);
+  };
 
   Kopf.prototype.zeigen = function (i, vonHand) {
     if (vonHand) {
@@ -153,7 +165,7 @@
   Kopf.prototype.wecken = function () {
     this.blick = Date.now();
     if (!this.ws) this.verbinden();
-    this.zeigen(this.seite, false);
+    if (this.laeuft) this.zeigen(this.seite, false);
   };
 
   Kopf.prototype.verbinden = function () {
@@ -181,6 +193,10 @@
       if (m.mempoolInfo) st.info = m.mempoolInfo;
       if (m.da) st.da = m.da;
       if (typeof m.vBytesPerSecond === "number") st.vbps = m.vBytesPerSecond;
+      if (!ich.laeuft) {
+        if (m.transactions && m.transactions.length) ich.losgehen();
+        return;
+      }
       var s = ich.seiten[ich.seite];
       if (s.auffrischen) s.auffrischen(st);
     };

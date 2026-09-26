@@ -35,6 +35,11 @@ ORDNUNG = ["de", "en", "es", "fr", "it", "pt-pt", "nl", "ru", "ja", "zh",
 # kommt deshalb aus project() in CMakeLists.txt, derselben Stelle, die der
 # Bau benutzt: nach einem Release reicht ein Neubau der Seite. In den Texten
 # steht sie als {v}.
+# Bildschirmfotos der Anwendung, 1280 x 800, aufgenommen mit
+# `tools/ansichten.py` auf Englisch. Name ohne Endung, die Dateien liegen als
+# .webp in website/bilder/. Die Unterschriften stehen je Sprache in "bilder".
+BILD_B, BILD_H = 1280, 800
+
 FASSUNG = re.search(r"project\(orangedeck-app VERSION ([0-9.]+)",
                     (WURZEL / "CMakeLists.txt").read_text()).group(1)
 
@@ -83,6 +88,10 @@ def seite(d, alle):
          % (e(u.replace("{v}", FASSUNG)), e(n), e(t.replace("{v}", FASSUNG))))
         if u else ('<div class="knopf wartet"><b>%s</b><span>%s</span></div>' % (e(n), e(t)))
         for n, t, u in d["holen"])
+    bilder = "".join(
+        '<figure><a href="../bilder/%s.webp"><img src="../bilder/%s.webp" alt="%s" '
+        'width="%d" height="%d" loading="lazy"></a><figcaption>%s</figcaption></figure>'
+        % (n, n, e(u), BILD_B, BILD_H, e(u)) for n, u in d["bilder"])
     faq = "".join("<details><summary>%s</summary><p>%s</p></details>"
                   % (e(f), e(a)) for f, a in d["faq"])
     return """<!doctype html>
@@ -97,14 +106,14 @@ def seite(d, alle):
 <meta property="og:url" content="https://orangedeck.dev/%(code)s/">
 <meta property="og:locale" content="%(code)s">
 <meta property="og:site_name" content="OrangeDeck">
-<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau.png">
+<meta property="og:image" content="https://orangedeck.dev/bilder/vorschau-%(code)s.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="%(titel)s">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="%(titel)s">
 <meta name="twitter:description" content="%(beschreibung)s">
-<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau.png">
+<meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-%(code)s.png">
 <link rel="canonical" href="https://orangedeck.dev/%(code)s/">
 <link rel="icon" href="../bilder/symbol.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../stil.css">
@@ -129,12 +138,13 @@ def seite(d, alle):
 
   <section class="schau">
     <!-- **Das Standbild steht darunter, nicht daneben.** `live.js` blendet es
-         aus, sobald es laeuft; ohne JavaScript, ohne Netz und bei
+         erst aus, wenn die ersten Transaktionen angekommen sind; ohne
+         JavaScript, ohne Verbindung zu mempool.space und bei
          `prefers-reduced-motion` bleibt es liegen. Eine Seite, deren
          Herzstueck ein leeres Loch ist, waere schlechter als eine mit einem
          Bild -- und ein Pruefer wie ein Crawler sieht genau das zuerst. -->
     <div id="live" class="live">
-      <img class="live-standbild" src="../bilder/feed.png" alt="%(feed_alt)s">
+      <img class="live-standbild" src="../bilder/feed.webp" alt="%(feed_alt)s" width="1280" height="800">
     </div>
   </section>
 
@@ -146,6 +156,11 @@ def seite(d, alle):
   <section id="ansichten">
     <h2>%(ansichten_titel)s</h2>
     <ul class="karten">%(ansichten)s</ul>
+  </section>
+
+  <section id="bilder">
+    <h2>%(bilder_titel)s</h2>
+    <div class="galerie">%(bilder)s</div>
   </section>
 
   <section id="wo">
@@ -199,6 +214,7 @@ def seite(d, alle):
        "warum_titel": e(d["warum_titel"]), "warum": warum,
        "holen_titel": e(d["holen_titel"]), "holen": holen,
        "faq_titel": e(d["faq_titel"]), "faq": faq,
+       "bilder_titel": e(d["bilder_titel"]), "bilder": bilder,
        "fuss_cta": e(d["fuss_cta"]), "fuss_lizenz": e(d["fuss_lizenz"]),
        "fuss_herkunft": e(d["fuss_herkunft"]), "repo": e(d["repo"]),
        "sprache_waehlen": e(d["sprache_waehlen"]),
@@ -368,9 +384,10 @@ def ldjson(d):
         "license": "https://opensource.org/licenses/MIT",
         "isAccessibleForFree": True,
         "offers": frei,
-        "image": "https://orangedeck.dev/bilder/vorschau.png",
-        "screenshot": ["https://orangedeck.dev/bilder/%s.png" % n
-                       for n in ("feed", "uhr", "markt")],
+        "image": "https://orangedeck.dev/bilder/vorschau-%s.png" % d["code"],
+        # Der Feed steht oben als Standbild, die Galerie zeigt die anderen.
+        "screenshot": ["https://orangedeck.dev/bilder/%s.webp" % n
+                       for n in ["feed"] + [n for n, _ in d["bilder"]]],
         "codeRepository": d["repo"],
         "author": {"@type": "Person", "name": "Satoshoe",
                    "url": "https://github.com/satoshoe-dev"},
