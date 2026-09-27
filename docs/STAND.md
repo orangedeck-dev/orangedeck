@@ -33,7 +33,7 @@
   Phoenix-Wallet (Name aufgeloest, Kanal der Spendenwallet eroeffnet, kam an,
   obwohl die Spendenwallet nicht aktiv war) und on-chain an eine Adresse von
   der Seite (in Sparrow "Spenden" angekommen). Silent Payments von "Spenden"
-  an die eigene sp1 gesendet, Eingang in "Spenden SP" noch offen.
+  an die eigene sp1 gesendet, am selben Tag in "Spenden SP" angekommen (Frigate). Alle drei Wege geprueft.
 - Spendenlink auch auf GitHub (FUNDING.yml + Sponsorships in orangedeck und
   dms-plugin eingeschaltet), in beiden READMEs, in der Metainfo (ab dem
   naechsten Flatpak) und bei F-Droid (`Donate:`, Index live).
