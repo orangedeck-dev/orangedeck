@@ -404,5 +404,7 @@
   "spenden_zeigen": "Adres aanmaken",
   "spenden_kopieren": "Kopiëren",
   "spenden_kopiert": "Gekopieerd",
-  "spenden_fehler": "Er is op dit moment geen adres beschikbaar. Probeer het later nog eens."
+  "spenden_fehler": "Er is op dit moment geen adres beschikbaar. Probeer het later nog eens.",
+  "spenden_zur_seite": "Naar de donatiepagina",
+  "spenden_jede_wallet": "Gewoon adres"
 }

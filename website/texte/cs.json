@@ -404,5 +404,7 @@
   "spenden_zeigen": "Vytvořit adresu",
   "spenden_kopieren": "Kopírovat",
   "spenden_kopiert": "Zkopírováno",
-  "spenden_fehler": "Momentálně není k dispozici žádná adresa. Zkuste to prosím později."
+  "spenden_fehler": "Momentálně není k dispozici žádná adresa. Zkuste to prosím později.",
+  "spenden_zur_seite": "Přejít na stránku darů",
+  "spenden_jede_wallet": "Běžná adresa"
 }

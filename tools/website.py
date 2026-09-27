@@ -143,50 +143,101 @@ def spenden_werte():
     return w if (w.get("lno") or w.get("sp") or w.get("onchain")) else None
 
 
-def spenden(d):
-    """Der Spendenabschnitt der Startseite, oder "" wenn nichts eingerichtet ist.
+SPENDEN_PFAD = "donate/"
 
-    Drei Wege, weil keiner alle Wallets erreicht: BOLT12 (Lightning), Silent
-    Payments (BIP352) und eine wechselnde gewoehnliche Adresse fuer alles
-    andere. Darueber der Name nach BIP353, der die ersten beiden in sich
-    traegt. Die QR-Codes zeichnet `spenden.js` im Browser."""
+
+def spendenweg(d, w, art):
+    """Ein Weg mit QR, Text, Wert und Knopf. `art` ist "lno", "sp" oder
+    "onchain"; die On-chain-Adresse holt `spenden.js` erst auf Klick."""
+    kopier = '<button class="kopier" type="button" data-wert="%s">%s</button>'
+    if art == "onchain":
+        text = d["spenden_onchain"]
+        return ('<article class="spendeweg"><div class="qr leer" role="img" aria-label="%s"></div>'
+                '<div class="spendeweg-text"><h2>%s</h2><p>%s</p><code class="wert" hidden></code>'
+                '<div class="knopfreihe"><button class="tat" type="button" data-aktion="adresse">%s</button>'
+                '<button class="kopier" type="button" hidden>%s</button></div>'
+                '<p class="spende-fehler" hidden>%s</p></div></article>'
+                % (e(text[0]), e(text[0]), e(text[1]), e(d["spenden_zeigen"]),
+                   e(d["spenden_kopieren"]), e(d["spenden_fehler"])))
+    text = d["spenden_lightning"] if art == "lno" else d["spenden_sp"]
+    return ('<article class="spendeweg"><div class="qr" data-qr="%s" role="img" aria-label="%s"></div>'
+            '<div class="spendeweg-text"><h2>%s</h2><p>%s</p><code class="wert">%s</code>'
+            '<div class="knopfreihe">%s</div></div></article>'
+            % (e(w[art]), e(text[0]), e(text[0]), e(text[1]), e(w[art]),
+               kopier % (e(w[art]), e(d["spenden_kopieren"]))))
+
+
+def spenden_name(d, w):
+    """Der Name nach BIP353, der Lightning und Silent Payments in sich traegt."""
+    if not w.get("name"):
+        return ""
+    adr = "%s@orangedeck.dev" % w["name"]
+    return ('<div class="spende-name"><p class="bip353">&#8383;%s</p>'
+            '<div class="knopfreihe"><button class="kopier" type="button" data-wert="%s">%s</button></div>'
+            '<p>%s</p></div>' % (e(adr), e(adr), e(d["spenden_kopieren"]), e(d["spenden_name"])))
+
+
+def spenden(d):
+    """Der kurze Spendenhinweis auf der Startseite, oder "" wenn nichts
+    eingerichtet ist. Die Wege selbst stehen auf der eigenen Seite (donate/)."""
     w = spenden_werte()
     if not w:
         return ""
-    kopier = '<button class="kopier" type="button" data-wert="%s">%s</button>'
-    wege = []
-    for schluessel, text in (("lno", d["spenden_lightning"]), ("sp", d["spenden_sp"])):
-        if w.get(schluessel):
-            wege.append(
-                '<article class="spendeweg"><div class="qr" data-qr="%s" role="img" aria-label="%s"></div>'
-                '<div class="spendeweg-text"><h3>%s</h3><p>%s</p><code class="wert">%s</code>'
-                '<div class="knopfreihe">%s</div></div></article>'
-                % (e(w[schluessel]), e(text[0]), e(text[0]), e(text[1]), e(w[schluessel]),
-                   kopier % (e(w[schluessel]), e(d["spenden_kopieren"]))))
-    if w.get("onchain"):
-        text = d["spenden_onchain"]
-        wege.append(
-            '<article class="spendeweg"><div class="qr leer" role="img" aria-label="%s"></div>'
-            '<div class="spendeweg-text"><h3>%s</h3><p>%s</p><code class="wert" hidden></code>'
-            '<div class="knopfreihe"><button class="tat" type="button" data-aktion="adresse">%s</button>%s</div>'
-            '<p class="spende-fehler" hidden>%s</p></div></article>'
-            % (e(text[0]), e(text[0]), e(text[1]), e(d["spenden_zeigen"]),
-               '<button class="kopier" type="button" hidden>%s</button>' % e(d["spenden_kopieren"]),
-               e(d["spenden_fehler"])))
-    name = ""
-    if w.get("name"):
-        adr = "%s@orangedeck.dev" % w["name"]
-        name = ('<div class="spende-name"><p class="bip353">&#8383;%s</p>'
-                '<div class="knopfreihe">%s</div><p>%s</p></div>'
-                % (e(adr), kopier % (e(adr), e(d["spenden_kopieren"])), e(d["spenden_name"])))
     return """
-  <section id="spenden" data-kopiert="%s">
+  <section id="spenden">
     <h2>%s</h2>
     <p class="fuehrend klein-fuehrend">%s</p>
-    %s
-    <div class="spendewege">%s</div>
+    <div class="knopfreihe"><a class="tat" href="%s">%s</a></div>
   </section>
-""" % (e(d["spenden_kopiert"]), e(d["spenden_titel"]), e(d["spenden_text"]), name, "".join(wege))
+""" % (e(d["spenden_titel"]), e(d["spenden_text"]), SPENDEN_PFAD, e(d["spenden_zur_seite"]))
+
+
+def spendenseite(d, alle):
+    """Die Spendenseite: Umschalter Lightning | On-chain, unter On-chain ein
+    zweiter fuer normale Adresse | Silent Payments.
+
+    **Nie zwei QR-Codes auf einmal.** Zwei Codes nebeneinander verleiten die
+    Kamera, den falschen zu lesen. Der Umschalter sind Optionsfelder mit
+    Beschriftungen, die Felder blendet das Stylesheet ueber :checked ein und
+    aus; so geht es auch ohne JavaScript. Welche Wege es gibt, bestimmt
+    `website/spenden.json`; ein fehlender Wert laesst seinen Reiter weg."""
+    w = spenden_werte()
+    oc_wege = [a for a in ("onchain", "sp") if w.get(a)]
+    reiter = [(k, n) for k, n in (("ln", "Lightning"), ("oc", "On-chain"))
+              if (w.get("lno") if k == "ln" else oc_wege)]
+    felder = ""
+    for i, (k, n) in enumerate(reiter):
+        felder += '<input class="wahl" type="radio" name="weg" id="weg-%s"%s>' % (k, " checked" if i == 0 else "")
+    felder += '<div class="schalter" role="presentation">%s</div>' % "".join(
+        '<label for="weg-%s">%s</label>' % (k, n) for k, n in reiter)
+    if w.get("lno"):
+        felder += '<div class="feld feld-ln">%s</div>' % spendenweg(d, w, "lno")
+    if oc_wege:
+        innen = ""
+        if len(oc_wege) > 1:
+            namen = {"onchain": d["spenden_jede_wallet"], "sp": "Silent Payments"}
+            innen += "".join('<input class="wahl" type="radio" name="oc" id="oc-%s"%s>'
+                             % (a, " checked" if i == 0 else "") for i, a in enumerate(oc_wege))
+            innen += '<div class="schalter klein" role="presentation">%s</div>' % "".join(
+                '<label for="oc-%s">%s</label>' % (a, e(namen[a])) for a in oc_wege)
+        innen += "".join('<div class="feld feld-%s">%s</div>' % (a, spendenweg(d, w, a)) for a in oc_wege)
+        felder += '<div class="feld feld-oc">%s</div>' % innen
+    inhalt = """  <header class="hero unter">
+    <p class="pfad"><a href="../">%(zurueck)s</a> › %(titel)s</p>
+    <h1>%(titel)s</h1>
+    <p class="fuehrend">%(text)s</p>
+  </header>
+
+  <section id="spenden" class="spendenseite" data-kopiert="%(kopiert)s">
+    %(name)s
+    <div class="spendenwahl">%(felder)s</div>
+  </section>""" % {"zurueck": e(d["zurueck"]), "titel": e(d["spenden_titel"]),
+                   "text": e(d["spenden_text"]), "kopiert": e(d["spenden_kopiert"]),
+                   "name": spenden_name(d, w), "felder": felder}
+    ld = [webseite(d, {"h1": d["spenden_titel"], "beschreibung": d["spenden_text"]}, SPENDEN_PFAD),
+          pfadleiste(d, d["spenden_titel"], SPENDEN_PFAD)]
+    return rahmen(d, alle, SPENDEN_PFAD, "%s | OrangeDeck" % d["spenden_titel"],
+                  d["spenden_text"], inhalt, ld, 2)
 
 
 def symbol(name, klasse="symbol"):
@@ -259,7 +310,7 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
                    for u in d["unterseiten"])
     mehr += '<a href="%schangelog/">%s</a>' % (start, e(d["neu_link"]))
     if spenden_werte():
-        mehr += '<a href="%s#spenden">%s</a>' % (start, e(d["spenden_titel"]))
+        mehr += '<a href="%s%s">%s</a>' % (start, SPENDEN_PFAD, e(d["spenden_titel"]))
     profile = "".join('<a href="%s" aria-label="%s" title="%s">%s</a>' % (e(u), e(n), e(n), symbol(s))
                       for n, u, s in PROFILE)
     rc = recht_code(d)
@@ -388,15 +439,16 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
        "repo": e(d["repo"]),
        "sprache_waehlen": e(d["sprache_waehlen"]),
        "ld": json.dumps(ld, ensure_ascii=False, separators=(",", ":")),
-       "skripte": "" if pfad else (
+       "skripte": ("" if pfad else (
            '<script>window.ORANGEDECK_LIVE = %s;</script>\n'
            '<script src="../mondrian.js"></script>\n'
            '<script src="../colors.js"></script>\n'
            '<script src="../live.js" defer></script>\n'
            '<script src="../lichtbox.js" defer></script>'
            % json.dumps({"s": APP_TEXTE[d["code"]]}, ensure_ascii=False, separators=(",", ":"))
-           + ('\n<script src="../qr.js" defer></script>\n<script src="../spenden.js" defer></script>'
-              if spenden_werte() else ""))}
+           )) + (
+           '<script src="../../qr.js" defer></script>\n<script src="../../spenden.js" defer></script>'
+           if pfad == SPENDEN_PFAD else "")}
 
 
 def seite(d, alle):
@@ -671,7 +723,8 @@ def neuseite(d, alle):
 
 
 def alle_pfade(d):
-    return [""] + [u["slug"] + "/" for u in d["unterseiten"]] + ["changelog/"]
+    return ([""] + [u["slug"] + "/" for u in d["unterseiten"]] + ["changelog/"]
+            + ([SPENDEN_PFAD] if spenden_werte() else []))
 
 
 # Schluessel fuer IndexNow (Bing, Yandex, Seznam, Naver). Die Datei
@@ -1011,6 +1064,8 @@ def main():
         seiten = [("", seite(d, alle))]
         seiten += [(u["slug"] + "/", unterseite(d, alle, u)) for u in d["unterseiten"]]
         seiten.append(("changelog/", neuseite(d, alle)))
+        if spenden_werte():
+            seiten.append((SPENDEN_PFAD, spendenseite(d, alle)))
         if d["code"] in RECHT_SPRACHEN:
             seiten += [(art + "/", rechtsseite(d, alle, art)) for art in ("imprint", "privacy")]
         for pfad, inhalt in seiten:

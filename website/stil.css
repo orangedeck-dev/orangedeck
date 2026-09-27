@@ -398,3 +398,32 @@ section[id], .anker { scroll-margin-top: 90px; }
   .spendeweg { grid-template-columns: 1fr; }
   .qr { width: min(15rem, 100%); }
 }
+
+/* ---- Spendenseite: Umschalter ------------------------------------------- */
+/* Optionsfelder statt Skript: das Feld hinter dem gewaehlten Knopf steht da,
+   alle anderen sind aus. Die Felder selbst sind unsichtbar, aber mit der
+   Tastatur erreichbar; der Fokus zeigt sich an der Beschriftung. */
+.spendenseite { border-top: 0; padding-top: 0; }
+.spendenwahl, .feld-oc { display: grid; }
+.wahl { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.schalter { display: inline-flex; justify-self: start; gap: 0.25rem; padding: 0.3rem; margin: 0 0 1.2rem;
+  border: 1px solid var(--linie); border-radius: 12px; background: rgba(27, 24, 34, 0.6);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.schalter label { padding: 0.55rem 1.3rem; border-radius: 9px; cursor: pointer; font-weight: 600; color: var(--gedaempft); }
+.schalter label:hover { color: var(--schrift); }
+.schalter.klein { margin: 0 0 0.4rem; }
+.schalter.klein label { padding: 0.4rem 1rem; font-size: 0.92rem; }
+.spendenwahl .feld { display: none; }
+#weg-ln:checked ~ .schalter label[for="weg-ln"], #weg-oc:checked ~ .schalter label[for="weg-oc"],
+#oc-onchain:checked ~ .schalter label[for="oc-onchain"], #oc-sp:checked ~ .schalter label[for="oc-sp"] {
+  background: var(--orange); color: #14100a; }
+#weg-ln:focus-visible ~ .schalter label[for="weg-ln"], #weg-oc:focus-visible ~ .schalter label[for="weg-oc"],
+#oc-onchain:focus-visible ~ .schalter label[for="oc-onchain"], #oc-sp:focus-visible ~ .schalter label[for="oc-sp"] {
+  outline: 2px solid var(--schrift); outline-offset: 2px; }
+#weg-ln:checked ~ .feld-ln, #weg-oc:checked ~ .feld-oc { display: grid; }
+#oc-onchain:checked ~ .feld-onchain, #oc-sp:checked ~ .feld-sp { display: block; }
+/* Nur ein On-chain-Weg eingerichtet: dann gibt es den inneren Umschalter nicht. */
+.feld-oc > .feld:only-child, .feld-oc > .feld:first-child:last-child { display: block; }
+.spendenseite .spendeweg h2 { font-size: 1.1rem; margin: 0 0 0.3rem; }
+/* Keine Linien um den Block: darunter beginnt gleich der Fuss mit seiner eigenen. */
+.spendenseite .spendeweg, .spendenseite .spendeweg:last-child { border: 0; padding: 0.6rem 0 0.4rem; }

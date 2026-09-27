@@ -404,5 +404,7 @@
   "spenden_zeigen": "アドレスを作成",
   "spenden_kopieren": "コピー",
   "spenden_kopiert": "コピーしました",
-  "spenden_fehler": "現在利用できるアドレスがありません。しばらくしてからもう一度お試しください。"
+  "spenden_fehler": "現在利用できるアドレスがありません。しばらくしてからもう一度お試しください。",
+  "spenden_zur_seite": "寄付のページへ",
+  "spenden_jede_wallet": "通常のアドレス"
 }

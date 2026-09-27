@@ -52,8 +52,11 @@ Ausgabeverzeichnis.
 
 ## Spenden
 
-Der Abschnitt `#spenden` erscheint erst, wenn `website/spenden.json` etwas
-enthaelt: `name` (BIP353, ergibt `₿name@orangedeck.dev`), `lno` (BOLT12-Angebot
+Die Spendenseite `<sprache>/donate/` (dazu ein kurzer Hinweis `#spenden` auf
+der Startseite und ein Link im Fuss) erscheint erst, wenn
+`website/spenden.json` etwas enthaelt. Umschalter Lightning | On-chain, unter
+On-chain normale Adresse | Silent Payments, nie zwei QR-Codes auf einmal.
+Felder: `name` (BIP353, ergibt `₿name@orangedeck.dev`), `lno` (BOLT12-Angebot
 aus Phoenix), `sp` (Silent-Payment-Adresse aus Sparrow) und `onchain` (true,
 sobald die Function eingerichtet ist). Leere Felder fallen einzeln weg.
 

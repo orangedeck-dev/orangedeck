@@ -404,5 +404,7 @@
   "spenden_zeigen": "Crear dirección",
   "spenden_kopieren": "Copiar",
   "spenden_kopiert": "Copiado",
-  "spenden_fehler": "Ahora mismo no hay ninguna dirección disponible. Vuelve a intentarlo más tarde."
+  "spenden_fehler": "Ahora mismo no hay ninguna dirección disponible. Vuelve a intentarlo más tarde.",
+  "spenden_zur_seite": "Ir a la página de donaciones",
+  "spenden_jede_wallet": "Dirección normal"
 }

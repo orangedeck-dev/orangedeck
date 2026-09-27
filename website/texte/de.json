@@ -404,5 +404,7 @@
   "spenden_zeigen": "Adresse erzeugen",
   "spenden_kopieren": "Kopieren",
   "spenden_kopiert": "Kopiert",
-  "spenden_fehler": "Gerade gibt es keine Adresse. Bitte später noch einmal versuchen."
+  "spenden_fehler": "Gerade gibt es keine Adresse. Bitte später noch einmal versuchen.",
+  "spenden_zur_seite": "Zur Spendenseite",
+  "spenden_jede_wallet": "Normale Adresse"
 }

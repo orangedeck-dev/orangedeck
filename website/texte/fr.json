@@ -404,5 +404,7 @@
   "spenden_zeigen": "Créer une adresse",
   "spenden_kopieren": "Copier",
   "spenden_kopiert": "Copié",
-  "spenden_fehler": "Aucune adresse disponible pour le moment. Veuillez réessayer plus tard."
+  "spenden_fehler": "Aucune adresse disponible pour le moment. Veuillez réessayer plus tard.",
+  "spenden_zur_seite": "Vers la page des dons",
+  "spenden_jede_wallet": "Adresse classique"
 }

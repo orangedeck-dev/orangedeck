@@ -404,5 +404,7 @@
   "spenden_zeigen": "Create address",
   "spenden_kopieren": "Copy",
   "spenden_kopiert": "Copied",
-  "spenden_fehler": "No address available right now. Please try again later."
+  "spenden_fehler": "No address available right now. Please try again later.",
+  "spenden_zur_seite": "To the donation page",
+  "spenden_jede_wallet": "Regular address"
 }

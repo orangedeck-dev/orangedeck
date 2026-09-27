@@ -404,5 +404,7 @@
   "spenden_zeigen": "Создать адрес",
   "spenden_kopieren": "Копировать",
   "spenden_kopiert": "Скопировано",
-  "spenden_fehler": "Сейчас адрес недоступен. Попробуйте позже."
+  "spenden_fehler": "Сейчас адрес недоступен. Попробуйте позже.",
+  "spenden_zur_seite": "Перейти к пожертвованиям",
+  "spenden_jede_wallet": "Обычный адрес"
 }

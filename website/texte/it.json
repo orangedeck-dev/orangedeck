@@ -404,5 +404,7 @@
   "spenden_zeigen": "Crea indirizzo",
   "spenden_kopieren": "Copia",
   "spenden_kopiert": "Copiato",
-  "spenden_fehler": "Al momento non c’è nessun indirizzo disponibile. Riprova più tardi."
+  "spenden_fehler": "Al momento non c’è nessun indirizzo disponibile. Riprova più tardi.",
+  "spenden_zur_seite": "Alla pagina delle donazioni",
+  "spenden_jede_wallet": "Indirizzo normale"
 }

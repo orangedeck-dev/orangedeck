@@ -404,5 +404,7 @@
   "spenden_zeigen": "Utwórz adres",
   "spenden_kopieren": "Kopiuj",
   "spenden_kopiert": "Skopiowano",
-  "spenden_fehler": "W tej chwili nie ma dostępnego adresu. Spróbuj ponownie później."
+  "spenden_fehler": "W tej chwili nie ma dostępnego adresu. Spróbuj ponownie później.",
+  "spenden_zur_seite": "Przejdź do strony darowizn",
+  "spenden_jede_wallet": "Zwykły adres"
 }

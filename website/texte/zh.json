@@ -404,5 +404,7 @@
   "spenden_zeigen": "生成地址",
   "spenden_kopieren": "复制",
   "spenden_kopiert": "已复制",
-  "spenden_fehler": "目前没有可用的地址，请稍后再试。"
+  "spenden_fehler": "目前没有可用的地址，请稍后再试。",
+  "spenden_zur_seite": "前往捐赠页面",
+  "spenden_jede_wallet": "普通地址"
 }

@@ -404,5 +404,7 @@
   "spenden_zeigen": "Gerar endereço",
   "spenden_kopieren": "Copiar",
   "spenden_kopiert": "Copiado",
-  "spenden_fehler": "No momento não há nenhum endereço disponível. Tente de novo mais tarde."
+  "spenden_fehler": "No momento não há nenhum endereço disponível. Tente de novo mais tarde.",
+  "spenden_zur_seite": "Ir para a página de doações",
+  "spenden_jede_wallet": "Endereço normal"
 }
