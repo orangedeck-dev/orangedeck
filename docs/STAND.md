@@ -37,6 +37,13 @@
 - Spendenlink auch auf GitHub (FUNDING.yml + Sponsorships in orangedeck und
   dms-plugin eingeschaltet), in beiden READMEs, in der Metainfo (ab dem
   naechsten Flatpak) und bei F-Droid (`Donate:`, Index live).
+- Bekanntgemacht 27.09.: Einundzwanzig-Shoutout, r/BitAxe, r/Bitcoin (Video
+  `~/Videos/orangedeck/orangedeck-feed-neuer-block.mp4`); Satoshoe-Reihe S1-S8
+  auf X in Publer geplant (29.09.-15.10.). Tagesabschluss:
+  `~/Schreibtisch/desktop-optik/STAND-2026-09-27.md`.
+- Lokal: Flatpak dev.orangedeck.OrangeDeck 0.2.15 installiert, alte
+  store._21rebel.orangedeck entfernt, Reste in
+  `~/.local/share/orangedeck/alt-2026-09-27/`.
 - WoS-Rueckfall gestrichen; phoenixd verworfen (nimmt nur an, solange er laeuft).
 
 ## NACHTRAG 26.09.2026 abends -- 0.2.15 ohne Wallet
