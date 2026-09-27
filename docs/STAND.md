@@ -34,6 +34,9 @@
   obwohl die Spendenwallet nicht aktiv war) und on-chain an eine Adresse von
   der Seite (in Sparrow "Spenden" angekommen). Silent Payments von "Spenden"
   an die eigene sp1 gesendet, Eingang in "Spenden SP" noch offen.
+- Spendenlink auch auf GitHub (FUNDING.yml + Sponsorships in orangedeck und
+  dms-plugin eingeschaltet), in beiden READMEs, in der Metainfo (ab dem
+  naechsten Flatpak) und bei F-Droid (`Donate:`, Index live).
 - WoS-Rueckfall gestrichen; phoenixd verworfen (nimmt nur an, solange er laeuft).
 
 ## NACHTRAG 26.09.2026 abends -- 0.2.15 ohne Wallet
