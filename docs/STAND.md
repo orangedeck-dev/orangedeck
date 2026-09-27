@@ -29,8 +29,11 @@
   m/84'/0'/0', Gap-Limit 200). Live gemessen: Indizes 44, 72, 162 aus dem
   richtigen Bereich. Beide Wallets aus denselben 12 Woertern (Papier beim
   Anwender).
-- Phoenix auf dem Galaxy: die erste Lightning-Zahlung eroeffnet den Kanal
-  (Gebuehr). Testzahlungen Lightning und on-chain stehen aus.
+- **Testzahlungen 27.09.:** Lightning an `sats@orangedeck.dev` aus der alten
+  Phoenix-Wallet (Name aufgeloest, Kanal der Spendenwallet eroeffnet, kam an,
+  obwohl die Spendenwallet nicht aktiv war) und on-chain an eine Adresse von
+  der Seite (in Sparrow "Spenden" angekommen). Silent Payments von "Spenden"
+  an die eigene sp1 gesendet, Eingang in "Spenden SP" noch offen.
 - WoS-Rueckfall gestrichen; phoenixd verworfen (nimmt nur an, solange er laeuft).
 
 ## NACHTRAG 26.09.2026 abends -- 0.2.15 ohne Wallet
