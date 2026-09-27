@@ -15,18 +15,22 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
-## MORGEN ALS ERSTES (27.09.2026): Spenden
+## 27.09.2026 -- Spenden live (f5d2e3d)
 
-Plan und Quellen im Tagesabschluss
-`~/Schreibtisch/desktop-optik/STAND-2026-09-26.md`, Abschnitt 3a und 6.
-Kurz: eigene Spendenwallet in Phoenix (BOLT12-Angebot), dazu eine
-Silent-Payment-Adresse (Sparrow ab 2.5), DNSSEC fuer orangedeck.dev an,
-TXT `<name>.user._bitcoin-payment.orangedeck.dev` =
-`bitcoin:?lno=<BOLT12>&sp=<sp1>` (BIP353). Wahlweise Rueckfall als
-LNURL-Adresse per Pages Function auf Wallet of Satoshi. Danach
-Spendenabschnitt in 13 Sprachen, Datenschutz ergaenzen, Punkt
-"Spendenteil" in `website/README.md` abhaken. Name (spenden@, donate@,
-sats@) ist noch offen.
+- Abschnitt `#spenden` auf der Startseite, 13 Sprachen, Anleitung in
+  `website/README.md` (Abschnitt Spenden). Werte in `website/spenden.json`.
+- **₿sats@orangedeck.dev**: TXT `sats.user._bitcoin-payment` mit `lno` (Phoenix,
+  eigene Spendenwallet auf dem Galaxy) und `sp` (Sparrow-Wallet "Spenden SP").
+  DNSSEC eingeschaltet; der DS-Eintrag in .dev war am 27.09. nachmittags noch
+  nicht da -- nachpruefen (`dig +short DS orangedeck.dev`).
+- **Wechselnde Adresse**: `functions/api/spenden-adresse.js`, Secret
+  `SPENDEN_ZPUB` im Projekt orangedeck-site (xpub der Sparrow-Wallet "Spenden",
+  m/84'/0'/0', Gap-Limit 200). Live gemessen: Indizes 44, 72, 162 aus dem
+  richtigen Bereich. Beide Wallets aus denselben 12 Woertern (Papier beim
+  Anwender).
+- Phoenix auf dem Galaxy: die erste Lightning-Zahlung eroeffnet den Kanal
+  (Gebuehr). Testzahlungen Lightning und on-chain stehen aus.
+- WoS-Rueckfall gestrichen; phoenixd verworfen (nimmt nur an, solange er laeuft).
 
 ## NACHTRAG 26.09.2026 abends -- 0.2.15 ohne Wallet
 
