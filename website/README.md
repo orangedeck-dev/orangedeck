@@ -50,6 +50,29 @@ darauf zeigen kann:
 Wer lieber bauen laesst: `python3 tools/website.py` als Bauschritt, gleiches
 Ausgabeverzeichnis.
 
+## Spenden
+
+Der Abschnitt `#spenden` erscheint erst, wenn `website/spenden.json` etwas
+enthaelt: `name` (BIP353, ergibt `₿name@orangedeck.dev`), `lno` (BOLT12-Angebot
+aus Phoenix), `sp` (Silent-Payment-Adresse aus Sparrow) und `onchain` (true,
+sobald die Function eingerichtet ist). Leere Felder fallen einzeln weg.
+
+Die wechselnde On-chain-Adresse kommt aus `functions/api/spenden-adresse.js`
+(Pages Function, liegt im Repo neben `website/`). Im Pages-Projekt
+`orangedeck-site` unter Settings > Variables and Secrets:
+
+    SPENDEN_ZPUB     zpub der Spendenwallet, als Secret
+    SPENDEN_BEREICH  optional, Standard 200; Gap-Limit in Sparrow mindestens so gross
+
+Vor dem Einschalten `node tools/spenden/test.mjs <zpub> 20` und die Adressen
+mit dem Reiter Addresses in Sparrow vergleichen. Die zwei gebuendelten
+Bibliotheken (`functions/_lib/ableitung.js`, `website/qr.js`) baut
+`tools/spenden/bau.sh` neu.
+
+BIP353 selbst ist ein DNS-Eintrag (DNSSEC muss an sein):
+
+    <name>.user._bitcoin-payment.orangedeck.dev  TXT  "bitcoin:?lno=<lno>&sp=<sp1>"
+
 ## Was noch fehlt
 
 - **Rechtstexte.** Zurueckgestellt: der Betreiber sitzt nicht in der EU,
@@ -57,6 +80,4 @@ Ausgabeverzeichnis.
   doch welche gebraucht werden, gehoeren sie in denselben Erzeuger -- als
   eigene Textdatei je Sprache, nicht als handgeschriebene Extraseite.
 - **Die elf uebrigen Sprachen.**
-- **Der Spendenteil**: eine wechselnde Adresse, damit sich Zahlungen nicht
-  einer einzigen zuordnen lassen. Braucht einen xpub und eine Ableitung, also
-  mehr als eine statische Seite.
+

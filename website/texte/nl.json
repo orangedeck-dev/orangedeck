@@ -385,5 +385,24 @@
   "impressum_link": "Juridische informatie",
   "bild_zu": "Sluiten",
   "bild_vor": "Volgende",
-  "bild_zurueck": "Vorige"
+  "bild_zurueck": "Vorige",
+  "spenden_titel": "Donaties",
+  "spenden_text": "OrangeDeck is gratis en blijft dat ook. Wil je het werk eraan steunen, dan kun je bitcoin sturen. Er is geen account en geen tegenprestatie, en de site slaat niet op wie er gedoneerd heeft.",
+  "spenden_name": "Wallets die namen volgens BIP 353 omzetten, vinden via dit adres zelf de juiste weg, via Lightning of on-chain.",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "Een vast aanbod dat je zo vaak kunt betalen als je wilt. Daarvoor is een wallet met BOLT12 nodig, zoals Phoenix."
+  ],
+  "spenden_sp": [
+    "On-chain met Silent Payments",
+    "Een vast adres waaruit de wallet voor elke betaling een eigen adres maakt. Daarvoor is een wallet met BIP 352 nodig, zoals Sparrow, Cake Wallet of Nunchuk."
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "Werkt met elke wallet. De site maakt op verzoek een nieuw adres aan, zodat donaties niet aan één enkel adres te koppelen zijn."
+  ],
+  "spenden_zeigen": "Adres aanmaken",
+  "spenden_kopieren": "Kopiëren",
+  "spenden_kopiert": "Gekopieerd",
+  "spenden_fehler": "Er is op dit moment geen adres beschikbaar. Probeer het later nog eens."
 }

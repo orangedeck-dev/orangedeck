@@ -385,5 +385,24 @@
   "impressum_link": "Aviso legal",
   "bild_zu": "Cerrar",
   "bild_vor": "Siguiente",
-  "bild_zurueck": "Anterior"
+  "bild_zurueck": "Anterior",
+  "spenden_titel": "Donaciones",
+  "spenden_text": "OrangeDeck es gratuito y lo seguirá siendo. Si quieres apoyar el trabajo que hay detrás, puedes enviar bitcoin. No hay cuenta ni contrapartida, y la página no guarda quién ha donado.",
+  "spenden_name": "Las wallets que resuelven nombres según BIP 353 encuentran por sí mismas el camino adecuado a través de esta dirección, por Lightning u on-chain.",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "Una oferta fija que se puede pagar tantas veces como se quiera. Hace falta una wallet con BOLT12, como Phoenix."
+  ],
+  "spenden_sp": [
+    "On-chain con Silent Payments",
+    "Una dirección fija a partir de la cual la wallet crea una distinta para cada pago. Hace falta una wallet con BIP 352, como Sparrow, Cake Wallet o Nunchuk."
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "Funciona con cualquier wallet. La página crea una dirección nueva cuando se la pides, para que las donaciones no se puedan asociar a una sola."
+  ],
+  "spenden_zeigen": "Crear dirección",
+  "spenden_kopieren": "Copiar",
+  "spenden_kopiert": "Copiado",
+  "spenden_fehler": "Ahora mismo no hay ninguna dirección disponible. Vuelve a intentarlo más tarde."
 }

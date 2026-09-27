@@ -130,6 +130,65 @@ PROFILE = [("GitHub", "https://github.com/orangedeck-dev/orangedeck", "github")]
 RECHT_SPRACHEN = ("de", "en")
 
 
+SPENDEN_DATEI = QUELLE / "spenden.json"
+
+
+def spenden_werte():
+    """Was in `website/spenden.json` steht: Name (BIP353), BOLT12-Angebot,
+    Silent-Payment-Adresse und ob die Function mit dem zpub eingerichtet ist.
+
+    **Leer heisst: kein Abschnitt.** So kann der Code auf `main`, bevor die
+    Wallets stehen, und die Seite zeigt nichts Halbes."""
+    w = json.loads(SPENDEN_DATEI.read_text(encoding="utf-8"))
+    return w if (w.get("lno") or w.get("sp") or w.get("onchain")) else None
+
+
+def spenden(d):
+    """Der Spendenabschnitt der Startseite, oder "" wenn nichts eingerichtet ist.
+
+    Drei Wege, weil keiner alle Wallets erreicht: BOLT12 (Lightning), Silent
+    Payments (BIP352) und eine wechselnde gewoehnliche Adresse fuer alles
+    andere. Darueber der Name nach BIP353, der die ersten beiden in sich
+    traegt. Die QR-Codes zeichnet `spenden.js` im Browser."""
+    w = spenden_werte()
+    if not w:
+        return ""
+    kopier = '<button class="kopier" type="button" data-wert="%s">%s</button>'
+    wege = []
+    for schluessel, text in (("lno", d["spenden_lightning"]), ("sp", d["spenden_sp"])):
+        if w.get(schluessel):
+            wege.append(
+                '<article class="spendeweg"><div class="qr" data-qr="%s" role="img" aria-label="%s"></div>'
+                '<div class="spendeweg-text"><h3>%s</h3><p>%s</p><code class="wert">%s</code>'
+                '<div class="knopfreihe">%s</div></div></article>'
+                % (e(w[schluessel]), e(text[0]), e(text[0]), e(text[1]), e(w[schluessel]),
+                   kopier % (e(w[schluessel]), e(d["spenden_kopieren"]))))
+    if w.get("onchain"):
+        text = d["spenden_onchain"]
+        wege.append(
+            '<article class="spendeweg"><div class="qr leer" role="img" aria-label="%s"></div>'
+            '<div class="spendeweg-text"><h3>%s</h3><p>%s</p><code class="wert" hidden></code>'
+            '<div class="knopfreihe"><button class="tat" type="button" data-aktion="adresse">%s</button>%s</div>'
+            '<p class="spende-fehler" hidden>%s</p></div></article>'
+            % (e(text[0]), e(text[0]), e(text[1]), e(d["spenden_zeigen"]),
+               '<button class="kopier" type="button" hidden>%s</button>' % e(d["spenden_kopieren"]),
+               e(d["spenden_fehler"])))
+    name = ""
+    if w.get("name"):
+        adr = "%s@orangedeck.dev" % w["name"]
+        name = ('<div class="spende-name"><p class="bip353">&#8383;%s</p>'
+                '<div class="knopfreihe">%s</div><p>%s</p></div>'
+                % (e(adr), kopier % (e(adr), e(d["spenden_kopieren"])), e(d["spenden_name"])))
+    return """
+  <section id="spenden" data-kopiert="%s">
+    <h2>%s</h2>
+    <p class="fuehrend klein-fuehrend">%s</p>
+    %s
+    <div class="spendewege">%s</div>
+  </section>
+""" % (e(d["spenden_kopiert"]), e(d["spenden_titel"]), e(d["spenden_text"]), name, "".join(wege))
+
+
 def symbol(name, klasse="symbol"):
     """Ein Symbol aus website/symbole/ (Simple Icons, CC0) als eingebettetes
     SVG in der Textfarbe. Eingebettet statt verlinkt: keine weitere Anfrage,
@@ -199,6 +258,8 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
     mehr = "".join('<a href="%s%s/">%s</a>' % (start, u["slug"], e(u["name"]))
                    for u in d["unterseiten"])
     mehr += '<a href="%schangelog/">%s</a>' % (start, e(d["neu_link"]))
+    if spenden_werte():
+        mehr += '<a href="%s#spenden">%s</a>' % (start, e(d["spenden_titel"]))
     profile = "".join('<a href="%s" aria-label="%s" title="%s">%s</a>' % (e(u), e(n), e(n), symbol(s))
                       for n, u, s in PROFILE)
     rc = recht_code(d)
@@ -333,7 +394,9 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
            '<script src="../colors.js"></script>\n'
            '<script src="../live.js" defer></script>\n'
            '<script src="../lichtbox.js" defer></script>'
-           % json.dumps({"s": APP_TEXTE[d["code"]]}, ensure_ascii=False, separators=(",", ":")))}
+           % json.dumps({"s": APP_TEXTE[d["code"]]}, ensure_ascii=False, separators=(",", ":"))
+           + ('\n<script src="../qr.js" defer></script>\n<script src="../spenden.js" defer></script>'
+              if spenden_werte() else ""))}
 
 
 def seite(d, alle):
@@ -467,6 +530,7 @@ def seite(d, alle):
     <ol class="gruende">%(warum)s</ol>
   </section>
 
+%(spenden)s
   <section id="faq">
     <h2>%(faq_titel)s</h2>
     <div class="fragen">%(faq)s</div>
@@ -480,10 +544,7 @@ def seite(d, alle):
     <button class="lb-knopf lb-zu" type="button" aria-label="%(bild_zu)s">&#215;</button>
   </dialog>
 
-  <!-- Hier kommt spaeter der Spendenteil hin: eine wechselnde Adresse, damit
-       sich Zahlungen nicht einer einzigen zuordnen lassen. Braucht einen xpub
-       und eine Ableitung, also mehr als eine statische Seite -- deshalb
-       bewusst noch nicht drin. -->""" % {
+""" % {
         "hero_titel": e(d["hero_titel"]), "hero_text": e(d["hero_text"]),
         "cta1": e(d["hero_cta1"]), "cta1z": e(d["hero_cta1_ziel"]),
         "cta2": e(d["hero_cta2"]), "cta2z": e(d["hero_cta2_ziel"]),
@@ -499,6 +560,7 @@ def seite(d, alle):
         "quellen_titel": e(d["quellen_titel"]), "quellen": quellen,
         "warum_titel": e(d["warum_titel"]), "warum": warum,
         "faq_titel": e(d["faq_titel"]), "faq": faq,
+        "spenden": spenden(d),
         "bild_zu": e(d["bild_zu"]), "bild_vor": e(d["bild_vor"]), "bild_zurueck": e(d["bild_zurueck"])}
     return rahmen(d, alle, "", d["titel"], d["beschreibung"], inhalt, ldjson(d), 1)
 
@@ -917,7 +979,8 @@ def fassungen():
     """
     import hashlib
     kennung = {}
-    for name in ("stil.css", "live.js", "lichtbox.js", "mondrian.js", "colors.js"):
+    for name in ("stil.css", "live.js", "lichtbox.js", "mondrian.js", "colors.js",
+                 "qr.js", "spenden.js"):
         kennung[name] = hashlib.sha256((ZIEL / name).read_bytes()).hexdigest()[:10]
     # Die Bilder ebenso: das Logo ohne Rahmen kam am 26.09.2026 erst Stunden
     # spaeter an, weil Cloudflare das alte symbol.svg weiter auslieferte.
@@ -961,6 +1024,8 @@ def main():
         shutil.copy2(QUELLE / "stil.css", ZIEL / "stil.css")
         shutil.copy2(QUELLE / "live.js", ZIEL / "live.js")
         shutil.copy2(QUELLE / "lichtbox.js", ZIEL / "lichtbox.js")
+        shutil.copy2(QUELLE / "qr.js", ZIEL / "qr.js")
+        shutil.copy2(QUELLE / "spenden.js", ZIEL / "spenden.js")
         (ZIEL / "robots.txt").write_text(robots(), encoding="utf-8")
         (ZIEL / "sitemap.xml").write_text(sitemap(alle), encoding="utf-8")
         (ZIEL / "llms.txt").write_text(llmstxt(alle), encoding="utf-8")

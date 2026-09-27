@@ -368,3 +368,33 @@ section[id], .anker { scroll-margin-top: 90px; }
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
 .tat.zweit:hover { background: rgba(38, 34, 48, 0.75); }
+
+/* ---- Spenden ------------------------------------------------------------ */
+/* Je Weg eine Zeile: QR links, Text, Wert und Knopf rechts. Die Werte sind
+   lang (ein BOLT12-Angebot hat rund 200 Zeichen) und brechen deshalb an
+   jeder Stelle um. Die QR-Codes bleiben schwarz auf weiss, sonst lesen
+   viele Kameras sie nicht. */
+.spende-name { margin: 0 0 1.6rem; }
+.spende-name .bip353 { font-size: clamp(1.15rem, 3.4vw, 1.5rem); font-weight: 600; color: var(--orange); margin: 0 0 0.6rem; overflow-wrap: anywhere; }
+.spende-name > p:last-child { color: var(--gedaempft); margin: 0.7rem 0 0; }
+/* hidden muss gewinnen: .wert und .tat setzen display selbst, und ohne diese
+   Zeile stand vor dem Klick ein leeres Feld und danach der Knopf weiter da. */
+#spenden [hidden] { display: none !important; }
+.spendewege { display: grid; }
+.spendeweg { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 1.4rem; padding: 1.5rem 0; border-top: 1px solid var(--linie); align-items: start; }
+.spendeweg:last-child { border-bottom: 1px solid var(--linie); }
+.spendeweg h3 { margin: 0 0 0.3rem; font-size: 1.05rem; }
+.spendeweg p { margin: 0 0 0.8rem; color: var(--gedaempft); }
+.qr { width: 11rem; aspect-ratio: 1; background: #fff; border-radius: 10px; overflow: hidden; }
+.qr svg { display: block; width: 100%; height: 100%; }
+.qr.leer { background: rgba(27, 24, 34, 0.6); border: 1px dashed var(--linie); }
+.wert { display: block; font: 0.85rem/1.5 ui-monospace, "SFMono-Regular", Menlo, monospace; color: var(--schrift); background: rgba(27, 24, 34, 0.6); border: 1px solid var(--linie); border-radius: 8px; padding: 0.6rem 0.8rem; margin: 0 0 0.8rem; overflow-wrap: anywhere; max-height: 7.5em; overflow-y: auto; }
+.kopier { font: inherit; font-size: 0.92rem; color: var(--schrift); background: rgba(27, 24, 34, 0.6); border: 1px solid var(--linie); border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.kopier:hover { background: rgba(38, 34, 48, 0.75); }
+.spendeweg button.tat { border: 0; font: inherit; font-weight: 600; cursor: pointer; }
+.spendeweg button.tat:disabled { opacity: 0.6; cursor: wait; }
+.spende-fehler { color: #ff8a80 !important; margin-top: 0.8rem !important; }
+@media (max-width: 46rem) {
+  .spendeweg { grid-template-columns: 1fr; }
+  .qr { width: min(15rem, 100%); }
+}

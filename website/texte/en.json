@@ -385,5 +385,24 @@
   "impressum_link": "Legal notice",
   "bild_zu": "Close",
   "bild_vor": "Next",
-  "bild_zurueck": "Previous"
+  "bild_zurueck": "Previous",
+  "spenden_titel": "Donate",
+  "spenden_text": "OrangeDeck is free and will stay free. If you would like to support the work on it, you can send bitcoin. There is no account and nothing in return, and the site does not store who donated.",
+  "spenden_name": "Wallets that resolve names per BIP 353 find the right way through this address themselves, over Lightning or on-chain.",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "A fixed offer that can be paid any number of times. Needs a wallet with BOLT12, such as Phoenix."
+  ],
+  "spenden_sp": [
+    "On-chain with Silent Payments",
+    "A fixed address from which the wallet makes a separate one for every payment. Needs a wallet with BIP 352, such as Sparrow, Cake Wallet or Nunchuk."
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "Works with any wallet. The site creates a fresh address on request, so donations cannot be tied to a single one."
+  ],
+  "spenden_zeigen": "Create address",
+  "spenden_kopieren": "Copy",
+  "spenden_kopiert": "Copied",
+  "spenden_fehler": "No address available right now. Please try again later."
 }

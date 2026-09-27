@@ -385,5 +385,24 @@
   "impressum_link": "Právní informace",
   "bild_zu": "Zavřít",
   "bild_vor": "Další",
-  "bild_zurueck": "Předchozí"
+  "bild_zurueck": "Předchozí",
+  "spenden_titel": "Dary",
+  "spenden_text": "OrangeDeck je zdarma a zdarma zůstane. Pokud chcete podpořit práci na něm, můžete poslat bitcoin. Neexistuje žádný účet ani nic na oplátku a stránka neukládá, kdo přispěl.",
+  "spenden_name": "Peněženky, které překládají jména podle BIP 353, si přes tuto adresu samy najdou vhodnou cestu, přes Lightning nebo on-chain.",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "Pevná nabídka, kterou lze zaplatit libovolněkrát. Je potřeba peněženka s podporou BOLT12, například Phoenix."
+  ],
+  "spenden_sp": [
+    "On-chain se Silent Payments",
+    "Pevná adresa, ze které peněženka pro každou platbu vytvoří samostatnou adresu. Je potřeba peněženka s podporou BIP 352, například Sparrow, Cake Wallet nebo Nunchuk."
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "Funguje s jakoukoli peněženkou. Stránka na požádání vytvoří novou adresu, aby se dary nedaly přiřadit k jediné adrese."
+  ],
+  "spenden_zeigen": "Vytvořit adresu",
+  "spenden_kopieren": "Kopírovat",
+  "spenden_kopiert": "Zkopírováno",
+  "spenden_fehler": "Momentálně není k dispozici žádná adresa. Zkuste to prosím později."
 }

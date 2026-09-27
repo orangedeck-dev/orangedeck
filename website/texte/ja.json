@@ -385,5 +385,24 @@
   "impressum_link": "運営者情報",
   "bild_zu": "閉じる",
   "bild_vor": "次へ",
-  "bild_zurueck": "前へ"
+  "bild_zurueck": "前へ",
+  "spenden_titel": "寄付",
+  "spenden_text": "OrangeDeck は無料で、これからも無料のままです。開発を支援したい方は bitcoin を送ることができます。アカウントは不要で見返りもなく、このサイトは誰が寄付したかを保存しません。",
+  "spenden_name": "BIP 353 の名前解決に対応したウォレットなら、このアドレスから Lightning か on-chain の適切な方法を自動で見つけます。",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "何度でも支払える固定のオファーです。Phoenix など、BOLT12 に対応したウォレットが必要です。"
+  ],
+  "spenden_sp": [
+    "Silent Payments による on-chain",
+    "固定のアドレスから、ウォレットが支払いごとに別のアドレスを作ります。Sparrow、Cake Wallet、Nunchuk など、BIP 352 に対応したウォレットが必要です。"
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "どのウォレットでも使えます。寄付がひとつのアドレスに結び付けられないよう、このサイトが必要に応じて新しいアドレスを作ります。"
+  ],
+  "spenden_zeigen": "アドレスを作成",
+  "spenden_kopieren": "コピー",
+  "spenden_kopiert": "コピーしました",
+  "spenden_fehler": "現在利用できるアドレスがありません。しばらくしてからもう一度お試しください。"
 }

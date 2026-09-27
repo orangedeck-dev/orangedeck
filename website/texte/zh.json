@@ -385,5 +385,24 @@
   "impressum_link": "法律声明",
   "bild_zu": "关闭",
   "bild_vor": "下一张",
-  "bild_zurueck": "上一张"
+  "bild_zurueck": "上一张",
+  "spenden_titel": "捐赠",
+  "spenden_text": "OrangeDeck 是免费的，并将一直免费。如果你想支持这项工作，可以发送 bitcoin。不需要账户，也没有任何回报，本网站不会记录谁捐赠过。",
+  "spenden_name": "支持按 BIP 353 解析名称的钱包会通过这个地址自行找到合适的方式，走 Lightning 或 on-chain。",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "一个固定的 offer，可以支付任意多次。需要支持 BOLT12 的钱包，例如 Phoenix。"
+  ],
+  "spenden_sp": [
+    "使用 Silent Payments 的 on-chain",
+    "一个固定地址，钱包会据此为每笔付款生成一个单独的地址。需要支持 BIP 352 的钱包，例如 Sparrow、Cake Wallet 或 Nunchuk。"
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "任何钱包都可以使用。网站会按需生成一个新地址，这样捐赠就无法被归到同一个地址上。"
+  ],
+  "spenden_zeigen": "生成地址",
+  "spenden_kopieren": "复制",
+  "spenden_kopiert": "已复制",
+  "spenden_fehler": "目前没有可用的地址，请稍后再试。"
 }

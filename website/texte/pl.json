@@ -385,5 +385,24 @@
   "impressum_link": "Nota prawna",
   "bild_zu": "Zamknij",
   "bild_vor": "Dalej",
-  "bild_zurueck": "Wstecz"
+  "bild_zurueck": "Wstecz",
+  "spenden_titel": "Darowizny",
+  "spenden_text": "OrangeDeck jest darmowy i taki pozostanie. Jeśli chcesz wesprzeć pracę nad nim, możesz wysłać bitcoin. Nie ma konta ani niczego w zamian, a strona nie zapisuje, kto przekazał darowiznę.",
+  "spenden_name": "Portfele, które rozwiązują nazwy według BIP 353, same znajdą przez ten adres właściwą drogę, przez Lightning albo on-chain.",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "Stała oferta, którą można opłacić dowolną liczbę razy. Potrzebny jest portfel z obsługą BOLT12, na przykład Phoenix."
+  ],
+  "spenden_sp": [
+    "On-chain z Silent Payments",
+    "Stały adres, z którego portfel tworzy osobny adres dla każdej płatności. Potrzebny jest portfel z obsługą BIP 352, na przykład Sparrow, Cake Wallet lub Nunchuk."
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "Działa z każdym portfelem. Na życzenie strona tworzy nowy adres, żeby darowizn nie dało się przypisać do jednego adresu."
+  ],
+  "spenden_zeigen": "Utwórz adres",
+  "spenden_kopieren": "Kopiuj",
+  "spenden_kopiert": "Skopiowano",
+  "spenden_fehler": "W tej chwili nie ma dostępnego adresu. Spróbuj ponownie później."
 }

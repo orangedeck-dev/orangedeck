@@ -385,5 +385,24 @@
   "impressum_link": "Informação legal",
   "bild_zu": "Fechar",
   "bild_vor": "Seguinte",
-  "bild_zurueck": "Anterior"
+  "bild_zurueck": "Anterior",
+  "spenden_titel": "Donativos",
+  "spenden_text": "O OrangeDeck é gratuito e vai continuar a sê-lo. Se quiser apoiar o trabalho que há por trás, pode enviar bitcoin. Não há conta nem contrapartida, e o site não guarda quem fez um donativo.",
+  "spenden_name": "As carteiras que resolvem nomes segundo o BIP 353 encontram sozinhas o caminho certo através deste endereço, por Lightning ou on-chain.",
+  "spenden_lightning": [
+    "Lightning (BOLT12)",
+    "Uma oferta fixa que pode ser paga quantas vezes quiser. É preciso uma carteira com BOLT12, como a Phoenix."
+  ],
+  "spenden_sp": [
+    "On-chain com Silent Payments",
+    "Um endereço fixo a partir do qual a carteira cria um endereço próprio para cada pagamento. É preciso uma carteira com BIP 352, como a Sparrow, a Cake Wallet ou a Nunchuk."
+  ],
+  "spenden_onchain": [
+    "On-chain",
+    "Funciona com qualquer carteira. O site cria um endereço novo a pedido, para que os donativos não possam ser associados a um único endereço."
+  ],
+  "spenden_zeigen": "Criar endereço",
+  "spenden_kopieren": "Copiar",
+  "spenden_kopiert": "Copiado",
+  "spenden_fehler": "De momento não há nenhum endereço disponível. Tente novamente mais tarde."
 }
