@@ -100,6 +100,7 @@
   <url type="homepage">https://orangedeck.dev</url>
   <url type="bugtracker">https://github.com/orangedeck-dev/orangedeck/issues</url>
   <url type="vcs-browser">https://github.com/orangedeck-dev/orangedeck</url>
+  <url type="donation">https://orangedeck.dev/en/donate/</url>
   <content_rating type="oars-1.1"/>
 
   <categories>

@@ -72,6 +72,13 @@ Every view has its own settings, reachable from the plugin settings page in
 DMS. The language follows the one set in DMS unless you pick another (13 languages),
 currency defaults to USD.
 
+## Donate
+
+OrangeDeck is free. If you would like to support the work on it:
+**[orangedeck.dev/en/donate](https://orangedeck.dev/en/donate/)**, over
+Lightning (BOLT12), Silent Payments or a fresh on-chain address. Wallets with
+BIP353 find everything through `₿sats@orangedeck.dev`.
+
 ## License
 
 MIT, see `LICENSE`. Two files, `mondrian.js` and `colors.js`, are ports from

@@ -20,8 +20,12 @@ APK signing certificate (SHA-256):
 This repository contains only the latest releases. Source code and issues are
 in the [main repository](https://github.com/orangedeck-dev/orangedeck).
 
+Donations: [orangedeck.dev/en/donate](https://orangedeck.dev/en/donate/)
+
 ## Deutsch
 
 Das F-Droid-Repo für OrangeDeck. Die APKs sind dieselben Dateien wie in den
 GitHub-Releases, vom Entwickler signiert. Zum Hinzufügen in F-Droid, Droid-ify
 oder Neo Store die Adresse oben verwenden.
+
+Spenden: [orangedeck.dev/de/donate](https://orangedeck.dev/de/donate/)

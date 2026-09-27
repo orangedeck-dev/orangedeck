@@ -140,6 +140,13 @@ Startzeilen stehen in `packaging/widgets/README.md`.
 - `docs/DOKUMENTATION.md` — Mechanik und alle Stolperfallen
 - `NOTICE.md` — Herkunft und Lizenzen
 
+## Spenden
+
+OrangeDeck ist kostenlos. Wer die Arbeit daran unterstuetzen moechte:
+**[orangedeck.dev/de/donate](https://orangedeck.dev/de/donate/)**, per
+Lightning (BOLT12), Silent Payments oder mit einer wechselnden On-chain-Adresse.
+Wallets mit BIP353 finden alles ueber `₿sats@orangedeck.dev`.
+
 ## Lizenz
 
 MIT, Copyright 2026 Satoshoe — Text in `LICENSE`.

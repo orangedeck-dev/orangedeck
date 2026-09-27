@@ -12,6 +12,7 @@ WebSite: https://orangedeck.dev
 SourceCode: https://github.com/orangedeck-dev/orangedeck
 IssueTracker: https://github.com/orangedeck-dev/orangedeck/issues
 Changelog: https://github.com/orangedeck-dev/orangedeck/releases
+Donate: https://orangedeck.dev/en/donate/
 
 # Der Markt-Reiter liest Trades von Binance und Bybit. Das sind geschlossene
 # Dienste, und F-Droid verlangt, das zu sagen. mempool.space selbst ist
