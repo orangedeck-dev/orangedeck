@@ -21,8 +21,9 @@
   `website/README.md` (Abschnitt Spenden). Werte in `website/spenden.json`.
 - **₿sats@orangedeck.dev**: TXT `sats.user._bitcoin-payment` mit `lno` (Phoenix,
   eigene Spendenwallet auf dem Galaxy) und `sp` (Sparrow-Wallet "Spenden SP").
-  DNSSEC eingeschaltet; der DS-Eintrag in .dev war am 27.09. nachmittags noch
-  nicht da -- nachpruefen (`dig +short DS orangedeck.dev`).
+  DNSSEC aktiv, DS in .dev gesetzt, Antworten validieren (Flag `ad`).
+- Eigene Seite `<sprache>/donate/` mit Umschalter Lightning | On-chain (und
+  normale Adresse | Silent Payments), immer nur ein QR-Code sichtbar.
 - **Wechselnde Adresse**: `functions/api/spenden-adresse.js`, Secret
   `SPENDEN_ZPUB` im Projekt orangedeck-site (xpub der Sparrow-Wallet "Spenden",
   m/84'/0'/0', Gap-Limit 200). Live gemessen: Indizes 44, 72, 162 aus dem
