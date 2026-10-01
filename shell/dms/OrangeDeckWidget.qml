@@ -48,6 +48,7 @@ PluginComponent {
         pollMs: 2000
         mode: root.get("dataSource", "auto")
         mempoolHost: root.opts.mempoolHost || ""
+        minerHostsRaw: root.opts.minerHostsRaw || ""
     }
 
     // ------------------------------------------------------ Settings
@@ -72,6 +73,7 @@ PluginComponent {
         return ({
             "dataSource": root.get("dataSource", "auto"),
             "mempoolHost": root.get("mempoolHost", ""),
+            "minerHostsRaw": root.get("minerHostsRaw", ""),
             "currency": root.get("currency", "usd"),
             // Empty means FeedTabs uses the system language.
             "lang": root.get("lang", ""),

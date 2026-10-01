@@ -97,6 +97,7 @@ Item {
     property string sizeMode: SettingsData.getPluginSetting(pid, "sizeMode", "value")
     property string dataSource: SettingsData.getPluginSetting(pid, "dataSource", "daemon")
     property string mempoolHost: SettingsData.getPluginSetting(pid, "mempoolHost", "")
+    property string minerHostsRaw: SettingsData.getPluginSetting(pid, "minerHostsRaw", "")
     property string currency: SettingsData.getPluginSetting(pid, "currency", "usd")
     property string lang: SettingsData.getPluginSetting(pid, "lang", "") || Tr.systemLang(SessionData.locale)
     property bool showHeader: SettingsData.getPluginSetting(pid, "showHeader", true)
@@ -164,6 +165,7 @@ Item {
     readonly property var opts: ({
         "dataSource": dataSource,
         "mempoolHost": mempoolHost,
+        "minerHostsRaw": minerHostsRaw,
         "currency": currency,
         "lang": lang,
         "density": density,
@@ -257,6 +259,7 @@ Item {
         active: root.live
         mode: root.dataSource
         mempoolHost: root.mempoolHost
+        minerHostsRaw: root.minerHostsRaw
     }
 
     FeedTabs {

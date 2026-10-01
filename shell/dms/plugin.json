@@ -2,7 +2,7 @@
     "id": "orangedeck",
     "name": "OrangeDeck Bitcoin Dashboard",
     "description": "Live view of the Bitcoin mempool: the latest block in the middle, the mempool as a pile below, new transactions raining in from above. Feed, clock, miner, market and explorer views. Data comes from mempool.space or any mempool instance you set, your own node included. No extra service needed.",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "author": "Satoshoe",
     "type": "composite",
     "capabilities": ["daemon", "dankbar-widget", "control-center", "desktop-widget"],

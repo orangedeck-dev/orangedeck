@@ -85,7 +85,24 @@ Item {
 
     // Addresses from the settings. Unused in daemon mode, where the service
     // reads `sources.json`.
-    property var minerHosts: []
+    //
+    // Hosts pass the stored `minerHostsRaw` (several separated by `|`) and get
+    // the list from it. The app binds `minerHosts` itself and leaves the raw
+    // value empty. Until 01.10.2026 no DMS host set either, so direct mode
+    // never polled a miner although the address was in the settings.
+    property string minerHostsRaw: ""
+    property var minerHosts: root.hostsAus(root.minerHostsRaw)
+
+    function hostsAus(roh) {
+        var out = [];
+        var teile = String(roh || "").split("|");
+        for (var i = 0; i < teile.length; i++) {
+            var t = teile[i].trim();
+            if (t.length)
+                out.push(t);
+        }
+        return out;
+    }
 
     // The mempool instance, as typed into the settings: empty for
     // mempool.space, otherwise "mempool.emzy.de", "https://mempool.ninja" or a
@@ -396,6 +413,17 @@ Item {
         onLoaded: {
             direkt.item.basis = Qt.binding(function () {
                 return root.mempoolBasis;
+            });
+            // Same pace as the service poll, so a host's `pollMs` holds in
+            // both modes. Without it the bar pill (2000 ms) rebuilt the full
+            // snapshot every 400 ms in direct mode.
+            direkt.item.pushMs = Qt.binding(function () {
+                return root.pollMs;
+            });
+            // Nobody looking, no WebSocket: the dashboard tab sets `active`
+            // to false while it is closed.
+            direkt.item.active = Qt.binding(function () {
+                return root.active;
             });
         }
         onStatusChanged: {

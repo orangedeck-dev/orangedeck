@@ -10,6 +10,7 @@
 // gets its full set of options.
 import QtQuick
 import qs.Common
+import qs.Services
 import "strings.js" as Tr
 
 Item {
@@ -23,6 +24,17 @@ Item {
     property bool editMode: false
     property real widgetWidth: 420
     property real widgetHeight: 300
+    // Set by DMS (DesktopPluginWrapper passes the screen it sits on)
+    property var screen: null
+
+    // A fullscreen window on this screen hides the widget completely. Then
+    // nothing is fetched and nothing is drawn: without this the feed view
+    // kept its 33 ms animation and its connection running under a game or a
+    // video all evening. Older DMS versions lack the helper; there the
+    // widget simply keeps running as before.
+    readonly property bool covered: root.screen
+        && typeof CompositorService.fullscreenToplevelOnScreen === "function"
+        ? CompositorService.fullscreenToplevelOnScreen(root.screen) : false
 
     property real minWidth: 180
     property real minHeight: 120
@@ -83,6 +95,7 @@ Item {
         return ({
             "dataSource": root.get("dataSource", "auto"),
             "mempoolHost": root.get("mempoolHost", ""),
+            "minerHostsRaw": root.get("minerHostsRaw", ""),
             "currency": root.get("currency", "usd"),
             // Empty means FeedTabs uses the system language.
             "lang": root.get("lang", ""),
@@ -155,9 +168,11 @@ Item {
     FeedState {
         id: feedState
 
+        active: !root.covered
         pollMs: 500
         mode: root.get("dataSource", "auto")
         mempoolHost: root.opts.mempoolHost || ""
+        minerHostsRaw: root.opts.minerHostsRaw || ""
     }
 
     Rectangle {
@@ -174,6 +189,7 @@ Item {
         // Without a choice in the plugin: the DMS language
         defaultLang: Tr.systemLang(SessionData.locale)
         anchors.margins: Theme.spacingM
+        live: !root.covered
         // One view, no tab bar
         tabsVisible: false
         // One view per widget, no switching

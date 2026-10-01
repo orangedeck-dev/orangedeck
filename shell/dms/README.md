@@ -27,11 +27,24 @@ It runs in three places at once:
 ## Requirements
 
 - DankMaterialShell 1.5.0 or newer
-- `QtWebSockets` (Qt 6). Without it the market view hides itself; everything
-  else keeps working.
+- `QtWebSockets` (Qt 6), packaged as `qt6-websockets` on Arch. Without it
+  the plugin can only show data from the OrangeDeck service (see below): the
+  direct connection to the mempool instance and the market view need it.
 
 Nothing else. The plugin talks to `mempool.space` by itself, or to another
 mempool instance you set in its settings.
+
+## Network access
+
+- The mempool instance from the settings, `mempool.space` by default: REST
+  requests and one WebSocket.
+- While the market view is open: `api.binance.com`, `fapi.binance.com`,
+  `www.okx.com`, `ws.okx.com`, `api.bybit.com` and `stream.bybit.com`.
+- The miner addresses you enter, on your own network.
+- `127.0.0.1:21021`, the optional OrangeDeck service. At startup the plugin
+  runs `systemctl --user start orangedeck.service`, or `~/.local/bin/orangedeck`
+  if that exists. Installed from the registry neither is there, and nothing
+  is started.
 
 ## Install
 
