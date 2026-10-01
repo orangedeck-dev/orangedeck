@@ -75,6 +75,16 @@ Internet", ueber den Zip-Handler des Explorers entpackt)
   das Projekt). `wrangler` laeuft per `npx`, Login mit `! npx wrangler login`.
 - CI: der Flatpak-Lauf zu 1b19909 brach beim Laden von layer-shell-qt ab
   (Netz zu langsam), im zweiten Versuch gruen.
+- CI am Abend: in den Laeufen zu "altes Pages-Projekt geloescht" und
+  "Tagesabschluss 01.10.2026" brach nur **macOS** ab, nach 15 min ohne einen
+  einzigen Schritt ("The job was not acquired by Runner of type hosted even
+  after multiple attempts", dazu GitHubs Hinweis auf knappe macOS-arm64-Runner).
+  Kein Fehler im Code. macOS im neueren Lauf (36884376488) neu gestartet:
+  in 2:43 min gruen, der Lauf ist komplett gruen. Der aeltere bleibt rot
+  stehen, der neuere baut denselben Stand mit.
+- Fuer spaeter, noch ohne Folgen: `actions/checkout@v4` und
+  `upload-artifact@v4` laufen auf Node 20 (abgekuendigt), `ubuntu-latest`
+  wechselt ab 19.10.2026 auf Ubuntu 26.
 
 **Ausserhalb von OrangeDeck, nur zur Einordnung**
 - Shopatch: die drei App-Server senden `X-Robots-Tag: noindex` und haben eine
@@ -103,6 +113,10 @@ Internet", ueber den Zip-Handler des Explorers entpackt)
   mit "Ausfuehren", Win+R den blauen Schirm.
 - **Die Registry verlangt den KI-Hinweis im PR** (CONTRIBUTING.md). Er bleibt,
   sachlich in einem Satz; neue Commits tragen keine Co-Authored-By-Zeile mehr.
+- **Ein roter macOS-Job nach genau 15 min ist meist kein Build-Fehler**,
+  sondern kein Runner frei. Erkennbar an der Annotation "not acquired by
+  Runner". `gh run rerun --failed` lieferte dabei HTTP 500; der Neustart
+  ueber die Job-ID (`gh run rerun -j <job-id>`) ging.
 
 ### Was morgen als Erstes drankommt
 
