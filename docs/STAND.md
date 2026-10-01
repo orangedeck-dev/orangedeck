@@ -15,53 +15,104 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
-## 01.10.2026 -- Pruefungen im DMS-Verzeichnis abgearbeitet
+## TAGESABSCHLUSS 01.10.2026 -- Registry sauber, Windows geprueft, Google angemeldet
 
-- Der Pruefbot der Registry hat alle sechs Eintraege gelesen. OrangeDeck
-  (#947) stand auf "needs changes", die fuenf anderen auf "ready" mit
-  kleinen Punkten.
-- **dms-plugin 1.2.1** (Tag `v1.2.1`): die Miner-Adresse aus den
-  Einstellungen kommt im Direktbezug an (vorher fragte keine
-  Registry-Installation je einen Miner ab), die Pille haelt ihre 2 s auch
-  direkt, das Desktop-Widget ruht unter einem Vollbildfenster, die README
-  nennt alle Hosts. `tools/dms-plugin.sh` laesst `.github` im Plugin-Repo
-  stehen (haette FUNDING.yml geloescht).
-- **AudioFX 1.4.1**: ein cava fuer den Visualizer, einer fuer den Glow, fuer
-  alle Bildschirme zusammen; Scheibe in Theme-Farben. **Xray 1.0.1**: keine
-  feste Knopfhoehe mehr.
-- Registry-PR **#979**: `requires_dms` fuer alle sechs, bei OrangeDeck
-  `qt6-websockets` und die Boersen in der Beschreibung. In #947 begruendet,
-  warum die Ansichten eigene Bedienelemente behalten und jedes
-  Desktop-Widget direkt eine eigene Verbindung haelt.
-- **dms-plugin 1.2.2** (Tag `v1.2.2`): Pille und Desktop-Widgets lesen aus
-  einer FeedState im Plugin-Daemon. In der Probe (frisches HOME, direkt,
-  Pille plus zwei Widgets) eine einzige Verbindung zu mempool.space.
-  `dms ipc call orangedeck feed` zeigt Zuschauer und Takt.
-- Registry-PR #979 am selben Tag gemergt.
-- **Windows in der VM geprueft** (0.2.15 aus dem Release, Kennzeichen "aus
-  dem Internet" gesetzt, ueber den Zip-Handler des Explorers entpackt):
-  - SmartScreen: aus dem Skript heraus die Sicherheitswarnung "Unbekannter
-    Herausgeber" mit "Ausfuehren"; ueber Win+R der blaue Schirm "Der Computer
-    wurde durch Windows geschuetzt", "Weitere Informationen", dann "Trotzdem
-    ausfuehren". Beides laesst sich durchklicken, danach laeuft die App.
-  - README-Startzeile (Uhr-Widget, alle Schalter) von Hand in Win+R getippt:
-    kein ClickFix-Befund, Defender meldet nichts Neues seit dem 13.09.
-  - Die 600 MB sind das Working Set; privat sind es 143 MB im Markt und 173 MB
-    im Feed. Der Rest sind geteilte Seiten (Grafiktreiber, Qt). Kein Befund
-    gegen den Markt.
-  - 150 %: Fenster scharf, Uhr-Widget 450 x 330 px mit 36 px Rand, also
-    genau 300 x 220 und 24 bei 150 %. Danach zurueck auf 100 %.
-  - Die Zeiten im Trades-Band (10:22 gegen 15:18) waren richtig: die VM steht
-    auf "Bahia Standard Time" (-3 h).
+### Der Stand in einem Satz
+
+Alle sechs Eintraege im DMS-Verzeichnis sind nach der Bot-Pruefung
+nachgezogen und gemergt (#979), das Plugin steht auf **1.2.2**, die offenen
+Windows-Pruefungen sind erledigt, und `orangedeck.dev` ist in der Google
+Search Console.
+
+### Was heute dazugekommen ist
+
+**DMS-Verzeichnis**
+- Der Pruefbot hatte alle sechs Eintraege gelesen: OrangeDeck (#947) "needs
+  changes", die fuenf anderen "ready" mit kleinen Punkten.
+- Registry-PR **#979** (`requires_dms` fuer alle sechs, bei OrangeDeck
+  `qt6-websockets` und Boersen/Dienst in der Beschreibung): Bot "ready",
+  am selben Tag gemergt. In #947 zwei Kommentare mit dem, was behoben ist,
+  und der Begruendung, warum die Ansichten eigene Bedienelemente behalten
+  (sie laufen auch in App und Android ohne DMS).
+- **dms-plugin 1.2.1** (`v1.2.1`): Miner-Adresse kommt im Direktbezug an
+  (vorher fragte keine Registry-Installation je einen Miner ab, mit dem
+  AxeOS-Nachbau geprueft), die Pille haelt ihre 2 s auch direkt, der
+  geschlossene Dashboard-Reiter haelt keinen WebSocket mehr, das
+  Desktop-Widget ruht unter einem Vollbildfenster, README nennt alle Hosts.
+- **dms-plugin 1.2.2** (`v1.2.2`): Pille und Desktop-Widgets lesen aus einer
+  FeedState im Plugin-Daemon. Probe (frisches HOME, direkt, Pille plus zwei
+  Widgets): eine einzige Verbindung zu mempool.space. `dms ipc call
+  orangedeck feed` zeigt Zuschauer, Takt und Modus.
+- `tools/dms-plugin.sh` laesst `.github` im Plugin-Repo stehen; der Lauf fuer
+  1.2.1 haette FUNDING.yml sonst geloescht.
+- **AudioFX 1.4.1**: ein cava fuer den Visualizer und einer fuer den Glow,
+  fuer alle Bildschirme zusammen (neue Datei `AudioFxBands.qml`); die
+  Scheibe in Theme-Farben. **Xray 1.0.1**: DankButton-Standardhoehe statt
+  fester 36 px (Theme hat in DMS 1.6.x keine Hoehen-Token).
+
+**Windows in der VM** (0.2.15 aus dem Release, Kennzeichen "aus dem
+Internet", ueber den Zip-Handler des Explorers entpackt)
+- SmartScreen: aus einem Skript heraus "Unbekannter Herausgeber" mit
+  "Ausfuehren"; ueber Win+R der blaue Schirm, "Weitere Informationen",
+  "Trotzdem ausfuehren". Danach laeuft die App.
+- README-Startzeile (Uhr-Widget, alle Schalter) von Hand in Win+R getippt:
+  kein ClickFix-Befund, Defender meldet nichts seit dem 13.09.
+- Die "600 MB im Markt" sind das Working Set; privat 143 MB im Markt, 173 MB
+  im Feed. Kein Befund gegen den Markt.
+- 150 %: Fenster scharf, Uhr-Widget 450 x 330 px mit 36 px Rand, also genau
+  die logischen Werte der Zeile. Danach zurueck auf 100 %, VM aus, wieder
+  10 GB.
+- Die Zeiten im Trades-Band waren richtig: die VM steht auf "Bahia Standard
+  Time" (-3 h).
+- `tools/win-tippen.py` kann jetzt Kommas.
+
+**Seite und Konten**
 - **Google Search Console**: Domain-Property `orangedeck.dev`, bestaetigt
-  ueber den Cloudflare-Weg (TXT `google-site-verification`, stehen lassen).
-  Sitemap eingereicht vom Anwender. Laeuft bewusst unter dem Google-Konto von
-  Shopatch; von aussen nicht sichtbar, die TXT-Werte der drei Domains sind
-  verschieden.
-- Altes Pages-Projekt `orangedeck` geloescht (erst 24 Deployments einzeln,
-  dann das Projekt; vom Anwender ausgefuehrt).
-- Der Flatpak-Lauf der CI zu 1b19909 brach beim Laden von layer-shell-qt ab
-  (zu langsam), im zweiten Versuch gruen.
+  ueber Cloudflare (TXT `google-site-verification`, stehen lassen), Sitemap
+  eingereicht. Die wichtigsten Adressen waren schon indexiert. Laeuft bewusst
+  unter dem Google-Konto von Shopatch; von aussen nicht sichtbar.
+- Altes Pages-Projekt `orangedeck` geloescht (24 Deployments einzeln, dann
+  das Projekt). `wrangler` laeuft per `npx`, Login mit `! npx wrangler login`.
+- CI: der Flatpak-Lauf zu 1b19909 brach beim Laden von layer-shell-qt ab
+  (Netz zu langsam), im zweiten Versuch gruen.
+
+**Ausserhalb von OrangeDeck, nur zur Einordnung**
+- Shopatch: die drei App-Server senden `X-Robots-Tag: noindex` und haben eine
+  `robots.txt`, `www.shopatch.com` leitet per Cloudflare-Regel auf den Apex,
+  Validierung in der Search Console gestartet. Scaleway hochgerechnet rund
+  58 EUR/Monat (September rund 270). Neuer Leseschluessel
+  `~/Schreibtisch/Shopatch/.scw-lesen.env`. Einzelheiten in den Notizen zu
+  den Shopatch-Apps.
+- Unterkunft: der Miner hasht, ist aber nicht erreichbar, weil das WLAN die
+  Geraete voneinander isoliert. Kein Fehler im Plugin oder in der App.
+- Zeitzone auf Europe/Berlin umgestellt.
+
+### Die Erkenntnisse des Tages
+
+- **Was der Bot pruefte, stimmte.** Der Miner-Fehler im Direktbezug war echt
+  und betraf jede Installation aus dem Verzeichnis; im eigenen Desktop fiel
+  er nie auf, weil dort der Dienst laeuft. Fuer das Plugin zaehlt die Probe
+  mit frischem HOME, nicht die eigene Sitzung.
+- **DMS setzt `instanceId` erst nach dem Erzeugen.** Ein Schluessel aus
+  `Component.onCompleted` ist danach falsch; wer sich irgendwo anmeldet, muss
+  den alten Schluessel wieder abmelden.
+- **Sechs Verbindungen zu 127.0.0.1 waren keine Last**, sondern leere
+  Keep-alive-Sockel aus dem Start. Erst die Bytes je Sockel ueber zehn
+  Sekunden zeigten das.
+- **SmartScreen haengt am Startweg.** Start-Process zeigte den alten Dialog
+  mit "Ausfuehren", Win+R den blauen Schirm.
+- **Die Registry verlangt den KI-Hinweis im PR** (CONTRIBUTING.md). Er bleibt,
+  sachlich in einem Satz; neue Commits tragen keine Co-Authored-By-Zeile mehr.
+
+### Was morgen als Erstes drankommt
+
+1. In #947 nachsehen, ob der Bot neu bewertet hat (stand zuletzt noch auf
+   "needs changes" vom 29.09.).
+2. In ein, zwei Tagen in der Search Console von `orangedeck.dev`: Sitemap
+   "Erfolgreich"? Unter **Leistung** die ersten Suchbegriffe.
+3. Danach die offene Liste unten: `bitfeed` (braucht das OK des Anwenders
+   fuer ein Panel auf dem Desktop), Freigabetext fuer die naechste Fassung,
+   die Entscheidungen zu Google Play und `21rebel.dev` in `main.cpp`.
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
