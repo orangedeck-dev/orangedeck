@@ -58,8 +58,8 @@
   Sitemap eingereicht vom Anwender. Laeuft bewusst unter dem Google-Konto von
   Shopatch; von aussen nicht sichtbar, die TXT-Werte der drei Domains sind
   verschieden.
-- Altes Pages-Projekt `orangedeck`: Loeschen scheitert an 25 Deployments,
-  der Befehl zum Abraeumen liegt beim Anwender.
+- Altes Pages-Projekt `orangedeck` geloescht (erst 24 Deployments einzeln,
+  dann das Projekt; vom Anwender ausgefuehrt).
 - Der Flatpak-Lauf der CI zu 1b19909 brach beim Laden von layer-shell-qt ab
   (zu langsam), im zweiten Versuch gruen.
 
@@ -366,8 +366,7 @@ darueber.
 8. **Am Telefon ein zweiter Tipp innerhalb der Doppeltipp-Zeit** auf dieselbe
    Kachel setzt die Sicht zurueck, statt den Explorer zu oeffnen. So gewollt,
    aber wer schnell tippt, merkt es. Beobachten.
-9. **Das alte Cloudflare-Projekt `orangedeck`** loescht sich nur ueber die API
-   (alle Deployments zuerst). Schadet nicht, kostet nichts.
+9. ~~**Das alte Cloudflare-Projekt `orangedeck`**~~ geloescht am 01.10.2026.
 10. **Shopatch** hat ein eigenes GitHub-Konto (Einzelunternehmen, also streng
     genommen ein zweites). Umwandeln in eine Organisation in Ruhe pruefen,
     wegen der Shopify-Anbindungen am Login -- Sache des Anwenders.
