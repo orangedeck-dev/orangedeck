@@ -75,9 +75,11 @@ empty for `mempool.space`, another public instance such as `mempool.emzy.de`,
 or your own node, for example `http://umbrel.local:3006`. It applies in direct
 mode and is passed on to the OrangeDeck service on the same computer.
 
-The service is optional. It is worth having when several windows or widgets
-are open, because it keeps one connection instead of one per view. The miner
-view works either way once the device address is entered.
+The service is optional. Inside DMS the bar pill and the desktop widgets
+share one connection either way, and the service also feeds the separate
+OrangeDeck window. A desktop widget whose data source differs
+from the plugin settings keeps a connection of its own. The miner view works
+either way once the device address is entered.
 
 ## Settings
 

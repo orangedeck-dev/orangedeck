@@ -1,4 +1,5 @@
-// Keeps the feed process alive while the plugin is active.
+// Keeps the feed process alive while the plugin is active, and holds the one
+// FeedState that the bar pills and the desktop widgets share.
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -73,6 +74,54 @@ PluginComponent {
         }
     }
 
+    // ------------------------------------------------------------ Shared feed
+    // Without it every bar pill and every desktop widget had a FeedState of its
+    // own, and in direct mode each one kept a WebSocket to mempool.space: three
+    // widgets, four connections. Hosts find this one through
+    // `PluginService.pluginDaemonInstances` and fall back to their own when it
+    // is missing.
+    //
+    // Hosts report whether they are looking (`setViewer`). Nobody looking, no
+    // requests. A visible desktop widget needs the fast pace for the rain; the
+    // pill alone shows two numbers and gets by with 2 s.
+    property var viewers: ({})
+    readonly property bool anyViewer: Object.keys(root.viewers).length > 0
+    readonly property bool desktopViewer: {
+        for (var k in root.viewers) {
+            if (root.viewers[k] === "desktop")
+                return true;
+        }
+        return false;
+    }
+
+    function setViewer(key, kind) {
+        var v = Object.assign({}, root.viewers);
+        if (kind)
+            v[key] = kind;
+        else
+            delete v[key];
+        root.viewers = v;
+    }
+
+    readonly property var _t: SettingsData.pluginSettings
+
+    function setting(key, def) {
+        root._t;
+        return SettingsData.getPluginSetting("orangedeck", key, def);
+    }
+
+    property alias feed: sharedFeed
+
+    FeedState {
+        id: sharedFeed
+
+        active: root.anyViewer
+        pollMs: root.desktopViewer ? 500 : 2000
+        mode: root.setting("dataSource", "auto")
+        mempoolHost: root.setting("mempoolHost", "")
+        minerHostsRaw: root.setting("minerHostsRaw", "")
+    }
+
     IpcHandler {
         target: "orangedeck"
 
@@ -80,6 +129,17 @@ PluginComponent {
             feedProc.running = false;
             feedProc.running = true;
             return "orangedeck neu gestartet";
+        }
+
+        // Who reads the shared feed and at what pace
+        function feed(): string {
+            return JSON.stringify({
+                "viewers": root.viewers,
+                "active": sharedFeed.active,
+                "pollMs": sharedFeed.pollMs,
+                "mode": sharedFeed.effMode,
+                "online": sharedFeed.online
+            });
         }
 
         function status(): string {

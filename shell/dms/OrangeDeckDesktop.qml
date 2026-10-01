@@ -165,10 +165,63 @@ Item {
         }
     }
 
-    FeedState {
-        id: feedState
+    // The feed shared through the plugin daemon (OrangeDeckDaemon.qml), as
+    // long as this instance reads its data the same way as the plugin. An
+    // instance with a source of its own (data source, mempool instance, miner
+    // address set only here) keeps its own FeedState, as does every widget
+    // while the daemon is missing.
+    readonly property var daemon: PluginService.pluginDaemonInstances
+        ? (PluginService.pluginDaemonInstances[root.pluginId] || null) : null
+    readonly property bool sameSource: {
+        SettingsData.pluginSettings;
+        var o = root.opts;
+        return o.dataSource === SettingsData.getPluginSetting(root.pluginId, "dataSource", "auto")
+            && o.mempoolHost === SettingsData.getPluginSetting(root.pluginId, "mempoolHost", "")
+            && o.minerHostsRaw === SettingsData.getPluginSetting(root.pluginId, "minerHostsRaw", "");
+    }
+    readonly property var sharedFeed: root.sameSource && root.daemon && root.daemon.feed
+        ? root.daemon.feed : null
+    readonly property var feedState: root.sharedFeed || ownFeed
 
-        active: !root.covered
+    // Registered while it shows the shared feed, is visible and not covered
+    readonly property string viewerKey: "desktop-" + (root.instanceId || String(root))
+    readonly property bool viewing: root.sharedFeed !== null && !root.covered && root.visible
+
+    onViewingChanged: root.anmelden()
+    onDaemonChanged: root.anmelden()
+    onViewerKeyChanged: root.anmelden()
+    Component.onCompleted: root.anmelden()
+    Component.onDestruction: root.abmelden()
+
+    // The key under which this host is registered. DMS sets `instanceId` only
+    // after creation, so the key can change once; the old entry has to go,
+    // otherwise it would keep the feed at the fast pace for good.
+    property string gemeldet: ""
+    property var gemeldetBei: null
+
+    function abmelden() {
+        if (root.gemeldetBei && root.gemeldet)
+            root.gemeldetBei.setViewer(root.gemeldet, "");
+        root.gemeldet = "";
+        root.gemeldetBei = null;
+    }
+
+    function anmelden() {
+        root.abmelden();
+        if (!root.daemon || !root.daemon.setViewer)
+            return;
+        var art = root.viewing ? "desktop" : "";
+        if (!art)
+            return;
+        root.daemon.setViewer(root.viewerKey, art);
+        root.gemeldet = root.viewerKey;
+        root.gemeldetBei = root.daemon;
+    }
+
+    FeedState {
+        id: ownFeed
+
+        active: root.sharedFeed === null && !root.covered && root.visible
         pollMs: 500
         mode: root.get("dataSource", "auto")
         mempoolHost: root.opts.mempoolHost || ""
@@ -195,7 +248,7 @@ Item {
         // One view per widget, no switching
         rotationAllowed: false
         view: root.viewIndex
-        feed: feedState
+        feed: root.feedState
         opts: root.opts
         // Nobody adjusts buttons on the desktop; the widget is for looking, not
         // for operating. For the same reason the explorer's search field does not

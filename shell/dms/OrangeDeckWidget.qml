@@ -10,6 +10,7 @@ import Quickshell.Io
 import qs.Common
 import qs.Widgets
 import qs.Modules.Plugins
+import qs.Services
 import "strings.js" as Tr
 
 PluginComponent {
@@ -38,8 +39,49 @@ PluginComponent {
         return n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k" : String(n);
     }
 
+    // The feed is shared through the plugin daemon (OrangeDeckDaemon.qml).
+    // Without it, for instance while the daemon is still starting, the pill
+    // runs its own.
+    readonly property var daemon: PluginService.pluginDaemonInstances
+        ? (PluginService.pluginDaemonInstances[root.pid] || null) : null
+    readonly property var sharedFeed: root.daemon && root.daemon.feed ? root.daemon.feed : null
+    readonly property var feedState: root.sharedFeed || ownFeed
+    readonly property string viewerKey: "bar-" + String(root)
+
+    onDaemonChanged: root.anmelden()
+    onViewerKeyChanged: root.anmelden()
+    Component.onCompleted: root.anmelden()
+    Component.onDestruction: root.abmelden()
+
+    // The key under which this host is registered. DMS sets `instanceId` only
+    // after creation, so the key can change once; the old entry has to go,
+    // otherwise it would keep the feed at the fast pace for good.
+    property string gemeldet: ""
+    property var gemeldetBei: null
+
+    function abmelden() {
+        if (root.gemeldetBei && root.gemeldet)
+            root.gemeldetBei.setViewer(root.gemeldet, "");
+        root.gemeldet = "";
+        root.gemeldetBei = null;
+    }
+
+    function anmelden() {
+        root.abmelden();
+        if (!root.daemon || !root.daemon.setViewer)
+            return;
+        var art = "bar";
+        if (!art)
+            return;
+        root.daemon.setViewer(root.viewerKey, art);
+        root.gemeldet = root.viewerKey;
+        root.gemeldetBei = root.daemon;
+    }
+
     FeedState {
-        id: feedState
+        id: ownFeed
+
+        active: root.sharedFeed === null
 
         // The pill only shows text: block height and mempool count. They hardly
         // change second by second, and the pill is always visible, so whatever it
@@ -194,9 +236,9 @@ PluginComponent {
     // ------------------------------------------------ Control Center tile
     ccWidgetIcon: "currency_bitcoin"
     ccWidgetPrimaryText: "Bitcoin"
-    ccWidgetSecondaryText: feedState.online
-        ? root.t("feed.inMempool", root.grp(feedState.mempoolCount)) : root.t("dms.offline")
-    ccWidgetIsActive: feedState.online
+    ccWidgetSecondaryText: root.feedState.online
+        ? root.t("feed.inMempool", root.grp(root.feedState.mempoolCount)) : root.t("dms.offline")
+    ccWidgetIsActive: root.feedState.online
 
     ccDetailContent: Component {
         Rectangle {
@@ -207,7 +249,7 @@ PluginComponent {
             FeedTabs {
                 anchors.fill: parent
                 anchors.margins: Theme.spacingM
-                feed: feedState
+                feed: root.feedState
                 opts: root.opts
                 defaultLang: root.dmsLang
                 view: root.view
@@ -244,12 +286,12 @@ PluginComponent {
                 anchors.verticalCenter: parent.verticalCenter
                 name: "currency_bitcoin"
                 size: Theme.fontSizeMedium + 2
-                color: feedState.online ? Theme.primary : Theme.surfaceVariantText
+                color: root.feedState.online ? Theme.primary : Theme.surfaceVariantText
             }
 
             StyledText {
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.shortCount(feedState.mempoolCount)
+                text: root.shortCount(root.feedState.mempoolCount)
                 color: Theme.surfaceText
                 font.pixelSize: Theme.fontSizeSmall
             }
@@ -264,12 +306,12 @@ PluginComponent {
                 anchors.horizontalCenter: parent.horizontalCenter
                 name: "currency_bitcoin"
                 size: Theme.fontSizeMedium
-                color: feedState.online ? Theme.primary : Theme.surfaceVariantText
+                color: root.feedState.online ? Theme.primary : Theme.surfaceVariantText
             }
 
             StyledText {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: root.shortCount(feedState.mempoolCount)
+                text: root.shortCount(root.feedState.mempoolCount)
                 color: Theme.surfaceText
                 font.pixelSize: Theme.fontSizeSmall - 2
             }
@@ -287,8 +329,8 @@ PluginComponent {
             id: popout
 
             headerText: "OrangeDeck"
-            detailsText: feedState.online
-                ? root.t("dms.details", root.grp(feedState.tipHeight), root.grp(feedState.mempoolCount))
+            detailsText: root.feedState.online
+                ? root.t("dms.details", root.grp(root.feedState.tipHeight), root.grp(root.feedState.mempoolCount))
                 : root.t("dms.offlineHint")
             showCloseButton: true
 
@@ -312,7 +354,7 @@ PluginComponent {
 
                 FeedTabs {
                     anchors.fill: parent
-                    feed: feedState
+                    feed: root.feedState
                     opts: root.opts
                     defaultLang: root.dmsLang
                     view: root.view
