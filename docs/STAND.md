@@ -37,7 +37,24 @@
   einer FeedState im Plugin-Daemon. In der Probe (frisches HOME, direkt,
   Pille plus zwei Widgets) eine einzige Verbindung zu mempool.space.
   `dms ipc call orangedeck feed` zeigt Zuschauer und Takt.
-- Offen: Merge von #979 (Bot: ready, alle Pruefungen gruen).
+- Registry-PR #979 am selben Tag gemergt.
+- **Windows in der VM geprueft** (0.2.15 aus dem Release, Kennzeichen "aus
+  dem Internet" gesetzt, ueber den Zip-Handler des Explorers entpackt):
+  - SmartScreen: aus dem Skript heraus die Sicherheitswarnung "Unbekannter
+    Herausgeber" mit "Ausfuehren"; ueber Win+R der blaue Schirm "Der Computer
+    wurde durch Windows geschuetzt", "Weitere Informationen", dann "Trotzdem
+    ausfuehren". Beides laesst sich durchklicken, danach laeuft die App.
+  - README-Startzeile (Uhr-Widget, alle Schalter) von Hand in Win+R getippt:
+    kein ClickFix-Befund, Defender meldet nichts Neues seit dem 13.09.
+  - Die 600 MB sind das Working Set; privat sind es 143 MB im Markt und 173 MB
+    im Feed. Der Rest sind geteilte Seiten (Grafiktreiber, Qt). Kein Befund
+    gegen den Markt.
+  - 150 %: Fenster scharf, Uhr-Widget 450 x 330 px mit 36 px Rand, also
+    genau 300 x 220 und 24 bei 150 %. Danach zurueck auf 100 %.
+  - Die Zeiten im Trades-Band (10:22 gegen 15:18) waren richtig: die VM steht
+    auf "Bahia Standard Time" (-3 h).
+- Der Flatpak-Lauf der CI zu 1b19909 brach beim Laden von layer-shell-qt ab
+  (zu langsam), im zweiten Versuch gruen.
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
@@ -333,9 +350,10 @@ darueber.
    in Brasilien, Indonesien, Singapur und Thailand, ab 2027 weltweit, einen
    registrierten Entwickler fuer jede App auf zertifizierten Telefonen, auch
    ausserhalb von Play.
-6. **Windows**: ungeprueft sind 600 MB im Markt, die README-Startzeile in
-   Win+R, Skalierung ueber 100 %, SmartScreen. **macOS**: baut in der CI, nie
-   geprueft, kein Paket; die Seite sagt es jetzt so.
+6. ~~**Windows**: 600 MB im Markt, README-Startzeile in Win+R, Skalierung
+   ueber 100 %, SmartScreen.~~ **Geprueft am 01.10.2026**, siehe oben.
+   **macOS**: baut in der CI, nie geprueft, kein Paket; die Seite sagt es
+   jetzt so.
 7. **`bitfeed`**: eine Messung in der Sitzung des Anwenders, `kitten panel
    --edge=background` unter niri (braucht sein OK), dann Stufe 3 und 4.
 8. **Am Telefon ein zweiter Tipp innerhalb der Doppeltipp-Zeit** auf dieselbe

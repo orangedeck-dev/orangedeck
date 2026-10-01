@@ -133,7 +133,13 @@ erst **nach** dem Zeigen: vorher gesetzt, stand der Besitzer danach wieder
 leer.
 
 Nicht geprueft: das Schliessen mit **Q** (der Zeiger laesst sich in der VM
-nicht verlaesslich setzen) und Bildschirme mit mehr als 100 % Skalierung.
+nicht verlaesslich setzen).
+
+**Bei 150 % Skalierung** (01.10.2026, dieselbe VM): Die Zeile oben ergibt ein
+Widget von 450 x 330 Bildpunkten mit 36 Bildpunkten Rand, also die Werte der
+Zeile in logischen Punkten. Von Hand in `Win+R` getippt, startet sie ohne
+Einwand von Defender; SmartScreen fragt beim ersten Start eines frisch
+geladenen Pakets einmal nach ("Weitere Informationen", "Trotzdem ausfuehren").
 
 ## Leisten statt Widgets
 

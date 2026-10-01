@@ -26,7 +26,7 @@ import time
 
 VM = os.environ.get("ORANGEDECK_WIN_VM", "win11")
 
-EINFACH = {"-": "KEY_SLASH", ".": "KEY_DOT", " ": "KEY_SPACE"}
+EINFACH = {"-": "KEY_SLASH", ".": "KEY_DOT", ",": "KEY_COMMA", " ": "KEY_SPACE"}
 UM = {":": "KEY_DOT", "_": "KEY_SLASH", ";": "KEY_COMMA"}   # mit Umschalt
 ALTGR = {"\\": "KEY_MINUS", "@": "KEY_Q"}                   # mit AltGr
 TAUSCH = {"z": "y", "y": "z", "Z": "Y", "Y": "Z"}           # deutsche Lage
