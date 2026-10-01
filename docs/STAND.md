@@ -15,6 +15,26 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## 01.10.2026 -- Pruefungen im DMS-Verzeichnis abgearbeitet
+
+- Der Pruefbot der Registry hat alle sechs Eintraege gelesen. OrangeDeck
+  (#947) stand auf "needs changes", die fuenf anderen auf "ready" mit
+  kleinen Punkten.
+- **dms-plugin 1.2.1** (Tag `v1.2.1`): die Miner-Adresse aus den
+  Einstellungen kommt im Direktbezug an (vorher fragte keine
+  Registry-Installation je einen Miner ab), die Pille haelt ihre 2 s auch
+  direkt, das Desktop-Widget ruht unter einem Vollbildfenster, die README
+  nennt alle Hosts. `tools/dms-plugin.sh` laesst `.github` im Plugin-Repo
+  stehen (haette FUNDING.yml geloescht).
+- **AudioFX 1.4.1**: ein cava fuer den Visualizer, einer fuer den Glow, fuer
+  alle Bildschirme zusammen; Scheibe in Theme-Farben. **Xray 1.0.1**: keine
+  feste Knopfhoehe mehr.
+- Registry-PR **#979**: `requires_dms` fuer alle sechs, bei OrangeDeck
+  `qt6-websockets` und die Boersen in der Beschreibung. In #947 begruendet,
+  warum die Ansichten eigene Bedienelemente behalten und jedes
+  Desktop-Widget direkt eine eigene Verbindung haelt.
+- Offen: Bot-Pruefung und Merge von #979 abwarten.
+
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
 - Abschnitt `#spenden` auf der Startseite, 13 Sprachen, Anleitung in
