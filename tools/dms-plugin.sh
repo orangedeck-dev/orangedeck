@@ -122,7 +122,11 @@ mkdir -p "$REPOZIEL"
 
 # Alles ausser .git heraus, dann den frischen Stand hinein: so verschwinden
 # geloeschte Dateien wirklich, statt als Leiche liegen zu bleiben.
-find "$REPOZIEL" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+#
+# **.github bleibt.** Es gehoert dem Plugin-Repo, nicht dem Bausatz
+# (FUNDING.yml fuer den Sponsor-Knopf, direkt dort angelegt). Am 01.10.2026
+# hat der Lauf fuer 1.2.1 es sonst geloescht.
+find "$REPOZIEL" -mindepth 1 -maxdepth 1 ! -name .git ! -name .github -exec rm -rf {} +
 cp -r "$ZIEL"/. "$REPOZIEL"/
 
 # **Die Identitaet des Hauptrepos, nicht die globale.** Ein frischer Klon
