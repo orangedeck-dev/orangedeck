@@ -33,7 +33,11 @@
   `qt6-websockets` und die Boersen in der Beschreibung. In #947 begruendet,
   warum die Ansichten eigene Bedienelemente behalten und jedes
   Desktop-Widget direkt eine eigene Verbindung haelt.
-- Offen: Bot-Pruefung und Merge von #979 abwarten.
+- **dms-plugin 1.2.2** (Tag `v1.2.2`): Pille und Desktop-Widgets lesen aus
+  einer FeedState im Plugin-Daemon. In der Probe (frisches HOME, direkt,
+  Pille plus zwei Widgets) eine einzige Verbindung zu mempool.space.
+  `dms ipc call orangedeck feed` zeigt Zuschauer und Takt.
+- Offen: Merge von #979 (Bot: ready, alle Pruefungen gruen).
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
