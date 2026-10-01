@@ -53,6 +53,13 @@
     genau 300 x 220 und 24 bei 150 %. Danach zurueck auf 100 %.
   - Die Zeiten im Trades-Band (10:22 gegen 15:18) waren richtig: die VM steht
     auf "Bahia Standard Time" (-3 h).
+- **Google Search Console**: Domain-Property `orangedeck.dev`, bestaetigt
+  ueber den Cloudflare-Weg (TXT `google-site-verification`, stehen lassen).
+  Sitemap eingereicht vom Anwender. Laeuft bewusst unter dem Google-Konto von
+  Shopatch; von aussen nicht sichtbar, die TXT-Werte der drei Domains sind
+  verschieden.
+- Altes Pages-Projekt `orangedeck`: Loeschen scheitert an 25 Deployments,
+  der Befehl zum Abraeumen liegt beim Anwender.
 - Der Flatpak-Lauf der CI zu 1b19909 brach beim Laden von layer-shell-qt ab
   (zu langsam), im zweiten Versuch gruen.
 
