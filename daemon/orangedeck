@@ -124,6 +124,7 @@ WS_STILL_MAX = 60
 # Im Mempool kommt immer etwas an; 90 s ohne eine neue TxID heisst: Knoten
 # wechseln.
 WS_TX_STILL_MAX = 90
+SUMMARY_RETRY = 20        # Sekunden bis zum naechsten Versuch nach einem Fehlschlag
 RECENT_KEEP = 120         # wie viele frische TX im Zustand liegen bleiben
 # Felder, die sich hoechstens im Minutentakt aendern. Sie machen fast die
 # Haelfte des Zustands aus und werden deshalb nur mitgeschickt, wenn sich
@@ -1937,6 +1938,7 @@ class Feed:
                 sys.stderr.write("Blockzusammenfassung fehlgeschlagen: %s\n" % e)
                 if self.summary_for == tip.get("id"):
                     self.summary_for = None
+                    self.summary_failed_at = time.time()
 
         threading.Thread(target=work, daemon=True).start()
 
@@ -3326,6 +3328,13 @@ def run_extras(feed):
             sample_stats(feed)
             poll_slow(feed)
             poll_miners(feed)
+            # **Die Blockzusammenfassung noch einmal.** `request_summary`
+            # laeuft sonst nur, wenn ein neuer Block kommt. Am 02.10.2026
+            # scheiterte sie fuer 969.600 an einem Verbindungsabbruch, und bis
+            # zum naechsten Block zeigten Feed und bitfeed keinen Block.
+            if (feed.summary_for is None and feed.tip.get("id")
+                    and time.time() - getattr(feed, "summary_failed_at", 0) >= SUMMARY_RETRY):
+                feed.request_summary()
         except Exception as e:
             sys.stderr.write("Nebenquellen: %s\n" % e)
         time.sleep(1)
