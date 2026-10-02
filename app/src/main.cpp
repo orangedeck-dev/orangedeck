@@ -234,12 +234,12 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     app.setOrganizationName("orangedeck");
-    app.setOrganizationDomain("21rebel.dev");
+    app.setOrganizationDomain("orangedeck.dev");
     app.setApplicationName("orangedeck");
     app.setApplicationVersion(QStringLiteral(ORANGEDECK_VERSION));
     app.setApplicationDisplayName(QStringLiteral("OrangeDeck"));
     // Ausdruecklich gesetzt: sonst leitet Qt die Wayland-app_id aus der
-    // umgedrehten Domain und dem Programmnamen ab ("dev.21rebel.orangedeck-app"),
+    // umgedrehten Domain und dem Programmnamen ab ("dev.orangedeck.orangedeck-app"),
     // und der Fensterverwalter findet das Symbol nicht, weil die
     // .desktop-Datei anders heisst. Der Unterstrich gehoert dazu -- ein
     // Segment einer solchen Kennung darf nicht mit einer Ziffer beginnen.

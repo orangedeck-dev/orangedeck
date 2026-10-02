@@ -126,7 +126,7 @@ Internet", ueber den Zip-Handler des Explorers entpackt)
    "Erfolgreich"? Unter **Leistung** die ersten Suchbegriffe.
 3. Danach die offene Liste unten: `bitfeed` (braucht das OK des Anwenders
    fuer ein Panel auf dem Desktop), Freigabetext fuer die naechste Fassung,
-   die Entscheidungen zu Google Play und `21rebel.dev` in `main.cpp`.
+   die Entscheidung zu Google Play (vorerst zurueckgestellt).
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
@@ -435,10 +435,9 @@ darueber.
 10. **Shopatch** hat ein eigenes GitHub-Konto (Einzelunternehmen, also streng
     genommen ein zweites). Umwandeln in eine Organisation in Ruhe pruefen,
     wegen der Shopify-Anbindungen am Login -- Sache des Anwenders.
-11. **`setOrganizationDomain("21rebel.dev")`** steht noch in `main.cpp`. Unter
-    Linux steht die Domain nicht im Pfad der Einstellungen
-    (`~/.config/orangedeck/orangedeck.conf`, nachgesehen), unter macOS schon --
-    Aendern wuerde sie dort verschieben. Entscheidung des Anwenders.
+11. **Erledigt 02.10.2026:** `setOrganizationDomain` steht jetzt auf
+    `orangedeck.dev`. Die Domain `21rebel.dev` gab es nie. Wirkt nur unter
+    macOS (Pfad der Einstellungen), dort war noch niemand betroffen.
 12. **Die naechste Fassung** braucht einen Freigabetext, der die vier
     Korrekturen nennt (Gebuehrenrate, Preisachse, Zahlenformate,
     Fenstersymbol). Die ISO-Datumsschreibweise in der englischen Oberflaeche
