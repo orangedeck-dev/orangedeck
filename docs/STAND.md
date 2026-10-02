@@ -438,10 +438,11 @@ darueber.
 11. **Erledigt 02.10.2026:** `setOrganizationDomain` steht jetzt auf
     `orangedeck.dev`. Die Domain `21rebel.dev` gab es nie. Wirkt nur unter
     macOS (Pfad der Einstellungen), dort war noch niemand betroffen.
-12. **Die naechste Fassung** braucht einen Freigabetext, der die vier
-    Korrekturen nennt (Gebuehrenrate, Preisachse, Zahlenformate,
-    Fenstersymbol). Die ISO-Datumsschreibweise in der englischen Oberflaeche
-    gehoert ebenfalls hinein: sie faellt auf.
+12. **Erledigt:** Die vier Korrekturen (Gebuehrenrate, Preisachse,
+    Zahlenformate, Fenstersymbol) standen im Freigabetext von 0.2.13. ISO im
+    Englischen ist Absicht (`strings.js`, DATUM). Fuer die naechste Fassung
+    liegen bisher nur zwei kleine Aenderungen an: Organisationsdomain und
+    Hilfetext der Mempool-Instanz (02.10.2026).
 13. **Idee fuer spaeter**: Wallet direkt auf dem Telefon.
 
 ### Fuer den naechsten Lauf
