@@ -1884,6 +1884,7 @@ class KittyBitfeed(Bitfeed):
         self.naechste_pid = 1
         self.shm_n = 0
         self.kopf_alt = None
+        self.linie_y = None
 
     # -- Ausgabe -------------------------------------------------------------
     def _apc(self, steuer, nutzlast=b""):
@@ -1977,19 +1978,19 @@ class KittyBitfeed(Bitfeed):
                 or self.farbmodus != self.gezeichnet_modus)
         if voll:
             self.halde_buf = bytearray(b * h * 4)
-            if not self.hg:
-                strich = bytes(LINIE) + b"\xff"
-                for xx in range(0, b, 4):
-                    rgba_fuellen(self.halde_buf, b, h, xx, 0, 2, 1, strich)
+            self.linie_y = None
             for e in self.halde:
                 self._halde_kachel(e, WEISS if e.get("weiss") else self.farbe_tx(e, jetzt))
         else:
             # Das Foerderband: Zeilen fielen unten heraus, alles rutscht nach
-            # unten, oben wird es frei. Die Strichlinie in Zeile 0 bleibt.
+            # unten, oben wird es frei. Die Strichlinie rutscht mit und wird
+            # in `_linie` an ihrer neuen Stelle geloescht.
             d = (self.lay.offset - self.gezeichnet_offset) * f.u
             if d > 0:
                 s = b * 4
-                ab = s
+                ab = 0
+                if self.linie_y is not None:
+                    self.linie_y = self.linie_y + d if self.linie_y + d < h else None
                 if d >= h - 1:
                     self.halde_buf[ab:] = bytes(len(self.halde_buf) - ab)
                 else:
@@ -2005,6 +2006,8 @@ class KittyBitfeed(Bitfeed):
                     farbe = self.farbe_tx(e, jetzt)
                 if e.get("gf") != farbe:
                     self._halde_kachel(e, farbe)
+        if not self.hg:
+            self._linie(f, oben, b, h)
         self.halde_voll = False
         self.gezeichnet_lay = self.lay
         self.gezeichnet_offset = self.lay.offset
@@ -2013,6 +2016,30 @@ class KittyBitfeed(Bitfeed):
         self.basis = True
         self.basis_schmutzig = False
         self.basis_zeit = jetzt
+
+    def _linie(self, f, oben, b, h):
+        """Die Strichlinie sitzt wie `pileTopY` in der App direkt ueber der
+        obersten belegten Zeile und wandert mit. Die alte wird geloescht, wo
+        sie noch steht: Kacheln haben nie die Farbe der Linie."""
+        y = max(0, min(h - 1, f.H - self.lay.hoehe() * f.u - oben - 2))
+        if y == self.linie_y:
+            return
+        strich = bytes(LINIE) + b"\xff"
+        s = b * 4
+        if self.linie_y is not None:
+            a = self.linie_y * s
+            for xx in range(0, b, 4):
+                for d in (0, 1):
+                    i = a + (xx + d) * 4
+                    if xx + d < b and self.halde_buf[i:i + 4] == strich:
+                        self.halde_buf[i:i + 4] = bytes(4)
+        for xx in range(0, b, 4):
+            a = y * s + xx * 4
+            for d in (0, 1):
+                i = a + d * 4
+                if xx + d < b and self.halde_buf[i + 3] == 0:
+                    self.halde_buf[i:i + 4] = strich
+        self.linie_y = y
 
     # -- Block ---------------------------------------------------------------
     def _block_bild(self, jetzt):
