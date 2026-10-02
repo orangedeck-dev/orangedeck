@@ -15,118 +15,109 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
-## TAGESABSCHLUSS 01.10.2026 -- Registry sauber, Windows geprueft, Google angemeldet
+## TAGESABSCHLUSS 02.10.2026 -- zwei Fixes am Dienst, bitfeed in echten Pixeln, AlternativeTo live
 
 ### Der Stand in einem Satz
 
-Alle sechs Eintraege im DMS-Verzeichnis sind nach der Bot-Pruefung
-nachgezogen und gemergt (#979), das Plugin steht auf **1.2.2**, die offenen
-Windows-Pruefungen sind erledigt, und `orangedeck.dev` ist in der Google
-Search Console.
+Der Dienst erkennt jetzt einen Knoten, der keine neuen Transaktionen mehr
+schickt, und holt eine gescheiterte Blockzusammenfassung nach; `bitfeed`
+zeichnet in kitty mit echten Pixeln wie die App; OrangeDeck steht auf
+AlternativeTo und hat einen PR bei awesome-bitcoin. Alles gepusht, CI gruen
+(`bbca7ca`). Seit 0.2.15 nicht veroeffentlicht.
 
 ### Was heute dazugekommen ist
 
-**DMS-Verzeichnis**
-- Der Pruefbot hatte alle sechs Eintraege gelesen: OrangeDeck (#947) "needs
-  changes", die fuenf anderen "ready" mit kleinen Punkten.
-- Registry-PR **#979** (`requires_dms` fuer alle sechs, bei OrangeDeck
-  `qt6-websockets` und Boersen/Dienst in der Beschreibung): Bot "ready",
-  am selben Tag gemergt. In #947 zwei Kommentare mit dem, was behoben ist,
-  und der Begruendung, warum die Ansichten eigene Bedienelemente behalten
-  (sie laufen auch in App und Android ohne DMS).
-- **dms-plugin 1.2.1** (`v1.2.1`): Miner-Adresse kommt im Direktbezug an
-  (vorher fragte keine Registry-Installation je einen Miner ab, mit dem
-  AxeOS-Nachbau geprueft), die Pille haelt ihre 2 s auch direkt, der
-  geschlossene Dashboard-Reiter haelt keinen WebSocket mehr, das
-  Desktop-Widget ruht unter einem Vollbildfenster, README nennt alle Hosts.
-- **dms-plugin 1.2.2** (`v1.2.2`): Pille und Desktop-Widgets lesen aus einer
-  FeedState im Plugin-Daemon. Probe (frisches HOME, direkt, Pille plus zwei
-  Widgets): eine einzige Verbindung zu mempool.space. `dms ipc call
-  orangedeck feed` zeigt Zuschauer, Takt und Modus.
-- `tools/dms-plugin.sh` laesst `.github` im Plugin-Repo stehen; der Lauf fuer
-  1.2.1 haette FUNDING.yml sonst geloescht.
-- **AudioFX 1.4.1**: ein cava fuer den Visualizer und einer fuer den Glow,
-  fuer alle Bildschirme zusammen (neue Datei `AudioFxBands.qml`); die
-  Scheibe in Theme-Farben. **Xray 1.0.1**: DankButton-Standardhoehe statt
-  fester 36 px (Theme hat in DMS 1.6.x keine Hoehen-Token).
+**Dienst (`daemon/orangedeck`)**
+- `04fe171`: neue Wache `WS_TX_STILL_MAX = 90`. Kommt 90 s keine neue TxID,
+  wird die Verbindung abgeraeumt und neu aufgebaut. Anlass: ab etwa 14:00
+  stand `seq` eine halbe Stunde, obwohl der WebSocket jede Sekunde Textrahmen
+  lieferte (Knoten `2001:df6:7280::92:206`). Die alte Wache
+  (`WS_STILL_MAX`) sah nur Textrahmen und blieb ruhig.
+- `a5f5d8f`: gescheiterte Blockzusammenfassung wird nach `SUMMARY_RETRY = 20`
+  s wiederholt (in `run_extras`). Vorher lief `request_summary` nur bei einem
+  neuen Block; 969.600 blieb deshalb in Feed und bitfeed leer.
+- **Beide Fixes nicht im Fehlerfall gemessen**, nur mit Neustart und
+  laufendem Betrieb (danach rund 5 TX/s, Block 969.601 mit Kacheln).
+- mempool.space war den ganzen Nachmittag wackelig: TLS-Handshake-Timeouts,
+  Connection reset, ein Knoten verstummte nach 0,6 s. mempool.emzy.de lief
+  dabei sauber.
 
-**Windows in der VM** (0.2.15 aus dem Release, Kennzeichen "aus dem
-Internet", ueber den Zip-Handler des Explorers entpackt)
-- SmartScreen: aus einem Skript heraus "Unbekannter Herausgeber" mit
-  "Ausfuehren"; ueber Win+R der blaue Schirm, "Weitere Informationen",
-  "Trotzdem ausfuehren". Danach laeuft die App.
-- README-Startzeile (Uhr-Widget, alle Schalter) von Hand in Win+R getippt:
-  kein ClickFix-Befund, Defender meldet nichts seit dem 13.09.
-- Die "600 MB im Markt" sind das Working Set; privat 143 MB im Markt, 173 MB
-  im Feed. Kein Befund gegen den Markt.
-- 150 %: Fenster scharf, Uhr-Widget 450 x 330 px mit 36 px Rand, also genau
-  die logischen Werte der Zeile. Danach zurueck auf 100 %, VM aus, wieder
-  10 GB.
-- Die Zeiten im Trades-Band waren richtig: die VM steht auf "Bahia Standard
-  Time" (-3 h).
-- `tools/win-tippen.py` kann jetzt Kommas.
+**bitfeed (`cli/orangedeck-cli`)**
+- Kurzbefehl `bitfeed` fehlte in `~/.local/bin` (am 12.09. nur die neun
+  Zahlenbefehle verlinkt), jetzt angelegt.
+- Hintergrund-Panel gemessen: `kitten panel --edge=background
+  --output-name=eDP-1 bitfeed --bg` laeuft unter niri 26.04 mit DMS, liegt
+  ueber dem Hintergrundbild und hinter allen Fenstern.
+- `4182dc7` + `56ff319`: **neuer Zeichenweg fuer kitty** (`KittyBitfeed`,
+  `PixelFlaeche`). Masse aus `FeedCanvas.qml` (4 px Kachel, 1 px Rand je
+  Seite, Blockfuge g/8, Block von oben nach unten, Breite
+  max(4, ceil(sqrt(Summe r*r)))). Block und Halde als RGBA-Bilder ueber
+  Shared Memory (`t=s`), fallende Kacheln als Platzierungen kleiner
+  Farbbilder. Strichlinie wandert wie `pileTopY`. Nur Standardbibliothek.
+  Neue Schalter `--render auto|kitty|text`, `--tile`.
+- Last im Panel: bitfeed ~2,6 % CPU, kitty ~6 % (vorher 2,1 / 0,3 %).
+  Danach Haldenbild auf hoechstens 6/s gesenkt, nicht nachgemessen.
+- Vom Anwender angesehen: sieht aus wie die App. Offen: Blockfund-Animation
+  (`b`) in kitty noch nicht auf dem Bildschirm gesehen.
 
-**Seite und Konten**
-- **Google Search Console**: Domain-Property `orangedeck.dev`, bestaetigt
-  ueber Cloudflare (TXT `google-site-verification`, stehen lassen), Sitemap
-  eingereicht. Die wichtigsten Adressen waren schon indexiert. Laeuft bewusst
-  unter dem Google-Konto von Shopatch; von aussen nicht sichtbar.
-- Altes Pages-Projekt `orangedeck` geloescht (24 Deployments einzeln, dann
-  das Projekt). `wrangler` laeuft per `npx`, Login mit `! npx wrangler login`.
-- CI: der Flatpak-Lauf zu 1b19909 brach beim Laden von layer-shell-qt ab
-  (Netz zu langsam), im zweiten Versuch gruen.
-- CI am Abend: in den Laeufen zu "altes Pages-Projekt geloescht" und
-  "Tagesabschluss 01.10.2026" brach nur **macOS** ab, nach 15 min ohne einen
-  einzigen Schritt ("The job was not acquired by Runner of type hosted even
-  after multiple attempts", dazu GitHubs Hinweis auf knappe macOS-arm64-Runner).
-  Kein Fehler im Code. macOS im neueren Lauf (36884376488) neu gestartet:
-  in 2:43 min gruen, der Lauf ist komplett gruen. Der aeltere bleibt rot
-  stehen, der neuere baut denselben Stand mit.
-- Fuer spaeter, noch ohne Folgen: `actions/checkout@v4` und
-  `upload-artifact@v4` laufen auf Node 20 (abgekuendigt), `ubuntu-latest`
-  wechselt ab 19.10.2026 auf Ubuntu 26.
+**Kleinkram**
+- `bc27d89`: `setOrganizationDomain("orangedeck.dev")` statt `21rebel.dev`
+  (die Domain gab es nie; wirkt nur unter macOS).
+- `be210ba`: Hilfetext Mempool-Instanz nennt den Dienst nur noch fuer Linux,
+  13 Sprachen.
+- Repo-Homepage `orangedeck-dev/orangedeck` = https://orangedeck.dev.
+- `bbca7ca`: CI baut macOS nur noch montags 04:17 UTC und per
+  `gh workflow run build.yml`. Zweimal in zwei Tagen kein Runner.
 
-**Ausserhalb von OrangeDeck, nur zur Einordnung**
-- Shopatch: die drei App-Server senden `X-Robots-Tag: noindex` und haben eine
-  `robots.txt`, `www.shopatch.com` leitet per Cloudflare-Regel auf den Apex,
-  Validierung in der Search Console gestartet. Scaleway hochgerechnet rund
-  58 EUR/Monat (September rund 270). Neuer Leseschluessel
-  `~/Schreibtisch/Shopatch/.scw-lesen.env`. Einzelheiten in den Notizen zu
-  den Shopatch-Apps.
-- Unterkunft: der Miner hasht, ist aber nicht erreichbar, weil das WLAN die
-  Geraete voneinander isoliert. Kein Fehler im Plugin oder in der App.
-- Zeitzone auf Europe/Berlin umgestellt.
+**Bekanntmachen**
+- awesome-bitcoin: PR **#243** (igorbarinov/awesome-bitcoin), Konto
+  satoshoe-dev, Autor `Satoshoe <info@orangedeck.dev>`, mergebar. Nicht
+  nachhaken.
+- AlternativeTo: Konto `Satoshoe` (info@orangedeck.dev, GitHub verknuepft),
+  eingereicht und um 15:10 freigegeben, ohne Bezahl-Vorrang:
+  https://alternativeto.net/software/orangedeck/about/ . Alternativen:
+  mempool, OpenBitcoin. Notizen in
+  `~/.local/share/orangedeck/texte/ALTERNATIVETO.md`.
+- Bing Webmaster: vom Anwender bewusst gestrichen. Google Play: vorerst nicht.
 
 ### Die Erkenntnisse des Tages
 
-- **Was der Bot pruefte, stimmte.** Der Miner-Fehler im Direktbezug war echt
-  und betraf jede Installation aus dem Verzeichnis; im eigenen Desktop fiel
-  er nie auf, weil dort der Dienst laeuft. Fuer das Plugin zaehlt die Probe
-  mit frischem HOME, nicht die eigene Sitzung.
-- **DMS setzt `instanceId` erst nach dem Erzeugen.** Ein Schluessel aus
-  `Component.onCompleted` ist danach falsch; wer sich irgendwo anmeldet, muss
-  den alten Schluessel wieder abmelden.
-- **Sechs Verbindungen zu 127.0.0.1 waren keine Last**, sondern leere
-  Keep-alive-Sockel aus dem Start. Erst die Bytes je Sockel ueber zehn
-  Sekunden zeigten das.
-- **SmartScreen haengt am Startweg.** Start-Process zeigte den alten Dialog
-  mit "Ausfuehren", Win+R den blauen Schirm.
-- **Die Registry verlangt den KI-Hinweis im PR** (CONTRIBUTING.md). Er bleibt,
-  sachlich in einem Satz; neue Commits tragen keine Co-Authored-By-Zeile mehr.
-- **Ein roter macOS-Job nach genau 15 min ist meist kein Build-Fehler**,
-  sondern kein Runner frei. Erkennbar an der Annotation "not acquired by
-  Runner". `gh run rerun --failed` lieferte dabei HTTP 500; der Neustart
-  ueber die Job-ID (`gh run rerun -j <job-id>`) ging.
+- **Verkehr ist kein Lebenszeichen.** Ein Knoten kann jede Sekunde Gebuehren
+  und Mempool-Bloecke schicken und trotzdem keine neue Transaktion. Die Wache
+  muss auf das schauen, wofuer die Verbindung da ist.
+- **Einmal versuchen heisst manchmal nie.** Was nur an einem Ereignis haengt
+  (neuer Block), braucht einen zweiten Weg, wenn es scheitert.
+- **Halbbloecke sind fuer Zahlen gut, fuer Kacheln nicht.** Bei 12-Punkt-Schrift
+  ist ein Halbblock-Pixel rund 10 x 10 echte Pixel. Fuer die Kachelansicht ist
+  kittys Grafikprotokoll der einzige Weg, der der App gleicht.
+- **Ein Bild nicht je Frame neu schicken.** Statisches als Bild (selten neu),
+  Bewegtes als verschobene Platzierungen. Ein Vollbild mit 20 fps waere
+  2560 x 1600 x 4 Byte je Frame gewesen.
+- **AlternativeTo:** Anmeldung ueber GitHub geht nur fuer ein bestehendes
+  Konto ("account_not_linked"); anlegen per E-Mail. Feld "Alternative to"
+  gibt es erst nach dem Absenden. Freigabe kann schnell gehen (2 h).
+- **Issue #1 ist Werbung.** Gleichlautende Vorschlaege desselben Accounts in
+  mindestens zwoelf Bitaxe-Projekten am 28.09.
 
 ### Was morgen als Erstes drankommt
 
-1. In #947 nachsehen, ob der Bot neu bewertet hat (stand zuletzt noch auf
-   "needs changes" vom 29.09.).
-2. In ein, zwei Tagen in der Search Console von `orangedeck.dev`: Sitemap
-   "Erfolgreich"? Unter **Leistung** die ersten Suchbegriffe.
-3. Danach die offene Liste unten: `bitfeed` (braucht das OK des Anwenders
-   fuer ein Panel auf dem Desktop), Freigabetext fuer die naechste Fassung,
-   die Entscheidung zu Google Play (vorerst zurueckgestellt).
+1. **Issue #1** ("Optional pool guide link", BTC PoW Lab, Carlos Monzon /
+   Power CM) ablehnen und schliessen -- **erst nach OK des Anwenders posten**.
+   Entwurf:
+   > Thanks for the clear disclosure. I'll keep the Miner view free of
+   > pool-specific links, though. A mapping from host to page would mean
+   > OrangeDeck picks which pools get a link, and I'd rather not be in that
+   > position. Closing this, but thanks for taking the time.
+2. **0.2.16** vorbereiten (Anwender gefragt, noch keine Antwort): zwei
+   Dienst-Fixes, bitfeed in kitty, Hilfetext, Domain. Freigabetext, Entwurf,
+   Pruefung Galaxy/Windows/Linux wie bei 0.2.15.
+3. AlternativeTo: Anwender traegt weitere Alternativen ein (empfohlen
+   Bitcoin Sidekick, Blockchain - Bitcoin Block Explorer, Blockchair; Minera
+   als Grenzfall). Badge auf orangedeck.dev nur als Vorschlag zeigen.
+4. In #947 schauen, ob der Bot neu bewertet hat (bis 02.10. nicht).
+5. Search Console orangedeck.dev: Sitemap-Status, erste Suchbegriffe.
+6. bitfeed: Blockfund in kitty ansehen; Stufe 3/4 (`blockinfo`, `tx`,
+   `market`, `miner`, Vervollstaendigung, AUR); evtl. als festen Hintergrund.
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
@@ -536,6 +527,7 @@ Ein Tag je Datei, das Neueste oben. Herausgeloest aus dieser Datei, unveraendert
 
 | Tag | Worum es ging |
 |---|---|
+| [01.10.2026](journal/2026-10-01.md) | Registry sauber (#979), Plugin 1.2.2, Windows-Pruefungen erledigt, Search Console, macOS ohne Runner. |
 | [19.09.2026](journal/2026-09-19.md) | 0.2.12 veroeffentlicht, Umzug nach `orangedeck-dev`, eigenes F-Droid-Repo unter fdroid.orangedeck.dev, die Seite verteilt selbst. |
 | [18.09.2026](journal/2026-09-18.md) | 0.2.11 veroeffentlicht, fuenf Punkte der offenen Liste erledigt, die Wache gegen den stummen WebSocket, Android 11 im Emulator. |
 | [17.09.2026](journal/2026-09-17.md) | 0.2.11 gebaut und signiert, die Widgets haben die Nacht bestanden, dieselbe Transaktion stand doppelt im Mempool-Protokoll, Windows lief mit Daten. |
