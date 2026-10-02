@@ -426,8 +426,14 @@ darueber.
    ueber 100 %, SmartScreen.~~ **Geprueft am 01.10.2026**, siehe oben.
    **macOS**: baut in der CI, nie geprueft, kein Paket; die Seite sagt es
    jetzt so.
-7. **`bitfeed`**: eine Messung in der Sitzung des Anwenders, `kitten panel
-   --edge=background` unter niri (braucht sein OK), dann Stufe 3 und 4.
+7. **`bitfeed` als Hintergrund gemessen (02.10.2026):** `kitten panel
+   --edge=background --output-name=eDP-1 bitfeed --bg` unter niri 26.04 mit
+   DMS laeuft und zeichnet ueber dem Hintergrundbild, hinter allen Fenstern.
+   Ueber 10 s: python 2,1 % CPU, kitty 0,3 %; RSS 36 MB bzw. 148 MB. Dienst
+   lief, Quelle also `/state`. Nach dem Ende kein Rest. Der Kurzbefehl
+   `bitfeed` fehlte in `~/.local/bin` und ist jetzt verlinkt. Offen: Stufe 3
+   (`blockinfo`, `tx`, Blockfund-Animation) und Stufe 4 (`market`, `miner`,
+   Vervollstaendigung, AUR).
 8. **Am Telefon ein zweiter Tipp innerhalb der Doppeltipp-Zeit** auf dieselbe
    Kachel setzt die Sicht zurueck, statt den Explorer zu oeffnen. So gewollt,
    aber wer schnell tippt, merkt es. Beobachten.
