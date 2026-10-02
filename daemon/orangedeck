@@ -116,6 +116,14 @@ WRITE_INTERVAL = 0.4      # Sekunden zwischen zwei Schreibvorgaengen
 # verschiedene Transaktionen in 60 s. Ein Draht, der nichts traegt, ist
 # kein Draht.
 WS_STILL_MAX = 60
+# **Und so lange duerfen keine neuen Transaktionen kommen.** Am 02.10.2026
+# hing der Dienst an einem Knoten, der weiter jede Sekunde Textrahmen schickte
+# (Gebuehren, Mempool-Bloecke), in `transactions` aber immer dieselben sechs.
+# Die Wache oben sah Verkehr und blieb ruhig, `seq` stand eine halbe Stunde
+# still. Eine frische Verbindung bekam im selben Moment jede Sekunde neue.
+# Im Mempool kommt immer etwas an; 90 s ohne eine neue TxID heisst: Knoten
+# wechseln.
+WS_TX_STILL_MAX = 90
 RECENT_KEEP = 120         # wie viele frische TX im Zustand liegen bleiben
 # Felder, die sich hoechstens im Minutentakt aendern. Sie machen fast die
 # Haelfte des Zustands aus und werden deshalb nur mitgeschickt, wenn sich
@@ -3239,15 +3247,23 @@ def run_ws(feed, still_max=None):
     # und raeumt den Sockel ab -- `recv()` faellt dann mit einer Ausnahme
     # heraus, und der Aufrufer verbindet neu (und haelt derweil per REST nach).
     grenze = WS_STILL_MAX if still_max is None else still_max
+    tx_grenze = max(grenze, WS_TX_STILL_MAX) if still_max is None else still_max * 1.5
     letzte = [time.time()]
+    letzte_tx = [time.time()]
     halt = threading.Event()
 
     def wache():
         while not halt.wait(min(5.0, grenze / 4.0)):
-            still = time.time() - letzte[0]
-            if still > grenze:
-                sys.stderr.write(
-                    "WebSocket schweigt seit %.0f s -- Verbindung wird abgeraeumt\n" % still)
+            jetzt = time.time()
+            still = jetzt - letzte[0]
+            tx_still = jetzt - letzte_tx[0]
+            if still > grenze or tx_still > tx_grenze:
+                if still > grenze:
+                    sys.stderr.write(
+                        "WebSocket schweigt seit %.0f s -- Verbindung wird abgeraeumt\n" % still)
+                else:
+                    sys.stderr.write(
+                        "Seit %.0f s keine neue Transaktion -- Verbindung wird abgeraeumt\n" % tx_still)
                 try:
                     ws.sock.shutdown(socket.SHUT_RDWR)
                 except Exception:
@@ -3273,7 +3289,10 @@ def run_ws(feed, still_max=None):
             if p is not None:
                 handle_projected(feed, p)
             else:
+                seq_vorher = feed.seq
                 handle(feed, msg)
+                if feed.seq != seq_vorher:
+                    letzte_tx[0] = time.time()
 
             # Niemand sieht mehr hin -> abbestellen. Sonst laeuft der Strom
             # dauerhaft mit, und das sind rund 8 kB/s.
