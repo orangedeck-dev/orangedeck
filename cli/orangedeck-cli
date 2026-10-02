@@ -1777,6 +1777,388 @@ class Bitfeed:
                 time.sleep(warte)
 
 
+# --------------------------------------------------------------------------
+# bitfeed in kitty -- echte Pixel ueber das Grafikprotokoll
+# --------------------------------------------------------------------------
+#
+# **Warum ein zweiter Weg.** In Halbbloecken ist ein Bildpunkt eine halbe
+# Zeichenzelle, bei einer 12-Punkt-Schrift rund 10 x 10 Pixel. Die App zeichnet
+# 4-Pixel-Kacheln mit einer Fuge von 2 Pixeln. Am 02.10.2026 im
+# Hintergrund-Panel nebeneinander gesehen: der Block wurde zur orangen Flaeche,
+# die Halde zu einer Handvoll Kloetze. kitty kann Bilder in echter Aufloesung
+# zeigen; damit gelten hier dieselben Masse wie in FeedCanvas.qml.
+#
+# Drei Ebenen, damit nie das ganze Bild je Frame wandert:
+#   Block    ein Bild, neu nur bei einem neuen Block und waehrend des Blockfunds
+#   Halde    ein Bild ueber dem unteren Drittel. Gelandete Kacheln werden
+#            hineingemalt, das Foerderband schiebt die Zeilen nach unten,
+#            neu gemalt wird nur, was noch juenger als 60 s ist
+#   Fallend  je Kachel eine Platzierung eines kleinen Farbbilds, die pro Frame
+#            nur verschoben wird
+# Block und Halde gehen ueber Shared Memory (t=s): kitty liest die Datei in
+# /dev/shm und loescht sie selbst.
+
+KITTY_BLOCK = 7101
+KITTY_HALDE = 7102
+KITTY_KACHEL_AB = 7200
+KITTY_HALDE_HZ = 6
+
+
+def kitty_moeglich():
+    term = os.environ.get("TERM", "")
+    if "kitty" not in term and not os.environ.get("KITTY_WINDOW_ID"):
+        return False
+    return fenster_pixel()[2] > 0
+
+
+def fenster_pixel():
+    import termios
+    try:
+        roh = fcntl.ioctl(sys.stdout.fileno(), termios.TIOCGWINSZ, b"\0" * 8)
+        ze, sp, xp, yp = struct.unpack("HHHH", roh)
+        return sp, ze, xp, yp
+    except OSError:
+        return 0, 0, 0, 0
+
+
+class PixelFlaeche:
+    """Die Aufteilung aus FeedCanvas.qml, in echten Pixeln. Dieselben Namen
+    wie `Flaeche`, damit die Mechanik in `Bitfeed` (Foerderband, Fallen,
+    `ziel_y`) unveraendert bleibt; `u` ist hier der Rasterschritt in Pixeln."""
+
+    def __init__(self, kopf, dichte):
+        sp, ze, xp, yp = fenster_pixel()
+        self.spalten = sp
+        self.cw = max(1, xp // max(1, sp))
+        self.ch = max(1, yp // max(1, ze))
+        self.kopf = 1 if kopf else 0
+        self.zeilen = ze - self.kopf
+        self.oy = self.kopf * self.ch
+        self.W = sp * self.cw
+        self.H = self.zeilen * self.ch
+        W, H = self.W, self.H
+        # fugeDev / seiteDev / zelleDev, bei dpr 1
+        self.fuge = max(1, round(min(3, max(1, dichte))))
+        seite = max(2, round(min(10, max(2, 4 * dichte))))
+        self.u = seite + 2 * self.fuge
+        self.raster = max(8, W // self.u - 1)
+        self.x0 = round((W - self.raster * self.u) / 2)
+        wunsch = min(W * 0.72, H / 2.5)
+        grenze = H / (4.5 if W <= 620 else 4)
+        halde = max(grenze, min(H - wunsch / 0.86, H / 3))
+        self.halde_oben = int(max(0, H - halde))
+        self.halde_zeilen = max(3, int(halde // self.u))
+        seite_b = int(min(W * 0.72, H / 2.5, self.halde_oben * 0.86))
+        self.block_seite = max(0, seite_b)
+        self.block_x = (W - seite_b) // 2
+        self.block_y = max(0, int(self.halde_oben * 0.5 - seite_b / 2))
+
+
+def rgba_fuellen(buf, breite, hoehe, x, y, b, h, rgba):
+    x0, x1 = max(0, x), min(breite, x + b)
+    y0, y1 = max(0, y), min(hoehe, y + h)
+    if x0 >= x1 or y0 >= y1:
+        return
+    zeile_ = rgba * (x1 - x0)
+    schritt = breite * 4
+    for yy in range(y0, y1):
+        a = yy * schritt + x0 * 4
+        buf[a:a + len(zeile_)] = zeile_
+
+
+class KittyBitfeed(Bitfeed):
+    def __init__(self, args, strom):
+        super().__init__(args, strom)
+        self.dichte = args.tile
+        self.halde_buf = None
+        self.halde_neu = False
+        self.halde_voll = True
+        self.halde_gesendet = 0.0
+        self.gezeichnet_offset = 0
+        self.gezeichnet_lay = None
+        self.gezeichnet_modus = None
+        self.block_schluessel = None
+        self.block_sichtbar = False
+        self.kachel_bilder = {}
+        self.platziert = {}
+        self.naechste_pid = 1
+        self.shm_n = 0
+        self.kopf_alt = None
+
+    # -- Ausgabe -------------------------------------------------------------
+    def _apc(self, steuer, nutzlast=b""):
+        if not nutzlast:
+            return "\x1b_G%s\x1b\\" % steuer
+        b64 = base64.standard_b64encode(nutzlast).decode()
+        if len(b64) <= 4096:
+            return "\x1b_G%s;%s\x1b\\" % (steuer, b64)
+        teile = [b64[i:i + 4096] for i in range(0, len(b64), 4096)]
+        aus = ["\x1b_G%s,m=1;%s\x1b\\" % (steuer, teile[0])]
+        for tl in teile[1:-1]:
+            aus.append("\x1b_Gm=1;%s\x1b\\" % tl)
+        aus.append("\x1b_Gm=0;%s\x1b\\" % teile[-1])
+        return "".join(aus)
+
+    def _cursor(self, px, py):
+        f = self.flaeche
+        sp, X = divmod(int(px), f.cw)
+        ze, Y = divmod(int(py) + f.oy, f.ch)
+        return "\x1b[%d;%dH" % (ze + 1, sp + 1), X, Y
+
+    def _bild_senden(self, bid, breite, hoehe, daten, px, py, z):
+        name = "/orangedeck-bitfeed-%d-%d" % (os.getpid(), self.shm_n)
+        self.shm_n += 1
+        fd = os.open("/dev/shm" + name, os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o600)
+        try:
+            ansicht = memoryview(daten)
+            while ansicht:
+                n = os.write(fd, ansicht)
+                ansicht = ansicht[n:]
+        finally:
+            os.close(fd)
+        pos, X, Y = self._cursor(px, py)
+        return pos + self._apc("a=T,f=32,t=s,s=%d,v=%d,S=%d,i=%d,p=1,X=%d,Y=%d,z=%d,C=1,q=2"
+                               % (breite, hoehe, len(daten), bid, X, Y, z), name.encode())
+
+    def aufraeumen(self):
+        aus = [self._apc("a=d,d=I,i=%d,q=2" % b) for b in (KITTY_BLOCK, KITTY_HALDE)]
+        aus += [self._apc("a=d,d=I,i=%d,q=2" % b) for b in self.kachel_bilder.values()]
+        sys.stdout.write("".join(aus))
+        sys.stdout.flush()
+        praefix = "orangedeck-bitfeed-%d-" % os.getpid()
+        try:
+            for name in os.listdir("/dev/shm"):
+                if name.startswith(praefix):
+                    os.unlink("/dev/shm/" + name)
+        except OSError:
+            pass
+
+    # -- Geometrie -----------------------------------------------------------
+    def neu_messen(self):
+        self.flaeche = PixelFlaeche(self.kopf, self.dichte)
+        if self.lay is None:
+            self.lay = Mondrian(self.flaeche.raster)
+        else:
+            self.lay = stabil_neu(self.flaeche.raster, self.halde)
+            self._foerderband()
+        self.fliegend = []
+        self.block_einheiten = None
+        self.block_schluessel = None
+        self.halde_voll = True
+        self.basis_schmutzig = True
+        self.platziert = {}
+        self.kopf_alt = None
+        sys.stdout.write("\x1b[2J" + self._apc("a=d,d=a,q=2"))
+
+    def blockfund(self, jetzt):
+        super().blockfund(jetzt)
+        self.halde_voll = True
+
+    # -- Halde ---------------------------------------------------------------
+    def _halde_masse(self):
+        f = self.flaeche
+        oben = max(0, f.halde_oben - 1)
+        return oben, f.W, f.H - oben
+
+    def _halde_kachel(self, e, farbe):
+        f = self.flaeche
+        oben, b, h = self._halde_masse()
+        x, y, r = e["sq"]
+        seite = r * f.u - 2 * f.fuge
+        py = int(self.ziel_y(e)) + f.fuge - oben
+        rgba_fuellen(self.halde_buf, b, h, f.x0 + x * f.u + f.fuge, py, seite, seite,
+                     bytes(self._dimmen(farbe)) + b"\xff")
+        e["gf"] = farbe
+
+    def basis_bauen(self, jetzt):
+        f = self.flaeche
+        oben, b, h = self._halde_masse()
+        voll = (self.halde_voll or self.halde_buf is None or self.lay is not self.gezeichnet_lay
+                or self.farbmodus != self.gezeichnet_modus)
+        if voll:
+            self.halde_buf = bytearray(b * h * 4)
+            if not self.hg:
+                strich = bytes(LINIE) + b"\xff"
+                for xx in range(0, b, 4):
+                    rgba_fuellen(self.halde_buf, b, h, xx, 0, 2, 1, strich)
+            for e in self.halde:
+                self._halde_kachel(e, WEISS if e.get("weiss") else self.farbe_tx(e, jetzt))
+        else:
+            # Das Foerderband: Zeilen fielen unten heraus, alles rutscht nach
+            # unten, oben wird es frei. Die Strichlinie in Zeile 0 bleibt.
+            d = (self.lay.offset - self.gezeichnet_offset) * f.u
+            if d > 0:
+                s = b * 4
+                ab = s
+                if d >= h - 1:
+                    self.halde_buf[ab:] = bytes(len(self.halde_buf) - ab)
+                else:
+                    self.halde_buf[ab + d * s:] = self.halde_buf[ab:len(self.halde_buf) - d * s]
+                    self.halde_buf[ab:ab + d * s] = bytes(d * s)
+            alt_grenze = AGE_S + 2 * ALTER_TAKT
+            for e in self.halde:
+                if e.get("weiss"):
+                    farbe = WEISS
+                elif "gf" in e and self.farbmodus == "age" and jetzt - e["t0"] > alt_grenze:
+                    continue
+                else:
+                    farbe = self.farbe_tx(e, jetzt)
+                if e.get("gf") != farbe:
+                    self._halde_kachel(e, farbe)
+        self.halde_voll = False
+        self.gezeichnet_lay = self.lay
+        self.gezeichnet_offset = self.lay.offset
+        self.gezeichnet_modus = self.farbmodus
+        self.halde_neu = True
+        self.basis = True
+        self.basis_schmutzig = False
+        self.basis_zeit = jetzt
+
+    # -- Block ---------------------------------------------------------------
+    def _block_bild(self, jetzt):
+        """Wie blockUnit() und blockPad() in FeedCanvas.qml: ganze Pixel ab
+        vier Pixeln je Rasterschritt, Fuge ein Achtel davon, mindestens 1."""
+        f = self.flaeche
+        n = f.block_seite
+        if not self.block or n < 8:
+            return None
+        if self.block_einheiten is None:
+            self.block_einheiten = self._block_einheiten()
+        be = self.block_einheiten
+        if not be:
+            return None
+        zeige, weiss = 1.0, 0.0
+        if self.anim:
+            zeit = jetzt - self.anim["start"]
+            if zeit < 1.2:
+                return None
+            zeige = min(1.0, (zeit - 1.2) / 1.3)
+            weiss = 1.0 - max(0.0, min(1.0, (zeit - 2.5) / 1.0))
+        spann = max(be["breite"], be["hoehe"])
+        g = n / spann
+        if g >= 4:
+            g = math.floor(g)
+            rand = max(1, round(g / 8))
+        else:
+            rand = g / 4
+        ox = (n - be["breite"] * g) / 2
+        sichtbar = be["hoehe"] * zeige
+        buf = bytearray(n * n * 4)
+        farben = {}
+        for x, y, r, k in be["kacheln"]:
+            if y >= sichtbar:
+                continue
+            fa = farben.get(k)
+            if fa is None:
+                ziel = self.orange if self.farbmodus == "age" else self.klassen_farben[min(k, 9)]
+                if weiss > 0:
+                    ziel = tuple(int(255 + (c - 255) * (1 - weiss)) for c in ziel)
+                fa = farben[k] = bytes(self._dimmen(ziel)) + b"\xff"
+            # Von oben nach unten wie in der App (`blockRect`: by + q.y * g):
+            # die grossen Kacheln oben, der ausgefranste Rand unten.
+            x0 = round(ox + x * g + rand)
+            x1 = max(x0 + 1, round(ox + (x + r) * g - rand))
+            y0 = round(y * g + rand)
+            y1 = max(y0 + 1, round((y + r) * g - rand))
+            rgba_fuellen(buf, n, n, x0, y0, x1 - x0, y1 - y0, fa)
+        return buf
+
+    def _block_einheiten(self):
+        """Wie rebuild() in FeedCanvas.qml: Breite max(4, ceil(sqrt(Summe r*r)))."""
+        paare = self.block.get("tiles") or ""
+        groessen = [(int(paare[i]) or 1, int(paare[i + 1])) for i in range(0, len(paare) - 1, 2)]
+        if not groessen:
+            return None
+        breite = max(4, math.ceil(math.sqrt(sum(r * r for r, _ in groessen))))
+        lay = Mondrian(breite)
+        einheiten = [lay.setze(r) + (k,) for r, k in groessen]
+        return {"breite": breite, "hoehe": lay.hoehe(), "kacheln": einheiten}
+
+    # -- Frame ---------------------------------------------------------------
+    def _kachel_bild(self, farbe, seite, aus):
+        schluessel = (farbe, seite)
+        bid = self.kachel_bilder.get(schluessel)
+        if bid is None:
+            if len(self.kachel_bilder) > 600:
+                for alt in list(self.kachel_bilder.values()):
+                    aus.append(self._apc("a=d,d=I,i=%d,q=2" % alt))
+                self.kachel_bilder.clear()
+                self.platziert = {}
+            bid = KITTY_KACHEL_AB + len(self.kachel_bilder)
+            while bid in self.kachel_bilder.values():
+                bid += 1
+            self.kachel_bilder[schluessel] = bid
+            aus.append(self._apc("a=t,f=24,s=%d,v=%d,i=%d,q=2" % (seite, seite, bid),
+                                 bytes(self._dimmen(farbe)) * (seite * seite)))
+        return bid
+
+    def zeichnen(self, jetzt):
+        f = self.flaeche
+        # Gelandetes sofort in die Halde, nicht erst im Takt von `laufen`:
+        # sonst verschwindet eine Kachel fuer einen Moment, zwischen dem Ende
+        # ihrer Platzierung und dem naechsten Haldenbild.
+        if self.basis_schmutzig and not self.anim:
+            self.basis_bauen(jetzt)
+        aus = ["\x1b[?2026h"]
+        if self.kopf:
+            kopf = self.kopfzeile()
+            if kopf != self.kopf_alt:
+                aus.append("\x1b[1;1H\x1b[0m\x1b[2K" + kopf)
+                self.kopf_alt = kopf
+
+        schluessel = (id(self.block_einheiten), self.block and self.block.get("id"),
+                      self.farbmodus, f.block_seite)
+        if self.anim or schluessel != self.block_schluessel:
+            bild = self._block_bild(jetzt)
+            if bild is None:
+                if self.block_sichtbar:
+                    aus.append(self._apc("a=d,d=i,i=%d,q=2" % KITTY_BLOCK))
+                    self.block_sichtbar = False
+            else:
+                aus.append(self._bild_senden(KITTY_BLOCK, f.block_seite, f.block_seite, bild,
+                                             f.block_x, f.block_y, -2))
+                self.block_sichtbar = True
+            self.block_schluessel = (id(self.block_einheiten), self.block and self.block.get("id"),
+                                     self.farbmodus, f.block_seite)
+
+        if self.halde_neu and jetzt - self.halde_gesendet >= 1 / KITTY_HALDE_HZ:
+            oben, b, h = self._halde_masse()
+            aus.append(self._bild_senden(KITTY_HALDE, b, h, self.halde_buf, 0, oben, -1))
+            self.halde_neu = False
+            self.halde_gesendet = jetzt
+        # Erst wenn die Halde mit der gelandeten Kachel gesendet ist, faellt
+        # deren Platzierung weg.
+        halde_aktuell = not self.halde_neu
+
+        jetzt_da = {}
+        for e in self.fliegend:
+            if e["y"] < 0:
+                continue
+            x, _, r = e["sq"]
+            seite = r * f.u - 2 * f.fuge
+            if "pid" not in e:
+                e["pid"] = self.naechste_pid
+                self.naechste_pid = self.naechste_pid % 16000000 + 1
+                e["fc"] = self.farbe_tx(e, jetzt)
+            bid = self._kachel_bild(e["fc"], seite, aus)
+            pos, X, Y = self._cursor(f.x0 + x * f.u + f.fuge, e["y"] + f.fuge)
+            aus.append(pos + self._apc("a=p,i=%d,p=%d,X=%d,Y=%d,z=1,C=1,q=2" % (bid, e["pid"], X, Y)))
+            jetzt_da[e["pid"]] = bid
+        for pid, bid in self.platziert.items():
+            if pid in jetzt_da:
+                continue
+            if halde_aktuell:
+                aus.append(self._apc("a=d,d=i,i=%d,p=%d,q=2" % (bid, pid)))
+            else:
+                jetzt_da[pid] = bid
+        self.platziert = jetzt_da
+
+        aus.append("\x1b[?2026l")
+        sys.stdout.write("".join(aus))
+        sys.stdout.flush()
+        self.bilder += 1
+
+
 def cmd_bitfeed(argv_rest):
     p = argparse.ArgumentParser(prog="bitfeed")
     p.add_argument("--source", choices=("auto", "daemon", "direct"), default="auto")
@@ -1784,6 +2166,10 @@ def cmd_bitfeed(argv_rest):
                    help="als Hintergrund: ohne Kopfzeile, gedimmt (z. B. in kitten panel --edge=background)")
     p.add_argument("--dim", type=float, default=0.6, help="Helligkeit im Hintergrund-Modus")
     p.add_argument("--fps", type=int, default=FPS_AKTIV)
+    p.add_argument("--render", choices=("auto", "kitty", "text"), default="auto",
+                   help="kitty: echte Pixel wie in der App; text: Halbbloecke fuer jedes Terminal")
+    p.add_argument("--tile", type=float, default=1.0,
+                   help="Kachelgroesse, 1 = wie die App (4 px Kachel, 2 px Fuge)")
     p.add_argument("--frames", type=int, default=0, help=argparse.SUPPRESS)
     p.add_argument("--test-block", action="store_true", help=argparse.SUPPRESS)
     args = p.parse_args(argv_rest)
@@ -1792,7 +2178,8 @@ def cmd_bitfeed(argv_rest):
     args.fps = max(2, min(60, args.fps))
 
     strom = starte_strom(args.source)
-    feed = Bitfeed(args, strom)
+    kitty = args.render == "kitty" or (args.render == "auto" and kitty_moeglich())
+    feed = (KittyBitfeed if kitty else Bitfeed)(args, strom)
     import termios
     import tty
     eingabe = sys.stdin.fileno() if sys.stdin.isatty() else None
@@ -1814,6 +2201,8 @@ def cmd_bitfeed(argv_rest):
         return feed.laufen()
     finally:
         strom.halt.set()
+        if kitty:
+            feed.aufraeumen()
         sys.stdout.write("\x1b[0m\x1b[?25h\x1b[?1049l")
         sys.stdout.flush()
         if alt is not None:
