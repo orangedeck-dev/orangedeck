@@ -209,10 +209,15 @@ Item {
             "name": name || w.name || "–",
             "online": w.aktiv,
             "hashRate": w.aktiv ? w.h : 0,
-            // The worker's best is since it last connected; AxeOS shows the best
-            // ever. With one device under the address that is the address's.
-            "bestDiff": poolKlient.arbeiter.length === 1 && poolKlient.client
-                        ? Math.max(w.best, poolKlient.zahl(poolKlient.client.bestDifficulty)) : w.best,
+            // Two bests from the pool: the device's since it last connected
+            // (`best`, used everywhere like a device's own), and the address's
+            // ever at this pool. The second is only this device's if it is the
+            // only one under the address. AxeOS keeps its own best on the device,
+            // and a factory flash clears it, so none of the three need agree.
+            "bestDiff": w.best,
+            "bestGesamt": poolKlient.arbeiter.length === 1 && poolKlient.client
+                          ? poolKlient.zahl(poolKlient.client.bestDifficulty) : 0,
+            "verbunden": w.verbunden,
             "alter": w.alter,
             "pool": (z && z.pool) || poolKlient.wirt,
             "worker": w.name
@@ -976,6 +981,22 @@ Item {
                         : "–"
                     color: root.textColor
                     font.pixelSize: root.scaleUnit * 0.95
+                }
+
+                // From the pool: which best this is, and the one of all time.
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: Math.min(implicitWidth, parent.width)
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                    visible: root.onePool && isFinite(root.one.verbunden)
+                    text: !visible ? ""
+                        : root.one.bestGesamt > 0
+                          ? Tr.t("miner.poolBestBoth", root.lang, root.span(root.one.verbunden),
+                                 root.big(root.one.bestGesamt))
+                          : Tr.t("miner.poolBestSession", root.lang, root.span(root.one.verbunden))
+                    color: root.dimColor
+                    font.pixelSize: root.scaleUnit * 0.55
                 }
 
                 Text {

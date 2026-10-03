@@ -133,8 +133,12 @@ Item {
         for (var i = 0; i < w.length; i++) {
             var zuletzt = Date.parse(w[i].lastSeen) / 1000;
             var alter = isFinite(zuletzt) ? root.jetzt - zuletzt : Infinity;
+            // The session: since the device last connected to the pool (power,
+            // reboot, Wi-Fi or pool reconnect). `best` belongs to it.
+            var start = Date.parse(w[i].startTime) / 1000;
             out.push({ "name": w[i].name || "", "h": root.zahl(w[i].hashRate),
                        "best": root.zahl(w[i].bestDifficulty), "alter": alter,
+                       "verbunden": isFinite(start) ? root.jetzt - start : NaN,
                        "aktiv": alter < 600 && root.zahl(w[i].hashRate) > 0 });
         }
         out.sort(function (a, b) {
