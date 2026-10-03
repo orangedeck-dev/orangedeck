@@ -85,6 +85,14 @@ der jetzt da ist).
    folgen (`bauplan-pruefen.py`). Beides im selben Zug setzen.
 6. **Platzhalter mit `replace(..., 1)` nur, wenn der Name einmalig ist:**
    "PRUEFSUMMEN" stand auch in der Pruefliste im Kopf des Freigabetexts.
+7. **Rote Flatpak-Laeufe hatten zwei Ursachen (behoben in 705095f):**
+   "Bauplan pruefen" blockierte jeden Push zwischen Nummer und Pin (9 von 10
+   seit 20.09.; jetzt Warnung im CI, zum Veroeffentlichen lokal pruefen), und
+   layer-shell-qt 6.5.5 liegt nur noch im KDE-Archiv `/Attic/` (Spiegel
+   fuehren `/stable/` nicht mehr). Bauplaene zeigen aufs Archiv mit Spiegeln
+   gwdg/netcologne, Quellen im actions/cache, Laden dreimal versuchen.
+   Wenn eine KDE-Quelle wieder 404 oder 0 Bytes liefert: zuerst unter
+   `/Attic/` nachsehen.
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
