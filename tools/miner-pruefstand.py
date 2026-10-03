@@ -14,6 +14,13 @@ unterscheiden, wie es bei Anwendern vorkommt:
     flackert          Gamma, faellt jede Minute 25 s aus
     antminer-s19      cgminer-Schnittstelle (TCP), meldet keine Leistung
 
+Dazu ein public-pool (--pool-port, Vorgabe 21059) fuer die Pool-Seite. Unter
+der Adresse bc1qbeispiel meldet er die Geraete, die auf public-pool.io
+schuerfen, mit dem Teil nach dem Punkt im Stratum-Benutzer als Namen; "flackert"
+bleibt im Aussetzer mit seiner letzten Meldung stehen. Jede andere Adresse
+hat keine Geraete. In der App: Pool 127.0.0.1:21059 (http:// davor, der
+Nachbau spricht kein TLS), Adresse bc1qbeispiel.
+
 Die AxeOS-Felder folgen tools/axeos-nachbau.py (am 10.09.2026 an einem
 echten Bitaxe v2.14.2 abgelesen). Jedes Geraet bekommt einen eigenen Port ab
 --port (Vorgabe 21051), der Antminer --cgminer-port (Vorgabe 21058).
@@ -205,6 +212,83 @@ class Cgminer(socketserver.BaseRequestHandler):
         self.request.sendall(json.dumps(antwort).encode() + b"\x00")
 
 
+POOL_TYPEN = [("bitaxe", 3076, 3.68e15, "336526649849.58"), ("NerdQAxe++", 335, 1.70e15, "1796426508035.12"),
+              ("Antminer", 16, 0.85e15, "48088950635.76"), ("cgminer", 41, 0.62e15, "35907557004549.51"),
+              ("NerdMiner", 812, 0.0004e15, "1208123.5"), ("BitChimney", 3, 0.002e15, "8813321.1"),
+              ("LuckyMiner", 74, 0.031e15, "92011233.7")]
+
+
+def iso(t):
+    return time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime(t))
+
+
+def arbeiter(adresse):
+    out = []
+    for g in GERAETE:
+        benutzer = g["pool"].rsplit("/", 1)[-1]
+        addr, _, name = benutzer.partition(".")
+        # Ein Pool sieht nur die Geraete, die bei ihm schuerfen.
+        if addr != adresse or "public-pool.io" not in g["pool"]:
+            continue
+        jetzt = time.time()
+        zuletzt = jetzt - (time.time() - START) % 60 + 35 if offline(g) else jetzt - 4
+        out.append({"sessionId": "%08x" % sum(map(ord, g["name"])), "name": name,
+                    "bestDifficulty": "%.2f" % (float(g["best"][:-1]) * {"M": 1e6, "G": 1e9}[g["best"][-1]]),
+                    "hashRate": 0 if offline(g) else langsam(g, geraetezeit(g)) * 1e9,
+                    "startTime": iso(START - VORLAUF), "lastSeen": iso(min(jetzt, zuletzt))})
+    return out
+
+
+def pool_kurve(summe_gh, schwankung):
+    jetzt = time.time() - time.time() % 600
+    return [{"label": iso(jetzt - k * 600),
+             "data": "%.0f" % (summe_gh * 1e9 * (1 + math.sin((jetzt - k * 600) / 9000) * schwankung))}
+            for k in range(144)]
+
+
+class Pool(http.server.BaseHTTPRequestHandler):
+    """Antwortet wie public-pool (benjamin-wilson/public-pool), Felder wie
+    am 03.10.2026 bei pool.solomining.de abgelesen."""
+    def do_GET(self):
+        pfad = urllib.parse.urlsplit(self.path).path.rstrip("/")
+        gesamt = sum(t[2] for t in POOL_TYPEN)
+        teile = pfad.split("/")
+        if pfad == "/api/info":
+            d = {"blockData": [], "uptime": iso(START - 90 * 86400),
+                 "userAgents": [{"userAgent": n, "count": str(c), "bestDifficulty": b,
+                                 "totalHashRate": "%.6f" % h} for n, c, h, b in POOL_TYPEN],
+                 "highScores": [{"updatedAt": iso(START - 86400 * 40), "bestDifficulty": "35907557004549.51",
+                                 "bestDifficultyUserAgent": "cgminer"}]}
+        elif pfad == "/api/info/chart":
+            d = pool_kurve(gesamt / 1e9, 0.04)
+        elif pfad == "/api/pool":
+            d = {"totalHashRate": gesamt, "blockHeight": 969702,
+                 "totalMiners": sum(t[1] for t in POOL_TYPEN), "blocksFound": [], "fee": 0}
+        elif pfad == "/api/network":
+            d = {"blocks": 969702, "difficulty": 132716002350731.3, "networkhashps": 9.05e20}
+        elif len(teile) == 4 and teile[2] == "client":
+            w = arbeiter(teile[3])
+            best = max([float(x["bestDifficulty"]) for x in w] or [27.9])
+            d = {"bestDifficulty": "%.2f" % best, "workersCount": len(w), "workers": w}
+        elif len(teile) == 5 and teile[2] == "client" and teile[4] == "chart":
+            w = [g for g in GERAETE if g["pool"].rsplit("/", 1)[-1].partition(".")[0] == teile[3]
+                 and "public-pool.io" in g["pool"]]
+            d = pool_kurve(sum(g["hr"] for g in w), 0.03) if w else []
+        else:
+            self.send_response(404)
+            self.end_headers()
+            return
+        b = json.dumps(d).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(b)))
+        self.end_headers()
+        self.wfile.write(b)
+
+    def log_message(self, *a):
+        pass
+
+
 class Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
     allow_reuse_address = True
@@ -223,6 +307,7 @@ def main():
     ap.add_argument("--an", default="", help="auf dieser einen Adresse lauschen")
     ap.add_argument("--nur", type=int, default=0, help="nur die ersten N AxeOS-Geraete")
     ap.add_argument("--ohne-cgminer", action="store_true")
+    ap.add_argument("--pool-port", type=int, default=21059)
     a = ap.parse_args()
 
     adresse = "0.0.0.0" if a.alle else (a.an or "127.0.0.1")
@@ -241,6 +326,9 @@ def main():
         threading.Thread(target=srv.serve_forever, daemon=True).start()
         quellen.append({"type": "cgminer", "host": gast, "port": a.cgminer_port})
         print("%-17s tcp://%s:%d (cgminer, nur ueber den Dienst)" % ("antminer-s19", adresse, a.cgminer_port))
+    srv = Server((adresse, a.pool_port), Pool)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    print("%-17s http://%s:%d (public-pool, Adresse bc1qbeispiel)" % ("pool", adresse, a.pool_port))
     print()
     print("Einstellungen (minerHostsRaw):")
     print("  " + "|".join(hosts))

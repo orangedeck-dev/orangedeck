@@ -96,6 +96,8 @@ Item {
             "dataSource": root.get("dataSource", "auto"),
             "mempoolHost": root.get("mempoolHost", ""),
             "minerHostsRaw": root.get("minerHostsRaw", ""),
+            "poolUrl": root.get("poolUrl", ""),
+            "poolAddress": root.get("poolAddress", ""),
             "currency": root.get("currency", "usd"),
             // Empty means FeedTabs uses the system language.
             "lang": root.get("lang", ""),

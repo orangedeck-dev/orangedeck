@@ -115,6 +115,10 @@ Window {
     //
     // Mehrere Adressen mit `|` getrennt, wie `minerFieldsRaw`.
     property string minerHostsRaw: ""
+    // Pool page of the miner tab: public-pool address and, optional, the
+    // payout address (PoolView.qml). Both only here and in QSettings.
+    property string poolUrl: ""
+    property string poolAddress: ""
     readonly property var minerHosts: {
         var out = [];
         var teile = minerHostsRaw.split("|");
@@ -298,6 +302,8 @@ Window {
         property alias clockFieldsRaw: win.clockFieldsRaw
         property alias minerFieldsRaw: win.minerFieldsRaw
         property alias minerHostsRaw: win.minerHostsRaw
+        property alias poolUrl: win.poolUrl
+        property alias poolAddress: win.poolAddress
         property alias daemonHost: win.daemonHost
         property alias mempoolHost: win.mempoolHost
         property alias showHeader: win.showHeader
@@ -474,6 +480,10 @@ Window {
             win.showMarket = value;
         else if (key === "minerHostsRaw")
             win.minerHostsRaw = value;
+        else if (key === "poolUrl")
+            win.poolUrl = value;
+        else if (key === "poolAddress")
+            win.poolAddress = value;
         else if (key === "minerChart")
             win.minerChart = value;
         else if (key === "minerDomains")
@@ -557,6 +567,8 @@ Window {
         "showExplorer": win.showExplorer,
         "showMarket": win.showMarket,
         "minerHostsRaw": win.minerHostsRaw,
+        "poolUrl": win.poolUrl,
+        "poolAddress": win.poolAddress,
         "minerChart": win.minerChart,
         "minerDomains": win.minerDomains,
         "minerBoard": win.minerBoard,

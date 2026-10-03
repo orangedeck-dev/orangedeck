@@ -29,6 +29,11 @@ Item {
 
     // History is stored in GH/s.
     function fmtRate(gh, withUnit) {
+        // A pool (PoolView) reaches peta- and exahashes.
+        if (gh >= root.teraFrom * 1e6)
+            return Tr.fixed(gh / 1e9, 2, root.lang) + (withUnit ? " EH/s" : "");
+        if (gh >= root.teraFrom * 1e3)
+            return Tr.fixed(gh / 1e6, 2, root.lang) + (withUnit ? " PH/s" : "");
         if (gh >= root.teraFrom)
             return Tr.fixed(gh / 1000, 2, root.lang) + (withUnit ? " TH/s" : "");
         return Tr.fixed(gh, 0, root.lang) + (withUnit ? " GH/s" : "");

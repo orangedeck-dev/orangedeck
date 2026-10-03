@@ -25,7 +25,8 @@ Item {
     // Keyboard: Page Up/Down, Home, End. On the network page its own area
     // scrolls, on the device page this one (roll.js; from Main.qml via FeedTabs)
     function rollen(wie) {
-        return root.paneNow === "net" ? netz.rollen(wie) : Roll.rollen(flick, wie);
+        return root.paneNow === "net" ? netz.rollen(wie)
+             : root.paneNow === "pool" ? poolSeite.rollen(wie) : Roll.rollen(flick, wie);
     }
 
     property var feed: null
@@ -60,11 +61,23 @@ Item {
         return v.indexOf(p) >= 0;
     }
     readonly property bool mitGeraet: root.configured && root.erlaubt("device")
-    readonly property bool mitNetz: root.erlaubt("net") || !root.mitGeraet
-    readonly property bool zweiSeiten: root.mitGeraet && root.mitNetz
-    readonly property string paneNow: !root.mitGeraet ? "net"
-                                    : !root.mitNetz ? "device"
-                                    : (root.pane === "net" ? "net" : "device")
+    // The pool page exists as soon as a pool is entered; entering it is the choice.
+    property string poolUrl: ""
+    property string poolAddress: ""
+    readonly property bool mitPool: root.poolUrl.trim() !== ""
+    readonly property bool mitNetz: root.erlaubt("net") || (!root.mitGeraet && !root.mitPool)
+    readonly property var seiten: {
+        var out = [];
+        if (root.mitGeraet)
+            out.push("device");
+        if (root.mitPool)
+            out.push("pool");
+        if (root.mitNetz)
+            out.push("net");
+        return out;
+    }
+    readonly property bool zweiSeiten: root.seiten.length > 1
+    readonly property string paneNow: root.seiten.indexOf(root.pane) >= 0 ? root.pane : root.seiten[0]
     // Solo chance on the device page, can be turned off like chart and best list.
     property bool showSolo: true
     // What the network page shows: "stats", "chart", "pools"; empty means all.
@@ -373,7 +386,12 @@ Item {
         lang: root.lang
         title: Tr.t("miner.whatIsThis", root.lang)
         // Explanations for the page currently on top.
-        entries: root.paneNow === "net" ? [
+        entries: root.paneNow === "pool" ? [
+            {
+                "k": Tr.t("miner.panePool", root.lang),
+                "v": Tr.t("pool.help", root.lang)
+            }
+        ] : root.paneNow === "net" ? [
             {
                 "color": root.accentColor,
                 "k": Tr.t("hashrate", root.lang),
@@ -490,10 +508,10 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: umschalter.schalterBreite
-        modes: [
-            { "k": "device", "l": Tr.t("miner.paneDevice", root.lang) },
-            { "k": "net", "l": Tr.t("miner.paneNet", root.lang) }
-        ]
+        modes: root.seiten.map(function (k) {
+            return { "k": k, "l": Tr.t(k === "device" ? "miner.paneDevice"
+                                     : k === "pool" ? "miner.panePool" : "miner.paneNet", root.lang) };
+        })
         mode: root.paneNow
         labelKey: ""
         counts: []
@@ -547,6 +565,29 @@ Item {
         }
     }
 
+    // --- Pool ---
+    PoolView {
+        id: poolSeite
+
+        anchors.fill: parent
+        visible: root.paneNow === "pool"
+        live: root.live && root.visible && root.paneNow === "pool"
+        topInset: root.zweiSeiten ? root.kopfHoehe
+                                  : (root.showActions ? info.buttonWidth + root.scaleUnit * 0.3 : 0)
+        url: root.poolUrl
+        address: root.poolAddress
+        miners: root.miners
+        netDiff: root.netDiff
+        lang: root.lang
+        finger: root.finger
+        scaleUnit: root.finger ? Math.max(20, root.scaleUnit) : root.scaleUnit
+        textColor: root.textColor
+        dimColor: root.dimColor
+        accentColor: root.accentColor
+        goodColor: root.goodColor
+        badColor: root.badColor
+    }
+
     // --- Configured, but all offline ---
     Column {
         anchors.centerIn: parent
@@ -566,6 +607,22 @@ Item {
             text: Tr.t("miner.offNote", root.lang)
             color: root.dimColor
             font.pixelSize: root.scaleUnit * 0.62
+        }
+
+        // Not reachable here, but the pool sees them.
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            visible: root.mitPool && root.poolAddress.trim() !== ""
+            text: Tr.t("miner.seePool", root.lang)
+            color: root.accentColor
+            font.pixelSize: root.scaleUnit * 0.62
+
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: -root.scaleUnit * 0.3
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.paneRequested("pool")
+            }
         }
     }
 

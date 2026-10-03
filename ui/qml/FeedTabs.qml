@@ -216,7 +216,7 @@ Item {
 
     // ------------------------------------------------- Rotating tabs
     // For a block clock on the wall: every `tabRotate` seconds the next station.
-    // Mining counts twice (device and network are two stations), otherwise the
+    // Mining counts up to three times (device, pool and network are stations), otherwise the
     // wall would only ever show the page that was last open.
     //
     // Switching goes through the same paths as a tap (`viewRequested`,
@@ -239,6 +239,8 @@ Item {
             if (v === 2) {
                 if (miner.mitGeraet && mit("device"))
                     out.push({ "v": 2, "pane": "device" });
+                if (miner.mitPool && mit("pool"))
+                    out.push({ "v": 2, "pane": "pool" });
                 if (miner.mitNetz && mit("net"))
                     out.push({ "v": 2, "pane": "net" });
             } else if (namen[String(v)] && mit(namen[String(v)])) {
@@ -439,6 +441,8 @@ Item {
         panes: root.o("minerPanes", [])
         netParts: root.o("netParts", [])
         showSolo: root.o("minerSolo", true)
+        poolUrl: root.o("poolUrl", "")
+        poolAddress: root.o("poolAddress", "")
         onPaneRequested: function (p) {
             root.optRequested("minerPane", p);
         }

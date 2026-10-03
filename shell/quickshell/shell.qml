@@ -73,6 +73,8 @@ ShellRoot {
         property var minerPanes: []
         property var netParts: []
         property bool minerSolo: true
+        property string poolUrl: ""
+        property string poolAddress: ""
         property int tabRotate: 0
         property var tabRotateViews: []
         property var explorerPanels: []
@@ -140,6 +142,8 @@ ShellRoot {
             "minerPanes": minerPanes,
             "netParts": netParts,
             "minerSolo": minerSolo,
+            "poolUrl": poolUrl,
+            "poolAddress": poolAddress,
             "tabRotate": tabRotate,
             "tabRotateViews": tabRotateViews,
             "explorerPanels": explorerPanels,
@@ -246,6 +250,10 @@ ShellRoot {
                 netParts = value;
             else if (key === "minerSolo")
                 minerSolo = value;
+            else if (key === "poolUrl")
+                poolUrl = value;
+            else if (key === "poolAddress")
+                poolAddress = value;
             else if (key === "tabRotate")
                 tabRotate = value;
             else if (key === "tabRotateViews")
@@ -311,6 +319,8 @@ ShellRoot {
                 "minerPanes": minerPanes,
                 "netParts": netParts,
                 "minerSolo": minerSolo,
+                "poolUrl": poolUrl,
+                "poolAddress": poolAddress,
                 "tabRotate": tabRotate,
                 "tabRotateViews": tabRotateViews,
                 "explorerPanels": explorerPanels,
@@ -446,6 +456,10 @@ ShellRoot {
                         win.netParts = v.netParts;
                     if (typeof v.minerSolo === "boolean")
                         win.minerSolo = v.minerSolo;
+                    if (typeof v.poolUrl === "string")
+                        win.poolUrl = v.poolUrl;
+                    if (typeof v.poolAddress === "string")
+                        win.poolAddress = v.poolAddress;
                     if (typeof v.tabRotate === "number")
                         win.tabRotate = v.tabRotate;
                     if (Array.isArray(v.tabRotateViews))

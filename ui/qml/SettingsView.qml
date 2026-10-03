@@ -1270,6 +1270,34 @@ Item {
                 }
 
                 Zeile {
+                    label: Tr.t("set.poolUrl", root.lang)
+                    help: Tr.t("set.poolUrlHelp", root.lang)
+
+                    Textzeile {
+                        wert: root.val("poolUrl", "")
+                        platzhalter: "pool.solomining.de"
+                        onUebernommen: function (neu) {
+                            root.changed("poolUrl", neu.trim());
+                        }
+                    }
+                }
+
+                // Only with a pool: the address goes nowhere else.
+                Zeile {
+                    visible: String(root.val("poolUrl", "")).trim() !== ""
+                    label: Tr.t("set.poolAddress", root.lang)
+                    help: Tr.t("set.poolAddressHelp", root.lang)
+
+                    Textzeile {
+                        wert: root.val("poolAddress", "")
+                        platzhalter: "bc1q…"
+                        onUebernommen: function (neu) {
+                            root.changed("poolAddress", neu.trim());
+                        }
+                    }
+                }
+
+                Zeile {
                     label: Tr.t("set.metrics", root.lang)
                     help: Tr.t("set.metricsMinerHelp", root.lang)
 
