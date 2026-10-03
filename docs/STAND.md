@@ -110,8 +110,23 @@ AlternativeTo und hat einen PR bei awesome-bitcoin. Alles gepusht, CI gruen
    Geraet per Klick, Leistung + J/TH gesamt, ein Feld je Adresse mit +.
    Dazu (a68051e): Summenverlauf, Gruppen nach Pool, ein Balken je Chip
    (vorher kam bei Hex/GT nur der erste Chip an -- vom Pruefstand gefunden).
-   Offen: Pruefung am Galaxy (ueber `adb reverse`, siehe Pruefstand),
-   Windows- und Linux-VMs (`--alle`), dann Freigabetext.
+   **Pool-Seite (d8dec73), auf Wunsch des Anwenders schon in 0.2.16:** Pool
+   mit public-pool-Schnittstelle eintragen, freiwillig die
+   Auszahlungsadresse; dann zeigt die Seite die eigenen Geraete aus Sicht
+   des Pools. Workaround fuer den Bitaxe des Anwenders, der im Airbnb-WLAN
+   (Client-Trennung, bis Ende Oktober) nicht erreichbar ist.
+   Geprueft 03.10.: Windows (ohne Pool-Seite) und Ubuntu/Fedora (ohne
+   Pool-Seite, per Agent) bestanden, Bilder unter
+   ~/.local/share/orangedeck/pruefbilder/0.2.16-*. Pool-Seite im Xvfb gegen
+   den Nachbau und gegen pool.solomining.de (ohne Adresse).
+   Offen: Pool-Seite unter Windows (TLS zu pool.solomining.de), Galaxy mit
+   der echten Adresse des Anwenders (ueber `adb reverse` fuer den
+   Pruefstand), dann Freigabetext.
+   Windows-VM steht noch auf 4 GB (nach der Runde wieder 10240000).
+   ufw-Regel fuer die VM: in on virbr0 von 192.168.122.0/24 auf
+   192.168.122.1 Ports 21061:21068 (vom Anwender am 03.10. gesetzt).
+   Am Rande: `--source direct` zeigt in den Einstellungen trotzdem
+   "Eigener Dienst" (Xvfb und beide VMs), nicht neu in 0.2.16.
    **Pruefstand:** `python3 tools/miner-pruefstand.py` spielt fuenf
    AxeOS-Geraete und einen Antminer (cgminer) auf 21051-21058. Der echte
    Bitaxe des Anwenders ist im jetzigen Netz nicht erreichbar (Router mit

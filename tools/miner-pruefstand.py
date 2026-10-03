@@ -116,7 +116,8 @@ def satz(g):
         "networkDifficulty": "142.3T",
         "blockFound": 0,
         "errorPercentage": 0.31 + random.uniform(0, 0.2),
-        "temp": g["temp"] + math.sin(t / 20 + phase) * 2.5,
+        # Dieselbe langsame Kurve wie in der Statistik, darauf etwas Rauschen.
+        "temp": g["temp"] + math.sin(geraetezeit(g) / 7200) * 2.5 + random.uniform(-0.3, 0.3),
         "power": g["watt"] + random.uniform(-0.6, 0.6),
         "fanrpm": 4120,
         "sharesAccepted": 84213,
