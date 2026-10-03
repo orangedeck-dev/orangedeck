@@ -19,8 +19,13 @@ echten Bitaxe v2.14.2 abgelesen). Jedes Geraet bekommt einen eigenen Port ab
 --port (Vorgabe 21051), der Antminer --cgminer-port (Vorgabe 21058).
 
     python3 tools/miner-pruefstand.py              nur 127.0.0.1
-    python3 tools/miner-pruefstand.py --alle       auf allen Schnittstellen,
-                                                   fuer die Pruef-VMs
+    python3 tools/miner-pruefstand.py --an 192.168.122.1
+                                                   fuer die Windows-VM (libvirt)
+    python3 tools/miner-pruefstand.py --alle       auf allen Schnittstellen
+
+Die Linux-VMs aus tools/pruefvm.sh brauchen nichts davon: im Benutzernetz
+von QEMU ist 10.0.2.2 der Rechner selbst, auch dessen 127.0.0.1. --alle
+bietet die Geraete auch im WLAN an; in fremden Netzen lieber --an.
     python3 tools/miner-pruefstand.py --nur 2      nur die ersten zwei
 
 Am Telefon ueber USB, ohne dass beide im selben WLAN sein muessen:
@@ -215,24 +220,26 @@ def main():
     ap.add_argument("--port", type=int, default=21051)
     ap.add_argument("--cgminer-port", type=int, default=21058)
     ap.add_argument("--alle", action="store_true", help="auf allen Schnittstellen lauschen")
+    ap.add_argument("--an", default="", help="auf dieser einen Adresse lauschen")
     ap.add_argument("--nur", type=int, default=0, help="nur die ersten N AxeOS-Geraete")
     ap.add_argument("--ohne-cgminer", action="store_true")
     a = ap.parse_args()
 
-    adresse = "0.0.0.0" if a.alle else "127.0.0.1"
+    adresse = "0.0.0.0" if a.alle else (a.an or "127.0.0.1")
+    gast = a.an or "127.0.0.1"
     geraete = GERAETE[:a.nur] if a.nur else GERAETE
     hosts, quellen = [], []
     for i, g in enumerate(geraete):
         port = a.port + i
         srv = Server((adresse, port), handler_fuer(g))
         threading.Thread(target=srv.serve_forever, daemon=True).start()
-        hosts.append("127.0.0.1:%d" % port)
-        quellen.append({"type": "axeos", "url": "http://127.0.0.1:%d" % port})
+        hosts.append("%s:%d" % (gast, port))
+        quellen.append({"type": "axeos", "url": "http://%s:%d" % (gast, port)})
         print("%-17s http://%s:%d" % (g["name"], adresse, port))
     if not a.ohne_cgminer:
         srv = TcpServer((adresse, a.cgminer_port), Cgminer)
         threading.Thread(target=srv.serve_forever, daemon=True).start()
-        quellen.append({"type": "cgminer", "host": "127.0.0.1", "port": a.cgminer_port})
+        quellen.append({"type": "cgminer", "host": gast, "port": a.cgminer_port})
         print("%-17s tcp://%s:%d (cgminer, nur ueber den Dienst)" % ("antminer-s19", adresse, a.cgminer_port))
     print()
     print("Einstellungen (minerHostsRaw):")
