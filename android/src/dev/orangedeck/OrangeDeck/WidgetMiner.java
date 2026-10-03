@@ -25,7 +25,20 @@ public class WidgetMiner extends DeckWidget {
             // sagt, wo sie steht.
             return new String[] { "--", Texte.t(c, "miner_keine"), null };
         }
-        JSONObject d = new JSONObject(holeVon("http://" + adresse + "/api/system/info", 4000));
+        JSONObject d;
+        try {
+            d = new JSONObject(holeVon("http://" + adresse + "/api/system/info", 3500));
+        } catch (Exception e) {
+            // Im Netz nicht erreichbar (unterwegs, Gaeste-WLAN): was der Pool
+            // ueber ihn weiss, mit dem Pool als Quelle. Ohne Pool bleibt es
+            // der Fehler wie bisher.
+            PoolStand p = vomPool(c, adresse, false);
+            if (p == null)
+                throw e;
+            String rate = p.gh >= 1025 ? zahl(p.gh / 1000.0, 2) + " TH/s" : zahl(p.gh, 0) + " GH/s";
+            String best = p.best > 0 ? Texte.t(c, "beste", kurz(String.valueOf(p.best))) : null;
+            return new String[] { rate, Texte.t(c, "laut_pool", p.wirt), best, null };
+        }
 
         // AxeOS meldet die Hashrate in GH/s. Ab etwa einem TH/s liest sich
         // TH/s besser -- dieselbe Schwelle wie im Graphen der Anwendung.

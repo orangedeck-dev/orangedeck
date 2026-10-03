@@ -47,8 +47,9 @@ Item {
 
     // As entered in the settings: "pool.solomining.de", "https://public-pool.io:40557"
     property string url: ""
-    // Payout address, optional.
-    property string address: ""
+    // The devices under the payout address, fetched once for this page and
+    // the device page (PoolKlient.qml). Null or not ready without an address.
+    property var klient: null
     // The own devices from the device page, for "your share" without an address.
     property var miners: []
     property real netDiff: 0
@@ -63,10 +64,7 @@ Item {
         u = u.replace(/\/+$/, "").replace(/\/api$/i, "");
         return u;
     }
-    // Without the worker name: the stratum user is "address.worker", and
-    // people paste it as AxeOS shows it ("bc1q….bitaxe"). An address never
-    // contains a dot, so everything from the first one on goes.
-    readonly property string adresse: String(root.address || "").trim().split(".")[0]
+    readonly property string adresse: root.klient && root.klient.bereit ? root.klient.adresse : ""
     // On a narrow screen the worker rows drop the best share column.
     readonly property bool schmal: root.width < root.scaleUnit * 22
     // Host without port, to match the stratum host of the own devices: the API
@@ -80,8 +78,8 @@ Item {
     property var pool: null          // /api/pool
     property var info: null          // /api/info
     property var poolChart: []       // /api/info/chart
-    property var client: null        // /api/client/<address>
-    property var clientChart: []     // /api/client/<address>/chart
+    readonly property var client: root.klient && root.adresse ? root.klient.client : null
+    readonly property var clientChart: root.klient && root.adresse ? root.klient.chart : []
     property string fehler: ""
     property bool geladen: false
     property int __runde: 0
@@ -126,19 +124,9 @@ Item {
             if (d)
                 root.info = d;
         });
-        if (root.adresse) {
-            var a = encodeURIComponent(root.adresse);
-            root.holen("/api/client/" + a, function (d, err) {
-                if (gilt())
-                    root.client = d;
-            });
-            root.holen("/api/client/" + a + "/chart", function (d, err) {
-                if (gilt())
-                    root.clientChart = Array.isArray(d) ? d : [];
-            });
-        } else {
-            root.client = null;
-            root.clientChart = [];
+        // With an address the chart shows its hashrate (PoolKlient), without
+        // one the pool's.
+        if (!root.adresse) {
             root.holen("/api/info/chart", function (d, err) {
                 if (gilt())
                     root.poolChart = Array.isArray(d) ? d : [];
@@ -277,24 +265,7 @@ Item {
         return { "h": h, "n": n };
     }
 
-    // The devices under the address, as the pool lists them. A worker the pool
-    // has not heard from for ten minutes counts as gone, and so does one it saw
-    // a moment ago but credits with no hashrate.
-    readonly property var arbeiter: {
-        var w = (root.client && root.client.workers) || [];
-        var out = [];
-        for (var i = 0; i < w.length; i++) {
-            var zuletzt = Date.parse(w[i].lastSeen) / 1000;
-            var alter = isFinite(zuletzt) ? root.jetzt - zuletzt : Infinity;
-            out.push({ "name": w[i].name || "–", "h": root.zahl(w[i].hashRate),
-                       "best": root.zahl(w[i].bestDifficulty), "alter": alter,
-                       "aktiv": alter < 600 && root.zahl(w[i].hashRate) > 0 });
-        }
-        out.sort(function (a, b) {
-            return b.h - a.h;
-        });
-        return out;
-    }
+    readonly property var arbeiter: root.klient && root.adresse ? root.klient.arbeiter : []
     readonly property real eigenHash: {
         var s = 0;
         for (var i = 0; i < root.arbeiter.length; i++)

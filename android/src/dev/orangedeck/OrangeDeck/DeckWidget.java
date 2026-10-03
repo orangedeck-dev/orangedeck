@@ -511,16 +511,137 @@ public abstract class DeckWidget extends AppWidgetProvider {
      * ({@code orangedeck/orangedeck.conf}, Schluessel {@code minerHostsRaw}).
      * Der Empfaenger laeuft im **eigenen** Prozess der Anwendung und kommt
      * damit an {@code getFilesDir()} -- eine Bruecke ueber C++ braucht es
-     * nicht. Mehrere Adressen sind durch Komma getrennt; genommen wird die
-     * erste.
+     * nicht. Mehrere Adressen trennt die Anwendung mit {@code |}; genommen
+     * wird die erste.
+     *
+     * <p>Bis 03.10.2026 wurde hier am Komma getrennt. Die Anwendung schreibt
+     * aber {@code |}, und mit zwei Adressen fragte das Widget die ganze
+     * Zeichenkette als eine Adresse ab. Komma gilt weiter, falls jemand so
+     * getippt hat, als es nur ein Textfeld gab.
      */
     protected static String minerAdresse(Context c) {
         String wert = ausEinstellungen(c, "minerHostsRaw");
         if (wert == null || wert.isEmpty())
             return null;
-        // Mehrere Adressen sind durch Komma getrennt; genommen wird die erste.
-        int komma = wert.indexOf(',');
-        return komma < 0 ? wert : wert.substring(0, komma).trim();
+        for (String teil : wert.split("[|,]")) {
+            String t = teil.trim();
+            if (!t.isEmpty())
+                return t;
+        }
+        return null;
+    }
+
+    /** Was ein public-pool ueber den Miner weiss (siehe {@code PoolKlient.qml}). */
+    protected static final class PoolStand {
+        double gh;          // Hashrate in GH/s, wie der Pool sie schaetzt
+        double best;        // beste Freigabe
+        String wirt;        // fuer "laut pool.solomining.de"
+        double[] kurve;     // GH/s, aeltester Punkt zuerst; null ohne
+    }
+
+    /**
+     * Der Miner aus Sicht des Pools, wenn das Widget ihn im Netz nicht
+     * erreicht -- unterwegs, im Gaeste-WLAN. Dieselbe Regel wie in
+     * {@code MinerView.qml}: das Geraet, dessen Worker-Name sich die
+     * Anwendung beim letzten direkten Kontakt gemerkt hat; ohne gemerkten
+     * Namen das einzige aktive Geraet unter der Adresse; sonst die Summe aller
+     * aktiven. Null, wenn kein Pool oder keine Adresse eingetragen ist oder
+     * der Pool nichts Aktives meldet.
+     *
+     * <p>Die Adresse geht nur an den eingetragenen Pool, der sie vom Miner
+     * ohnehin kennt.
+     */
+    protected static PoolStand vomPool(Context c, String minerId, boolean mitKurve) {
+        String url = ausEinstellungen(c, "poolUrl");
+        String adresse = ausEinstellungen(c, "poolAddress");
+        if (url == null || adresse == null)
+            return null;
+        url = entklammern(url).trim();
+        adresse = entklammern(adresse).trim();
+        if (url.isEmpty() || adresse.isEmpty())
+            return null;
+        // Ohne Worker-Namen: "bc1q....bitaxe" -> "bc1q...", eine Adresse hat keinen Punkt.
+        int punkt = adresse.indexOf('.');
+        if (punkt > 0)
+            adresse = adresse.substring(0, punkt);
+        if (!url.contains("://"))
+            url = "https://" + url;
+        url = url.replaceAll("/+$", "").replaceAll("(?i)/api$", "");
+        try {
+            String a = java.net.URLEncoder.encode(adresse, "UTF-8");
+            JSONObject d = new JSONObject(holeVon(url + "/api/client/" + a, 4000));
+            JSONArray w = d.optJSONArray("workers");
+            if (w == null || w.length() == 0)
+                return null;
+            String gemerkt = null;
+            String zu = ausEinstellungen(c, "zuordnungJson");
+            if (zu != null && minerId != null) {
+                JSONObject z = new JSONObject(entklammern(zu)).optJSONObject(minerId);
+                if (z != null && !z.optString("worker", "").isEmpty())
+                    gemerkt = z.optString("worker");
+            }
+            long jetzt = System.currentTimeMillis() / 1000;
+            PoolStand p = new PoolStand();
+            p.wirt = url.replaceFirst("^[a-zA-Z]+://", "").replaceFirst("[:/].*$", "");
+            int aktiv = 0;
+            JSONObject einer = null;
+            for (int i = 0; i < w.length(); i++) {
+                JSONObject x = w.getJSONObject(i);
+                double h = x.optDouble("hashRate", 0);
+                long gesehen;
+                try {
+                    gesehen = java.time.Instant.parse(x.optString("lastSeen")).getEpochSecond();
+                } catch (Exception e) {
+                    gesehen = 0;
+                }
+                if (!(h > 0) || jetzt - gesehen >= 600)
+                    continue;
+                if (gemerkt != null && !gemerkt.equals(x.optString("name")))
+                    continue;
+                aktiv++;
+                einer = x;
+                p.gh += h / 1e9;
+                p.best = Math.max(p.best, x.optDouble("bestDifficulty", 0));
+            }
+            if (aktiv == 0)
+                return null;
+            // Der Verlauf gehoert zur ganzen Adresse; er passt nur, wenn dort
+            // genau ein Geraet steht.
+            if (mitKurve && w.length() == 1 && einer != null) {
+                JSONArray k = new JSONArray(holeVon(url + "/api/client/" + a + "/chart", 3000));
+                java.util.TreeMap<Long, Double> reihe = new java.util.TreeMap<>();
+                for (int i = 0; i < k.length(); i++) {
+                    JSONObject x = k.getJSONObject(i);
+                    try {
+                        reihe.put(java.time.Instant.parse(x.optString("label")).getEpochSecond(),
+                                  x.optDouble("data", 0) / 1e9);
+                    } catch (Exception e) {
+                        // Punkt ohne lesbare Zeit: weglassen
+                    }
+                }
+                if (reihe.size() >= 3) {
+                    p.kurve = new double[reihe.size()];
+                    int i = 0;
+                    for (double v : reihe.values())
+                        p.kurve[i++] = v;
+                }
+            }
+            return p;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * QSettings schreibt Zeichenketten mit Sonderzeichen in Anfuehrungszeichen
+     * und maskiert darin {@code "} und {@code \}: aus {@code {"a":1}} wird
+     * {@code "{\"a\":1}"}.
+     */
+    protected static String entklammern(String roh) {
+        String t = roh.trim();
+        if (t.length() >= 2 && t.startsWith("\"") && t.endsWith("\""))
+            t = t.substring(1, t.length() - 1).replace("\\\"", "\"").replace("\\\\", "\\");
+        return t;
     }
 
     /** Ein Wert aus Qts Einstellungsdatei, oder null. */

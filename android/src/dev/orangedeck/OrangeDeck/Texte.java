@@ -137,6 +137,9 @@ final class Texte {
           "История копится · %1$d из %2$d точек", "履歴を記録中 · %2$d 点中 %1$d 点",
           "正在积累历史 · %1$d / %2$d 个点", "Histórico sendo formado · %1$d de %2$d pontos",
           "Historia się zbiera · %1$d z %2$d punktów", "Historie se sbírá · %1$d z %2$d bodů");
+        t("laut_pool", "laut %1$s", "per %1$s", "según %1$s", "selon %1$s", "secondo %1$s",
+          "segundo %1$s", "volgens %1$s", "по данным %1$s", "%1$s の情報", "来自 %1$s",
+          "segundo %1$s", "wg %1$s", "podle %1$s");
         t("beste", "beste %1$s", "best %1$s", "mejor %1$s", "meilleure %1$s",
           "migliore %1$s", "melhor %1$s", "beste %1$s", "лучший %1$s", "最高 %1$s",
           "最佳 %1$s", "melhor %1$s", "najlepszy %1$s", "nejlepší %1$s");

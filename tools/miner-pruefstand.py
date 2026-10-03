@@ -35,6 +35,10 @@ von QEMU ist 10.0.2.2 der Rechner selbst, auch dessen 127.0.0.1. --alle
 bietet die Geraete auch im WLAN an; in fremden Netzen lieber --an.
     python3 tools/miner-pruefstand.py --nur 2      nur die ersten zwei
 
+Mit --unerreichbar gamma-wohnzimmer,supra-keller antworten diese Geraete im
+Netz nicht mehr, schuerfen beim Pool aber weiter -- wie ein Miner daheim,
+waehrend das Telefon unterwegs ist oder in einem Gaeste-WLAN haengt.
+
 Am Telefon ueber USB, ohne dass beide im selben WLAN sein muessen:
 
     for p in 21051 21052 21053 21054 21055; do adb reverse tcp:$p tcp:$p; done
@@ -68,6 +72,9 @@ GERAETE = [
      "watt": 17.2, "temp": 66, "pool": "stratum+tcp://public-pool.io:21496/bc1qbeispiel.flackert",
      "best": "35.6M", "statistik": False, "chips": 1, "domaenen": 4, "aussetzer": (60, 25)},
 ]
+
+
+UNERREICHBAR = set()
 
 
 def offline(g):
@@ -126,8 +133,11 @@ def satz(g):
         "statsFrequency": TAKT if g["statistik"] else 0,
         "statsLimit": GRENZE,
         "miningPaused": False,
-        # Mit Benutzername: die App darf davon nur den Wirt behalten.
-        "stratumURL": g["pool"],
+        # Wie AxeOS: Wirt, Port und Benutzer getrennt. Der Benutzer traegt die
+        # Adresse; die App darf davon nur den Teil hinter dem Punkt behalten.
+        "stratumURL": g["pool"].split("//")[1].split("/")[0].split(":")[0],
+        "stratumPort": int(g["pool"].split("//")[1].split("/")[0].split(":")[1]),
+        "stratumUser": g["pool"].rsplit("/", 1)[-1],
         "hashrateMonitor": {"asics": domaenen},
     }
 
@@ -162,7 +172,7 @@ def statistik(g, spalten):
 def handler_fuer(g):
     class H(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
-            if offline(g):
+            if offline(g) or g["name"] in UNERREICHBAR:
                 # Verbindung ohne Antwort schliessen
                 self.close_connection = True
                 return
@@ -223,13 +233,21 @@ def iso(t):
     return time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime(t))
 
 
+POOL_GERAETE = {"gamma-wohnzimmer", "supra-keller", "flackert"}
+
+
+def ist_pool(g):
+    """Die Geraete, die auf dem nachgebauten public-pool schuerfen."""
+    return g["name"] in POOL_GERAETE
+
+
 def arbeiter(adresse):
     out = []
     for g in GERAETE:
         benutzer = g["pool"].rsplit("/", 1)[-1]
         addr, _, name = benutzer.partition(".")
         # Ein Pool sieht nur die Geraete, die bei ihm schuerfen.
-        if addr != adresse or "public-pool.io" not in g["pool"]:
+        if addr != adresse or not ist_pool(g):
             continue
         jetzt = time.time()
         zuletzt = jetzt - (time.time() - START) % 60 + 35 if offline(g) else jetzt - 4
@@ -273,7 +291,7 @@ class Pool(http.server.BaseHTTPRequestHandler):
             d = {"bestDifficulty": "%.2f" % best, "workersCount": len(w), "workers": w}
         elif len(teile) == 5 and teile[2] == "client" and teile[4] == "chart":
             w = [g for g in GERAETE if g["pool"].rsplit("/", 1)[-1].partition(".")[0] == teile[3]
-                 and "public-pool.io" in g["pool"]]
+                 and ist_pool(g)]
             d = pool_kurve(sum(g["hr"] for g in w), 0.03) if w else []
         else:
             self.send_response(404)
@@ -309,8 +327,16 @@ def main():
     ap.add_argument("--nur", type=int, default=0, help="nur die ersten N AxeOS-Geraete")
     ap.add_argument("--ohne-cgminer", action="store_true")
     ap.add_argument("--pool-port", type=int, default=21059)
+    ap.add_argument("--pool-wirt", default="",
+                    help="Stratum-Wirt der public-pool-Geraete ersetzen, z. B. 127.0.0.1, damit er zum Pool-Nachbau passt")
+    ap.add_argument("--unerreichbar", default="",
+                    help="Geraete, mit Komma, die im Netz schweigen, beim Pool aber weiter schuerfen")
     a = ap.parse_args()
 
+    if a.pool_wirt:
+        for g in GERAETE:
+            g["pool"] = g["pool"].replace("public-pool.io", a.pool_wirt)
+    UNERREICHBAR.update(n.strip() for n in a.unerreichbar.split(",") if n.strip())
     adresse = "0.0.0.0" if a.alle else (a.an or "127.0.0.1")
     gast = a.an or "127.0.0.1"
     geraete = GERAETE[:a.nur] if a.nur else GERAETE

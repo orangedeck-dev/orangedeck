@@ -49,7 +49,23 @@ public class WidgetMinerGross extends GraphWidget {
             // ohne Adresse entsteht keiner (11.09.2026 im Emulator).
             return new String[] { "–", Texte.t(c, "miner_keine"), null };
 
-        JSONObject d = new JSONObject(holeVon("http://" + adresse + "/api/system/info", 4000));
+        JSONObject d;
+        try {
+            d = new JSONObject(holeVon("http://" + adresse + "/api/system/info", 3500));
+        } catch (Exception e) {
+            // Im Netz nicht erreichbar: der Stand laut Pool, wie im Widget
+            // WidgetMiner. Der Verlauf kommt dann vom Pool, wenn unter der
+            // Adresse genau ein Geraet steht; den eigenen fuehrt das Widget
+            // nicht fort, sonst mischte er Messung und Schaetzung.
+            PoolStand p = vomPool(c, adresse, true);
+            if (p == null)
+                throw e;
+            String rate = p.gh >= 1025 ? zahl(p.gh / 1000.0, 2) + " TH/s" : zahl(p.gh, 0) + " GH/s";
+            String neben = Texte.t(c, "laut_pool", p.wirt);
+            if (p.best > 0)
+                neben += " · " + Texte.t(c, "beste", kurz(String.valueOf(p.best)));
+            return new String[] { rate, neben, p.kurve != null ? alsText(p.kurve) : null };
+        }
         double gh = d.optDouble("hashRate", 0);
         double[] w = Verlauf.anhaengen(c, SPEICHER, gh, PUNKTE);
         if (d.optInt("statsFrequency", 0) > 0) {

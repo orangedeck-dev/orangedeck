@@ -76,6 +76,7 @@ set(SHARED_QML
     ui/qml/MinerChart.qml
     ui/qml/NetworkView.qml
     ui/qml/PoolView.qml
+    ui/qml/PoolKlient.qml
     ui/qml/NetworkChart.qml
     ui/qml/PriceChart.qml
     ui/qml/MarketView.qml

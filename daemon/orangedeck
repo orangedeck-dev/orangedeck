@@ -2658,6 +2658,11 @@ def probe_axeos(url, timeout=4):
     # enthaelt bei Solomining die Auszahlungsadresse -- die hat in keinem
     # Zustand, keiner Anzeige und keinem Protokoll etwas verloren.
     pool = (d.get("stratumURL") or "").split("//")[-1].split("/")[0] or None
+    # Nur der Teil hinter dem Punkt ("adresse.bitaxe" -> "bitaxe"): unter dem
+    # Namen fuehrt der Pool das Geraet, und daran erkennt die Pool-Seite es
+    # wieder, wenn es im Netz nicht erreichbar ist. Die Adresse davor bleibt
+    # draussen.
+    worker = stratum_worker(d)
 
     return {
         "type": "axeos",
@@ -2683,11 +2688,21 @@ def probe_axeos(url, timeout=4):
         "uptime": d.get("uptimeSeconds"),
         "paused": d.get("miningPaused"),
         "pool": pool,
+        "worker": worker,
         # Die einzelnen Rechenwerke -- in der Weboberflaeche "Hashrate Registers".
         # Mit mehreren Chips (Hex, GT) einer je Chip, als Summe seiner
         # Rechenwerke; bis 02.10.2026 kam nur der erste Chip an.
         **rechenwerke(d),
     }
+
+
+def stratum_worker(d):
+    """Der Geraetename aus dem Stratum-Benutzer. AxeOS fuehrt ihn in
+    `stratumUser`; manche Nachbauten haengen ihn an die URL."""
+    user = d.get("stratumUser") or ""
+    if not user and "//" in (d.get("stratumURL") or ""):
+        user = d["stratumURL"].split("//", 1)[1].partition("/")[2]
+    return user.split(".", 1)[1] if "." in user else ""
 
 
 def rechenwerke(d):

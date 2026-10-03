@@ -12,8 +12,9 @@
 // content even without an own miner. With no device configured there is
 // only the network page and no switcher.
 //
-// Only `import QtQuick`, so it also runs on Android.
+// Only `QtQuick` and `QtCore` (for Settings), so it also runs on Android.
 import QtQuick
+import QtCore
 import "strings.js" as Tr
 import "roll.js" as Roll
 
@@ -86,10 +87,22 @@ Item {
     // What the network page shows: "stats", "chart", "pools"; empty means all.
     property var netParts: []
 
+    // The devices as the daemon or `DirectMiner` reach them on the network.
     readonly property var miners: feed ? feed.miners : []
-    readonly property var total: feed ? feed.minerTotal : ({})
     readonly property bool configured: feed ? feed.minerConfigured : false
-    readonly property bool anyOnline: feed ? feed.minerOnline : false
+    // What the page shows: `geraete`, the devices from both sources, and their sum.
+    readonly property var total: {
+        var g = root.geraete, live = 0, h = 0, best = 0;
+        for (var i = 0; i < g.length; i++) {
+            if (!g[i].online)
+                continue;
+            live++;
+            h += g[i].hashRate || 0;
+            best = Math.max(best, g[i].bestDiff || 0);
+        }
+        return { "count": g.length, "online": live, "hashRate": h, "bestDiff": best };
+    }
+    readonly property bool anyOnline: root.total.online > 0
     readonly property real netDiff: (feed && feed.hashrate.difficulty) || 0
     readonly property real netHash: (feed && feed.hashrate.current) || 0
     // The top of the page shows the open device, otherwise the sum of all.
@@ -119,31 +132,189 @@ Item {
             return Tr.t("duration.days", root.lang, Tr.group(tage, root.lang));
         return root.span(tage * 86400);
     }
+    // ------------------------------------------------ Second source: the pool
+    //
+    // A device the app cannot reach on the network (guest Wi-Fi with client
+    // isolation, phone on mobile data) still mines, and the pool shows what
+    // it gets. With a pool and a payout address in the settings such a device
+    // keeps its row, with the pool's numbers and the pool named as source.
+    // Reachable again, the row goes back to the device's own numbers on the
+    // next poll. Never both at once.
+    //
+    // Which row belongs to which device at the pool: the worker name, the part
+    // of the stratum user after the dot ("bitaxe" in "bc1q….bitaxe"). It is
+    // remembered from the last time the device was reached and kept across
+    // restarts, so the match still holds after leaving the house. A device
+    // that was never reached here has no name yet; if as many such devices
+    // remain as unknown devices at the pool, they are paired in order. With
+    // one each, the common case, that is exact.
+    PoolKlient {
+        id: poolKlient
+
+        url: root.poolUrl
+        address: root.poolAddress
+        active: root.live && root.visible && root.mitPool
+                && (root.paneNow === "device" || root.paneNow === "pool")
+    }
+
+    // Name, worker and pool host of each device as last reached, by its id.
+    Settings {
+        id: gemerkt
+
+        category: "minerPool"
+        property string zuordnungJson: "{}"
+    }
+    readonly property var zuordnung: {
+        try {
+            return JSON.parse(gemerkt.zuordnungJson) || ({});
+        } catch (e) {
+            return ({});
+        }
+    }
+    function wirtVon(p) {
+        return String(p || "").split(":")[0].toLowerCase();
+    }
+    // Same pool if the hosts match or one is a subdomain of the other: the
+    // statistics often sit on "web." or "api." in front of the stratum host.
+    function gleicherPool(stratum) {
+        var a = root.wirtVon(stratum), b = poolKlient.wirt;
+        if (!a || !b)
+            return false;
+        return a === b || a.endsWith("." + b) || b.endsWith("." + a);
+    }
+    onMinersChanged: {
+        var zu = root.zuordnung, anders = false;
+        for (var i = 0; i < root.miners.length; i++) {
+            var m = root.miners[i];
+            if (!m.online)
+                continue;
+            var alt = zu[m.id];
+            if (!alt || alt.name !== m.name || alt.pool !== m.pool || alt.worker !== (m.worker || "")) {
+                zu[m.id] = { "name": m.name, "pool": m.pool || "", "worker": m.worker || "" };
+                anders = true;
+            }
+        }
+        if (anders)
+            gemerkt.zuordnungJson = JSON.stringify(zu);
+    }
+
+    function poolEintrag(m, w, z) {
+        var name = (z && z.name) || "";
+        if (!name && m && m.name && m.name !== m.id)
+            name = m.name;
+        return {
+            "id": m ? m.id : "pool:" + w.name,
+            "type": "pool",
+            "quelle": "pool",
+            "name": name || w.name || "–",
+            "online": w.aktiv,
+            "hashRate": w.aktiv ? w.h : 0,
+            "bestDiff": w.best,
+            "alter": w.alter,
+            "pool": (z && z.pool) || poolKlient.wirt,
+            "worker": w.name
+        };
+    }
+
+    readonly property var geraete: {
+        var lokal = root.miners;
+        if (!poolKlient.bereit || !poolKlient.client)
+            return lokal;
+        var zu = root.zuordnung;
+        var frei = poolKlient.arbeiter.slice();
+        function nimm(name) {
+            for (var k = 0; k < frei.length; k++)
+                if (frei[k].name === name)
+                    return frei.splice(k, 1)[0];
+            return null;
+        }
+        // Devices reached on the network claim their worker first.
+        for (var i = 0; i < lokal.length; i++) {
+            var m = lokal[i];
+            if (m.online && m.worker && root.gleicherPool(m.pool))
+                nimm(m.worker);
+        }
+        var out = [], offen = [];
+        for (i = 0; i < lokal.length; i++) {
+            m = lokal[i];
+            if (m.online) {
+                out.push(m);
+                continue;
+            }
+            var z = zu[m.id];
+            var w = (z && z.worker && root.gleicherPool(z.pool)) ? nimm(z.worker) : null;
+            if (w) {
+                out.push(root.poolEintrag(m, w, z));
+            } else {
+                // Never reached with a worker name: a candidate for pairing.
+                if (!(z && z.worker))
+                    offen.push(out.length);
+                out.push(m);
+            }
+        }
+        var aktiv = frei.filter(function (x) {
+            return x.aktiv;
+        });
+        if (offen.length > 0 && offen.length === aktiv.length) {
+            for (i = 0; i < offen.length; i++) {
+                out[offen[i]] = root.poolEintrag(out[offen[i]], aktiv[i], zu[out[offen[i]].id]);
+                frei.splice(frei.indexOf(aktiv[i]), 1);
+            }
+        }
+        // Devices only the pool knows, not entered here at all.
+        for (i = 0; i < frei.length; i++)
+            if (frei[i].aktiv)
+                out.push(root.poolEintrag(null, frei[i], null));
+        return out;
+    }
+    readonly property bool mitPoolQuelle: {
+        for (var i = 0; i < root.geraete.length; i++)
+            if (root.geraete[i].quelle === "pool" && root.geraete[i].online)
+                return true;
+        return false;
+    }
+    readonly property real poolAnteil: {
+        var h = 0;
+        for (var i = 0; i < root.geraete.length; i++)
+            if (root.geraete[i].quelle === "pool" && root.geraete[i].online)
+                h += root.geraete[i].hashRate || 0;
+        return h;
+    }
+    function vor(sek) {
+        if (!isFinite(sek))
+            return "–";
+        if (sek < 60)
+            return Tr.t("net.justNow", root.lang);
+        return Tr.t("net.ago", root.lang, root.span(sek));
+    }
+
     // With several devices the page lists them, and a tap on one opens its
     // details: the same view a single device gets. The choice is only kept
     // while that device is online; then the list comes back.
-    readonly property bool several: miners.length > 1
+    readonly property bool several: root.geraete.length > 1
     property string openId: ""
     // List and details differ in height; each starts at the top.
     onOpenIdChanged: flick.contentY = 0
     readonly property var opened: {
         if (!root.several || !root.openId)
             return null;
-        for (var i = 0; i < root.miners.length; i++)
-            if (root.miners[i].id === root.openId && root.miners[i].online)
-                return root.miners[i];
+        for (var i = 0; i < root.geraete.length; i++)
+            if (root.geraete[i].id === root.openId && root.geraete[i].online)
+                return root.geraete[i];
         return null;
     }
     // The device whose details are shown: the only one, or the opened one.
     readonly property var one: root.several ? root.opened
-                             : ((miners.length === 1 && miners[0].online) ? miners[0] : null)
+                             : ((root.geraete.length === 1 && root.geraete[0].online) ? root.geraete[0] : null)
+    readonly property bool onePool: root.one !== null && root.one.quelle === "pool"
     // Power of all running devices and what it costs per terahash. Only when
     // every running device reports its power: a sum with gaps would make the
-    // efficiency look better than it is. The cgminer API has no power field.
+    // efficiency look better than it is. The cgminer API has no power field,
+    // the pool neither.
     readonly property var sumPower: {
         var w = 0, n = 0, live = 0;
-        for (var i = 0; i < root.miners.length; i++) {
-            var m = root.miners[i];
+        for (var i = 0; i < root.geraete.length; i++) {
+            var m = root.geraete[i];
             if (!m.online)
                 continue;
             live++;
@@ -154,40 +325,44 @@ Item {
         }
         return { "watt": w, "complete": live > 0 && n === live };
     }
-    readonly property var oneHist: (one && feed) ? (feed.minerHistory[one.id] || ({})) : ({})
+    // A device seen only through the pool has no history of its own here. With
+    // a single device under the address the address chart is its chart.
+    readonly property var oneHist: {
+        if (!root.one || !root.feed)
+            return ({});
+        if (root.onePool) {
+            if (poolKlient.arbeiter.length !== 1)
+                return ({});
+            var p = (poolKlient.chart || []).map(function (x) {
+                return { "t": Date.parse(x.label) / 1000, "v": parseFloat(x.data) / 1e9 };
+            }).filter(function (x) {
+                return isFinite(x.t) && isFinite(x.v);
+            }).sort(function (a, b) {
+                return a.t - b.t;
+            });
+            return { "t": p.map(function (x) { return x.t; }),
+                     "hr": p.map(function (x) { return Math.round(x.v * 10) / 10; }),
+                     "hrNow": [], "temp": [] };
+        }
+        return root.feed.minerHistory[root.one.id] || ({});
+    }
     // Name and pool as last reported. A device that is off reports neither, and
     // without this it would show its address and drop out of its pool's group
     // for as long as it is gone.
-    property var bekannt: ({})
-    onMinersChanged: {
-        var neu = root.bekannt, anders = false;
-        for (var i = 0; i < root.miners.length; i++) {
-            var m = root.miners[i];
-            if (!m.online)
-                continue;
-            var alt = neu[m.id];
-            if (!alt || alt.name !== m.name || alt.pool !== m.pool) {
-                neu[m.id] = { "name": m.name, "pool": m.pool };
-                anders = true;
-            }
-        }
-        if (anders)
-            root.bekannt = Object.assign({}, neu);
-    }
     function nameVon(m) {
-        var b = root.bekannt[m.id];
+        var b = root.zuordnung[m.id];
         return (m.online ? m.name : (b && b.name)) || m.name || m.id;
     }
     function poolVon(m) {
-        var b = root.bekannt[m.id];
-        return (m.online ? m.pool : (b && b.pool)) || "";
+        var b = root.zuordnung[m.id];
+        return (m.online ? m.pool : (b && b.pool)) || m.pool || "";
     }
 
     // The list, grouped by pool once the devices mine on more than one. Each
     // entry carries the pool as `kopf` if it opens a group. Unknown pool (device
     // off, or the cgminer API, which does not report it) sorts last.
     readonly property var liste: {
-        var reihen = root.miners.slice();
+        var reihen = root.geraete.slice();
         var pools = [];
         for (var i = 0; i < reihen.length; i++) {
             var p = root.poolVon(reihen[i]);
@@ -232,9 +407,12 @@ Item {
             return ({});
         var reihen = [];
         var von = -Infinity, bis = Infinity;
-        for (var i = 0; i < root.miners.length; i++) {
-            var m = root.miners[i];
-            if (!m.online)
+        // Only devices reached directly: the pool's estimate has its own chart
+        // on the pool page, and a sum of both would mix a measurement with a
+        // guess.
+        for (var i = 0; i < root.geraete.length; i++) {
+            var m = root.geraete[i];
+            if (!m.online || m.quelle === "pool")
                 continue;
             var h = root.feed.minerHistory[m.id];
             if (!h || !h.t || h.t.length < 2)
@@ -317,7 +495,8 @@ Item {
 
     readonly property var metrics: {
         var m = root.one;
-        if (!m)
+        // The pool knows hashrate and best share, nothing of the device itself.
+        if (!m || root.onePool)
             return [];
         var alle = [
             { "id": "temp", "k": Tr.t("miner.temp", root.lang), "v": (m.temp !== undefined && m.temp !== null)
@@ -581,7 +760,7 @@ Item {
         topInset: root.zweiSeiten ? root.kopfHoehe
                                   : (root.showActions ? info.buttonWidth + root.scaleUnit * 0.3 : 0)
         url: root.poolUrl
-        address: root.poolAddress
+        klient: poolKlient
         miners: root.miners
         netDiff: root.netDiff
         lang: root.lang
@@ -696,7 +875,7 @@ Item {
                 text: root.one ? (root.one.name || root.one.id)
                     : root.total.online > 1
                     ? Tr.t("miner.devices", root.lang, root.total.online)
-                    : (root.miners[0] ? root.miners[0].name : Tr.t("miner.title", root.lang))
+                    : (root.geraete[0] ? root.nameVon(root.geraete[0]) : Tr.t("miner.title", root.lang))
                 color: root.dimColor
                 font.pixelSize: root.scaleUnit * 0.72
             }
@@ -707,6 +886,21 @@ Item {
                 color: root.accentColor
                 font.pixelSize: root.scaleUnit * 2.6
                 font.bold: true
+            }
+
+            // Where the numbers come from when the pool stands in for the device,
+            // or how much of the sum is its estimate.
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: Math.min(implicitWidth, parent.width)
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                visible: root.onePool || (root.one === null && root.mitPoolQuelle)
+                text: root.onePool
+                    ? Tr.t("miner.sourcePool", root.lang, poolKlient.wirt, root.vor(root.one.alter))
+                    : Tr.t("miner.inclPool", root.lang, root.big(root.poolAnteil, "H/s"), poolKlient.wirt)
+                color: root.accentColor
+                font.pixelSize: root.scaleUnit * 0.55
             }
 
             // The instantaneous rate swings by about ten percent, so the top shows the
@@ -1137,20 +1331,27 @@ Item {
                                     font.pixelSize: root.scaleUnit * 0.62
                                 }
 
+                                // A row the pool stands in for says so where the
+                                // temperature would be; the pool does not know it.
                                 Text {
-                                    visible: line.modelData.online && line.modelData.temp !== undefined
-                                             && line.modelData.temp !== null
-                                    width: root.scaleUnit * 2.4
-                                    text: line.modelData.temp !== undefined && line.modelData.temp !== null
-                                        ? Math.round(line.modelData.temp) + " °C" : ""
-                                    color: root.dimColor
+                                    readonly property bool ausPool: line.modelData.quelle === "pool"
+
+                                    visible: line.modelData.online && (ausPool
+                                             || (line.modelData.temp !== undefined && line.modelData.temp !== null))
+                                    width: ausPool ? implicitWidth : root.scaleUnit * 2.4
+                                    text: ausPool ? Tr.t("miner.viaPool", root.lang)
+                                        : (line.modelData.temp !== undefined && line.modelData.temp !== null
+                                           ? Math.round(line.modelData.temp) + " °C" : "")
+                                    color: ausPool ? root.accentColor : root.dimColor
                                     font.pixelSize: root.scaleUnit * 0.62
                                 }
 
                                 // Left out on a narrow screen, the row would run off the edge.
                                 Text {
                                     visible: line.modelData.online && !root.schmal
-                                    text: root.span(line.modelData.uptime)
+                                    // From the pool: when it last heard from the device.
+                                    text: line.modelData.quelle === "pool" ? root.vor(line.modelData.alter)
+                                                                           : root.span(line.modelData.uptime)
                                     color: root.dimColor
                                     font.pixelSize: root.scaleUnit * 0.62
                                 }

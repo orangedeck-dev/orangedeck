@@ -90,6 +90,15 @@ Item {
             var teile = String(d.stratumURL).split("//");
             pool = teile[teile.length - 1].split("/")[0] || null;
         }
+        // Only the part after the dot ("address.bitaxe" -> "bitaxe"): the pool
+        // lists the device under that name, and the pool fallback finds it by
+        // it. The address in front stays out, as in the daemon (`stratum_worker`).
+        var user = String(d.stratumUser || "");
+        if (!user && String(d.stratumURL || "").indexOf("//") >= 0) {
+            var rest = String(d.stratumURL).split("//")[1];
+            user = rest.indexOf("/") >= 0 ? rest.substring(rest.indexOf("/") + 1) : "";
+        }
+        var worker = user.indexOf(".") >= 0 ? user.substring(user.indexOf(".") + 1) : "";
 
         var asics = (d.hashrateMonitor && d.hashrateMonitor.asics) || [];
         return {
@@ -118,6 +127,7 @@ Item {
             // Seconds between two entries in the device's own log; 0 means it does not log.
             "statsFrequency": d.statsFrequency || 0,
             "pool": pool,
+            "worker": worker,
             // With several chips (Hex, GT) one bar per chip, the sum of its
             // domains, as in the daemon (`rechenwerke`). Until 02.10.2026 only
             // the first chip arrived.
