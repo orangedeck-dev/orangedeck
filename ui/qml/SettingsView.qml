@@ -254,6 +254,13 @@ Item {
 
         signal uebernommen(string neu)
 
+        // What is in the field right now, also before it was taken over.
+        readonly property alias text: feld.text
+
+        function fokussieren() {
+            feld.forceActiveFocus();
+        }
+
         width: parent ? parent.width : 0
         height: root.uiFont * 2.2
         radius: 6
@@ -294,6 +301,155 @@ Item {
                 color: root.dimColor
                 font.pixelSize: root.uiFont * 0.95
                 font.family: Fonts.mono()
+            }
+        }
+    }
+
+    // Round button next to a text field, "+" or "×".
+    component Rundknopf: Rectangle {
+        id: knopfRoot
+
+        property string zeichen: "+"
+        property string name: ""
+
+        signal geklickt
+
+        width: root.uiFont * 2.2
+        height: width
+        radius: width / 2
+        color: knopfArea.containsMouse && knopfRoot.enabled ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(1, 1, 1, 0.06)
+        border.width: 1
+        border.color: Qt.rgba(1, 1, 1, 0.14)
+        opacity: knopfRoot.enabled ? 1 : 0.4
+        Accessible.role: Accessible.Button
+        Accessible.name: knopfRoot.name
+
+        Text {
+            anchors.centerIn: parent
+            text: knopfRoot.zeichen
+            color: root.textColor
+            font.pixelSize: root.uiFont * 1.15
+        }
+
+        MouseArea {
+            id: knopfArea
+
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: knopfRoot.geklickt()
+        }
+    }
+
+    // One field per address, "+" adds another below. Stored as one string
+    // separated by "|", the form the Android widget, the DMS hosts and
+    // `FeedState` read. Until 0.2.15 that string was typed by hand.
+    component Adressliste: Column {
+        id: listeRoot
+
+        property string schluessel: ""
+        property string platzhalter: ""
+        // Rows added with "+" that hold nothing yet. They are not stored.
+        property int leer: 0
+
+        readonly property var gespeichert: {
+            var out = [];
+            var teile = String(root.val(listeRoot.schluessel, "") || "").split("|");
+            for (var i = 0; i < teile.length; i++) {
+                var t = teile[i].trim();
+                if (t.length)
+                    out.push(t);
+            }
+            return out;
+        }
+        // At least one row, so there is somewhere to type the first address.
+        readonly property var zeilen: {
+            var out = listeRoot.gespeichert.slice();
+            var dazu = Math.max(listeRoot.leer, out.length ? 0 : 1);
+            for (var i = 0; i < dazu; i++)
+                out.push("");
+            return out;
+        }
+
+        function speichern(liste) {
+            var out = [];
+            for (var i = 0; i < liste.length; i++) {
+                var t = String(liste[i] || "").trim();
+                if (t.length && out.indexOf(t) < 0)
+                    out.push(t);
+            }
+            listeRoot.leer = 0;
+            root.changed(listeRoot.schluessel, out.join("|"));
+        }
+
+        width: parent ? parent.width : 0
+        spacing: root.uiFont * 0.4
+
+        Repeater {
+            model: listeRoot.zeilen
+
+            Row {
+                id: adresse
+
+                required property var modelData
+                required property int index
+
+                readonly property bool letzte: adresse.index === listeRoot.zeilen.length - 1
+
+                width: listeRoot.width
+                spacing: root.uiFont * 0.4
+
+                Textzeile {
+                    id: adressFeld
+
+                    width: adresse.width - (minus.width + plus.width + adresse.spacing * 2)
+                    wert: adresse.modelData
+                    platzhalter: adresse.index === 0 ? listeRoot.platzhalter : ""
+                    onUebernommen: function (neu) {
+                        var l = listeRoot.zeilen.slice();
+                        l[adresse.index] = neu;
+                        listeRoot.speichern(l);
+                    }
+                    // A row just added with "+" gets the cursor right away.
+                    Component.onCompleted: {
+                        if (listeRoot.leer > 0 && adresse.letzte && adresse.modelData === "")
+                            adressFeld.fokussieren();
+                    }
+                }
+
+                Rundknopf {
+                    id: minus
+
+                    zeichen: "×"
+                    name: Tr.t("miner.removeHost", root.lang)
+                    // A single empty row has nothing to remove.
+                    visible: listeRoot.zeilen.length > 1 || adresse.modelData !== ""
+                    onGeklickt: {
+                        var l = listeRoot.zeilen.slice();
+                        l.splice(adresse.index, 1);
+                        listeRoot.speichern(l);
+                    }
+                }
+
+                Rundknopf {
+                    id: plus
+
+                    zeichen: "+"
+                    name: Tr.t("miner.addHost", root.lang)
+                    // Only on the last row, and only once it holds something. A
+                    // click does not take the focus from the field, so what was
+                    // typed is taken over here, then the new row follows.
+                    opacity: adresse.letzte ? (enabled ? 1 : 0.4) : 0
+                    enabled: adresse.letzte && adressFeld.text.trim() !== ""
+                    onGeklickt: {
+                        if (adressFeld.text !== adresse.modelData) {
+                            var l = listeRoot.zeilen.slice();
+                            l[adresse.index] = adressFeld.text;
+                            listeRoot.speichern(l);
+                        }
+                        listeRoot.leer = 1;
+                    }
+                }
             }
         }
     }
@@ -1107,12 +1263,9 @@ Item {
                     label: Tr.t("set.minerHosts", root.lang)
                     help: Tr.t("set.minerHostsHelp", root.lang)
 
-                    Textzeile {
-                        wert: root.val("minerHostsRaw", "")
+                    Adressliste {
+                        schluessel: "minerHostsRaw"
                         platzhalter: "http://192.168.1.42"
-                        onUebernommen: function (neu) {
-                            root.changed("minerHostsRaw", neu);
-                        }
                     }
                 }
 

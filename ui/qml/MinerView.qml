@@ -76,15 +76,18 @@ Item {
     readonly property bool anyOnline: feed ? feed.minerOnline : false
     readonly property real netDiff: (feed && feed.hashrate.difficulty) || 0
     readonly property real netHash: (feed && feed.hashrate.current) || 0
-    readonly property real bestShare: (netDiff > 0 && total.bestDiff)
-        ? total.bestDiff / netDiff : 0
+    // The top of the page shows the open device, otherwise the sum of all.
+    readonly property real shownHash: root.one ? (root.one.hashRate || 0) : (root.total.hashRate || 0)
+    readonly property real shownBest: root.one ? (root.one.bestDiff || 0) : (root.total.bestDiff || 0)
+    readonly property real bestShare: (netDiff > 0 && root.shownBest)
+        ? root.shownBest / netDiff : 0
 
     // Solo chance. Own hashrate divided by network hashrate is the share of each
     // block; with 144 blocks a day that gives the chance per day and its inverse,
     // the mean waiting time. Both are expected values of a memoryless random
     // process: after a thousand years the chance for the next day is the same.
-    readonly property real soloAnteil: (root.netHash > 0 && root.total.hashRate > 0)
-        ? root.total.hashRate / root.netHash : 0
+    readonly property real soloAnteil: (root.netHash > 0 && root.shownHash > 0)
+        ? root.shownHash / root.netHash : 0
     readonly property real soloTag: root.soloAnteil * 144
 
     // "16.600 Jahre", "64 Tage", "5 Std 20 Min"
@@ -100,8 +103,41 @@ Item {
             return Tr.t("duration.days", root.lang, Tr.group(tage, root.lang));
         return root.span(tage * 86400);
     }
-    // With exactly one device there is room for the details.
-    readonly property var one: (miners.length === 1 && miners[0].online) ? miners[0] : null
+    // With several devices the page lists them, and a tap on one opens its
+    // details: the same view a single device gets. The choice is only kept
+    // while that device is online; then the list comes back.
+    readonly property bool several: miners.length > 1
+    property string openId: ""
+    // List and details differ in height; each starts at the top.
+    onOpenIdChanged: flick.contentY = 0
+    readonly property var opened: {
+        if (!root.several || !root.openId)
+            return null;
+        for (var i = 0; i < root.miners.length; i++)
+            if (root.miners[i].id === root.openId && root.miners[i].online)
+                return root.miners[i];
+        return null;
+    }
+    // The device whose details are shown: the only one, or the opened one.
+    readonly property var one: root.several ? root.opened
+                             : ((miners.length === 1 && miners[0].online) ? miners[0] : null)
+    // Power of all running devices and what it costs per terahash. Only when
+    // every running device reports its power: a sum with gaps would make the
+    // efficiency look better than it is. The cgminer API has no power field.
+    readonly property var sumPower: {
+        var w = 0, n = 0, live = 0;
+        for (var i = 0; i < root.miners.length; i++) {
+            var m = root.miners[i];
+            if (!m.online)
+                continue;
+            live++;
+            if (m.power > 0) {
+                w += m.power;
+                n++;
+            }
+        }
+        return { "watt": w, "complete": live > 0 && n === live };
+    }
     readonly property var oneHist: (one && feed) ? (feed.minerHistory[one.id] || ({})) : ({})
     // If the host already has a button bar (the DMS one in the dashboard), it
     // provides the buttons itself and turns ours off. They then sit in the top
@@ -451,9 +487,30 @@ Item {
                 y: Math.max(root.scaleUnit * 0.3, (flick.height - implicitHeight) / 2)
                 spacing: root.scaleUnit * 0.45
 
+            // Back to the list. Large enough for a finger on the phone.
+            Text {
+                visible: root.opened !== null
+                text: Tr.t("miner.allDevices", root.lang)
+                color: zurueckArea.containsMouse ? root.textColor : root.dimColor
+                font.pixelSize: root.scaleUnit * 0.62
+                height: root.finger ? Math.max(40, implicitHeight) : implicitHeight
+                verticalAlignment: Text.AlignVCenter
+
+                MouseArea {
+                    id: zurueckArea
+
+                    anchors.fill: parent
+                    anchors.margins: -root.scaleUnit * 0.3
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.openId = ""
+                }
+            }
+
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: root.total.online > 1
+                text: root.one ? (root.one.name || root.one.id)
+                    : root.total.online > 1
                     ? Tr.t("miner.devices", root.lang, root.total.online)
                     : (root.miners[0] ? root.miners[0].name : Tr.t("miner.title", root.lang))
                 color: root.dimColor
@@ -462,7 +519,7 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: root.big(root.total.hashRate, "H/s")
+                text: root.big(root.shownHash, "H/s")
                 color: root.accentColor
                 font.pixelSize: root.scaleUnit * 2.6
                 font.bold: true
@@ -476,6 +533,19 @@ Item {
                 visible: root.one && root.one.expected
                 text: root.one && root.one.expected
                     ? Tr.t("miner.smoothed", root.lang, root.big(root.one.expected, "H/s"))
+                    : ""
+                color: root.dimColor
+                font.pixelSize: root.scaleUnit * 0.55
+            }
+
+            // All devices together: power and what one terahash costs.
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: root.several && root.one === null && root.sumPower.complete
+                         && root.total.hashRate > 0
+                text: visible
+                    ? Tr.fixed(root.sumPower.watt, 1, root.lang) + " W · "
+                      + Tr.fixed(root.sumPower.watt / (root.total.hashRate / 1e12), 1, root.lang) + " J/TH"
                     : ""
                 color: root.dimColor
                 font.pixelSize: root.scaleUnit * 0.55
@@ -519,8 +589,8 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: root.total.bestDiff
-                        ? Tr.t("miner.ofNet", root.lang, root.big(root.total.bestDiff),
+                    text: root.shownBest
+                        ? Tr.t("miner.ofNet", root.lang, root.big(root.shownBest),
                                root.big(root.netDiff))
                         : "–"
                     color: root.textColor
@@ -795,61 +865,98 @@ Item {
             }
 
             // --- Individual devices ---
+            // A tap on a running device opens its details.
             Column {
                 width: parent.width
-                spacing: root.scaleUnit * 0.2
+                spacing: root.scaleUnit * 0.1
 
                 visible: root.one === null
 
                 Repeater {
                     model: root.miners
 
-                    Row {
+                    Item {
                         id: line
 
                         required property var modelData
 
                         width: parent.width
-                        spacing: root.scaleUnit * 0.5
+                        height: root.finger ? Math.max(40, reihe.implicitHeight)
+                                            : reihe.implicitHeight + root.scaleUnit * 0.3
 
                         Rectangle {
+                            anchors.fill: parent
+                            anchors.leftMargin: -root.scaleUnit * 0.3
+                            anchors.rightMargin: -root.scaleUnit * 0.3
+                            radius: root.scaleUnit * 0.25
+                            color: zeileArea.containsMouse ? Qt.rgba(1, 1, 1, 0.06) : "transparent"
+                        }
+
+                        Row {
+                            id: reihe
+
                             anchors.verticalCenter: parent.verticalCenter
-                            width: root.scaleUnit * 0.32
-                            height: width
-                            radius: width / 2
-                            color: line.modelData.online ? root.goodColor : root.badColor
+                            width: parent.width
+                            spacing: root.scaleUnit * 0.5
+
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: root.scaleUnit * 0.32
+                                height: width
+                                radius: width / 2
+                                color: line.modelData.online ? root.goodColor : root.badColor
+                            }
+
+                            Text {
+                                width: root.scaleUnit * 7
+                                elide: Text.ElideRight
+                                text: line.modelData.name || line.modelData.id
+                                color: root.textColor
+                                font.pixelSize: root.scaleUnit * 0.62
+                            }
+
+                            Text {
+                                width: root.scaleUnit * 4
+                                text: line.modelData.online ? root.big(line.modelData.hashRate, "H/s") : Tr.t("miner.off", root.lang)
+                                color: root.dimColor
+                                font.pixelSize: root.scaleUnit * 0.62
+                            }
+
+                            Text {
+                                visible: line.modelData.online && line.modelData.temp !== undefined
+                                         && line.modelData.temp !== null
+                                width: root.scaleUnit * 2.4
+                                text: line.modelData.temp !== undefined && line.modelData.temp !== null
+                                    ? Math.round(line.modelData.temp) + " °C" : ""
+                                color: root.dimColor
+                                font.pixelSize: root.scaleUnit * 0.62
+                            }
+
+                            Text {
+                                visible: line.modelData.online
+                                text: root.span(line.modelData.uptime)
+                                color: root.dimColor
+                                font.pixelSize: root.scaleUnit * 0.62
+                            }
                         }
 
                         Text {
-                            width: root.scaleUnit * 7
-                            elide: Text.ElideRight
-                            text: line.modelData.name || line.modelData.id
-                            color: root.textColor
-                            font.pixelSize: root.scaleUnit * 0.62
-                        }
-
-                        Text {
-                            width: root.scaleUnit * 4
-                            text: line.modelData.online ? root.big(line.modelData.hashRate, "H/s") : Tr.t("miner.off", root.lang)
-                            color: root.dimColor
-                            font.pixelSize: root.scaleUnit * 0.62
-                        }
-
-                        Text {
-                            visible: line.modelData.online && line.modelData.temp !== undefined
-                                     && line.modelData.temp !== null
-                            width: root.scaleUnit * 2.4
-                            text: line.modelData.temp !== undefined && line.modelData.temp !== null
-                                ? Math.round(line.modelData.temp) + " °C" : ""
-                            color: root.dimColor
-                            font.pixelSize: root.scaleUnit * 0.62
-                        }
-
-                        Text {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
                             visible: line.modelData.online
-                            text: root.span(line.modelData.uptime)
-                            color: root.dimColor
-                            font.pixelSize: root.scaleUnit * 0.62
+                            text: "›"
+                            color: zeileArea.containsMouse ? root.textColor : root.dimColor
+                            font.pixelSize: root.scaleUnit * 0.8
+                        }
+
+                        MouseArea {
+                            id: zeileArea
+
+                            anchors.fill: parent
+                            enabled: line.modelData.online
+                            hoverEnabled: true
+                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: root.openId = line.modelData.id
                         }
                     }
                 }
