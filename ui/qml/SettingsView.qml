@@ -254,11 +254,22 @@ Item {
 
         signal uebernommen(string neu)
 
-        // What is in the field right now, also before it was taken over.
-        readonly property alias text: feld.text
+        // What is in the field right now, also before it was taken over, and
+        // with what the keyboard still holds as a word in progress. Samsung's
+        // keyboard keeps typed text there until a space, Enter or a focus
+        // change; a tap on "+" changes none of them (03.10.2026, Galaxy: two
+        // of five addresses lost).
+        readonly property string text: feld.text + feld.preeditText
 
         function fokussieren() {
             feld.forceActiveFocus();
+        }
+
+        // Hand the word in progress to the field, then return its text.
+        function abschliessen() {
+            if (feld.activeFocus)
+                Qt.inputMethod.commit();
+            return feld.text;
         }
 
         width: parent ? parent.width : 0
@@ -442,9 +453,10 @@ Item {
                     opacity: adresse.letzte ? (enabled ? 1 : 0.4) : 0
                     enabled: adresse.letzte && adressFeld.text.trim() !== ""
                     onGeklickt: {
-                        if (adressFeld.text !== adresse.modelData) {
+                        var neu = adressFeld.abschliessen();
+                        if (neu !== adresse.modelData) {
                             var l = listeRoot.zeilen.slice();
-                            l[adresse.index] = adressFeld.text;
+                            l[adresse.index] = neu;
                             listeRoot.speichern(l);
                         }
                         listeRoot.leer = 1;

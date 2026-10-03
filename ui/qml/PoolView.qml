@@ -64,6 +64,8 @@ Item {
         return u;
     }
     readonly property string adresse: String(root.address || "").trim()
+    // On a narrow screen the worker rows drop the best share column.
+    readonly property bool schmal: root.width < root.scaleUnit * 22
     // Host without port, to match the stratum host of the own devices: the API
     // often runs on another port than stratum (public-pool.io: 40557 and 21496).
     readonly property string wirt: {
@@ -452,7 +454,7 @@ Item {
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            width: root.scaleUnit * 7
+                            width: root.scaleUnit * (root.schmal ? 5.5 : 7)
                             elide: Text.ElideRight
                             text: wz.modelData.name
                             color: root.textColor
@@ -470,6 +472,7 @@ Item {
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
+                            visible: !root.schmal
                             width: root.scaleUnit * 3
                             text: Tr.big(wz.modelData.best, root.lang)
                             color: root.dimColor

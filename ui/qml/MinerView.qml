@@ -35,7 +35,10 @@ Item {
     property color accentColor: "#f7931a"
     property color goodColor: "#57b894"
     property color badColor: "#d9534f"
-    property real scaleUnit: Math.max(10, Math.min(width / 26, height / 16))
+    // With touch input not below 20, as on the network page: `width / 26` is
+    // about 16 in portrait on a phone, and the list of several devices ended
+    // up at ten-point text (Galaxy, 03.10.2026).
+    property real scaleUnit: Math.max(root.finger ? 20 : 10, Math.min(width / 26, height / 16))
     // Touch input: larger buttons on the network chart
     property bool finger: false
     // When nobody is looking, the network page fetches nothing.
@@ -337,14 +340,17 @@ Item {
         });
     }
 
-    // From six metrics on, split into rows of three; below that one row.
+    // From six metrics on, split into rows of three; below that one row. On a
+    // narrow screen rows of two: "84213 (12 rejected)" alone takes half of it.
+    readonly property bool schmal: root.width < root.scaleUnit * 22
     readonly property var metricRows: {
         var m = root.metrics;
-        if (m.length < 6)
+        var je = root.schmal ? 2 : 3;
+        if (!root.schmal && m.length < 6)
             return m.length ? [m] : [];
         var out = [];
-        for (var i = 0; i < m.length; i += 3)
-            out.push(m.slice(i, i + 3));
+        for (var i = 0; i < m.length; i += je)
+            out.push(m.slice(i, i + je));
         return out;
     }
     readonly property bool roomForBoard: height > 240
@@ -1141,8 +1147,9 @@ Item {
                                     font.pixelSize: root.scaleUnit * 0.62
                                 }
 
+                                // Left out on a narrow screen, the row would run off the edge.
                                 Text {
-                                    visible: line.modelData.online
+                                    visible: line.modelData.online && !root.schmal
                                     text: root.span(line.modelData.uptime)
                                     color: root.dimColor
                                     font.pixelSize: root.scaleUnit * 0.62
