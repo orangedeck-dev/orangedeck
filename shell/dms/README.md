@@ -2,8 +2,9 @@
 
 A live view of the Bitcoin mempool as a DMS plugin: the latest block in the
 middle, the mempool as a pile below it, new transactions raining in from
-above. Besides the mempool feed there are a block clock, a miner view, a
-market view and a block explorer.
+above. Besides the mempool feed there are a block clock, a miner view with
+several devices and an optional pool page, a market view and a block
+explorer.
 
 ![OrangeDeck](assets/screenshot.png)
 
@@ -41,6 +42,9 @@ mempool instance you set in its settings.
 - While the market view is open: `api.binance.com`, `fapi.binance.com`,
   `www.okx.com`, `ws.okx.com`, `api.bybit.com` and `stream.bybit.com`.
 - The miner addresses you enter, on your own network.
+- Only if you enter a pool in the miner settings: that pool's public-pool
+  interface, for its statistics and, if you also enter your payout address,
+  for the devices mining to it. The address is sent to that pool only.
 - `127.0.0.1:21021`, the optional OrangeDeck service. At startup the plugin
   runs `systemctl --user start orangedeck.service`, or `~/.local/bin/orangedeck`
   if that exists. Installed from the registry neither is there, and nothing
