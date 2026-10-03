@@ -1,5 +1,19 @@
 [
   {
+    "v": "0.2.16",
+    "datum": "2026-10-03",
+    "en": [
+      "Several miners: one field per address, a tap on a device opens its details, the overview shows combined hashrate with its history, power and J/TH, grouped by pool. Devices with several chips show one bar per chip.",
+      "New Pool page for pools with the public-pool interface, such as pool.solomining.de: pool hashrate, miners, blocks, and the devices mining there as bars or a ring.",
+      "Optionally with your payout address, which stays on your device and goes only to that pool: your miners as the pool sees them, also on the device page and in the Android widgets whenever a miner cannot be reached on the network."
+    ],
+    "de": [
+      "Mehrere Miner: ein Feld je Adresse, ein Tipp auf ein Gerät öffnet seine Details, die Übersicht zeigt gemeinsame Hashrate mit Verlauf, Leistung und J/TH, gruppiert nach Pool. Geräte mit mehreren Chips zeigen einen Balken je Chip.",
+      "Neue Seite Pool für Pools mit public-pool-Schnittstelle, etwa pool.solomining.de: Hashrate, Miner, Blöcke und die Geräte dort als Balken oder Ring.",
+      "Freiwillig mit der eigenen Auszahlungsadresse, die auf dem Gerät bleibt und nur an diesen Pool geht: die eigenen Miner aus Sicht des Pools, auch auf der Geräteseite und in den Android-Widgets, wenn ein Miner im Netz nicht erreichbar ist."
+    ]
+  },
+  {
     "v": "0.2.15",
     "datum": "2026-09-26",
     "en": [

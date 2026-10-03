@@ -4,7 +4,7 @@
 
 OrangeDeck is a free desktop and Android application that draws the Bitcoin mempool as a living tile mosaic. It combines five views in one window: mempool feed, block height clock, mining figures, block explorer and market data. It runs on Linux, Windows and Android and as a DankMaterialShell plugin, speaks thirteen languages, is MIT licensed and requires no account.
 
-Current version: 0.2.15, released 2026-09-26. Website: https://orangedeck.dev/en/
+Current version: 0.2.16, released 2026-10-03. Website: https://orangedeck.dev/en/
 
 ## Five views
 
@@ -43,10 +43,10 @@ Every tab can be switched off, and the ones that stay can be put in any order. I
 
 ## Get it
 
-- **Windows**: Version 0.2.15. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.15-windows-x86_64.zip
-- **Linux**: Version 0.2.15. Flatpak bundle: flatpak install --user orangedeck-0.2.15.flatpak. The runtime comes from Flathub. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.15.flatpak
+- **Windows**: Version 0.2.16. ZIP for Windows 10 and 11, 64-bit: unzip and run orangedeck-app.exe. Not signed, SmartScreen asks on the first start. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.16-windows-x86_64.zip
+- **Linux**: Version 0.2.16. Flatpak bundle: flatpak install --user orangedeck-0.2.16.flatpak. The runtime comes from Flathub. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.16.flatpak
 - **DankMaterialShell**: From the DMS plugin directory: dms plugins install orangedeck. Runs on its own and uses the app's data when the app is running. https://github.com/orangedeck-dev/dms-plugin
-- **Android APK**: Version 0.2.15. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.15-arm64-v8a.apk
+- **Android APK**: Version 0.2.16. For Android 9 or newer, 64-bit ARM. Signed, the release notes give the fingerprint. https://github.com/orangedeck-dev/orangedeck/releases/latest/download/orangedeck-0.2.16-arm64-v8a.apk
 - **F-Droid**: OrangeDeck's own repository. Add it once in F-Droid, Droid-ify or Neo Store, and updates arrive by themselves. https://fdroid.orangedeck.dev/repo/
 - **Obtainium**: Takes every new version straight from the GitHub releases. Add the repository address as the source. https://github.com/orangedeck-dev/orangedeck
 - **All versions**: Release notes, checksums and older versions on GitHub. https://github.com/orangedeck-dev/orangedeck/releases
