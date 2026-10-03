@@ -205,25 +205,61 @@ Item {
         return ((root.info && root.info.blockData) || []).length;
     }
 
-    // Device types, largest share of the hashrate first, the rest combined.
+    // Device types, by miners or by hashrate, largest first, the rest combined.
+    // Each gets its color, the same in bars and ring, as on solomining.de.
+    property string typAnsicht: "balken"     // "balken" | "ring"
+    property string typMass: "hash"          // "hash" | "miner"
+    readonly property var typFarben: [root.accentColor, "#3b82f6", "#22c55e", "#a855f7", "#f5c16c"]
+    readonly property color restFarbe: "#94a3b8"
     readonly property var typen: {
-        var ua = ((root.info && root.info.userAgents) || []).slice();
-        ua.sort(function (a, b) {
-            return root.zahl(b.totalHashRate) - root.zahl(a.totalHashRate);
+        var ua = ((root.info && root.info.userAgents) || []).map(function (x) {
+            return { "name": x.userAgent || "?", "n": parseInt(x.count, 10) || 0,
+                     "h": root.zahl(x.totalHashRate) };
         });
-        var out = [], rest = 0, restN = 0;
-        for (var i = 0; i < ua.length; i++) {
-            if (i < 5)
-                out.push({ "name": ua[i].userAgent || "?", "n": parseInt(ua[i].count, 10) || 0,
-                           "h": root.zahl(ua[i].totalHashRate) });
-            else {
-                rest += root.zahl(ua[i].totalHashRate);
-                restN += parseInt(ua[i].count, 10) || 0;
+        var nachMiner = root.typMass === "miner";
+        ua.sort(function (a, b) {
+            return nachMiner ? b.n - a.n : b.h - a.h;
+        });
+        var out = [], rest = { "n": 0, "h": 0 };
+        // The pool's own catch-all names go into "others" with the rest.
+        var sammel = ["other", "others", "unknown", "?", ""];
+        var eigene = ua.filter(function (x) {
+            return sammel.indexOf(String(x.name).toLowerCase()) < 0;
+        });
+        for (var j = 0; j < ua.length; j++) {
+            if (eigene.indexOf(ua[j]) < 0) {
+                rest.n += ua[j].n;
+                rest.h += ua[j].h;
             }
         }
-        if (rest > 0)
-            out.push({ "name": Tr.t("net.others", root.lang), "n": restN, "h": rest });
+        ua = eigene;
+        for (var i = 0; i < ua.length; i++) {
+            if (i < root.typFarben.length) {
+                ua[i].farbe = root.typFarben[i];
+                out.push(ua[i]);
+            } else {
+                rest.n += ua[i].n;
+                rest.h += ua[i].h;
+            }
+        }
+        if (rest.n > 0 || rest.h > 0)
+            out.push({ "name": Tr.t("net.others", root.lang), "n": rest.n, "h": rest.h,
+                       "farbe": root.restFarbe });
+        var summe = 0;
+        for (var k = 0; k < out.length; k++)
+            summe += nachMiner ? out[k].n : out[k].h;
+        for (k = 0; k < out.length; k++)
+            out[k].anteil = summe > 0 ? (nachMiner ? out[k].n : out[k].h) / summe : 0;
         return out;
+    }
+    readonly property real typSumme: {
+        var s = 0;
+        for (var i = 0; i < root.typen.length; i++)
+            s += root.typMass === "miner" ? root.typen[i].n : root.typen[i].h;
+        return s;
+    }
+    function typWert(t) {
+        return root.typMass === "miner" ? Tr.group(t.n, root.lang) : Tr.big(t.h, root.lang, "H/s");
     }
 
     // Own devices on the network that mine on this pool.
@@ -302,6 +338,103 @@ Item {
             return "–";
         var p = 100 * teil / ganz;
         return Tr.fixed(p, p >= 1 ? 1 : (p >= 0.01 ? 3 : 5), root.lang) + " %";
+    }
+
+    // Two small pill buttons, one of them chosen.
+    component Wahl: Row {
+        id: wahlRoot
+
+        property var eintraege: []
+        property string wert: ""
+        signal gewaehlt(string k)
+
+        spacing: root.scaleUnit * 0.15
+
+        Repeater {
+            model: wahlRoot.eintraege
+
+            Rectangle {
+                id: knopf
+
+                required property var modelData
+
+                readonly property bool an: knopf.modelData.k === wahlRoot.wert
+
+                width: knopfText.implicitWidth + root.scaleUnit * 0.7
+                height: Math.max(root.finger ? 32 : 0, knopfText.implicitHeight + root.scaleUnit * 0.25)
+                radius: height / 2
+                color: knopf.an ? Qt.rgba(1, 1, 1, 0.12) : "transparent"
+                border.width: 1
+                border.color: knopf.an ? root.accentColor : Qt.rgba(1, 1, 1, 0.14)
+
+                Text {
+                    id: knopfText
+
+                    anchors.centerIn: parent
+                    text: knopf.modelData.l
+                    color: knopf.an ? root.textColor : root.dimColor
+                    font.pixelSize: root.scaleUnit * 0.5
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: root.finger ? -6 : 0
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: wahlRoot.gewaehlt(knopf.modelData.k)
+                }
+            }
+        }
+    }
+
+    // Label on a bar: dark where the bar is, light beyond `grenze`.
+    component ZweiTon: Item {
+        id: zt
+
+        property real grenze: 0
+        property string links: ""
+        property string rechts: ""
+        readonly property color hell: root.textColor
+        readonly property color dunkel: "#14111a"
+
+        // Each layer shows only its stretch: dark from 0 to the bar's end,
+        // light from there on. The texts inside sit at the same place in both.
+        Repeater {
+            model: [{ "c": zt.dunkel, "von": 0, "bis": zt.grenze },
+                    { "c": zt.hell, "von": zt.grenze, "bis": zt.width }]
+
+            Item {
+                id: lage
+
+                required property var modelData
+
+                x: Math.max(0, Math.min(zt.width, lage.modelData.von))
+                width: Math.max(0, Math.min(zt.width, lage.modelData.bis) - x)
+                height: zt.height
+                clip: true
+
+                Item {
+                    x: -lage.x
+                    width: zt.width
+                    height: zt.height
+
+                    Text {
+                        x: root.scaleUnit * 0.3
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: zt.links
+                        color: lage.modelData.c
+                        font.pixelSize: root.scaleUnit * 0.5
+                    }
+
+                    Text {
+                        x: zt.width - width - root.scaleUnit * 0.3
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: zt.rechts
+                        color: lage.modelData.c
+                        font.pixelSize: root.scaleUnit * 0.5
+                    }
+                }
+            }
+        }
     }
 
     // --------------------------------------------------------------- Layout
@@ -554,20 +687,58 @@ Item {
                 font.pixelSize: root.scaleUnit * 0.62
             }
 
-            // Which devices mine here, by share of the hashrate.
+            // Which devices mine here: bars or ring, by miners or by hashrate.
             Column {
                 width: parent.width
-                spacing: root.scaleUnit * 0.15
+                spacing: root.scaleUnit * 0.25
                 visible: root.typen.length > 0
 
-                Text {
-                    text: Tr.t("pool.deviceTypes", root.lang)
-                    color: root.dimColor
-                    font.pixelSize: root.scaleUnit * 0.55
+                Item {
+                    width: parent.width
+                    height: Math.max(typTitel.height, wahlAnsicht.height)
+
+                    Text {
+                        id: typTitel
+
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Tr.t("pool.devicesInPool", root.lang)
+                        color: root.dimColor
+                        font.pixelSize: root.scaleUnit * 0.55
+                    }
+
+                    Row {
+                        id: wahlAnsicht
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: root.scaleUnit * 0.5
+
+                        Wahl {
+                            eintraege: [{ "k": "hash", "l": Tr.t("pool.byHash", root.lang) },
+                                        { "k": "miner", "l": Tr.t("pool.byMiners", root.lang) }]
+                            wert: root.typMass
+                            onGewaehlt: function (k) {
+                                root.typMass = k;
+                            }
+                        }
+
+                        Wahl {
+                            eintraege: [{ "k": "balken", "l": Tr.t("pool.viewBars", root.lang) },
+                                        { "k": "ring", "l": Tr.t("pool.viewRing", root.lang) }]
+                            wert: root.typAnsicht
+                            onGewaehlt: function (k) {
+                                root.typAnsicht = k;
+                            }
+                        }
+                    }
                 }
 
+                // Bars. The label is drawn twice: dark as far as the bar reaches,
+                // light beyond. One color for both was unreadable wherever the bar
+                // ended inside a word (Galaxy, 03.10.2026).
                 Repeater {
-                    model: root.typen
+                    model: root.typAnsicht === "balken" ? root.typen : []
 
                     Item {
                         id: typ
@@ -575,7 +746,7 @@ Item {
                         required property var modelData
 
                         width: parent.width
-                        height: root.scaleUnit * 0.95
+                        height: root.scaleUnit * 1.05
 
                         Rectangle {
                             anchors.fill: parent
@@ -584,29 +755,120 @@ Item {
                         }
 
                         Rectangle {
-                            width: parent.width * Math.max(0.005, Math.min(1, typ.modelData.h / Math.max(1, root.poolHash)))
+                            id: balken
+
+                            width: parent.width * Math.max(0.005, Math.min(1, typ.modelData.anteil))
                             height: parent.height
                             radius: 3
-                            color: root.accentColor
-                            opacity: 0.55
+                            color: typ.modelData.farbe
+                        }
+
+                        ZweiTon {
+                            anchors.fill: parent
+                            grenze: balken.width
+                            links: typ.modelData.name + " · " + root.typWert(typ.modelData)
+                            rechts: Tr.fixed(100 * typ.modelData.anteil,
+                                             typ.modelData.anteil >= 0.01 ? 1 : 3, root.lang) + " %"
+                        }
+                    }
+                }
+
+                // Ring with the total in the middle and a legend below.
+                Item {
+                    visible: root.typAnsicht === "ring"
+                    width: parent.width
+                    height: ring.height
+
+                    Canvas {
+                        id: ring
+
+                        readonly property var teile: root.typen
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: Math.min(parent.width, root.scaleUnit * 9)
+                        height: width
+                        onTeileChanged: requestPaint()
+                        onWidthChanged: requestPaint()
+                        onVisibleChanged: if (visible) requestPaint()
+                        onPaint: {
+                            var ctx = getContext("2d");
+                            ctx.reset();
+                            var t = ring.teile, summe = 0, i;
+                            for (i = 0; i < t.length; i++)
+                                summe += t[i].anteil;
+                            if (!(summe > 0))
+                                return;
+                            var aussen = width / 2 - 2, innen = aussen * 0.62;
+                            var r = (aussen + innen) / 2, start = -Math.PI / 2;
+                            ctx.lineWidth = aussen - innen;
+                            for (i = 0; i < t.length; i++) {
+                                var ende = start + t[i].anteil / summe * Math.PI * 2;
+                                ctx.beginPath();
+                                ctx.arc(width / 2, height / 2, r, start, ende);
+                                ctx.strokeStyle = t[i].farbe;
+                                ctx.stroke();
+                                start = ende;
+                            }
+                        }
+                    }
+
+                    Column {
+                        anchors.centerIn: ring
+                        spacing: root.scaleUnit * 0.05
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: root.typMass === "miner" ? Tr.group(root.typSumme, root.lang)
+                                                           : Tr.big(root.typSumme, root.lang, "H/s")
+                            color: root.textColor
+                            font.pixelSize: root.scaleUnit * 0.85
+                            font.weight: Font.DemiBold
                         }
 
                         Text {
-                            anchors.left: parent.left
-                            anchors.leftMargin: root.scaleUnit * 0.3
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: typ.modelData.name + " · " + Tr.group(typ.modelData.n, root.lang)
-                            color: root.textColor
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: Tr.t(root.typMass === "miner" ? "pool.miners" : "pool.hashrate", root.lang)
+                            color: root.dimColor
                             font.pixelSize: root.scaleUnit * 0.5
+                        }
+                    }
+                }
+
+                Repeater {
+                    model: root.typAnsicht === "ring" ? root.typen : []
+
+                    Row {
+                        id: leg
+
+                        required property var modelData
+
+                        width: parent.width
+                        spacing: root.scaleUnit * 0.4
+
+                        Rectangle {
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: root.scaleUnit * 0.45
+                            height: width
+                            radius: 2
+                            color: leg.modelData.farbe
                         }
 
                         Text {
-                            anchors.right: parent.right
-                            anchors.rightMargin: root.scaleUnit * 0.3
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: root.anteil(typ.modelData.h, root.poolHash)
+                            width: leg.width - root.scaleUnit * 0.85 - legWert.width - root.scaleUnit * 0.4
+                            elide: Text.ElideRight
+                            text: leg.modelData.name
                             color: root.textColor
-                            font.pixelSize: root.scaleUnit * 0.5
+                            font.pixelSize: root.scaleUnit * 0.58
+                        }
+
+                        Text {
+                            id: legWert
+
+                            text: root.typWert(leg.modelData) + " · "
+                                  + Tr.fixed(100 * leg.modelData.anteil,
+                                             leg.modelData.anteil >= 0.01 ? 1 : 3, root.lang) + " %"
+                            color: root.dimColor
+                            font.pixelSize: root.scaleUnit * 0.58
                         }
                     }
                 }
