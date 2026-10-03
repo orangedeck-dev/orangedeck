@@ -31,9 +31,7 @@
         auf main, nicht auf Tags; der Pin-Commit unterscheidet sich vom Tag
         nur im Bauplan). Dateien und Bytes gegen das Artefakt halten.
      7. APK signiert der Anwender; Zertifikat gegen den Fingerabdruck unten.
-        Test-APKs und ihre Zeilen in `    ab6aff6c15ad4f6f6780efbf5fd668541a5ded9b412c81b737fbccc07c9da184  orangedeck-0.2.16-windows-x86_64.zip
-    29fcbf7b9b1f60a5d1326294816f34fd047a377f306e7e793ae3c272e988640b  orangedeck-0.2.16-arm64-v8a.apk
-    1bb355f8789f487f0b89558d59c67a33db7e09ec498b6f32bd9f0923cabbcea0  orangedeck-0.2.16.flatpak.txt` vorher wegraeumen.
+        Test-APKs und ihre Zeilen in `PRUEFSUMMEN.txt` vorher wegraeumen.
      8. Drei Pruefsummen eintragen, "Tested on" nur mit dem, was in Punkt 2
         bis 4 wirklich gesehen wurde.
      9. **Stil des Textes**, maschinell pruefen: keine Gedankenstriche als
@@ -116,7 +114,9 @@ This pulls the KDE runtime 6.9 from Flathub.
 
 ## Checksums (SHA-256)
 
-PRUEFSUMMEN
+    ab6aff6c15ad4f6f6780efbf5fd668541a5ded9b412c81b737fbccc07c9da184  orangedeck-0.2.16-windows-x86_64.zip
+    29fcbf7b9b1f60a5d1326294816f34fd047a377f306e7e793ae3c272e988640b  orangedeck-0.2.16-arm64-v8a.apk
+    1bb355f8789f487f0b89558d59c67a33db7e09ec498b6f32bd9f0923cabbcea0  orangedeck-0.2.16.flatpak
 
 ---
 
