@@ -101,16 +101,26 @@ AlternativeTo und hat einen PR bei awesome-bitcoin. Alles gepusht, CI gruen
 
 ### Was morgen als Erstes drankommt
 
-1. **Issue #1** ("Optional pool guide link", BTC PoW Lab, Carlos Monzon /
-   Power CM) ablehnen und schliessen -- **erst nach OK des Anwenders posten**.
-   Entwurf:
-   > Thanks for the clear disclosure. I'll keep the Miner view free of
-   > pool-specific links, though. A mapping from host to page would mean
-   > OrangeDeck picks which pools get a link, and I'd rather not be in that
-   > position. Closing this, but thanks for taking the time.
-2. **0.2.16** vorbereiten (Anwender gefragt, noch keine Antwort): zwei
-   Dienst-Fixes, bitfeed in kitty, Hilfetext, Domain. Freigabetext, Entwurf,
-   Pruefung Galaxy/Windows/Linux wie bei 0.2.15.
+1. **Issue #1 erledigt 03.10.2026:** abgelehnt und als "not planned"
+   geschlossen, mit Ausblick auf einen allgemeinen Pool-Reiter (ohne
+   eingebaute Liste, "idea, not a commitment").
+2. **0.2.16 = Mehrere Geraete** (Entscheidung Anwender 03.10.): nicht nur die
+   Dienst-Fixes, sondern mit spuerbarem Inhalt fuer alle Plattformen.
+   Erledigt (siehe Commit "Mining: Geraete einzeln oeffnen"): Details je
+   Geraet per Klick, Leistung + J/TH gesamt, ein Feld je Adresse mit +.
+   Offen: gemeinsamer Hashrate-Verlauf (Verlaeufe haben je Geraet eigene
+   Zeitstempel, Geraeteverlauf im Minutenabstand); Pool je Zeile; danach
+   Freigabetext, Pruefung Galaxy/Windows/Linux wie bei 0.2.15.
+   **0.2.17 = Pool-Reiter:** Basisadresse des Pools eintragen, offene
+   Endpunkte im public-pool-Format (`/api/info`, `/api/network`,
+   `/api/info/chart`) ohne Auszahlungsadresse; Vorlage ist
+   `Solomining/custom-sections/pool-live-stats/pool-live-stats.liquid`.
+   Eigener Anteil = Summe der eigenen Geraete mit diesem Stratum-Host /
+   Pool-Hashrate. ckpool spaeter, falls gefragt.
+   **AxeOS-Swarm** liegt nur im localStorage des Browsers (SWARM_DATA), am
+   Geraet gibt es nur `swarmColor`. Nichts zum Auslesen; unsere eigene Suche
+   ersetzt ihn. Die Swarm-Suche dort kennt auch NerdOS (`hostip`) und
+   Bitforge (`staIp` unter `/api/ap/info`).
 3. AlternativeTo: Anwender traegt weitere Alternativen ein (empfohlen
    Bitcoin Sidekick, Blockchain - Bitcoin Block Explorer, Blockchair; Minera
    als Grenzfall). Badge auf orangedeck.dev nur als Vorschlag zeigen.
