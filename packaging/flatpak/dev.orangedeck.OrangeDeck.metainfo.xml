@@ -216,6 +216,39 @@
        das Repo umgezogen ist, gehoert nicht hierher: es aendert nichts an der
        Anwendung. Das Datum ist vorlaeufig (19.09.2026). -->
   <releases>
+    <release version="0.2.16" date="2026-10-03">
+      <description>
+        <p>
+          The mining tab handles several miners. Each address has its own
+          field, a tap on a device opens its details, and the overview shows
+          the combined hashrate over time, the total power and J/TH, grouped
+          by pool. Devices with several chips show one bar per chip.
+        </p>
+        <p>
+          A new Pool page reads the open statistics of a pool with the
+          public-pool interface, such as pool.solomining.de. With your payout
+          address it also shows your miners as the pool sees them, and the
+          device page and the Android widgets use these numbers whenever a
+          miner cannot be reached on the network, for example from a guest
+          Wi-Fi or on mobile data.
+        </p>
+        <p xml:lang="de">
+          Der Mining-Reiter kommt mit mehreren Minern zurecht. Jede Adresse
+          hat ihr eigenes Feld, ein Tipp auf ein Gerät öffnet seine Details,
+          und die Übersicht zeigt die gemeinsame Hashrate im Verlauf, die
+          Leistung und J/TH, gruppiert nach Pool. Geräte mit mehreren Chips
+          zeigen einen Balken je Chip.
+        </p>
+        <p xml:lang="de">
+          Die neue Seite Pool liest die offene Statistik eines Pools mit
+          public-pool-Schnittstelle, etwa pool.solomining.de. Mit der eigenen
+          Auszahlungsadresse zeigt sie auch die eigenen Miner aus Sicht des
+          Pools, und Geräteseite und Android-Widgets nehmen diese Werte, wenn
+          ein Miner im Netz nicht erreichbar ist, etwa aus einem Gäste-WLAN
+          oder über mobile Daten.
+        </p>
+      </description>
+    </release>
     <release version="0.2.15" date="2026-09-26">
       <description>
         <p>
