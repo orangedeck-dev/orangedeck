@@ -54,8 +54,18 @@ modules:
       - -DCMAKE_BUILD_TYPE=Release
       - -DBUILD_TESTING=OFF
     sources:
+      # **Aus dem Archiv, mit Spiegeln.** Seit Plasma 6.5.5 ins "Attic" gewandert
+      # ist (gesehen 03.10.2026), leitet download.kde.org/stable/ dorthin um, und
+      # die Spiegel fuehren /stable/ fuer diese Fassung nicht mehr (404). Damit
+      # hing jeder Bau an einem einzigen Server; im CI brach er mehrmals nach
+      # 60 s ohne ein Byte ab. Die Spiegel fuehren das Archiv, dieselbe Datei,
+      # dieselbe Pruefsumme -- flatpak-builder nimmt sie, wenn die erste Adresse
+      # versagt.
       - type: archive
-        url: https://download.kde.org/stable/plasma/6.5.5/layer-shell-qt-6.5.5.tar.xz
+        url: https://download.kde.org/Attic/plasma/6.5.5/layer-shell-qt-6.5.5.tar.xz
+        mirror-urls:
+          - https://ftp.gwdg.de/pub/linux/kde/Attic/plasma/6.5.5/layer-shell-qt-6.5.5.tar.xz
+          - https://mirror.netcologne.de/kde/Attic/plasma/6.5.5/layer-shell-qt-6.5.5.tar.xz
         sha256: 6844fee55b8b7cbc320cd8308b51595ef830d5a99b4d355b0fd59f88feab2c11
     cleanup:
       - /include

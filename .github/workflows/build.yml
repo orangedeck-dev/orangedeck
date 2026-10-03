@@ -217,8 +217,24 @@ jobs:
       # Am 05.09.2026 ist sie deshalb dreimal hinterhergehinkt, einmal auf
       # einen Stand, an dem es die zu installierenden Dateien gar nicht gab.
       # Diese Pruefung sieht dort nach, bevor irgendetwas ueberschrieben wird.
+      #
+      # **Hier nur als Warnung.** Ob Nummer, Metainfo und Pin zusammenpassen,
+      # ist eine Frage des Veroeffentlichens: zwischen dem Hochsetzen der
+      # Nummer und dem Pin ist die Pruefung zwangslaeufig rot, und dann lief der
+      # Bau darunter gar nicht erst. Seit dem 20.09.2026 brachen so neun von
+      # zehn Flatpak-Laeufen ab, ohne dass am Stand etwas falsch war. Zum
+      # Veroeffentlichen laeuft die Pruefung lokal und muss dort sauber sein
+      # (docs/STAND.md, "Release, in dieser Reihenfolge").
       - name: Bauplan pruefen
-        run: python3 tools/bauplan-pruefen.py
+        run: |
+          if ! python3 tools/bauplan-pruefen.py > bauplan.txt 2>&1; then
+            cat bauplan.txt
+            grep -E '^\s+\*' bauplan.txt | sed 's/^\s*\* *//' | while read -r zeile; do
+              echo "::warning title=Bauplan, vor dem Veroeffentlichen beheben::$zeile"
+            done
+          else
+            cat bauplan.txt
+          fi
 
       # **Kein fertiges Abbild.** Der erste Anlauf nahm
       # `bilelmoussaoui/flatpak-github-actions:kde-6.9` -- das Abbild gibt es
@@ -231,8 +247,26 @@ jobs:
           sudo apt-get install -y flatpak flatpak-builder
           flatpak remote-add --if-not-exists --user \
             flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user -y --noninteractive \
-            flathub org.kde.Platform//6.9 org.kde.Sdk//6.9
+          # Flathub antwortet nicht immer beim ersten Mal; dreimal versuchen.
+          for versuch in 1 2 3; do
+            flatpak install --user -y --noninteractive \
+              flathub org.kde.Platform//6.9 org.kde.Sdk//6.9 && break
+            [ "$versuch" = 3 ] && exit 1
+            sleep 30
+          done
+
+      # **Heruntergeladene Quellen zwischen den Laeufen behalten.** layer-shell-qt
+      # kam bei jedem Lauf neu von download.kde.org, und die Fassung liegt seit
+      # Anfang Oktober 2026 nur noch im Archiv dort und auf wenigen Spiegeln;
+      # zweimal ging ein Lauf nur im zweiten Versuch durch, am 03.10.2026 gar
+      # nicht. Der Schluessel haengt am Bauplan: aendert sich eine Quelle,
+      # wird neu geladen.
+      - name: Quellen aus dem Speicher
+        uses: actions/cache@v4
+        with:
+          path: .flatpak-builder/downloads
+          key: flatpak-quellen-${{ hashFiles('packaging/flatpak/dev.orangedeck.OrangeDeck.yml') }}
+          restore-keys: flatpak-quellen-
 
       # **Der Bauplan zum Ausliefern, nicht der zum Arbeiten.** Der andere
       # baut aus dem Arbeitsverzeichnis (`type: dir`) -- hier gibt es keines,
@@ -252,6 +286,14 @@ jobs:
 
       - name: Bauen und buendeln
         run: |
+          # Erst nur laden, bei einem Netzfehler bis zu dreimal; der Bau danach
+          # nimmt, was schon da ist.
+          for versuch in 1 2 3; do
+            flatpak-builder --user --download-only --force-clean \
+              build-fp packaging/flatpak/dev.orangedeck.OrangeDeck.yml && break
+            [ "$versuch" = 3 ] && exit 1
+            sleep 30
+          done
           flatpak-builder --user --repo=repo --force-clean \
             build-fp packaging/flatpak/dev.orangedeck.OrangeDeck.yml
           flatpak build-bundle repo orangedeck.flatpak \
