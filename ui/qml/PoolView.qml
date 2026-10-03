@@ -237,7 +237,8 @@ Item {
     }
 
     // The devices under the address, as the pool lists them. A worker the pool
-    // has not heard from for ten minutes counts as gone.
+    // has not heard from for ten minutes counts as gone, and so does one it saw
+    // a moment ago but credits with no hashrate.
     readonly property var arbeiter: {
         var w = (root.client && root.client.workers) || [];
         var out = [];
@@ -246,7 +247,7 @@ Item {
             var alter = isFinite(zuletzt) ? root.jetzt - zuletzt : Infinity;
             out.push({ "name": w[i].name || "–", "h": root.zahl(w[i].hashRate),
                        "best": root.zahl(w[i].bestDifficulty), "alter": alter,
-                       "aktiv": alter < 600 });
+                       "aktiv": alter < 600 && root.zahl(w[i].hashRate) > 0 });
         }
         out.sort(function (a, b) {
             return b.h - a.h;
