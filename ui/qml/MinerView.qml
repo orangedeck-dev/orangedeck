@@ -209,7 +209,10 @@ Item {
             "name": name || w.name || "–",
             "online": w.aktiv,
             "hashRate": w.aktiv ? w.h : 0,
-            "bestDiff": w.best,
+            // The worker's best is since it last connected; AxeOS shows the best
+            // ever. With one device under the address that is the address's.
+            "bestDiff": poolKlient.arbeiter.length === 1 && poolKlient.client
+                        ? Math.max(w.best, poolKlient.zahl(poolKlient.client.bestDifficulty)) : w.best,
             "alter": w.alter,
             "pool": (z && z.pool) || poolKlient.wirt,
             "worker": w.name
