@@ -139,6 +139,127 @@ Item {
         return { "watt": w, "complete": live > 0 && n === live };
     }
     readonly property var oneHist: (one && feed) ? (feed.minerHistory[one.id] || ({})) : ({})
+    // Name and pool as last reported. A device that is off reports neither, and
+    // without this it would show its address and drop out of its pool's group
+    // for as long as it is gone.
+    property var bekannt: ({})
+    onMinersChanged: {
+        var neu = root.bekannt, anders = false;
+        for (var i = 0; i < root.miners.length; i++) {
+            var m = root.miners[i];
+            if (!m.online)
+                continue;
+            var alt = neu[m.id];
+            if (!alt || alt.name !== m.name || alt.pool !== m.pool) {
+                neu[m.id] = { "name": m.name, "pool": m.pool };
+                anders = true;
+            }
+        }
+        if (anders)
+            root.bekannt = Object.assign({}, neu);
+    }
+    function nameVon(m) {
+        var b = root.bekannt[m.id];
+        return (m.online ? m.name : (b && b.name)) || m.name || m.id;
+    }
+    function poolVon(m) {
+        var b = root.bekannt[m.id];
+        return (m.online ? m.pool : (b && b.pool)) || "";
+    }
+
+    // The list, grouped by pool once the devices mine on more than one. Each
+    // entry carries the pool as `kopf` if it opens a group. Unknown pool (device
+    // off, or the cgminer API, which does not report it) sorts last.
+    readonly property var liste: {
+        var reihen = root.miners.slice();
+        var pools = [];
+        for (var i = 0; i < reihen.length; i++) {
+            var p = root.poolVon(reihen[i]);
+            if (pools.indexOf(p) < 0)
+                pools.push(p);
+        }
+        var gruppiert = pools.length > 1;
+        if (gruppiert) {
+            // Stable: within a pool the order from the settings stays.
+            var rang = function (m) {
+                var p = root.poolVon(m);
+                return p ? pools.indexOf(p) : pools.length;
+            };
+            reihen = reihen.map(function (m, k) {
+                return { "m": m, "k": k };
+            }).sort(function (a, b) {
+                return (rang(a.m) - rang(b.m)) || (a.k - b.k);
+            }).map(function (x) {
+                return x.m;
+            });
+        }
+        var out = [], vorher = null;
+        for (var j = 0; j < reihen.length; j++) {
+            var pool = root.poolVon(reihen[j]);
+            out.push({ "m": reihen[j], "kopf": gruppiert && pool !== vorher ? (pool || "–") : "" });
+            vorher = pool;
+        }
+        return out;
+    }
+
+    // Hashrate of all running devices over time, for the list view.
+    //
+    // Each device has its own timestamps: every five seconds from our own polling,
+    // once a minute from a device that records its own history, and the devices
+    // were not switched on together. So the sum is taken on a common grid, with
+    // each device's value interpolated between its two neighbouring points, and only over the
+    // span every running device covers. Outside it the sum would lack a device and
+    // the curve would drop for no real reason. No temperature: a single line for
+    // several devices would mean nothing.
+    readonly property var sumHist: {
+        if (!root.several || !root.feed)
+            return ({});
+        var reihen = [];
+        var von = -Infinity, bis = Infinity;
+        for (var i = 0; i < root.miners.length; i++) {
+            var m = root.miners[i];
+            if (!m.online)
+                continue;
+            var h = root.feed.minerHistory[m.id];
+            if (!h || !h.t || h.t.length < 2)
+                return ({});
+            reihen.push(h);
+            von = Math.max(von, h.t[0]);
+            bis = Math.min(bis, h.t[h.t.length - 1]);
+        }
+        if (reihen.length < 2 || !(bis - von >= 60))
+            return ({});
+        var n = 120, zeit = [], summe = [];
+        var pos = reihen.map(function () {
+            return 0;
+        });
+        for (var k = 0; k < n; k++) {
+            var tg = von + (bis - von) * k / (n - 1);
+            var sum = 0, voll = true;
+            for (var r = 0; r < reihen.length; r++) {
+                var hr = reihen[r];
+                // pos[r]: first point after tg. The one before it is at or before tg.
+                while (pos[r] < hr.t.length && hr.t[pos[r]] <= tg)
+                    pos[r]++;
+                var a = pos[r] - 1, b = pos[r];
+                var va = a >= 0 ? hr.hr[a] : null;
+                var vb = b < hr.t.length ? hr.hr[b] : null;
+                if (va === null || va === undefined) {
+                    voll = false;
+                    continue;
+                }
+                if (vb === null || vb === undefined || hr.t[b] === hr.t[a])
+                    sum += va;
+                else
+                    sum += va + (vb - va) * (tg - hr.t[a]) / (hr.t[b] - hr.t[a]);
+            }
+            if (!voll)
+                continue;
+            zeit.push(Math.round(tg));
+            summe.push(Math.round(sum * 10) / 10);
+        }
+        return { "t": zeit, "hr": summe, "hrNow": [], "temp": [] };
+    }
     // If the host already has a button bar (the DMS one in the dashboard), it
     // provides the buttons itself and turns ours off. They then sit in the top
     // row where nothing can cover them.
@@ -715,12 +836,16 @@ Item {
             }
 
             // --- History ---
+            // One device: its own history. The list of several: their sum.
             MinerChart {
+                readonly property var reihe: root.one !== null ? root.oneHist : root.sumHist
+
                 width: parent.width
                 height: root.scaleUnit * 4.2
-                visible: root.showChart && root.one !== null && root.roomForChart
-                         && (root.oneHist.hr || []).length > 1
-                hist: root.oneHist
+                visible: root.showChart && root.roomForChart
+                         && (root.one !== null || root.several)
+                         && (reihe.hr || []).length > 1
+                hist: reihe
                 lang: root.lang
                 lineColor: root.accentColor
                 dimColor: root.dimColor
@@ -755,11 +880,14 @@ Item {
                     // readings fluctuate by more than ten percent, so the smoothed value is shown;
                     // otherwise noise looks like a defect.
                     // Minutes formatted per language, whole numbers from one minute up.
+                    // With several chips one bar per chip (`domainsAreChips`).
                     text: root.one && root.one.domainSamples
-                        ? Tr.t("miner.domainsAvg", root.lang, root.domainMin >= 1
+                        ? Tr.t(root.one.domainsAreChips ? "miner.chipsAvg" : "miner.domainsAvg",
+                               root.lang, root.domainMin >= 1
                                ? Math.round(root.domainMin)
                                : Tr.fixed(root.domainMin, 1, root.lang))
-                        : Tr.t("miner.domains", root.lang)
+                        : Tr.t(root.one && root.one.domainsAreChips ? "miner.chips" : "miner.domains",
+                               root.lang)
                     color: root.dimColor
                     font.pixelSize: root.scaleUnit * 0.55
                 }
@@ -873,90 +1001,115 @@ Item {
                 visible: root.one === null
 
                 Repeater {
-                    model: root.miners
+                    model: root.liste
 
                     Item {
-                        id: line
+                        id: eintrag
 
                         required property var modelData
 
                         width: parent.width
-                        height: root.finger ? Math.max(40, reihe.implicitHeight)
-                                            : reihe.implicitHeight + root.scaleUnit * 0.3
+                        height: (kopfText.visible ? kopfText.height + root.scaleUnit * 0.25 : 0) + line.height
 
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.leftMargin: -root.scaleUnit * 0.3
-                            anchors.rightMargin: -root.scaleUnit * 0.3
-                            radius: root.scaleUnit * 0.25
-                            color: zeileArea.containsMouse ? Qt.rgba(1, 1, 1, 0.06) : "transparent"
+                        // The pool above its devices, only the host: the user name
+                        // holds the payout address.
+                        Text {
+                            id: kopfText
+
+                            visible: eintrag.modelData.kopf !== ""
+                            width: parent.width
+                            y: 0
+                            text: eintrag.modelData.kopf
+                            elide: Text.ElideRight
+                            color: root.dimColor
+                            font.pixelSize: root.scaleUnit * 0.5
+                            topPadding: root.scaleUnit * 0.2
                         }
 
-                        Row {
-                            id: reihe
+                        Item {
+                            id: line
 
-                            anchors.verticalCenter: parent.verticalCenter
+                            readonly property var modelData: eintrag.modelData.m
+
+                            y: kopfText.visible ? kopfText.height + root.scaleUnit * 0.25 : 0
                             width: parent.width
-                            spacing: root.scaleUnit * 0.5
+                            height: root.finger ? Math.max(40, reihe.implicitHeight)
+                                                : reihe.implicitHeight + root.scaleUnit * 0.3
 
                             Rectangle {
+                                anchors.fill: parent
+                                anchors.leftMargin: -root.scaleUnit * 0.3
+                                anchors.rightMargin: -root.scaleUnit * 0.3
+                                radius: root.scaleUnit * 0.25
+                                color: zeileArea.containsMouse ? Qt.rgba(1, 1, 1, 0.06) : "transparent"
+                            }
+
+                            Row {
+                                id: reihe
+
                                 anchors.verticalCenter: parent.verticalCenter
-                                width: root.scaleUnit * 0.32
-                                height: width
-                                radius: width / 2
-                                color: line.modelData.online ? root.goodColor : root.badColor
+                                width: parent.width
+                                spacing: root.scaleUnit * 0.5
+
+                                Rectangle {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: root.scaleUnit * 0.32
+                                    height: width
+                                    radius: width / 2
+                                    color: line.modelData.online ? root.goodColor : root.badColor
+                                }
+
+                                Text {
+                                    width: root.scaleUnit * 7
+                                    elide: Text.ElideRight
+                                    text: root.nameVon(line.modelData)
+                                    color: root.textColor
+                                    font.pixelSize: root.scaleUnit * 0.62
+                                }
+
+                                Text {
+                                    width: root.scaleUnit * 4
+                                    text: line.modelData.online ? root.big(line.modelData.hashRate, "H/s") : Tr.t("miner.off", root.lang)
+                                    color: root.dimColor
+                                    font.pixelSize: root.scaleUnit * 0.62
+                                }
+
+                                Text {
+                                    visible: line.modelData.online && line.modelData.temp !== undefined
+                                             && line.modelData.temp !== null
+                                    width: root.scaleUnit * 2.4
+                                    text: line.modelData.temp !== undefined && line.modelData.temp !== null
+                                        ? Math.round(line.modelData.temp) + " °C" : ""
+                                    color: root.dimColor
+                                    font.pixelSize: root.scaleUnit * 0.62
+                                }
+
+                                Text {
+                                    visible: line.modelData.online
+                                    text: root.span(line.modelData.uptime)
+                                    color: root.dimColor
+                                    font.pixelSize: root.scaleUnit * 0.62
+                                }
                             }
 
                             Text {
-                                width: root.scaleUnit * 7
-                                elide: Text.ElideRight
-                                text: line.modelData.name || line.modelData.id
-                                color: root.textColor
-                                font.pixelSize: root.scaleUnit * 0.62
-                            }
-
-                            Text {
-                                width: root.scaleUnit * 4
-                                text: line.modelData.online ? root.big(line.modelData.hashRate, "H/s") : Tr.t("miner.off", root.lang)
-                                color: root.dimColor
-                                font.pixelSize: root.scaleUnit * 0.62
-                            }
-
-                            Text {
-                                visible: line.modelData.online && line.modelData.temp !== undefined
-                                         && line.modelData.temp !== null
-                                width: root.scaleUnit * 2.4
-                                text: line.modelData.temp !== undefined && line.modelData.temp !== null
-                                    ? Math.round(line.modelData.temp) + " °C" : ""
-                                color: root.dimColor
-                                font.pixelSize: root.scaleUnit * 0.62
-                            }
-
-                            Text {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
                                 visible: line.modelData.online
-                                text: root.span(line.modelData.uptime)
-                                color: root.dimColor
-                                font.pixelSize: root.scaleUnit * 0.62
+                                text: "›"
+                                color: zeileArea.containsMouse ? root.textColor : root.dimColor
+                                font.pixelSize: root.scaleUnit * 0.8
                             }
-                        }
 
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            visible: line.modelData.online
-                            text: "›"
-                            color: zeileArea.containsMouse ? root.textColor : root.dimColor
-                            font.pixelSize: root.scaleUnit * 0.8
-                        }
+                            MouseArea {
+                                id: zeileArea
 
-                        MouseArea {
-                            id: zeileArea
-
-                            anchors.fill: parent
-                            enabled: line.modelData.online
-                            hoverEnabled: true
-                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                            onClicked: root.openId = line.modelData.id
+                                anchors.fill: parent
+                                enabled: line.modelData.online
+                                hoverEnabled: true
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: root.openId = line.modelData.id
+                            }
                         }
                     }
                 }

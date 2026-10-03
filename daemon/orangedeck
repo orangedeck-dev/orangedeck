@@ -2683,10 +2683,19 @@ def probe_axeos(url, timeout=4):
         "uptime": d.get("uptimeSeconds"),
         "paused": d.get("miningPaused"),
         "pool": pool,
-        # Die einzelnen Rechenwerke -- in der Weboberflaeche "Hashrate Registers"
-        "domains": (((d.get("hashrateMonitor") or {}).get("asics") or [{}])[0]
-                    .get("domains") or []),
+        # Die einzelnen Rechenwerke -- in der Weboberflaeche "Hashrate Registers".
+        # Mit mehreren Chips (Hex, GT) einer je Chip, als Summe seiner
+        # Rechenwerke; bis 02.10.2026 kam nur der erste Chip an.
+        **rechenwerke(d),
     }
+
+
+def rechenwerke(d):
+    asics = (d.get("hashrateMonitor") or {}).get("asics") or []
+    if len(asics) > 1:
+        return {"domains": [round(sum(a.get("domains") or []), 1) for a in asics],
+                "domainsAreChips": True}
+    return {"domains": (asics[0].get("domains") or []) if asics else []}
 
 
 def cgminer_call(host, port, command, timeout=3):

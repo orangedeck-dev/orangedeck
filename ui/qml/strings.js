@@ -442,6 +442,8 @@ var S = {
         "この機器がこれまでに達成した最高難易度をネットワーク難易度で割った値です。「426 k 分の 1」はブロックまで 426 000 倍足りなかったという意味です。",
         "该设备曾达到的最高难度除以全网难度。「426 k 分之一」表示距离出块还差 426 000 倍。"
     , "A dificuldade mais alta que este equipamento já alcançou, dividida pela da rede. «1 em 426 k» significa que faltava um fator de 426 000 para um bloco.", "Najwyższa trudność, jaką to urządzenie kiedykolwiek osiągnęło, podzielona przez trudność sieci. „1 na 426 k” znaczy, że do bloku brakowało czynnika 426 000.", "Nejvyšší obtížnost, jaké toto zařízení kdy dosáhlo, dělená obtížností sítě. „1 ku 426 k“ znamená, že do bloku chyběl činitel 426 000."],
+    "miner.chips": ["Chips", "Chips", "Chips", "Puces", "Chip", "Chips", "Chips", "Чипы", "チップ", "芯片", "Chips", "Układy", "Čipy"],
+    "miner.chipsAvg": ["Chips · Mittel über {0} Min", "Chips · average over {0} min", "Chips · media de {0} min", "Puces · moyenne sur {0} min", "Chip · media su {0} min", "Chips · média de {0} min", "Chips · gemiddelde over {0} min", "Чипы · среднее за {0} мин", "チップ · {0} 分平均", "芯片 · {0} 分钟平均", "Chips · média de {0} min", "Układy · średnia z {0} min", "Čipy · průměr za {0} min"],
     "miner.domainsHelp": [
         "Der Chip rechnet in mehreren getrennten Bereichen mit eigener Spannung und Taktung. Liegen sie gleichauf, ist alles in Ordnung; fällt einer dauerhaft ab, ist dieser Teil instabil. Einzelmessungen schwanken über 10 %, deshalb der Mittelwert.",
         "The chip computes in several separate domains, each with its own voltage and clock. If they run level, all is well; if one lags persistently, that part is unstable. Single readings vary by over 10 %, hence the average.",

@@ -62,6 +62,17 @@ Item {
     }
 
     // AxeOS reports GH/s; everything here is in H/s.
+    function jeChip(asics) {
+        var out = [];
+        for (var i = 0; i < asics.length; i++) {
+            var d = (asics[i] && asics[i].domains) || [], summe = 0;
+            for (var k = 0; k < d.length; k++)
+                summe += d[k];
+            out.push(Math.round(summe * 10) / 10);
+        }
+        return out;
+    }
+
     function gh(v) {
         return typeof v === "number" ? v * 1e9 : null;
     }
@@ -80,7 +91,7 @@ Item {
             pool = teile[teile.length - 1].split("/")[0] || null;
         }
 
-        var asics = (d.hashrateMonitor && d.hashrateMonitor.asics) || [{}];
+        var asics = (d.hashrateMonitor && d.hashrateMonitor.asics) || [];
         return {
             "type": "axeos",
             "id": url,
@@ -107,7 +118,11 @@ Item {
             // Seconds between two entries in the device's own log; 0 means it does not log.
             "statsFrequency": d.statsFrequency || 0,
             "pool": pool,
-            "domains": (asics[0] && asics[0].domains) || []
+            // With several chips (Hex, GT) one bar per chip, the sum of its
+            // domains, as in the daemon (`rechenwerke`). Until 02.10.2026 only
+            // the first chip arrived.
+            "domains": asics.length > 1 ? root.jeChip(asics) : ((asics[0] && asics[0].domains) || []),
+            "domainsAreChips": asics.length > 1
         };
     }
 
