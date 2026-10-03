@@ -108,9 +108,14 @@ AlternativeTo und hat einen PR bei awesome-bitcoin. Alles gepusht, CI gruen
    Dienst-Fixes, sondern mit spuerbarem Inhalt fuer alle Plattformen.
    Erledigt (siehe Commit "Mining: Geraete einzeln oeffnen"): Details je
    Geraet per Klick, Leistung + J/TH gesamt, ein Feld je Adresse mit +.
-   Offen: gemeinsamer Hashrate-Verlauf (Verlaeufe haben je Geraet eigene
-   Zeitstempel, Geraeteverlauf im Minutenabstand); Pool je Zeile; danach
-   Freigabetext, Pruefung Galaxy/Windows/Linux wie bei 0.2.15.
+   Dazu (a68051e): Summenverlauf, Gruppen nach Pool, ein Balken je Chip
+   (vorher kam bei Hex/GT nur der erste Chip an -- vom Pruefstand gefunden).
+   Offen: Pruefung am Galaxy (ueber `adb reverse`, siehe Pruefstand),
+   Windows- und Linux-VMs (`--alle`), dann Freigabetext.
+   **Pruefstand:** `python3 tools/miner-pruefstand.py` spielt fuenf
+   AxeOS-Geraete und einen Antminer (cgminer) auf 21051-21058. Der echte
+   Bitaxe des Anwenders ist im jetzigen Netz nicht erreichbar (Router mit
+   Client-Trennung, kein Zugang zum Router).
    **0.2.17 = Pool-Reiter:** Basisadresse des Pools eintragen, offene
    Endpunkte im public-pool-Format (`/api/info`, `/api/network`,
    `/api/info/chart`) ohne Auszahlungsadresse; Vorlage ist
