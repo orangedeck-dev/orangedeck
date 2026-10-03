@@ -63,7 +63,10 @@ Item {
         u = u.replace(/\/+$/, "").replace(/\/api$/i, "");
         return u;
     }
-    readonly property string adresse: String(root.address || "").trim()
+    // Without the worker name: the stratum user is "address.worker", and
+    // people paste it as AxeOS shows it ("bc1q….bitaxe"). An address never
+    // contains a dot, so everything from the first one on goes.
+    readonly property string adresse: String(root.address || "").trim().split(".")[0]
     // On a narrow screen the worker rows drop the best share column.
     readonly property bool schmal: root.width < root.scaleUnit * 22
     // Host without port, to match the stratum host of the own devices: the API
