@@ -123,6 +123,23 @@ der jetzt da ist).
 - **CLS an #was behoben:** die Punktreihe unter dem Live-Kopf kam erst beim
   Start dazu und schob alles um 35 px. Platz jetzt von Anfang an frei
   (`website/stil.css`), im Headless-Chrome nachgemessen.
+- **0.2.17 in Arbeit:** Fassung gesetzt (`92ba8f9`, versionCode 20, Metainfo).
+  Emulator (Android 11, Pruefstand ueber adb reverse): Summenkurve in allen
+  18 Bildern ueber zwei Aussetzer von flackert, Ring + Miner nach force-stop
+  noch da. APK unsigniert unter `auslieferung/`. Offen: Signieren,
+  Geraetelauf, Pin, CI-Buendel, VMs, Tag, Entwurf, F-Droid, Seite, Plugin-Repo.
+- **Emulator-Falle:** `adb shell input text` mit Buchstaben am Anfang
+  ueberholt Gboard: die ersten Zeichen bleiben als offenes Wort stehen und
+  landen beim Uebernehmen am Ende ("tp://...ht"). Kein Fehler der App, mit
+  echten Tastentipps kommt das Wort richtig an. Abhilfe: Gboard abschalten
+  (`adb shell ime disable com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME`,
+  hinterher `ime enable` + `ime set`). Und **keine Zurueck-Taste**, wenn die
+  Tastatur schon zu ist: sie verlaesst die App, die Eingaben gingen dann in
+  die Google-Suche des Startbildschirms.
+- **Pruefstand mit Pool:** ohne `--pool-wirt` melden die Geraete
+  public-pool.io, die App fragt 127.0.0.1 -- `gleicherPool` schlaegt fehl und
+  ein erreichbares Geraet erscheint zusaetzlich "laut Pool" (doppelt gezaehlt).
+  Kein Fehler der App.
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
