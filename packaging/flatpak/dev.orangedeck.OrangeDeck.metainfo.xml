@@ -230,6 +230,12 @@
           Started with --source, the settings now show the data source that
           is actually in use.
         </p>
+        <p>
+          Fixes: negative numbers no longer get a separator right after the
+          minus sign, the button that leaves full screen can be clicked again
+          in the mining tab, and keyboard shortcuts work again after typing
+          into a settings field.
+        </p>
         <p xml:lang="de">
           Bei mehreren Minern verschwindet die gemeinsame Hashrate-Kurve nicht
           mehr, wenn ein Gerät ein paar Abfragen verpasst. Es bleibt bis zu
@@ -241,6 +247,12 @@
           Ring erscheinen und ob sie nach Hashrate oder nach Minern sortiert
           sind. Mit --source gestartet, zeigen die Einstellungen jetzt die
           Datenquelle, die tatsächlich gilt.
+        </p>
+        <p xml:lang="de">
+          Behoben: Negative Zahlen bekommen kein Trennzeichen mehr direkt
+          hinter dem Minus, der Knopf zum Verlassen des Vollbilds lässt sich
+          im Mining-Reiter wieder anklicken, und die Tastenkürzel wirken
+          wieder, nachdem man in ein Feld der Einstellungen getippt hat.
         </p>
       </description>
     </release>
