@@ -126,8 +126,28 @@ der jetzt da ist).
 - **0.2.17 in Arbeit:** Fassung gesetzt (`92ba8f9`, versionCode 20, Metainfo).
   Emulator (Android 11, Pruefstand ueber adb reverse): Summenkurve in allen
   18 Bildern ueber zwei Aussetzer von flackert, Ring + Miner nach force-stop
-  noch da. APK unsigniert unter `auslieferung/`. Offen: Signieren,
-  Geraetelauf, Pin, CI-Buendel, VMs, Tag, Entwurf, F-Droid, Seite, Plugin-Repo.
+  noch da.
+- **Linux-VMs (Agent, CI-Buendel von 92ba8f9):** Ubuntu und Fedora bestanden
+  (Fassung, Feed, Uhr, Explorer, Markt, --source direct, Summenkurve in allen
+  44 Bildern mit flackert aus, Ring+Miner nach Neustart). Bilder
+  `pruefbilder/0.2.17-ubuntu|fedora/`. Drei alte Befunde, behoben in
+  `8b4491c` (Minus-Trenner in Tr.group, Vollbildknopf lag auf dem i,
+  Tastenfokus blieb auf verstecktem Einstellungsfeld), Metainfo `879e015`.
+  Erste Signierrunde verworfen (`...-verworfen-92ba8f9`), zweite APK gebaut.
+- **Windows (CI von 879e015):** Summenkurve in 20 von 20 Bildern (flackert 6x
+  laut Pool), Ring+Miner in der Registry und nach Neustart, Vollbild per
+  Klick verlassen. Bilder `pruefbilder/0.2.17-windows/`. Die ufw-Regel
+  21061:21068 auf virbr0 steht noch. win11 wieder auf 10240000.
+- **Emulator (zweite Runde):** Vollbild verlassen geht, aber `adb input tap`
+  ganz oben (y=77 px, Streifen der versteckten Statusleiste) wird teils
+  verschluckt, bei y=110 zuverlaessig. Am Telefon mit dem Finger pruefen.
+  Kosmetik, alt: "Pool not reachable (Pool not reachable)" doppelt.
+- **Flatpak:** der Dienst laeuft nach dem Schliessen weiter, auch mit
+  --source direct (`orangedeck-launch`), erst `flatpak kill` beendet ihn.
+  Nicht neu, nirgends dokumentiert.
+- Offen: zweite Signatur, Geraetelauf, Pin, Tag, Entwurf, F-Droid, Seite,
+  Plugin-Repo. Die Linux-VMs liefen auf dem Stand vor den drei Korrekturen;
+  diese sind im Xvfb, im Emulator und unter Windows geprueft.
 - **Emulator-Falle:** `adb shell input text` mit Buchstaben am Anfang
   ueberholt Gboard: die ersten Zeichen bleiben als offenes Wort stehen und
   landen beim Uebernehmen am Ende ("tp://...ht"). Kein Fehler der App, mit
