@@ -57,9 +57,13 @@ Issue #1 abgelehnt und geschlossen (Ausblick auf allgemeinen Pool-Reiter,
 der jetzt da ist).
 
 ### Offen fuer 0.2.17
-1. Liste springt, wenn ein Geraet immer wieder ausfaellt: die Summenkurve
-   verschwindet und kommt wieder (Agent, Fedora). Kurve bei kurzen Aussetzern
-   stehen lassen.
+1. ~~Liste springt, wenn ein Geraet immer wieder ausfaellt: die Summenkurve
+   verschwindet und kommt wieder (Agent, Fedora).~~ **Erledigt 08.10.2026:**
+   ein Geraet bleibt bis 120 s ohne Antwort mit seinem letzten Wert in der
+   Summe, danach zaehlen die uebrigen, auch ein einzelnes. Im Pruefstand mit
+   gamma-wohnzimmer + flackert gemessen: zwei Aussetzer in 150 s, die Kurve
+   stand in jedem Bild. Im Aussetzer zeigt die Kurve 2,24 TH/s, die grosse
+   Zahl 1,21 (nur das erreichbare Geraet), so gewollt.
 2. `--source direct` zeigt in den Einstellungen "Eigener Dienst" (alt, in
    Xvfb und beiden VMs gesehen).
 3. Ring/Balken-Wahl der Pool-Seite merkt sich die App nicht.

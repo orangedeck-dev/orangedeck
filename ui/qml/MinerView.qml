@@ -410,26 +410,52 @@ Item {
     // span every running device covers. Outside it the sum would lack a device and
     // the curve would drop for no real reason. No temperature: a single line for
     // several devices would mean nothing.
+    //
+    // A device that misses a few polls stays in the sum with its last value.
+    // Mostly it is the Wi-Fi, not the miner, and the device keeps hashing.
+    // Dropping it at once redrew the whole curve without it, and with two
+    // devices the chart vanished and the list below jumped up, once a minute
+    // for a device that kept dropping out. Only after `sumGraceSec` without a
+    // reply does it leave the sum. Then the curve is that of the devices
+    // still running, down to a single one.
+    readonly property int sumGraceSec: 120
     readonly property var sumHist: {
         if (!root.several || !root.feed)
             return ({});
-        var reihen = [];
-        var von = -Infinity, bis = Infinity;
+        var kandidaten = [];
+        var neueste = -Infinity;
         // Only devices reached directly: the pool's estimate has its own chart
         // on the pool page, and a sum of both would mix a measurement with a
-        // guess.
+        // guess. A device the pool stands in for still has its own history
+        // up to the dropout, and it is held like any other gap.
         for (var i = 0; i < root.geraete.length; i++) {
             var m = root.geraete[i];
-            if (!m.online || m.quelle === "pool")
-                continue;
             var h = root.feed.minerHistory[m.id];
             if (!h || !h.t || h.t.length < 2)
-                return ({});
-            reihen.push(h);
-            von = Math.max(von, h.t[0]);
-            bis = Math.min(bis, h.t[h.t.length - 1]);
+                continue;
+            var direkt = m.online && m.quelle !== "pool";
+            kandidaten.push({ "h": h, "direkt": direkt });
+            neueste = Math.max(neueste, h.t[h.t.length - 1]);
         }
-        if (reihen.length < 2 || !(bis - von >= 60))
+        var reihen = [];
+        var von = -Infinity, bis = Infinity, bisGehalten = -Infinity;
+        for (i = 0; i < kandidaten.length; i++) {
+            var kd = kandidaten[i];
+            var letzte = kd.h.t[kd.h.t.length - 1];
+            if (!kd.direkt && neueste - letzte > root.sumGraceSec)
+                continue;
+            reihen.push(kd.h);
+            von = Math.max(von, kd.h.t[0]);
+            // The end of the curve: the newest point every running device has.
+            // A held device has no new points, its last value carries on.
+            if (kd.direkt)
+                bis = Math.min(bis, letzte);
+            else
+                bisGehalten = Math.max(bisGehalten, letzte);
+        }
+        if (bis === Infinity)
+            bis = bisGehalten;
+        if (reihen.length < 1 || !(bis - von >= 60))
             return ({});
         var n = 120, zeit = [], summe = [];
         var pos = reihen.map(function () {
