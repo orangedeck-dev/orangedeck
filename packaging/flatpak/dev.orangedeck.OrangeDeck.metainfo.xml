@@ -216,6 +216,34 @@
        das Repo umgezogen ist, gehoert nicht hierher: es aendert nichts an der
        Anwendung. Das Datum ist vorlaeufig (19.09.2026). -->
   <releases>
+    <release version="0.2.17" date="2026-10-08">
+      <description>
+        <p>
+          With several miners, the combined hashrate curve no longer
+          disappears when one device misses a few polls. A device stays in
+          the sum with its last value for up to two minutes; after that the
+          curve shows the devices still running.
+        </p>
+        <p>
+          The Pool page remembers whether device types are shown as bars or
+          as a ring, and whether they are sorted by hashrate or by miners.
+          Started with --source, the settings now show the data source that
+          is actually in use.
+        </p>
+        <p xml:lang="de">
+          Bei mehreren Minern verschwindet die gemeinsame Hashrate-Kurve nicht
+          mehr, wenn ein Gerät ein paar Abfragen verpasst. Es bleibt bis zu
+          zwei Minuten mit seinem letzten Wert in der Summe, danach zeigt die
+          Kurve die Geräte, die noch laufen.
+        </p>
+        <p xml:lang="de">
+          Die Pool-Seite merkt sich, ob die Gerätetypen als Balken oder als
+          Ring erscheinen und ob sie nach Hashrate oder nach Minern sortiert
+          sind. Mit --source gestartet, zeigen die Einstellungen jetzt die
+          Datenquelle, die tatsächlich gilt.
+        </p>
+      </description>
+    </release>
     <release version="0.2.16" date="2026-10-03">
       <description>
         <p>
