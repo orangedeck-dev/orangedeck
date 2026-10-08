@@ -442,9 +442,9 @@ darueber.
     macOS (Pfad der Einstellungen), dort war noch niemand betroffen.
 12. **Erledigt:** Die vier Korrekturen (Gebuehrenrate, Preisachse,
     Zahlenformate, Fenstersymbol) standen im Freigabetext von 0.2.13. ISO im
-    Englischen ist Absicht (`strings.js`, DATUM). Fuer die naechste Fassung
-    liegen bisher nur zwei kleine Aenderungen an: Organisationsdomain und
-    Hilfetext der Mempool-Instanz (02.10.2026).
+    Englischen ist Absicht (`strings.js`, DATUM). Die zwei kleinen Aenderungen
+    vom 02.10.2026 (Organisationsdomain, Hilfetext der Mempool-Instanz) sind
+    mit 0.2.16 ausgeliefert (`bc27d89` liegt im Tag; am 08.10. nachgesehen).
 13. **Idee fuer spaeter**: Wallet direkt auf dem Telefon.
 
 ### Fuer den naechsten Lauf
