@@ -145,8 +145,14 @@ der jetzt da ist).
 - **Flatpak:** der Dienst laeuft nach dem Schliessen weiter, auch mit
   --source direct (`orangedeck-launch`), erst `flatpak kill` beendet ihn.
   Nicht neu, nirgends dokumentiert.
-- Offen: zweite Signatur, Geraetelauf, Pin, Tag, Entwurf, F-Droid, Seite,
-  Plugin-Repo. Die Linux-VMs liefen auf dem Stand vor den drei Korrekturen;
+- **Freigabe 0.2.17 vorbereitet:** zweite Signatur (APK `4abf66f0...`,
+  Zertifikat B3:CC:83:79), Geraetelauf am Galaxy vom Anwender ("sieht gut
+  aus"), Pin `a6554f4` auf `879e015`, Tag `v0.2.17` auf `879e015`, Entwurf
+  mit ZIP/APK/Flatpak aus dem Pin-Lauf 37794652507 (exe gegenueber dem
+  getesteten Lauf 145 Bytes anders: PE-Zeitstempel und Bauzeiten der
+  Ressourcen, Code gleich). F-Droid-Repo gepusht (0.2.17 + 0.2.16), Plugin
+  1.3.1 gepusht und getaggt. Seite gebaut (`9bc9d04`), **main erst nach dem
+  Veroeffentlichen pushen**, sonst zeigen die Download-Links ins Leere. Die Linux-VMs liefen auf dem Stand vor den drei Korrekturen;
   diese sind im Xvfb, im Emulator und unter Windows geprueft.
 - **Emulator-Falle:** `adb shell input text` mit Buchstaben am Anfang
   ueberholt Gboard: die ersten Zeichen bleiben als offenes Wort stehen und
