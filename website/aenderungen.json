@@ -1,5 +1,19 @@
 [
   {
+    "v": "0.2.17",
+    "datum": "2026-10-08",
+    "en": [
+      "With several miners, the combined hashrate chart stays in place when one device misses a few polls; it stays in the sum with its last value for up to two minutes.",
+      "The Pool page remembers bars or ring and the sort order of the device types.",
+      "Fixes: no separator right after a minus sign, the button that leaves full screen is no longer covered in the mining tab, keyboard shortcuts work again after typing into a settings field, and with --source the settings show the data source in use."
+    ],
+    "de": [
+      "Bei mehreren Minern bleibt die gemeinsame Hashrate-Kurve stehen, wenn ein Gerät ein paar Abfragen verpasst; es bleibt bis zu zwei Minuten mit seinem letzten Wert in der Summe.",
+      "Die Pool-Seite merkt sich Balken oder Ring und die Sortierung der Gerätetypen.",
+      "Behoben: kein Trennzeichen mehr direkt hinter einem Minus, der Knopf zum Verlassen des Vollbilds liegt im Mining-Reiter frei, die Tastenkürzel wirken wieder nach einer Eingabe in den Einstellungen, und mit --source zeigen die Einstellungen die Datenquelle, die gilt."
+    ]
+  },
+  {
     "v": "0.2.16",
     "datum": "2026-10-03",
     "en": [

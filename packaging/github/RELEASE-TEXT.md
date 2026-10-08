@@ -1,5 +1,5 @@
-<!-- Der Text unten ist der Entwurf fuer 0.2.16 (03.10.2026). Die Texte von
-     0.2.8 bis 0.2.15 stehen in der Geschichte dieser Datei.
+<!-- Der Text unten ist der Entwurf fuer 0.2.17 (08.10.2026). Die Texte von
+     0.2.8 bis 0.2.16 stehen in der Geschichte dieser Datei.
 
      **Die Pruefliste gilt fuer jede Nummer, nicht nur fuer die, bei der sie
      entstand.** Am 14.09.2026 nannte sie fuer 0.2.9 nur Windows und das
@@ -42,36 +42,23 @@
 
 A Bitcoin dashboard with the mempool as a live tile mosaic, a block height clock, mining figures for the whole network and your own miners, a block explorer and the BTC market. MIT licensed, no account needed.
 
-This release is about mining with more than one device, and about seeing your miner when you are not on its network.
+A small release with fixes for the mining tab and for the desktop app.
 
-## What's new since 0.2.15
+## What's new since 0.2.16
 
-### Several miners
+### Mining
 
-- The settings have one field per miner address. The + below adds another, × removes one. Before, several addresses had to be typed into one field, separated by `|`.
-- With several devices the mining tab shows the combined hashrate and its history, the total power and J/TH, and one row per device. Tap a row to open that device with its chart, hash domains and best shares; "All devices" goes back.
-- When the devices mine on more than one pool, the list is grouped by pool. A device that is off keeps its name and its group.
-- Devices with several chips (Bitaxe Hex, GT) show one bar per chip. Until now only the first chip was read.
-- On phones the device page uses larger text, as the network page already did.
-
-### Pool page
-
-- A new page between Device and Network for pools with the public-pool interface, such as pool.solomining.de or public-pool.io. Enter the pool in the mining settings and the page appears: pool hashrate and history, miners, blocks found, and which devices mine there, as bars or a ring, by hashrate or by number of miners.
-- Optionally, enter your payout address. The page then shows your devices as the pool sees them: hashrate, best share, when the pool last heard from them. A worker name copied along with the address (`bc1q….bitaxe`) is ignored.
-- The address stays on your device and is sent only to the pool you entered, which knows it from your miner anyway.
-
-### When the miner is out of reach
-
-- If a miner cannot be reached on the network, for example from a guest Wi-Fi with client isolation or on mobile data, its row shows the pool's numbers instead, marked "per pool". As soon as the miner answers again, the row switches back to its own numbers. A device never appears twice.
-- The device details then show which best share this is: the one of the current pool connection with its duration, and, if only this device mines to the address, the best ever at this pool.
-- The Android miner widgets fall back to the pool the same way.
+- With several miners, the combined hashrate chart no longer disappears when one device misses a few polls. Most of the time that is the Wi-Fi, and the miner keeps hashing. The device stays in the sum with its last value for up to two minutes; after that the chart shows the devices that are still running.
+- The pool page remembers whether device types are shown as bars or as a ring, and whether they are sorted by hashrate or by number of miners. Until now both were reset on every start.
 
 ### Fixes
 
-- The Android miner widgets read only the first address correctly when more than one was set. They split at commas while the app stores `|`.
-- The service on Linux reconnects when no new transaction has arrived for 90 seconds, and retries a failed block summary after 20 seconds.
+- Negative numbers no longer get a thousands separator right after the minus sign. The explorer showed a UTXO change of "-,940".
+- In full screen, the button that leaves full screen sat on top of the "i" of the mining tab, so a click opened the legend instead. The buttons of the view now move aside in full screen.
+- Keyboard shortcuts work again after typing into a settings field and switching to another tab. Until now F11, "i" and "," did nothing after that.
+- Started with `--source`, the settings show the data source that is actually in use. Before, they showed the saved one, and the field for a service on another device was visible although nothing used it.
 
-## Windows: `orangedeck-0.2.16-windows-x86_64.zip`
+## Windows: `orangedeck-0.2.17-windows-x86_64.zip`
 
 Unzip anywhere and run `orangedeck-app.exe`. Requires Windows 10 or 11, 64-bit.
 
@@ -83,13 +70,13 @@ To start a widget, for example the block clock in the top right corner:
 
 Click a widget and press Q to close it. Details are in `packaging/widgets/README.md`.
 
-## Android: `orangedeck-0.2.16-arm64-v8a.apk`
+## Android: `orangedeck-0.2.17-arm64-v8a.apk`
 
-For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.15.
+For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.16.
 
 Please check the signature before installing:
 
-    apksigner verify --print-certs orangedeck-0.2.16-arm64-v8a.apk
+    apksigner verify --print-certs orangedeck-0.2.17-arm64-v8a.apk
 
 The SHA-256 fingerprint of the signing certificate must be:
 
@@ -99,35 +86,33 @@ The same APK is also in the OrangeDeck F-Droid repository, which keeps it up to 
 
     https://fdroid.orangedeck.dev/repo?fingerprint=06E62F144A293077C333DE18FA6076364FE7FB0718F1F3D6E8897E7291DC4C59
 
-## Linux: `orangedeck-0.2.16.flatpak`
+## Linux: `orangedeck-0.2.17.flatpak`
 
-    flatpak install --user orangedeck-0.2.16.flatpak
+    flatpak install --user orangedeck-0.2.17.flatpak
 
 This pulls the KDE runtime 6.9 from Flathub.
 
 ## Tested on
 
-- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.15 with its settings kept: several test miners entered through the + fields (also when + is tapped while the keyboard still holds the typed word), the list grouped by pool, a device opened and closed. A real Bitaxe that cannot be reached from a guest Wi-Fi appears with the numbers of pool.solomining.de, marked "per pool", with the best share of the current pool connection and of all time at this pool.
-- Windows 11 in a VM with a German system, this ZIP: several test miners, one of them never reached on the network and shown through a test pool, its details, and the pool page against pool.solomining.de with bars and ring.
-- This Flatpak bundle in the live sessions of Ubuntu 24.04 and Fedora 44 KDE, in English: the + fields, the pool page against pool.solomining.de over HTTPS with bars and ring, and a test miner that was never reached on the network shown through a test pool, without a second row for it.
-- Not tested in this release: macOS, real tablets, display scaling above 100% on Windows, and a real cluster of several physical miners; the multi-device views were tested with simulated AxeOS and cgminer devices. If something looks wrong, please open an issue.
+- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.16 with its settings kept: the mining tab, the pool page with ring and miners still selected after the app was closed and opened again, leaving full screen with a tap, and all tabs.
+- Windows 11 in a VM with a German system: two test miners, one of them dropping out for 25 seconds every minute, with the combined chart staying in place, the pool page keeping ring and miners after a restart, and leaving full screen with a click.
+- The Flatpak bundle of the build before the three fixes above in the live sessions of Ubuntu 24.04 and Fedora 44 KDE, in English: all tabs, the settings with `--source direct`, the combined chart with a test miner dropping out, and the pool page keeping its choice after a restart. The three fixes were tested on Linux in the app built from this release, not in the bundle.
+- Not tested in this release: macOS, real tablets, the Windows widgets, display scaling above 100% on Windows, and a real cluster of several physical miners; the multi-device views were tested with simulated AxeOS devices. If something looks wrong, please open an issue.
 
 ## Checksums (SHA-256)
 
-    ab6aff6c15ad4f6f6780efbf5fd668541a5ded9b412c81b737fbccc07c9da184  orangedeck-0.2.16-windows-x86_64.zip
-    29fcbf7b9b1f60a5d1326294816f34fd047a377f306e7e793ae3c272e988640b  orangedeck-0.2.16-arm64-v8a.apk
-    1bb355f8789f487f0b89558d59c67a33db7e09ec498b6f32bd9f0923cabbcea0  orangedeck-0.2.16.flatpak
+    6322d2ece54bec79d4c7f122d8a910c8859e50642fc85ee9a26138183918c09a  orangedeck-0.2.17-windows-x86_64.zip
+    4abf66f00052165d7cf0145d295c0640d09039bda3d68a6f46933652c5b7bf08  orangedeck-0.2.17-arm64-v8a.apk
+    25ee6e9b69eecfba323db61bf58b6c5a7c4eae407e5613a2b697299653aef69e  orangedeck-0.2.17.flatpak
 
 ---
 
 ## Deutsch
 
-In 0.2.16 geht es um mehrere Miner und darum, den eigenen Miner auch dann zu sehen, wenn man nicht in seinem Netz ist.
+0.2.17 ist eine kleine Fassung mit Korrekturen für den Mining-Reiter und die Desktop-App.
 
-Jede Miner-Adresse hat in den Einstellungen ihr eigenes Feld, weitere kommen über +. Mit mehreren Geräten zeigt der Mining-Reiter die gemeinsame Hashrate mit Verlauf, Leistung und J/TH und eine Zeile je Gerät; ein Tipp öffnet das Gerät. Laufen die Geräte auf mehreren Pools, ist die Liste danach gruppiert. Geräte mit mehreren Chips zeigen einen Balken je Chip.
+Bei mehreren Minern verschwindet die gemeinsame Hashrate-Kurve nicht mehr, wenn ein Gerät ein paar Abfragen verpasst. Es bleibt bis zu zwei Minuten mit seinem letzten Wert in der Summe, danach zeigt die Kurve die Geräte, die noch laufen. Die Pool-Seite merkt sich, ob die Gerätetypen als Balken oder als Ring erscheinen und wonach sie sortiert sind.
 
-Die neue Seite Pool liest die offene Statistik von Pools mit public-pool-Schnittstelle, etwa pool.solomining.de. Mit der eigenen Auszahlungsadresse, freiwillig, zeigt sie auch die eigenen Geräte so, wie der Pool sie sieht. Die Adresse bleibt auf dem Gerät und geht nur an den eingetragenen Pool.
+Behoben: Negative Zahlen bekommen kein Trennzeichen mehr direkt hinter dem Minus. Der Knopf zum Verlassen des Vollbilds liegt nicht mehr auf dem i des Mining-Reiters. Die Tastenkürzel wirken wieder, nachdem man in ein Feld der Einstellungen getippt und den Reiter gewechselt hat. Mit `--source` gestartet, zeigen die Einstellungen die Datenquelle, die tatsächlich gilt.
 
-Ist ein Miner im Netz nicht erreichbar, etwa aus einem Gäste-WLAN oder über mobile Daten, zeigt seine Zeile die Werte des Pools mit dem Hinweis "laut Pool". Antwortet er wieder, gelten wieder seine eigenen Werte. Die Android-Widgets machen es genauso und lesen jetzt auch mehrere Adressen richtig.
-
-Das APK installiert sich über 0.2.15 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
+Das APK installiert sich über 0.2.16 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
