@@ -195,8 +195,12 @@ Item {
 
     // Device types, by miners or by hashrate, largest first, the rest combined.
     // Each gets its color, the same in bars and ring, as on solomining.de.
+    // Both come from the host and are stored there: a pick is only reported
+    // (`typRequested`), like the span of the network page. Until 0.2.16 they
+    // were local and back to bars by hashrate on every start.
     property string typAnsicht: "balken"     // "balken" | "ring"
     property string typMass: "hash"          // "hash" | "miner"
+    signal typRequested(string ansicht, string mass)
     readonly property var typFarben: [root.accentColor, "#3b82f6", "#22c55e", "#a855f7", "#f5c16c"]
     readonly property color restFarbe: "#94a3b8"
     readonly property var typen: {
@@ -690,7 +694,7 @@ Item {
                                         { "k": "miner", "l": Tr.t("pool.byMiners", root.lang) }]
                             wert: root.typMass
                             onGewaehlt: function (k) {
-                                root.typMass = k;
+                                root.typRequested(root.typAnsicht, k);
                             }
                         }
 
@@ -699,7 +703,7 @@ Item {
                                         { "k": "ring", "l": Tr.t("pool.viewRing", root.lang) }]
                             wert: root.typAnsicht
                             onGewaehlt: function (k) {
-                                root.typAnsicht = k;
+                                root.typRequested(k, root.typMass);
                             }
                         }
                     }

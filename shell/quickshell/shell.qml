@@ -68,6 +68,8 @@ ShellRoot {
         property bool minerBoard: true
         property string minerPane: ""
         property string netSpan: "1y"
+        property string poolTypesView: "balken"
+        property string poolTypesBy: "hash"
         property bool explorerLive: true
         property var explorerParts: []
         property var minerPanes: []
@@ -137,6 +139,8 @@ ShellRoot {
             "minerBoard": minerBoard,
             "minerPane": minerPane,
             "netSpan": netSpan,
+            "poolTypesView": poolTypesView,
+            "poolTypesBy": poolTypesBy,
             "explorerLive": explorerLive,
             "explorerParts": explorerParts,
             "minerPanes": minerPanes,
@@ -240,6 +244,10 @@ ShellRoot {
                 minerPane = value;
             else if (key === "netSpan")
                 netSpan = value;
+            else if (key === "poolTypesView")
+                poolTypesView = value;
+            else if (key === "poolTypesBy")
+                poolTypesBy = value;
             else if (key === "explorerLive")
                 explorerLive = value;
             else if (key === "explorerParts")
@@ -314,6 +322,8 @@ ShellRoot {
                 "minerBoard": minerBoard,
                 "minerPane": minerPane,
                 "netSpan": netSpan,
+                "poolTypesView": poolTypesView,
+                "poolTypesBy": poolTypesBy,
                 "explorerLive": explorerLive,
                 "explorerParts": explorerParts,
                 "minerPanes": minerPanes,
@@ -446,6 +456,10 @@ ShellRoot {
                         win.minerPane = v.minerPane;
                     if (typeof v.netSpan === "string")
                         win.netSpan = v.netSpan;
+                    if (typeof v.poolTypesView === "string")
+                        win.poolTypesView = v.poolTypesView;
+                    if (typeof v.poolTypesBy === "string")
+                        win.poolTypesBy = v.poolTypesBy;
                     if (typeof v.explorerLive === "boolean")
                         win.explorerLive = v.explorerLive;
                     if (Array.isArray(v.explorerParts))

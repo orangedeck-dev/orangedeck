@@ -70,7 +70,12 @@ der jetzt da ist).
    Fenster auf. In Xvfb geprueft (gespeichert daemon, gestartet direct:
    "Direkt" markiert, Dienst-Feld weg; Klick auf Automatisch: markiert,
    `dataSource=auto` gespeichert, Feld wieder da).
-3. Ring/Balken-Wahl der Pool-Seite merkt sich die App nicht.
+3. ~~Ring/Balken-Wahl der Pool-Seite merkt sich die App nicht.~~ **Erledigt
+   08.10.2026:** Ring/Balken und Hashrate/Miner liegen als `poolTypesView`
+   und `poolTypesBy` in allen sechs Wirten (App, Dashtab, DMS-Desktop und
+   -Leiste, Quickshell). In der App geprueft: Ring, dann Miner gewaehlt, nach
+   jedem Neustart stand die Wahl. DMS-Wirte nur per qmllint geprueft;
+   **Plugin-Repo beim naechsten Release nachziehen.**
 4. Echter Cluster mehrerer physischer Miner ist nie gesehen worden.
 5. Lokales Flatpak des Anwenders ist aelter als der Stand (bei Bedarf
    `flatpak-builder ... dev.yml`).

@@ -195,6 +195,8 @@ Window {
     // Zeitraum des Netz-Graphen
     property string minerPane: ""
     property string netSpan: "1y"
+    property string poolTypesView: "balken"
+    property string poolTypesBy: "hash"
     property bool explorerLive: true
     // Als Zeichenkette abgelegt, getrennt mit "|". Zwei Fallen von QSettings
     // stecken darin: eine **leere** Liste wird als `@Invalid()` geschrieben und
@@ -332,6 +334,8 @@ Window {
         property alias minerBoard: win.minerBoard
         property alias minerPane: win.minerPane
         property alias netSpan: win.netSpan
+        property alias poolTypesView: win.poolTypesView
+        property alias poolTypesBy: win.poolTypesBy
         property alias explorerLive: win.explorerLive
         property alias explorerPartsRaw: win.explorerPartsRaw
         property alias minerPanesRaw: win.minerPanesRaw
@@ -499,6 +503,10 @@ Window {
             win.minerPane = value;
         else if (key === "netSpan")
             win.netSpan = value;
+        else if (key === "poolTypesView")
+            win.poolTypesView = value;
+        else if (key === "poolTypesBy")
+            win.poolTypesBy = value;
         else if (key === "explorerLive")
             win.explorerLive = value;
         else if (key === "explorerParts")
@@ -583,6 +591,8 @@ Window {
         "minerBoard": win.minerBoard,
         "minerPane": win.minerPane,
         "netSpan": win.netSpan,
+        "poolTypesView": win.poolTypesView,
+        "poolTypesBy": win.poolTypesBy,
         "explorerLive": win.explorerLive,
         "explorerParts": win.explorerParts,
         "minerPanes": win.minerPanes,

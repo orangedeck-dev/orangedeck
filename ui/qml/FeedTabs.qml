@@ -449,6 +449,14 @@ Item {
         onNetSpanRequested: function (sp) {
             root.optRequested("netSpan", sp);
         }
+        poolTypesView: root.o("poolTypesView", "balken")
+        poolTypesBy: root.o("poolTypesBy", "hash")
+        onPoolTypesRequested: function (ansicht, mass) {
+            if (ansicht !== root.o("poolTypesView", "balken"))
+                root.optRequested("poolTypesView", ansicht);
+            if (mass !== root.o("poolTypesBy", "hash"))
+                root.optRequested("poolTypesBy", mass);
+        }
         metricKeys: root.o("minerFields", [])
         showChart: root.o("minerChart", true)
         showDomains: root.o("minerDomains", true)

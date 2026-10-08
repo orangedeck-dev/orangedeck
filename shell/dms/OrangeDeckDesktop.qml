@@ -140,6 +140,8 @@ Item {
             "minerBoard": root.get("minerBoard", true),
             "minerPane": root.get("minerPane", ""),
             "netSpan": root.get("netSpan", "1y"),
+            "poolTypesView": root.get("poolTypesView", "balken"),
+            "poolTypesBy": root.get("poolTypesBy", "hash"),
             "minerFields": root.getList("minerFieldsRaw", ""),
             "explorerLive": root.get("explorerLive", true),
             "explorerParts": root.getList("explorerPartsRaw", ""),

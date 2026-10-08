@@ -133,6 +133,8 @@ Item {
     property bool minerBoard: SettingsData.getPluginSetting(pid, "minerBoard", true)
     property string minerPane: SettingsData.getPluginSetting(pid, "minerPane", "")
     property string netSpan: SettingsData.getPluginSetting(pid, "netSpan", "1y")
+    property string poolTypesView: SettingsData.getPluginSetting(pid, "poolTypesView", "balken")
+    property string poolTypesBy: SettingsData.getPluginSetting(pid, "poolTypesBy", "hash")
     property bool explorerLive: SettingsData.getPluginSetting(pid, "explorerLive", true)
     property string clockFieldsRaw: SettingsData.getPluginSetting(pid, "clockFieldsRaw", "")
     property string minerFieldsRaw: SettingsData.getPluginSetting(pid, "minerFieldsRaw", "")
@@ -206,6 +208,8 @@ Item {
         "minerBoard": minerBoard,
         "minerPane": minerPane,
         "netSpan": netSpan,
+        "poolTypesView": poolTypesView,
+        "poolTypesBy": poolTypesBy,
         "minerFields": minerFields,
         "explorerLive": explorerLive,
         "explorerParts": explorerParts,

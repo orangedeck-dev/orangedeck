@@ -51,6 +51,10 @@ Item {
     property string netSpan: "1y"
     signal paneRequested(string p)
     signal netSpanRequested(string s)
+    // Device types on the pool page: bars or ring, by hashrate or by miners.
+    property string poolTypesView: "balken"
+    property string poolTypesBy: "hash"
+    signal poolTypesRequested(string ansicht, string mass)
 
     // Which pages exist at all, from the settings; empty means both. Without
     // "device" the tab only shows the network, even with a miner configured;
@@ -795,6 +799,11 @@ Item {
                                   : (root.showActions ? info.buttonWidth + root.scaleUnit * 0.3 : 0)
         url: root.poolUrl
         klient: poolKlient
+        typAnsicht: root.poolTypesView
+        typMass: root.poolTypesBy
+        onTypRequested: function (ansicht, mass) {
+            root.poolTypesRequested(ansicht, mass);
+        }
         miners: root.miners
         netDiff: root.netDiff
         lang: root.lang
