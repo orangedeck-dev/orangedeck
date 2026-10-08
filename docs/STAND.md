@@ -15,157 +15,129 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
-## TAGESABSCHLUSS 03.10.2026 -- 0.2.16 veroeffentlicht: mehrere Miner, Pool-Seite, Pool als Ersatzquelle
+## TAGESABSCHLUSS 08.10.2026 -- 0.2.17 veroeffentlicht: Summenkurve, Pool-Wahl, drei alte Fehler
 
-**0.2.16 ist draussen** (Tag `v0.2.16` auf `aafb970`, Pin-Commit `b672026`,
-Release "Latest", F-Droid mit 0.2.16 und 0.2.15, Seite mit Downloads und
-Was ist neu, DMS-Plugin 1.3.0 im Plugin-Repo mit Tag). Pruefsummen im
-Freigabetext; APK-Zertifikat B3:CC:83:79... wie immer.
+### Der Stand in einem Satz
 
-Inhalt:
-- **Mehrere Miner:** ein Feld je Adresse mit + und x (gespeichert weiter mit
-  `|`), Details je Geraet per Tipp, Leistung + J/TH (nur wenn jedes Geraet
-  Leistung meldet), Summenverlauf auf gemeinsamem Raster, Gruppen nach Pool,
-  ein Balken je Chip (Hex/GT; vorher nur Chip 0 in Dienst und Direktbezug).
-- **Pool-Seite** (`PoolView.qml`) fuer public-pool: Hashrate, Miner, Bloecke,
-  Verlauf, Geraetetypen als Balken (zweifarbige Schrift) oder Ring, nach
-  Hashrate oder Minern. Erscheint, sobald ein Pool eingetragen ist (kein
-  Haken unter Seiten).
-- **Pool als zweite Quelle** (`PoolKlient.qml`, `MinerView.geraete`): ein im
-  Netz unerreichbares Geraet behaelt seine Zeile mit den Werten des Pools
-  ("laut Pool"), zurueck auf direkt beim naechsten Abruf. Zuordnung ueber den
-  Worker-Namen aus `stratumUser`, gemerkt in QtCore Settings [minerPool];
-  nie erreichtes Geraet wird gepaart, wenn gleich viele offen sind. Detail:
-  Bestwert der aktuellen Verbindung (mit Dauer aus startTime) und, bei einem
-  Geraet unter der Adresse, der Bestwert der Adresse an diesem Pool.
-- Android-Widgets: derselbe Ersatz; Adressen werden an `|` getrennt (vorher
-  Komma, mit zwei Adressen kaputt).
-- Telefon: Mindestschrift 20 auf der Geraeteseite, + holt das Wort aus der
-  Tastatur (Qt.inputMethod.commit), sonst gingen Adressen verloren.
+**0.2.17 ist draussen** (Tag `v0.2.17` auf `879e015`, Pin `a6554f4`, Release
+"Latest", F-Droid mit 0.2.17 und 0.2.16, Seite mit Downloads und Was ist neu,
+DMS-Plugin 1.3.1 im Plugin-Repo mit Tag). APK `4abf66f0...`, Zertifikat
+B3:CC:83:79 wie immer. Alles gepusht, Arbeitsbaum sauber.
 
-Geprueft: Galaxy (echter Bitaxe des Anwenders ueber pool.solomining.de im
-Airbnb-WLAN), Windows-VM, Ubuntu und Fedora (Agent). Bilder unter
-`~/.local/share/orangedeck/pruefbilder/0.2.16-*`.
+### Was in 0.2.17 steckt
 
-**Pruefstand** `tools/miner-pruefstand.py`: fuenf AxeOS (stratumURL/Port/User
-getrennt wie echt), ein cgminer, ein public-pool (Adresse `bc1qbeispiel`),
-`--unerreichbar`, `--pool-wirt`, `--an 192.168.122.1` fuer win11 (ufw-Regel
-auf virbr0, Ports 21061:21068, vom Anwender gesetzt). Am Telefon ueber
-`adb reverse`. Linux-VMs erreichen den Wirt als 10.0.2.2.
+- **Summenkurve bleibt stehen** (`58da2f1`, `MinerView.sumHist`): ein Geraet,
+  das Abfragen verpasst, bleibt bis `sumGraceSec` (120 s) mit seinem letzten
+  Wert in der Summe, auch wenn der Pool solange einspringt; danach zaehlen
+  die uebrigen, auch ein einzelnes. Im Aussetzer zeigt die Kurve die volle
+  Summe, die grosse Zahl nur das erreichbare Geraet -- so gewollt.
+- **Einstellungen zeigen die geltende Quelle** (`001689d`): mit `--source`
+  stand dort die gespeicherte; eine Wahl dort hebt `--source` auf.
+- **Pool-Seite merkt sich Ring/Balken und Sortierung** (`f0547c5`):
+  `poolTypesView`/`poolTypesBy` in allen sechs Wirten (App, Dashtab,
+  DMS-Desktop, DMS-Leiste, Quickshell).
+- **Drei alte Fehler aus den Linux-VMs** (`8b4491c`): `Tr.group` setzte einen
+  Trenner hinter das Minus ("-,940"); im Vollbild lag der Vollbildknopf auf
+  dem i des Mining-Reiters (Knoepfe ruecken jetzt um 50 nach links,
+  `actionsRechts`); ein verstecktes Einstellungsfeld behielt den Fokus und
+  die Tastenkuerzel waren tot (`fokusPruefen` nach jedem Ansichtswechsel).
+- Seite: CLS an `#was` behoben (`54862a8`), Platz fuer die Punktreihe unter
+  dem Live-Kopf von Anfang an frei.
 
-Issue #1 abgelehnt und geschlossen (Ausblick auf allgemeinen Pool-Reiter,
-der jetzt da ist).
+Geprueft: Xvfb, Emulator (Android 11), Ubuntu und Fedora per Agent (CI von
+`92ba8f9`, also vor den drei Korrekturen), Windows-VM (CI von `879e015`),
+Galaxy A55 vom Anwender. Bilder unter
+`~/.local/share/orangedeck/pruefbilder/0.2.17-*`. Einzelheiten im Journal.
 
-### Offen fuer 0.2.17
-1. ~~Liste springt, wenn ein Geraet immer wieder ausfaellt: die Summenkurve
-   verschwindet und kommt wieder (Agent, Fedora).~~ **Erledigt 08.10.2026:**
-   ein Geraet bleibt bis 120 s ohne Antwort mit seinem letzten Wert in der
-   Summe, danach zaehlen die uebrigen, auch ein einzelnes. Im Pruefstand mit
-   gamma-wohnzimmer + flackert gemessen: zwei Aussetzer in 150 s, die Kurve
-   stand in jedem Bild. Im Aussetzer zeigt die Kurve 2,24 TH/s, die grosse
-   Zahl 1,21 (nur das erreichbare Geraet), so gewollt.
-2. ~~`--source direct` zeigt in den Einstellungen "Eigener Dienst" (alt, in
-   Xvfb und beiden VMs gesehen).~~ **Erledigt 08.10.2026:** die Einstellungen
-   zeigen die geltende Quelle, eine Wahl dort hebt `--source` fuer das
-   Fenster auf. In Xvfb geprueft (gespeichert daemon, gestartet direct:
-   "Direkt" markiert, Dienst-Feld weg; Klick auf Automatisch: markiert,
-   `dataSource=auto` gespeichert, Feld wieder da).
-3. ~~Ring/Balken-Wahl der Pool-Seite merkt sich die App nicht.~~ **Erledigt
-   08.10.2026:** Ring/Balken und Hashrate/Miner liegen als `poolTypesView`
-   und `poolTypesBy` in allen sechs Wirten (App, Dashtab, DMS-Desktop und
-   -Leiste, Quickshell). In der App geprueft: Ring, dann Miner gewaehlt, nach
-   jedem Neustart stand die Wahl. DMS-Wirte nur per qmllint geprueft;
-   **Plugin-Repo beim naechsten Release nachziehen.**
-4. Echter Cluster mehrerer physischer Miner ist nie gesehen worden.
-5. Lokales Flatpak des Anwenders ist aelter als der Stand (bei Bedarf
-   `flatpak-builder ... dev.yml`).
+### Zahlen vom 08.10.
 
-### Learnings 03.10.2026
-1. **Neue Datei unter ui/qml: sofort `tools/install-links.sh` und
-   `orangedeck-dashtab`**, sonst legt "X is not a type" das DMS-Dashboard
-   lahm. Heute einmal passiert (PoolView), einmal vorher abgefangen
-   (PoolKlient).
-2. **Samsung-Tastatur haelt das getippte Wort zurueck** (preeditText), ein
-   Tipp auf einen Knopf uebergibt es nicht. Vor dem Lesen eines Felds aus
-   einem Knopf heraus `Qt.inputMethod.commit()`.
-3. **Ein Pruefstand findet, was ein einzelnes Geraet nie zeigt:** Chip 0,
-   Komma statt `|` im Widget, Sprung im Verlauf, falsches Lesen von
-   `stratumURL`. Er sollte die echte Feldform nachbauen, nicht eine bequeme.
-4. **public-pool kennt zwei Bestwerte:** je Sitzung (Worker, startTime) und je
-   Adresse ueber alle Zeit; AxeOS fuehrt einen dritten, den ein Flashen
-   loescht. Nicht einen fuer den anderen ausgeben.
-5. **Versionsnummer frueh erhoehen bricht die CI**, bis Metainfo und Pin
-   folgen (`bauplan-pruefen.py`). Beides im selben Zug setzen.
-6. **Platzhalter mit `replace(..., 1)` nur, wenn der Name einmalig ist:**
-   "PRUEFSUMMEN" stand auch in der Pruefliste im Kopf des Freigabetexts.
-7. **Rote Flatpak-Laeufe hatten zwei Ursachen (behoben in 705095f):**
-   "Bauplan pruefen" blockierte jeden Push zwischen Nummer und Pin (9 von 10
-   seit 20.09.; jetzt Warnung im CI, zum Veroeffentlichen lokal pruefen), und
-   layer-shell-qt 6.5.5 liegt nur noch im KDE-Archiv `/Attic/` (Spiegel
-   fuehren `/stable/` nicht mehr). Bauplaene zeigen aufs Archiv mit Spiegeln
-   gwdg/netcologne, Quellen im actions/cache, Laden dreimal versuchen.
-   Wenn eine KDE-Quelle wieder 404 oder 0 Bytes liefert: zuerst unter
-   `/Attic/` nachsehen.
+- GitHub-Downloads seit 0.2.8: 59 (APK 34, Flatpak 14, Windows 11), 0.2.16
+  bis dahin 13. F-Droid zaehlt nichts (GitHub Pages, in Cloudflare nur DNS);
+  Proxy dafuer vom Anwender **vorerst verworfen**.
+- Web Analytics (ohne Bots, laeuft seit Anfang September): 160
+  Seitenaufrufe in 30 Tagen, Spitze um den 27.09. (Reddit/Einundzwanzig).
+  Gelesen: /en/, /en/bitaxe/, /en/wall-display/. "Visits" taugt nichts,
+  Seitenaufrufe nehmen; der Zonen-Ueberblick ist fast nur Crawler.
+- awesome-bitcoin PR #243 am 07.10. ohne Kommentar geschlossen, wie fast
+  alle offenen Einreichungen dort. **Thema abgeschlossen.**
 
-## 08.10.2026 -- awesome-bitcoin abgelehnt, Zahlen, CLS auf der Startseite
+### Offen fuer 0.2.18
 
-- **awesome-bitcoin PR #243** am 07.10. ohne Merge und ohne Kommentar
-  geschlossen (Overtorment). Am selben Nachmittag gingen fast alle offenen
-  Einreichungen so zu (#230, #242, #245-#247). Thema abgeschlossen.
-- **Downloads GitHub** (Stand 08.10.): 59 seit 0.2.8, davon APK 34, Flatpak
-  14, Windows 11; 0.2.16 bisher 13. F-Droid zaehlt nichts: fdroid.orangedeck.dev
-  liegt auf GitHub Pages, in Cloudflare nur DNS. Mit "Proxied" liessen sich
-  APK- und Index-Abrufe zaehlen (Entscheidung beim Anwender).
-- **Web Analytics** laeuft seit Anfang September (ohne Bots): 160 Seitenaufrufe
-  in 30 Tagen, Spitze um den 27.09. Gelesen werden /en/, /en/bitaxe/,
-  /en/wall-display/. Der Zonen-Ueberblick (943 "Unique Visitors") ist fast
-  nur Crawler. "Visits" in Web Analytics ist unbrauchbar, Seitenaufrufe nehmen.
-- **CLS an #was behoben:** die Punktreihe unter dem Live-Kopf kam erst beim
-  Start dazu und schob alles um 35 px. Platz jetzt von Anfang an frei
-  (`website/stil.css`), im Headless-Chrome nachgemessen.
-- **0.2.17 in Arbeit:** Fassung gesetzt (`92ba8f9`, versionCode 20, Metainfo).
-  Emulator (Android 11, Pruefstand ueber adb reverse): Summenkurve in allen
-  18 Bildern ueber zwei Aussetzer von flackert, Ring + Miner nach force-stop
-  noch da.
-- **Linux-VMs (Agent, CI-Buendel von 92ba8f9):** Ubuntu und Fedora bestanden
-  (Fassung, Feed, Uhr, Explorer, Markt, --source direct, Summenkurve in allen
-  44 Bildern mit flackert aus, Ring+Miner nach Neustart). Bilder
-  `pruefbilder/0.2.17-ubuntu|fedora/`. Drei alte Befunde, behoben in
-  `8b4491c` (Minus-Trenner in Tr.group, Vollbildknopf lag auf dem i,
-  Tastenfokus blieb auf verstecktem Einstellungsfeld), Metainfo `879e015`.
-  Erste Signierrunde verworfen (`...-verworfen-92ba8f9`), zweite APK gebaut.
-- **Windows (CI von 879e015):** Summenkurve in 20 von 20 Bildern (flackert 6x
-  laut Pool), Ring+Miner in der Registry und nach Neustart, Vollbild per
-  Klick verlassen. Bilder `pruefbilder/0.2.17-windows/`. Die ufw-Regel
-  21061:21068 auf virbr0 steht noch. win11 wieder auf 10240000.
-- **Emulator (zweite Runde):** Vollbild verlassen geht, aber `adb input tap`
-  ganz oben (y=77 px, Streifen der versteckten Statusleiste) wird teils
-  verschluckt, bei y=110 zuverlaessig. Am Telefon mit dem Finger pruefen.
-  Kosmetik, alt: "Pool not reachable (Pool not reachable)" doppelt.
-- **Flatpak:** der Dienst laeuft nach dem Schliessen weiter, auch mit
-  --source direct (`orangedeck-launch`), erst `flatpak kill` beendet ihn.
-  Nicht neu, nirgends dokumentiert.
-- **Freigabe 0.2.17 vorbereitet:** zweite Signatur (APK `4abf66f0...`,
-  Zertifikat B3:CC:83:79), Geraetelauf am Galaxy vom Anwender ("sieht gut
-  aus"), Pin `a6554f4` auf `879e015`, Tag `v0.2.17` auf `879e015`, Entwurf
-  mit ZIP/APK/Flatpak aus dem Pin-Lauf 37794652507 (exe gegenueber dem
-  getesteten Lauf 145 Bytes anders: PE-Zeitstempel und Bauzeiten der
-  Ressourcen, Code gleich). F-Droid-Repo gepusht (0.2.17 + 0.2.16), Plugin
-  1.3.1 gepusht und getaggt. Seite gebaut (`9bc9d04`), **main erst nach dem
-  Veroeffentlichen pushen**, sonst zeigen die Download-Links ins Leere. Die Linux-VMs liefen auf dem Stand vor den drei Korrekturen;
-  diese sind im Xvfb, im Emulator und unter Windows geprueft.
-- **Emulator-Falle:** `adb shell input text` mit Buchstaben am Anfang
-  ueberholt Gboard: die ersten Zeichen bleiben als offenes Wort stehen und
-  landen beim Uebernehmen am Ende ("tp://...ht"). Kein Fehler der App, mit
-  echten Tastentipps kommt das Wort richtig an. Abhilfe: Gboard abschalten
-  (`adb shell ime disable com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME`,
-  hinterher `ime enable` + `ime set`). Und **keine Zurueck-Taste**, wenn die
-  Tastatur schon zu ist: sie verlaesst die App, die Eingaben gingen dann in
-  die Google-Suche des Startbildschirms.
-- **Pruefstand mit Pool:** ohne `--pool-wirt` melden die Geraete
-  public-pool.io, die App fragt 127.0.0.1 -- `gleicherPool` schlaegt fehl und
-  ein erreichbares Geraet erscheint zusaetzlich "laut Pool" (doppelt gezaehlt).
-  Kein Fehler der App.
+1. **"Pool not reachable (Pool not reachable)"**: Fehlertext der Pool-Seite
+   steht doppelt (im Emulator gesehen, alt).
+2. **Flatpak laesst den Dienst weiterlaufen**, auch mit `--source direct`:
+   `orangedeck-launch` startet `/app/bin/orangedeck` immer, nach dem
+   Schliessen des Fensters lebt die Instanz, erst `flatpak kill` beendet sie.
+   Entweder bei `--source direct` nicht starten oder dokumentieren.
+3. **Android-Vollbild:** `adb input tap` ganz oben (y=77 px, Streifen der
+   versteckten Statusleiste) wurde im Emulator teils verschluckt, bei
+   y=110 zuverlaessig. Der Anwender hat mit dem Finger nichts gemeldet --
+   beobachten, der Knopf koennte im Vollbild etwas tiefer sitzen.
+4. Explorer (Ubuntu, einmal): kurz nach dem Start fehlte der neueste Block
+   in der Reihe der bestaetigten, nach Neustart da.
+5. Konsole Fedora: "QObject::disconnect: wildcard call disconnects from
+   destroyed signal of QSslSocket", 30-mal in 12 Minuten. Harmlos?
+6. Main.qml beim Start im Vollbild: "Conflicting properties 'visible' and
+   'visibility'".
+7. Summenkurve erscheint erst 35-40 s nach dem Start (genug Messpunkte).
+   Kein Fehler, aber sichtbar.
+8. Die App zeigt ihre Fassung nirgends in der Oberflaeche (nur
+   `--version`). Fuer Fehlerberichte waere sie in den Einstellungen nuetzlich.
+9. Echter Cluster mehrerer physischer Miner nie gesehen (weiter offen).
+
+### Fuer den Anwender
+
+- **DMS-Dashtab neu erzeugen**, damit er die gespeicherte Pool-Wahl kennt
+  (startet DMS neu):
+  `cd ~/Schreibtisch/orangedeck && ./tools/install-links.sh && python3 -B daemon/orangedeck-dashtab && systemctl --user restart dms`
+- Die **ufw-Regel 21061:21068 auf virbr0** (vom 03.10.) ist noch aktiv.
+
+### Learnings 08.10.2026
+
+1. **Befunde vor dem Tag in dieselbe Nummer nehmen kostet nur eine
+   Signatur.** Der Geraetelauf stand noch aus, also wurde die erste Runde
+   als `...-verworfen-92ba8f9` umbenannt (Zeilen in `PRUEFSUMMEN.txt`
+   auskommentiert) und neu gebaut.
+2. **Die Website erst nach dem Veroeffentlichen pushen.** Die Download-Links
+   gehen ueber `releases/latest`; vorher zeigen sie ins Leere.
+3. **Qt laesst einem unsichtbar gewordenen Element den aktiven Fokus** und
+   meldet keinen Wechsel (`activeFocusItemChanged` kam nicht). Wer Fokus
+   zurueckholen will, muss selbst nachsehen (`!activeFocusItem.visible`).
+4. **Ein Popup liegt ueber allem.** Ein Knopf, dessen erster Tipp "durchgeht",
+   darf nicht ueber etwas liegen, das ein Popup oeffnet: das Popup faengt den
+   zweiten Tipp ab.
+5. **`adb shell input text` ueberholt Gboard:** die ersten Buchstaben bleiben
+   als offenes Wort stehen und landen beim Uebernehmen am Ende
+   ("tp://...ht"). Kein App-Fehler (mit echten Tastentipps richtig). Fuer
+   Eingaben Gboard abschalten (`ime disable`, danach `ime enable` + `ime set`).
+6. **Keine Zurueck-Taste im Emulator, wenn die Tastatur schon zu ist:** sie
+   verlaesst die App, und die naechsten Eingaben gingen in die Google-Suche
+   des Startbildschirms (Testwerte, nichts Echtes).
+7. **Pruefstand mit Pool braucht `--pool-wirt`**, sonst meldet ein Geraet
+   public-pool.io, `gleicherPool` schlaegt fehl, und es erscheint zusaetzlich
+   "laut Pool" (doppelt gezaehlt). Kein App-Fehler.
+8. **Ein geschlossener WebSocket ist nicht gleich ein Fehler im Code.** Einmal
+   meldete die App "remote host closed the connection"; Gegenprobe ohne die
+   Aenderungen und danach zwei Laeufe mit ihnen zeigten Daten -- ein
+   Aussetzer bei mempool.space. Erst gegenpruefen, dann suchen.
+9. **Ein Stand-Eintrag kann veraltet sein:** "zwei Aenderungen liegen an"
+   waren laengst mit 0.2.16 ausgeliefert. Vor dem Arbeiten gegen Tag und
+   Code pruefen.
+10. **Windows-exe ist nicht reproduzierbar:** zwei CI-Laeufe desselben Codes
+    unterscheiden sich in 145 Bytes (PE-Zeitstempel, Bauzeiten der
+    Ressourcen). Fuers Release zaehlen Dateien und Bytes, nicht `cmp`.
+
+### Was ich selbst falsch gemacht habe
+
+- `daemon/orangedeck-dashtab` mit `qmllint` "geprueft", obwohl es ein
+  Python-Skript mit QML-Text ist. Erst spaeter den QML-Teil herausgezogen
+  und richtig geprueft.
+- Zweimal `pkill -f` mit einem Muster aus der eigenen Befehlszeile (die Shell
+  starb mit); die Regel stand schon unter "Fuer den naechsten Lauf".
+- Dem Anwender einen Befehl mit relativem Pfad gegeben; sein Terminal steht
+  in `~` (jetzt in der Erinnerung: immer absolut oder `cd` davor).
+- Im Freigabetext einen unbelegten Halbsatz geschrieben ("until the next
+  click"), beim Gegenlesen gestrichen.
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
@@ -489,6 +461,12 @@ darueber.
     vom 02.10.2026 (Organisationsdomain, Hilfetext der Mempool-Instanz) sind
     mit 0.2.16 ausgeliefert (`bc27d89` liegt im Tag; am 08.10. nachgesehen).
 13. **Idee fuer spaeter**: Wallet direkt auf dem Telefon.
+14. **Bekanntmachen** (08.10.): Awesome-Listen abgehakt. Wirkung zeigen
+    r/BitAxe und Einundzwanzig (Spitze 27.09.); die X-Reihe in Publer lief
+    bis 15.10. Naechster sinnvoller Ort: Bitaxe-/OSMU-Discord mit Bild der
+    Mehrfach-Miner- und Pool-Seite.
+15. **Google Play** und die Entwickler-Registrierung ab 2027: Entscheidung
+    des Anwenders vor dem Fruehjahr.
 
 ### Fuer den naechsten Lauf
 
@@ -566,6 +544,16 @@ darueber.
     qmllint: /usr/lib/qt6/bin/qmllint -I ui/qml [-I app/qml] <datei>
     tools/install-links.sh --check        (neue Datei unter ui/qml: ZUERST verlinken)
     tools/install-links.sh && python3 -B daemon/orangedeck-dashtab && systemctl --user restart dms
+    Emulator-Eingaben ohne Gboard (sonst vertauscht adb input text die Buchstaben):
+      adb shell ime disable com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+      hinterher: ime enable ... ; ime set com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+    Pruefstand mit Pool: immer --pool-wirt <Adresse, die die App fragt>
+      Windows-Gast: --an 192.168.122.1 --port 21061 --pool-port 21068 --pool-wirt 192.168.122.1
+      (Ports 21061-21068 sind die der ufw-Regel)
+    Windows-Gast ohne Tippen einstellen: build/od-0217.cmd (Registry), build/od-pooltypen.cmd (auslesen)
+    Mausrad im Gast per QMP: input-send-event btn wheel-down -- Zeiger vorher per abs auf die Seite setzen
+    daemon/orangedeck-dashtab ist Python mit QML-Text: pruefen mit ast + literal_eval(BITCOIN_TAB) -> qmllint
+    Website erst NACH dem Veroeffentlichen pushen (Download-Links ueber releases/latest)
 
 ---
 
@@ -575,6 +563,8 @@ Ein Tag je Datei, das Neueste oben. Herausgeloest aus dieser Datei, unveraendert
 
 | Tag | Worum es ging |
 |---|---|
+| [08.10.2026](journal/2026-10-08.md) | Arbeitsnotizen zu 0.2.17: Zahlen, CLS, VM-Laeufe, drei alte Fehler, zwei Signierrunden, Emulator-Fallen. |
+| [03.10.2026](journal/2026-10-03.md) | 0.2.16 veroeffentlicht: mehrere Miner, Pool-Seite, Pool als Ersatzquelle, Plugin 1.3.0. |
 | [02.10.2026](journal/2026-10-02.md) | Zwei Fixes am Dienst, bitfeed in echten Pixeln, AlternativeTo live, Issue #1 entworfen. |
 | [01.10.2026](journal/2026-10-01.md) | Registry sauber (#979), Plugin 1.2.2, Windows-Pruefungen erledigt, Search Console, macOS ohne Runner. |
 | [19.09.2026](journal/2026-09-19.md) | 0.2.12 veroeffentlicht, Umzug nach `orangedeck-dev`, eigenes F-Droid-Repo unter fdroid.orangedeck.dev, die Seite verteilt selbst. |
