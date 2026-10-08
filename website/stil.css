@@ -212,8 +212,13 @@ footer .sprachen + p { margin-top: 1.4rem; }
 :lang(ja) .hero h1, :lang(zh) .hero h1 { max-width: none; word-break: auto-phrase; }
 
 /* Ein Punkt je Reiter unter dem bewegten Kopf, erst sichtbar, wenn er laeuft.
-   Die Knoepfe sind 24 px gross zum Tippen, der Punkt darin 8 px. */
-.live-punkte { display: none; justify-content: center; gap: 4px; margin-top: 0.7rem; }
+   Die Knoepfe sind 24 px gross zum Tippen, der Punkt darin 8 px.
+   **Der Platz ist von Anfang an frei** (padding-bottom an .schau, die Reihe
+   liegt absolut darin): kam sie erst mit dem Start dazu, schob sie alles
+   darunter um gut 35 px nach unten, Web Analytics meldete das als CLS an #was. */
+.schau:has(.live) { position: relative; padding-bottom: calc(2.6rem + 0.7rem + 24px); }
+.live-punkte { display: none; justify-content: center; gap: 4px;
+               position: absolute; left: 0; right: 0; bottom: 2.6rem; }
 .live.laeuft + .live-punkte { display: flex; }
 .live-punkte button { all: unset; cursor: pointer; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; }
 .live-punkte button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #4a4658; transition: background 0.2s, transform 0.2s; }

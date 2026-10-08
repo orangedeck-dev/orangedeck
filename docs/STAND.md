@@ -94,6 +94,23 @@ der jetzt da ist).
    Wenn eine KDE-Quelle wieder 404 oder 0 Bytes liefert: zuerst unter
    `/Attic/` nachsehen.
 
+## 08.10.2026 -- awesome-bitcoin abgelehnt, Zahlen, CLS auf der Startseite
+
+- **awesome-bitcoin PR #243** am 07.10. ohne Merge und ohne Kommentar
+  geschlossen (Overtorment). Am selben Nachmittag gingen fast alle offenen
+  Einreichungen so zu (#230, #242, #245-#247). Thema abgeschlossen.
+- **Downloads GitHub** (Stand 08.10.): 59 seit 0.2.8, davon APK 34, Flatpak
+  14, Windows 11; 0.2.16 bisher 13. F-Droid zaehlt nichts: fdroid.orangedeck.dev
+  liegt auf GitHub Pages, in Cloudflare nur DNS. Mit "Proxied" liessen sich
+  APK- und Index-Abrufe zaehlen (Entscheidung beim Anwender).
+- **Web Analytics** laeuft seit Anfang September (ohne Bots): 160 Seitenaufrufe
+  in 30 Tagen, Spitze um den 27.09. Gelesen werden /en/, /en/bitaxe/,
+  /en/wall-display/. Der Zonen-Ueberblick (943 "Unique Visitors") ist fast
+  nur Crawler. "Visits" in Web Analytics ist unbrauchbar, Seitenaufrufe nehmen.
+- **CLS an #was behoben:** die Punktreihe unter dem Live-Kopf kam erst beim
+  Start dazu und schob alles um 35 px. Platz jetzt von Anfang an frei
+  (`website/stil.css`), im Headless-Chrome nachgemessen.
+
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
 - Abschnitt `#spenden` auf der Startseite, 13 Sprachen, Anleitung in
