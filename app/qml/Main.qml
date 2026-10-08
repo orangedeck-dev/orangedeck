@@ -402,8 +402,13 @@ Window {
             win.density = value;
         else if (key === "startView")
             win.startView = value;
-        else if (key === "dataSource")
+        // Eine Wahl in den Einstellungen gilt auch fuer dieses Fenster: sonst
+        // bliebe ein `--source` stehen, und der Umschalter saehe aus, als
+        // nehme er die Wahl nicht an.
+        else if (key === "dataSource") {
             win.dataSource = value;
+            win.forcedSource = "";
+        }
         // **Fehlte bis zum 15.09.2026.** Das Feld "Dienst auf einem anderen
         // Geraet" meldete seine Eingabe hierher, und ohne diesen Zweig fiel
         // sie stillschweigend weg: die Anwendung fragte weiter 127.0.0.1 auf
@@ -524,7 +529,11 @@ Window {
         "bgOpacity": win.bgOpacity,
         "density": win.density,
         "startView": win.startView,
-        "dataSource": win.dataSource,
+        // **Was gilt, nicht was gespeichert ist.** Mit `--source direct` stand
+        // in den Einstellungen "Eigener Dienst" (gesehen in Xvfb und beiden
+        // VMs), und das Feld fuer den Dienst auf einem anderen Geraet war
+        // sichtbar, obwohl nichts es benutzte.
+        "dataSource": win.forcedSource.length ? win.forcedSource : win.dataSource,
         "daemonHost": win.daemonHost,
         "mempoolHost": win.mempoolHost,
         "dienstMoeglich": win.dienstMoeglich,

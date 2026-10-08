@@ -64,8 +64,12 @@ der jetzt da ist).
    gamma-wohnzimmer + flackert gemessen: zwei Aussetzer in 150 s, die Kurve
    stand in jedem Bild. Im Aussetzer zeigt die Kurve 2,24 TH/s, die grosse
    Zahl 1,21 (nur das erreichbare Geraet), so gewollt.
-2. `--source direct` zeigt in den Einstellungen "Eigener Dienst" (alt, in
-   Xvfb und beiden VMs gesehen).
+2. ~~`--source direct` zeigt in den Einstellungen "Eigener Dienst" (alt, in
+   Xvfb und beiden VMs gesehen).~~ **Erledigt 08.10.2026:** die Einstellungen
+   zeigen die geltende Quelle, eine Wahl dort hebt `--source` fuer das
+   Fenster auf. In Xvfb geprueft (gespeichert daemon, gestartet direct:
+   "Direkt" markiert, Dienst-Feld weg; Klick auf Automatisch: markiert,
+   `dataSource=auto` gespeichert, Feld wieder da).
 3. Ring/Balken-Wahl der Pool-Seite merkt sich die App nicht.
 4. Echter Cluster mehrerer physischer Miner ist nie gesehen worden.
 5. Lokales Flatpak des Anwenders ist aelter als der Stand (bei Bedarf
