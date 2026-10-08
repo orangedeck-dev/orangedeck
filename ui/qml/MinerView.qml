@@ -496,6 +496,10 @@ Item {
     // provides the buttons itself and turns ours off. They then sit in the top
     // row where nothing can cover them.
     property bool showActions: true
+    // Room the host keeps free at the top right, for a button of its own
+    // there. The app's full screen button sits exactly where "i" is once the
+    // tabs are gone, and a tap meant for it opened the legend instead.
+    property real actionsRight: 0
     // For the host: expand or collapse the legend.
     function toggleInfo() {
         info.open = !info.open;
@@ -602,6 +606,7 @@ Item {
 
         anchors.fill: parent
         buttonMargin: 0
+        buttonRightInset: root.actionsRight
         showButton: root.showActions
         fontSize: root.scaleUnit * 0.72
         textColor: root.textColor
@@ -672,7 +677,7 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.rightMargin: info.buttonWidth + root.scaleUnit * 0.4
+        anchors.rightMargin: root.actionsRight + info.buttonWidth + root.scaleUnit * 0.4
         visible: root.showActions && root.webUrl !== "" && root.paneNow === "device"
         width: info.buttonWidth
         height: width

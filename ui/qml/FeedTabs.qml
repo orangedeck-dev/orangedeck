@@ -44,6 +44,9 @@ Item {
     property bool settingsTab: true
     // Space to the right of the tabs that the host needs for its own buttons
     property real tabsRechts: 0
+    // The same for the action buttons inside a view (Mining: "i" and the web
+    // UI), for when the tab row is hidden and the host's button moves up.
+    property real actionsRechts: 0
     // Touch input (phone, tablet): larger tap targets. Set by the host, which
     // knows where it runs.
     property bool finger: false
@@ -432,6 +435,7 @@ Item {
         anchors.fill: parent
         anchors.topMargin: root.tabSpace
         showActions: root.minerActions
+        actionsRight: root.actionsRechts
         feed: root.feed
         lang: root.lang
         live: root.live

@@ -668,6 +668,12 @@ Window {
             // 14, die `FeedTabs` ohnehin einrueckt).
             settingsTab: false
             tabsRechts: win.bare ? 0 : 80
+            // **Im Vollbild ruecken die Knoepfe der Ansicht nach links.** Ohne
+            // Reiterzeile lag der Vollbildknopf genau auf dem "i" des
+            // Mining-Reiters: der erste Tipp ging durch und oeffnete die
+            // Legende, deren Popup auch den zweiten abfing. Mit der Maus kam
+            // man nicht mehr heraus, nur mit F11 (08.10.2026, beide VMs).
+            actionsRechts: win.vollbild ? 50 : 0
             // Der Reiterwechsel laeuft auch im Vollbild -- gerade dort, an
             // der Wand. Nur das nackte Widget zeigt immer dieselbe Ansicht.
             rotationAllowed: !win.bare
@@ -709,6 +715,22 @@ Window {
             searchFocus: !win.ohneTastatur
         }
     }
+
+    // **Steht der Fokus auf etwas Verstecktem, bekommen ihn die Tastenkuerzel
+    // zurueck.** Ein Feld in den Einstellungen behielt ihn nach Enter, und
+    // wer dann ueber einen Reiter wegklickte, versteckte das Feld samt Fokus:
+    // F11, "i" und "," taten nichts mehr, im Vollbild sass man fest
+    // (08.10.2026, beide VMs). Qt laesst einem unsichtbar gewordenen Element
+    // den Fokus und meldet keinen Wechsel (`activeFocusItemChanged` kam nicht,
+    // im Xvfb nachgesehen), deshalb wird nach jedem Ansichtswechsel geprueft.
+    // Spaeter, nicht sofort: das Suchfeld des Explorers nimmt sich den Fokus
+    // beim Sichtbarwerden selbst und soll ihn behalten.
+    function fokusPruefen() {
+        var f = win.activeFocusItem;
+        if (!f || !f.visible)
+            keys.forceActiveFocus();
+    }
+    onViewChanged: Qt.callLater(win.fokusPruefen)
 
     Item {
         id: keys

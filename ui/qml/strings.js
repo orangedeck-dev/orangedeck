@@ -973,13 +973,16 @@ function group(n, lang) {
     if (n === undefined || n === null || isNaN(n))
         return "–";
     var s = sep(lang);
-    var t0 = String(Math.round(n)), out = "", c = 0;
+    // The sign stays outside the grouping: counted as a digit it got a
+    // separator of its own, "-,940" in the explorer (08.10.2026, Fedora).
+    var r = Math.round(n);
+    var t0 = String(Math.abs(r)), out = "", c = 0;
     for (var i = t0.length - 1; i >= 0; i--) {
         out = t0[i] + out;
         if (++c % 3 === 0 && i > 0)
             out = s + out;
     }
-    return out;
+    return (r < 0 ? "-" : "") + out;
 }
 
 // Amount in fiat currency. Rate and symbol come from `money.js`: that
