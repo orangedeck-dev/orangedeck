@@ -165,6 +165,12 @@ Item {
     Settings {
         id: gemerkt
 
+        // The app names itself (organization "orangedeck"); inside DMS nothing
+        // does, and QSettings without a name stores nothing. There it gets a
+        // file of its own, apart from the app's, so neither writes over the other.
+        location: Qt.application.organization
+            ? ""
+            : StandardPaths.writableLocation(StandardPaths.GenericConfigLocation) + "/orangedeck/dms-plugin.conf"
         category: "minerPool"
         property string zuordnungJson: "{}"
     }

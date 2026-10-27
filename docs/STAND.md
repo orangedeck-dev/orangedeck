@@ -48,6 +48,13 @@ vom 27.10.
   (qtwebsockets), kein App-Fehler; in je 4 min unter 6.12 und 6.9 nicht
   aufgetreten.
 
+- **Abends in DMS gegengeprueft** (`28c7fcd` und folgender Commit): Netzwerk- und
+  Preisansicht ignorieren spaete Antworten wie die Blockansichten. Die Mining-Ansicht
+  merkte sich unter DMS die Pool-Zuordnung nicht (QSettings ohne Organisationsnamen,
+  Warnung `Failed to initialize QSettings`); sie hat dort jetzt eine eigene Datei
+  `~/.config/orangedeck/dms-plugin.conf`, die App bleibt bei ihrer. Gehoert in Plugin 1.3.3,
+  wirkt in DMS nach dem naechsten Neustart.
+
 ### Offen fuer 0.2.18 (fuer die naechsten Tage)
 
 3. **Android-Vollbild:** `adb input tap` ganz oben (y=77 px) wurde im
