@@ -25,7 +25,13 @@
   DMS 1.6 ueberspringt die `dash`-Komponente mit einer Warnung.
 - Unter DMS 2.0 ist der Bitcoin-Reiter Teil des Plugins; der Hinweis unten
   "DMS-Dashtab neu erzeugen" gilt nur noch unter 1.6.
-- Die neun Punkte "Offen fuer 0.2.18" unten gelten unveraendert.
+- Von den neun Punkten "Offen fuer 0.2.18" unten sind **1, 7 und 8 im Code
+  erledigt** (noch nicht veroeffentlicht): Pool-Seite ohne doppelten
+  Fehlertext, Summenkurve nach 10 s gemeinsamen Verlaufs (Pruefstand: 14 s
+  statt 35-40 s), "OrangeDeck <Fassung>" unten auf der Seite Allgemein, nur
+  in der App. Geprueft mit der App als Layer-Flaeche (`--layer overlay --id`)
+  und unter DMS 2.0 (Bitcoin-Reiter ohne Fehler). Offen bleiben 2-6 und 9.
+  Vor dem naechsten Plugin-Release (1.3.3) kurz in DMS gegenpruefen.
 
 ## TAGESABSCHLUSS 08.10.2026 -- 0.2.17 veroeffentlicht: Summenkurve, Pool-Wahl, drei alte Fehler
 
