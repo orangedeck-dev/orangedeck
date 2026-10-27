@@ -30,7 +30,7 @@ views (`dms ipc call dash open plugin_orangedeck`). Older versions skip it.
 
 ## Requirements
 
-- DankMaterialShell 1.5.0 or newer
+- DankMaterialShell 1.5.0 or newer (tested with 1.6.2 and 2.0.0)
 - `QtWebSockets` (Qt 6), packaged as `qt6-websockets` on Arch. Without it
   the plugin can only show data from the OrangeDeck service (see below): the
   direct connection to the mempool instance and the market view need it.
