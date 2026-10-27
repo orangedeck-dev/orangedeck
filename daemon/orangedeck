@@ -1920,6 +1920,13 @@ class Feed:
         }
         if is_new:
             self.block_event = time.time()
+        # Die neuesten Bloecke lagen bis zu LOOKUP_TTL im Zwischenspeicher.
+        # Kam in der Zeit ein Block, lud der Explorer 4 s spaeter neu und
+        # bekam die alte Liste: der neue Block fehlte bis zum naechsten
+        # (Ubuntu-VM, 08.10.2026, kurz nach dem Start).
+        with _lookup_lock:
+            _lookup_cache.pop(("blocks", "recent"), None)
+            _lookup_cache.pop(("mempoolblocks", "now"), None)
         self.dirty = True
         self.request_summary()
 

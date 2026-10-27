@@ -6,9 +6,41 @@
 # schon als Benutzerdienst, wird er mitbenutzt -- sonst startet hier einer im
 # Sandkasten. Zwei Instanzen kann es nicht geben: orangedeck haelt eine Sperre und
 # beendet sich mit 0, wenn er belegt ist.
+#
+# Mit dem Direktbezug braucht die Anwendung keinen Daemon. Bis 0.2.17 startete
+# er trotzdem und lebte nach dem Schliessen des Fensters weiter, bis
+# `flatpak kill` kam. Die Quelle kommt wie in der Anwendung zuerst aus
+# --source, sonst aus der gespeicherten Einstellung. Wer in den Einstellungen
+# spaeter auf den Dienst umschaltet, bekommt ihn erst beim naechsten Start.
 set -e
 
-if ! curl -s -m 2 -o /dev/null http://127.0.0.1:21021/health; then
+quelle=""
+kennung=""
+naechstes=""
+for a in "$@"; do
+    case "$naechstes" in
+        source) quelle=$a; naechstes=""; continue ;;
+        id) kennung=$a; naechstes=""; continue ;;
+    esac
+    case "$a" in
+        --source) naechstes=source ;;
+        --source=*) quelle=${a#--source=} ;;
+        --id) naechstes=id ;;
+        --id=*) kennung=${a#--id=} ;;
+    esac
+done
+
+if [ -z "$quelle" ]; then
+    name=orangedeck
+    [ -n "$kennung" ] && name="orangedeck-$kennung"
+    conf="${XDG_CONFIG_HOME:-$HOME/.config}/orangedeck/$name.conf"
+    if [ -r "$conf" ]; then
+        quelle=$(awk -F= '/^\[/ { g = $0; next }
+                          g == "[view]" && $1 == "dataSource" { print $2; exit }' "$conf")
+    fi
+fi
+
+if [ "$quelle" != direct ] && ! curl -s -m 2 -o /dev/null http://127.0.0.1:21021/health; then
     /app/bin/orangedeck >/dev/null 2>&1 &
     # kurz warten, sonst zeigt die erste Ansicht "keine Verbindung"
     i=0
