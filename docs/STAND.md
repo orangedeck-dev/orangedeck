@@ -15,6 +15,18 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 27.10.2026 -- DMS 2.0, Plugin 1.3.2
+
+- **DMS-Plugin 1.3.2 ist draussen** (Plugin-Repo `4ad8007`, Tag `v1.3.2`,
+  gebaut aus `8c9aeec`). Neu: der Bitcoin-Reiter als `dash`-Komponente fuer
+  DMS 2.0 (`OrangeDeckDashTab.qml`, IPC `dms ipc call dash open plugin_orangedeck`),
+  kuerzere Beschreibung, README "tested with 1.6.2 and 2.0.0", BlockHistory
+  und BlockChain ignorieren Antworten, die nach dem Abbau der Ansicht kommen.
+  DMS 1.6 ueberspringt die `dash`-Komponente mit einer Warnung.
+- Unter DMS 2.0 ist der Bitcoin-Reiter Teil des Plugins; der Hinweis unten
+  "DMS-Dashtab neu erzeugen" gilt nur noch unter 1.6.
+- Die neun Punkte "Offen fuer 0.2.18" unten gelten unveraendert.
+
 ## TAGESABSCHLUSS 08.10.2026 -- 0.2.17 veroeffentlicht: Summenkurve, Pool-Wahl, drei alte Fehler
 
 ### Der Stand in einem Satz
