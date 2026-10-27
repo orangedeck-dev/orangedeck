@@ -660,6 +660,7 @@ Window {
             feed: feedState
             opts: win.opts
             view: win.view
+            appVersion: Qt.application.version
             // Im nackten Widget bleibt die Reiterzeile weg -- und mit ihr der
             // Platz, den sie braucht.
             tabsVisible: !win.bare && !win.vollbild

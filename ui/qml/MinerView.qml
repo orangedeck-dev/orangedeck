@@ -459,7 +459,9 @@ Item {
         }
         if (bis === Infinity)
             bis = bisGehalten;
-        if (reihen.length < 1 || !(bis - von >= 60))
+        // two polls (5 s each) in common are enough; with 60 s the chart
+        // stayed empty for most of the first minute after the start
+        if (reihen.length < 1 || !(bis - von >= 10))
             return ({});
         var n = 120, zeit = [], summe = [];
         var pos = reihen.map(function () {

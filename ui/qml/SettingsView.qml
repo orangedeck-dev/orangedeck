@@ -50,6 +50,10 @@ Item {
     // Opacity and start view belong to the window. In the dashboard tab the
     // host provides the surface, so both would have no effect there.
     property bool windowed: true
+    // The app's version, shown at the bottom of the general page for bug
+    // reports. Only the app sets it: in the DMS plugin Qt.application.version
+    // would be the one of Quickshell, and DMS shows the plugin's own version.
+    property string appVersion: ""
 
     signal changed(string key, var value)
 
@@ -876,6 +880,15 @@ Item {
                             root.changed("density", w);
                         }
                     }
+                }
+
+                Text {
+                    visible: root.appVersion !== ""
+                    width: parent.width
+                    topPadding: root.uiFont
+                    text: "OrangeDeck " + root.appVersion
+                    color: root.dimColor
+                    font.pixelSize: root.uiFont * 0.85
                 }
             }
 

@@ -32,6 +32,8 @@ Item {
     // The settings page hides opacity and start view where the window does not
     // belong to the app.
     property bool windowedSettings: false
+    // passed on to the settings page; only the app sets it
+    property string appVersion: ""
     // In the dashboard the bar at the top right holds the miner buttons, where
     // they cannot cover anything.
     property bool minerActions: true
@@ -551,6 +553,7 @@ Item {
         opts: root.opts
         lang: root.lang
         windowed: root.windowedSettings
+        appVersion: root.appVersion
         textColor: root.textColor
         dimColor: root.dimColor
         accentColor: root.accentColor

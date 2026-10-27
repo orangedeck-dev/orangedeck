@@ -90,13 +90,15 @@ Item {
             if (x.readyState !== XMLHttpRequest.DONE)
                 return;
             if (x.status !== 200) {
-                fertig(null, x.status ? "HTTP " + x.status : Tr.t("pool.unreachable", root.lang));
+                // "unreachable" and "noPublicPool" are string keys, turned
+                // into text where it is shown (the language can change meanwhile)
+                fertig(null, x.status ? "HTTP " + x.status : "unreachable");
                 return;
             }
             try {
                 fertig(JSON.parse(x.responseText), "");
             } catch (e) {
-                fertig(null, Tr.t("pool.noPublicPool", root.lang));
+                fertig(null, "noPublicPool");
             }
         };
         x.open("GET", root.basis + pfad);
@@ -457,7 +459,9 @@ Item {
                 visible: root.geladen && root.fehler !== "" && !root.info
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
-                text: Tr.t("pool.unreachable", root.lang) + " (" + root.fehler + ")"
+                // the bare reason only once, a detail in brackets after it
+                text: root.fehler === "unreachable" ? Tr.t("pool.unreachable", root.lang)
+                    : Tr.t("pool.unreachable", root.lang) + " (" + (root.fehler === "noPublicPool" ? Tr.t("pool.noPublicPool", root.lang) : root.fehler) + ")"
                 color: root.badColor
                 font.pixelSize: root.scaleUnit * 0.62
             }
