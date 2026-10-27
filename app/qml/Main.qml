@@ -274,8 +274,12 @@ Window {
     // erscheint, mit der Zurueck-Geste oder mit F11.
     property bool vollbild: false
 
+    // Vor dem ersten Zeigen nichts setzen: Settings laedt `vollbild` noch
+    // waehrend des Aufbaus, `visible` ist dann false (main.cpp), und Qt
+    // meldet "Conflicting properties 'visible' and 'visibility'". Das
+    // gemerkte Vollbild setzt main.cpp beim Zeigen.
     function vollbildAnwenden() {
-        if (win.bare)
+        if (win.bare || !win.visible)
             return;
         win.visibility = win.vollbild ? Window.FullScreen : Window.Windowed;
     }
@@ -349,13 +353,23 @@ Window {
         property alias bigRotate: win.bigRotate
         property alias tabOrderRaw: win.tabOrderRaw
         property alias vollbild: win.vollbild
+
+        // **Fehlt ein Schluessel in der Datei, legt Settings beim Laden alle
+        // Werte zum Schreiben zurueck**, auch die, die es noch gar nicht
+        // gelesen hat (QQmlSettingsPrivate::load ruft _q_propertyChanged).
+        // Alles, was hier hinter dem fehlenden Schluessel steht, landete mit
+        // seiner Vorgabe in der Datei. Das passiert nach jedem Update mit
+        // einer neuen Einstellung: Sprache, Reiterfolge und Vollbild waren
+        // dann beim zweiten Start weg (gefunden am 27.10.2026, Qt 6.9 und
+        // 6.12). Eine Aenderung nach dem Laden legt die richtigen Werte
+        // zurueck, siehe Component.onCompleted.
+        property bool nachLaden: false
     }
 
     // Beim Start in die gemerkte Ansicht -- fuer ein Tablet an der Wand ist
     // das meist die Uhr.
     Component.onCompleted: {
-        if (win.vollbild)
-            vollbildAnwenden();
+        prefs.nachLaden = !prefs.nachLaden;
         if (win.forcedPane !== "")
             win.minerPane = win.forcedPane;
         if (win.forcedView >= 0)

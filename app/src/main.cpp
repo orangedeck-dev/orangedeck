@@ -502,7 +502,16 @@ int main(int argc, char *argv[])
     QQmlProperty(fenster, QStringLiteral("vollbild")).connectNotifySignal(wache, SLOT(anpassen()));
     wache->anpassen();
 
-    fenster->setVisible(true);
+    // Ein gemerktes Vollbild gilt gleich beim Zeigen. Bis 0.2.17 setzte
+    // Main.qml `visibility` schon beim Laden der Einstellungen, waehrend
+    // `visible` von oben noch false war: Qt meldete "Conflicting properties
+    // 'visible' and 'visibility'" und zeigte das Fenster sofort, vor allem,
+    // was hier darueber steht. QWindow::setVisibility geht an den
+    // QML-Settern vorbei, F11 bleibt danach ohne Warnung.
+    if (fenster->property("vollbild").toBool() && !fenster->property("bare").toBool())
+        fenster->setVisibility(QWindow::FullScreen);
+    else
+        fenster->setVisible(true);
     return app.exec();
 }
 
