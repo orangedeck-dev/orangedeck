@@ -430,14 +430,24 @@ def fail(msg):
     sys.exit(1)
 
 
+class AnkerFehlt(Exception):
+    """Ein Ankerpunkt fuer den Bitcoin-Tab fehlt. Die Datei bleibt dann
+    ungepatcht und der Bau laeuft weiter (nur Warnung): unter DMS 2.0 fehlen
+    alle drei, dort kommt der Tab als Plugin-Komponente."""
+
+
+def warnung(msg):
+    print("WARNUNG: " + msg, file=sys.stderr)
+
+
 def patch_settings(text):
     old = 'readonly property var _dashTabIds: ["overview", "media", "wallpaper", "weather", "settings"]'
     new = 'readonly property var _dashTabIds: ["overview", "media", "wallpaper", "weather", "bitcoin", "settings"]'
     if new in text:
         return text
     if old not in text:
-        fail("Ankerpunkt in SettingsData.qml nicht gefunden -- DMS hat sich geaendert.\n"
-             "       Gesucht wurde: " + old)
+        raise AnkerFehlt("Ankerpunkt in SettingsData.qml nicht gefunden -- DMS hat sich geaendert.\n"
+                         "       Gesucht wurde: " + old)
     return text.replace(old, new)
 
 
@@ -454,7 +464,7 @@ def patch_ipc(text):
                 return "bitcoin";
 """
     if old not in text:
-        fail("Ankerpunkt in DMSShellIPC.qml nicht gefunden -- DMS hat sich geaendert.")
+        raise AnkerFehlt("Ankerpunkt in DMSShellIPC.qml nicht gefunden -- DMS hat sich geaendert.")
     return text.replace(old, new, 1)
 
 
@@ -518,8 +528,8 @@ def patch_popout(text):
     ]
     for old, new in anchors:
         if old not in text:
-            fail("Ankerpunkt in DankDashPopout.qml nicht gefunden -- DMS hat sich geaendert.\\n"
-                 "       Gesucht wurde:\\n" + old)
+            raise AnkerFehlt("Ankerpunkt in DankDashPopout.qml nicht gefunden -- DMS hat sich geaendert.\n"
+                             "       Gesucht wurde:\n" + old)
         text = text.replace(old, new, 1)
     return text
 
@@ -553,8 +563,11 @@ def ui_source():
         shutil.rmtree(stale, ignore_errors=True)
 
     # 1. was die laufende DMS entpackt hat -- bitgleich zum Binary
-    run = "/run/user/%d/danklinux-shell" % os.getuid()
-    for cand in sorted(glob.glob(os.path.join(run, "*"))):
+    # DMS 1.6 entpackt nach danklinux-shell, 2.0 nach dms-shell
+    kandidaten = []
+    for run in ("/run/user/%d/dms-shell" % os.getuid(), "/run/user/%d/danklinux-shell" % os.getuid()):
+        kandidaten += sorted(glob.glob(os.path.join(run, "*")))
+    for cand in kandidaten:
         if read_version(cand) == ver and os.path.isfile(os.path.join(cand, "shell.qml")):
             shutil.copytree(cand, cache + ".tmp", symlinks=False, dirs_exist_ok=True)
             os.replace(cache + ".tmp", cache)
@@ -643,12 +656,21 @@ def _build():
         ("DMSShellIPC.qml", patch_ipc, ""),
     ):
         path = os.path.join(DST, sub, name) if sub else os.path.join(DST, name)
+        quelle = os.path.join(SRC, sub, name) if sub else os.path.join(SRC, name)
+        if not os.path.isfile(quelle):
+            warnung("%s fehlt in der DMS-Oberflaeche, Bitcoin-Tab dort nicht eingehaengt" % name)
+            continue
+        with open(quelle) as f:
+            text = f.read()
+        try:
+            text = patcher(text)
+        except AnkerFehlt as e:
+            warnung(str(e) + "\n       Datei bleibt ungepatcht.")
+            continue
         if os.path.islink(path):
             os.unlink(path)
-        with open(os.path.join(SRC, sub, name) if sub else os.path.join(SRC, name)) as f:
-            text = f.read()
         with open(path, "w") as f:
-            f.write(patcher(text))
+            f.write(text)
 
     # Tab-Inhalt und die geteilten Bausteine daneben legen
     with open(os.path.join(dash, "BitcoinTab.qml"), "w") as f:

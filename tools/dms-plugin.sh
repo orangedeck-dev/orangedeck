@@ -38,7 +38,10 @@ fi
 # Verzeichnis gelesen statt aufgezaehlt: eine Liste von Hand vergisst man.
 # Die Pruefstaende (`Pruefstand*.qml`) sind Werkzeug und bleiben draussen.
 QMLFILES="$(cd "$R/ui/qml" && command ls -1 *.qml *.js 2>/dev/null | grep -v '^Pruefstand')"
-PLUGINFILES="OrangeDeckDaemon.qml OrangeDeckDesktop.qml OrangeDeckSettings.qml OrangeDeckWidget.qml plugin.json"
+# OrangeDeckDashTab.qml ist der Dashboard-Tab fuer DMS 2.0 (`components.dash`).
+# DMS 1.6 kennt die Flaeche nicht und laedt die Datei gar nicht; sie muss
+# trotzdem mit, sonst scheitert unter 2.0 das ganze Plugin am fehlenden Teil.
+PLUGINFILES="OrangeDeckDaemon.qml OrangeDeckDashTab.qml OrangeDeckDesktop.qml OrangeDeckSettings.qml OrangeDeckWidget.qml plugin.json"
 # Der Bausatz traegt `mondrian.js` und `colors.js` mit -- Portierungen aus
 # bitfeed. Beide Lizenztexte gehen also mit, nicht nur der eigene.
 BEIFILES="LICENSE LICENSE-bitfeed"

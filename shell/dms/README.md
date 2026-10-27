@@ -14,6 +14,9 @@ It runs in three places at once:
 - a control center tile with the same views,
 - a desktop widget, one instance per view, freely placed and sized.
 
+From DMS 2.0 on there is also a Bitcoin tab in the dashboard with the same
+views (`dms ipc call dash open plugin_orangedeck`). Older versions skip it.
+
 ## Screenshots
 
 | | |

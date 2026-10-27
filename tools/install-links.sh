@@ -69,7 +69,9 @@ done
 
 # DMS-Plugin
 P="$HOME/.config/DankMaterialShell/plugins/OrangeDeck"
-for f in OrangeDeckDaemon.qml OrangeDeckDesktop.qml OrangeDeckSettings.qml OrangeDeckWidget.qml plugin.json README.md; do
+# OrangeDeckDashTab.qml: Dashboard-Tab fuer DMS 2.0. Unter 1.6 liegt er nur
+# daneben; unter 2.0 laedt ohne ihn das ganze Plugin nicht (plugin.json nennt ihn).
+for f in OrangeDeckDaemon.qml OrangeDeckDashTab.qml OrangeDeckDesktop.qml OrangeDeckSettings.qml OrangeDeckWidget.qml plugin.json README.md; do
   link "$R/shell/dms/$f" "$P/$f"
 done
 for f in DOKUMENTATION.md STAND.md ZIELBILD.md; do
