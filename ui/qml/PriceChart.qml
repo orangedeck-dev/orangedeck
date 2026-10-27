@@ -82,7 +82,9 @@ Item {
         root.laden = true;
         var nr = ++root.__anfrage;
         root.feed.prices(root.span, root.currency, function (d, err) {
-            if (nr !== root.__anfrage)
+            // the view can be gone by the time the answer comes (DMS builds
+            // its widgets more than once while starting)
+            if (!root || nr !== root.__anfrage)
                 return;
             root.laden = false;
             if (err || !d) {
