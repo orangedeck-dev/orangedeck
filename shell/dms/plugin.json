@@ -2,7 +2,7 @@
     "id": "orangedeck",
     "name": "OrangeDeck Bitcoin Dashboard",
     "description": "Bitcoin mempool, blocks, miners and market on the desktop",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "author": "Satoshoe",
     "type": "composite",
     "capabilities": ["daemon", "dankbar-widget", "control-center", "desktop-widget", "dash-tab"],
