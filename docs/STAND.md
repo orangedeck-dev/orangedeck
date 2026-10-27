@@ -15,6 +15,49 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 27.10.2026 spaet -- 0.2.18-Punkte 2, 4, 5, 6 und ein Settings-Fehler
+
+Commits `093c976` und `6832ee4`, nicht gepusht, nicht veroeffentlicht.
+
+- **Punkt 2 erledigt:** `orangedeck-launch` liest `--source` (auch
+  `--source=`), sonst `dataSource` aus `[view]` der Conf (mit `--id` die
+  eigene). Bei `direct` startet kein Dienst. Geprueft mit Attrappen und im
+  Dev-Flatpak (`flatpak build` auf einen Bau im Scratchpad): direkt kein
+  Dienst, `daemon` startet ihn. Wer in den Einstellungen auf den Dienst
+  umschaltet, bekommt ihn erst beim naechsten Start.
+- **Punkt 4 wahrscheinlich erledigt:** der Dienst hielt `blocks/recent` 45 s
+  im Zwischenspeicher; kam in der Zeit ein Block, lud BlockChain nach 4 s
+  die alte Liste. `Feed.set_tip` verwirft jetzt `blocks/recent` und
+  `mempoolblocks/now`. Nur als Einzeltest der Methode geprueft, kein
+  echter Block abgewartet.
+- **Punkt 5 harmlos, kein App-Fehler:** die Meldung kommt aus
+  `QWebSocketPrivate::releaseConnections` (`pTcpSocket->disconnect()`).
+  Die Warnung steht seit qtbase 6.10 in QObject, qtwebsockets ab 6.10.0
+  trennt `destroyed` vorher selbst. Je 4 min mit Qt 6.12 (System) und im
+  Dev-Flatpak (6.9): null Meldungen. Unter Fedora vermutlich eine
+  Laufzeit mit nachgezogenem qtbase ohne den qtwebsockets-Teil.
+- **Punkt 6 erledigt:** Ursache war nicht `onCompleted`, sondern
+  `onVollbildChanged` beim Laden der Settings (vor dem Zeigen).
+  `vollbildAnwenden` tut vor dem ersten Zeigen nichts, main.cpp zeigt mit
+  `QWindow::setVisibility(FullScreen)`. Unter 6.9 und 6.12 ohne Warnung,
+  Fenster startet im Vollbild.
+- **Neu gefunden und behoben:** `Settings` (QtCore) ruft beim Laden
+  `_q_propertyChanged`, sobald ein Schluessel fehlt, und legt dabei alle
+  Werte zum Schreiben zurueck, auch die noch nicht gelesenen. Alles hinter
+  dem fehlenden Schluessel ging mit der Vorgabe in die Datei. Folge: nach
+  jedem Update mit neuer Einstellung beim zweiten Start Sprache,
+  Reiterfolge, Vollbild usw. weg. Gegenprobe alter Stand: `langWahl=de`,
+  `tabOrderRaw=2|0|1`, `vollbild=true` wurden zu leer/leer/false. Abhilfe:
+  `prefs.nachLaden` in `Component.onCompleted` umschalten. Betrifft nur
+  `[view]`; `[minerPool]` hat einen einzigen Schluessel.
+- **Offen bleiben 3 (beobachten) und 9 (Hardware).**
+- **Falle:** Qt schreibt ohne Terminal ins Journal, nicht nach stderr.
+  Fuer Tests `QT_FORCE_STDERR_LOGGING=1`, sonst sieht man keine Warnung.
+  `flatpak-builder --run` scheitert nach einem abgebrochenen Lauf an
+  rofiles-fuse; `flatpak build <ordner> <befehl>` geht immer.
+  `timeout` beendet `flatpak build`/`flatpak run` nicht sicher, Reste mit
+  `ps ... | grep pruef` suchen.
+
 ## NACHTRAG 27.10.2026 -- DMS 2.0, Plugin 1.3.2
 
 - **DMS-Plugin 1.3.2 ist draussen** (Plugin-Repo `4ad8007`, Tag `v1.3.2`,
