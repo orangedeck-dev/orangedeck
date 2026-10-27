@@ -15,190 +15,89 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
-## NACHTRAG 27.10.2026 spaet -- 0.2.18-Punkte 2, 4, 5, 6 und ein Settings-Fehler
-
-Commits `093c976` und `6832ee4`, nicht gepusht, nicht veroeffentlicht.
-
-- **Punkt 2 erledigt:** `orangedeck-launch` liest `--source` (auch
-  `--source=`), sonst `dataSource` aus `[view]` der Conf (mit `--id` die
-  eigene). Bei `direct` startet kein Dienst. Geprueft mit Attrappen und im
-  Dev-Flatpak (`flatpak build` auf einen Bau im Scratchpad): direkt kein
-  Dienst, `daemon` startet ihn. Wer in den Einstellungen auf den Dienst
-  umschaltet, bekommt ihn erst beim naechsten Start.
-- **Punkt 4 wahrscheinlich erledigt:** der Dienst hielt `blocks/recent` 45 s
-  im Zwischenspeicher; kam in der Zeit ein Block, lud BlockChain nach 4 s
-  die alte Liste. `Feed.set_tip` verwirft jetzt `blocks/recent` und
-  `mempoolblocks/now`. Nur als Einzeltest der Methode geprueft, kein
-  echter Block abgewartet.
-- **Punkt 5 harmlos, kein App-Fehler:** die Meldung kommt aus
-  `QWebSocketPrivate::releaseConnections` (`pTcpSocket->disconnect()`).
-  Die Warnung steht seit qtbase 6.10 in QObject, qtwebsockets ab 6.10.0
-  trennt `destroyed` vorher selbst. Je 4 min mit Qt 6.12 (System) und im
-  Dev-Flatpak (6.9): null Meldungen. Unter Fedora vermutlich eine
-  Laufzeit mit nachgezogenem qtbase ohne den qtwebsockets-Teil.
-- **Punkt 6 erledigt:** Ursache war nicht `onCompleted`, sondern
-  `onVollbildChanged` beim Laden der Settings (vor dem Zeigen).
-  `vollbildAnwenden` tut vor dem ersten Zeigen nichts, main.cpp zeigt mit
-  `QWindow::setVisibility(FullScreen)`. Unter 6.9 und 6.12 ohne Warnung,
-  Fenster startet im Vollbild.
-- **Neu gefunden und behoben:** `Settings` (QtCore) ruft beim Laden
-  `_q_propertyChanged`, sobald ein Schluessel fehlt, und legt dabei alle
-  Werte zum Schreiben zurueck, auch die noch nicht gelesenen. Alles hinter
-  dem fehlenden Schluessel ging mit der Vorgabe in die Datei. Folge: nach
-  jedem Update mit neuer Einstellung beim zweiten Start Sprache,
-  Reiterfolge, Vollbild usw. weg. Gegenprobe alter Stand: `langWahl=de`,
-  `tabOrderRaw=2|0|1`, `vollbild=true` wurden zu leer/leer/false. Abhilfe:
-  `prefs.nachLaden` in `Component.onCompleted` umschalten. Betrifft nur
-  `[view]`; `[minerPool]` hat einen einzigen Schluessel.
-- **Offen bleiben 3 (beobachten) und 9 (Hardware).**
-- **Falle:** Qt schreibt ohne Terminal ins Journal, nicht nach stderr.
-  Fuer Tests `QT_FORCE_STDERR_LOGGING=1`, sonst sieht man keine Warnung.
-  `flatpak-builder --run` scheitert nach einem abgebrochenen Lauf an
-  rofiles-fuse; `flatpak build <ordner> <befehl>` geht immer.
-  `timeout` beendet `flatpak build`/`flatpak run` nicht sicher, Reste mit
-  `ps ... | grep pruef` suchen.
-
-## NACHTRAG 27.10.2026 -- DMS 2.0, Plugin 1.3.2
-
-- **DMS-Plugin 1.3.2 ist draussen** (Plugin-Repo `4ad8007`, Tag `v1.3.2`,
-  gebaut aus `8c9aeec`). Neu: der Bitcoin-Reiter als `dash`-Komponente fuer
-  DMS 2.0 (`OrangeDeckDashTab.qml`, IPC `dms ipc call dash open plugin_orangedeck`),
-  kuerzere Beschreibung, README "tested with 1.6.2 and 2.0.0", BlockHistory
-  und BlockChain ignorieren Antworten, die nach dem Abbau der Ansicht kommen.
-  DMS 1.6 ueberspringt die `dash`-Komponente mit einer Warnung.
-- Unter DMS 2.0 ist der Bitcoin-Reiter Teil des Plugins; der Hinweis unten
-  "DMS-Dashtab neu erzeugen" gilt nur noch unter 1.6.
-- Von den neun Punkten "Offen fuer 0.2.18" unten sind **1, 7 und 8 im Code
-  erledigt** (noch nicht veroeffentlicht): Pool-Seite ohne doppelten
-  Fehlertext, Summenkurve nach 10 s gemeinsamen Verlaufs (Pruefstand: 14 s
-  statt 35-40 s), "OrangeDeck <Fassung>" unten auf der Seite Allgemein, nur
-  in der App. Geprueft mit der App als Layer-Flaeche (`--layer overlay --id`)
-  und unter DMS 2.0 (Bitcoin-Reiter ohne Fehler). Offen bleiben 2-6 und 9.
-  Vor dem naechsten Plugin-Release (1.3.3) kurz in DMS gegenpruefen.
-
-## TAGESABSCHLUSS 08.10.2026 -- 0.2.17 veroeffentlicht: Summenkurve, Pool-Wahl, drei alte Fehler
+## TAGESABSCHLUSS 27.10.2026 -- DMS 2.0, Plugin 1.3.2, sieben von neun Punkten fuer 0.2.18
 
 ### Der Stand in einem Satz
 
-**0.2.17 ist draussen** (Tag `v0.2.17` auf `879e015`, Pin `a6554f4`, Release
-"Latest", F-Droid mit 0.2.17 und 0.2.16, Seite mit Downloads und Was ist neu,
-DMS-Plugin 1.3.1 im Plugin-Repo mit Tag). APK `4abf66f0...`, Zertifikat
-B3:CC:83:79 wie immer. Alles gepusht, Arbeitsbaum sauber.
+**0.2.17 ist die letzte Fassung, DMS-Plugin 1.3.2 ist draussen, und 0.2.18
+hat sieben von neun Punkten im Code** (`main` auf `404337d`, gepusht,
+nichts veroeffentlicht). Arbeitsbaum sauber. Einzelheiten im Journal
+vom 27.10.
 
-### Was in 0.2.17 steckt
+### Was heute dazukam
 
-- **Summenkurve bleibt stehen** (`58da2f1`, `MinerView.sumHist`): ein Geraet,
-  das Abfragen verpasst, bleibt bis `sumGraceSec` (120 s) mit seinem letzten
-  Wert in der Summe, auch wenn der Pool solange einspringt; danach zaehlen
-  die uebrigen, auch ein einzelnes. Im Aussetzer zeigt die Kurve die volle
-  Summe, die grosse Zahl nur das erreichbare Geraet -- so gewollt.
-- **Einstellungen zeigen die geltende Quelle** (`001689d`): mit `--source`
-  stand dort die gespeicherte; eine Wahl dort hebt `--source` auf.
-- **Pool-Seite merkt sich Ring/Balken und Sortierung** (`f0547c5`):
-  `poolTypesView`/`poolTypesBy` in allen sechs Wirten (App, Dashtab,
-  DMS-Desktop, DMS-Leiste, Quickshell).
-- **Drei alte Fehler aus den Linux-VMs** (`8b4491c`): `Tr.group` setzte einen
-  Trenner hinter das Minus ("-,940"); im Vollbild lag der Vollbildknopf auf
-  dem i des Mining-Reiters (Knoepfe ruecken jetzt um 50 nach links,
-  `actionsRechts`); ein verstecktes Einstellungsfeld behielt den Fokus und
-  die Tastenkuerzel waren tot (`fokusPruefen` nach jedem Ansichtswechsel).
-- Seite: CLS an `#was` behoben (`54862a8`), Platz fuer die Punktreihe unter
-  dem Live-Kopf von Anfang an frei.
+- **DMS-Plugin 1.3.2** (Plugin-Repo `4ad8007`, Tag `v1.3.2`, aus
+  `8c9aeec`): Bitcoin-Reiter als `dash`-Komponente fuer DMS 2.0
+  (`dms ipc call dash open plugin_orangedeck`), kuerzere Beschreibung,
+  README "tested with 1.6.2 and 2.0.0", BlockHistory und BlockChain
+  ignorieren spaete Antworten. DMS 1.6 ueberspringt die `dash`-Komponente
+  mit einer Warnung.
+- **0.2.18 im Code** (`913850f`, `093c976`, `6832ee4`):
+  - Pool-Seite ohne doppelten Fehlertext, Gruende als Schluessel (Punkt 1).
+  - Flatpak startet beim Direktbezug keinen Dienst mehr (Punkt 2).
+  - Der Dienst verwirft `blocks/recent` bei neuem Tip, der Explorer bekommt
+    den neuen Block (Punkt 4, nur als Einzeltest geprueft).
+  - Vollbild beim Start ohne "Conflicting properties" (Punkt 6).
+  - Summenkurve nach 10 s gemeinsamen Verlaufs (Punkt 7).
+  - "OrangeDeck <Fassung>" unten auf der Seite Allgemein, nur App (Punkt 8).
+  - **Neu gefunden:** QtCore `Settings` schrieb nach einem Update mit neuer
+    Einstellung die Vorgaben aller noch nicht geladenen Werte zurueck;
+    Sprache, Reiterfolge, Vollbild waren beim zweiten Start weg. Behoben
+    mit `prefs.nachLaden`.
+- **Punkt 5 geschlossen:** die QSslSocket-Meldung kommt aus Qt
+  (qtwebsockets), kein App-Fehler; in je 4 min unter 6.12 und 6.9 nicht
+  aufgetreten.
 
-Geprueft: Xvfb, Emulator (Android 11), Ubuntu und Fedora per Agent (CI von
-`92ba8f9`, also vor den drei Korrekturen), Windows-VM (CI von `879e015`),
-Galaxy A55 vom Anwender. Bilder unter
-`~/.local/share/orangedeck/pruefbilder/0.2.17-*`. Einzelheiten im Journal.
+### Offen fuer 0.2.18 (fuer die naechsten Tage)
 
-### Zahlen vom 08.10.
+3. **Android-Vollbild:** `adb input tap` ganz oben (y=77 px) wurde im
+   Emulator teils verschluckt, bei y=110 zuverlaessig. Der Anwender hat mit
+   dem Finger nichts gemeldet; beobachten, der Knopf koennte im Vollbild
+   etwas tiefer sitzen.
+9. **Echter Cluster mehrerer physischer Miner** nie gesehen.
 
-- GitHub-Downloads seit 0.2.8: 59 (APK 34, Flatpak 14, Windows 11), 0.2.16
-  bis dahin 13. F-Droid zaehlt nichts (GitHub Pages, in Cloudflare nur DNS);
-  Proxy dafuer vom Anwender **vorerst verworfen**.
-- Web Analytics (ohne Bots, laeuft seit Anfang September): 160
-  Seitenaufrufe in 30 Tagen, Spitze um den 27.09. (Reddit/Einundzwanzig).
-  Gelesen: /en/, /en/bitaxe/, /en/wall-display/. "Visits" taugt nichts,
-  Seitenaufrufe nehmen; der Zonen-Ueberblick ist fast nur Crawler.
-- awesome-bitcoin PR #243 am 07.10. ohne Kommentar geschlossen, wie fast
-  alle offenen Einreichungen dort. **Thema abgeschlossen.**
-
-### Offen fuer 0.2.18
-
-1. **"Pool not reachable (Pool not reachable)"**: Fehlertext der Pool-Seite
-   steht doppelt (im Emulator gesehen, alt).
-2. **Flatpak laesst den Dienst weiterlaufen**, auch mit `--source direct`:
-   `orangedeck-launch` startet `/app/bin/orangedeck` immer, nach dem
-   Schliessen des Fensters lebt die Instanz, erst `flatpak kill` beendet sie.
-   Entweder bei `--source direct` nicht starten oder dokumentieren.
-3. **Android-Vollbild:** `adb input tap` ganz oben (y=77 px, Streifen der
-   versteckten Statusleiste) wurde im Emulator teils verschluckt, bei
-   y=110 zuverlaessig. Der Anwender hat mit dem Finger nichts gemeldet --
-   beobachten, der Knopf koennte im Vollbild etwas tiefer sitzen.
-4. Explorer (Ubuntu, einmal): kurz nach dem Start fehlte der neueste Block
-   in der Reihe der bestaetigten, nach Neustart da.
-5. Konsole Fedora: "QObject::disconnect: wildcard call disconnects from
-   destroyed signal of QSslSocket", 30-mal in 12 Minuten. Harmlos?
-6. Main.qml beim Start im Vollbild: "Conflicting properties 'visible' and
-   'visibility'".
-7. Summenkurve erscheint erst 35-40 s nach dem Start (genug Messpunkte).
-   Kein Fehler, aber sichtbar.
-8. Die App zeigt ihre Fassung nirgends in der Oberflaeche (nur
-   `--version`). Fuer Fehlerberichte waere sie in den Einstellungen nuetzlich.
-9. Echter Cluster mehrerer physischer Miner nie gesehen (weiter offen).
+Danach: Geraetelauf (Galaxy, Emulator, Windows-VM, Ubuntu/Fedora),
+Release 0.2.18 nach dem gewohnten Ablauf, Seite und `aenderungen.json`,
+vor Plugin 1.3.3 kurz in DMS gegenpruefen.
 
 ### Fuer den Anwender
 
-- **DMS-Dashtab neu erzeugen**, damit er die gespeicherte Pool-Wahl kennt
-  (startet DMS neu):
-  `cd ~/Schreibtisch/orangedeck && ./tools/install-links.sh && python3 -B daemon/orangedeck-dashtab && systemctl --user restart dms`
-- Die **ufw-Regel 21061:21068 auf virbr0** (vom 03.10.) ist noch aktiv.
+- Unter DMS 2.0 ist der Bitcoin-Reiter Teil des Plugins. "DMS-Dashtab neu
+  erzeugen" gilt nur noch unter DMS 1.6.
+- Die **ufw-Regel 21061:21068 auf virbr0** (vom 03.10.) stand am 08.10.
+  noch; heute nicht nachgesehen.
 
-### Learnings 08.10.2026
+### Learnings 27.10.2026
 
-1. **Befunde vor dem Tag in dieselbe Nummer nehmen kostet nur eine
-   Signatur.** Der Geraetelauf stand noch aus, also wurde die erste Runde
-   als `...-verworfen-92ba8f9` umbenannt (Zeilen in `PRUEFSUMMEN.txt`
-   auskommentiert) und neu gebaut.
-2. **Die Website erst nach dem Veroeffentlichen pushen.** Die Download-Links
-   gehen ueber `releases/latest`; vorher zeigen sie ins Leere.
-3. **Qt laesst einem unsichtbar gewordenen Element den aktiven Fokus** und
-   meldet keinen Wechsel (`activeFocusItemChanged` kam nicht). Wer Fokus
-   zurueckholen will, muss selbst nachsehen (`!activeFocusItem.visible`).
-4. **Ein Popup liegt ueber allem.** Ein Knopf, dessen erster Tipp "durchgeht",
-   darf nicht ueber etwas liegen, das ein Popup oeffnet: das Popup faengt den
-   zweiten Tipp ab.
-5. **`adb shell input text` ueberholt Gboard:** die ersten Buchstaben bleiben
-   als offenes Wort stehen und landen beim Uebernehmen am Ende
-   ("tp://...ht"). Kein App-Fehler (mit echten Tastentipps richtig). Fuer
-   Eingaben Gboard abschalten (`ime disable`, danach `ime enable` + `ime set`).
-6. **Keine Zurueck-Taste im Emulator, wenn die Tastatur schon zu ist:** sie
-   verlaesst die App, und die naechsten Eingaben gingen in die Google-Suche
-   des Startbildschirms (Testwerte, nichts Echtes).
-7. **Pruefstand mit Pool braucht `--pool-wirt`**, sonst meldet ein Geraet
-   public-pool.io, `gleicherPool` schlaegt fehl, und es erscheint zusaetzlich
-   "laut Pool" (doppelt gezaehlt). Kein App-Fehler.
-8. **Ein geschlossener WebSocket ist nicht gleich ein Fehler im Code.** Einmal
-   meldete die App "remote host closed the connection"; Gegenprobe ohne die
-   Aenderungen und danach zwei Laeufe mit ihnen zeigten Daten -- ein
-   Aussetzer bei mempool.space. Erst gegenpruefen, dann suchen.
-9. **Ein Stand-Eintrag kann veraltet sein:** "zwei Aenderungen liegen an"
-   waren laengst mit 0.2.16 ausgeliefert. Vor dem Arbeiten gegen Tag und
-   Code pruefen.
-10. **Windows-exe ist nicht reproduzierbar:** zwei CI-Laeufe desselben Codes
-    unterscheiden sich in 145 Bytes (PE-Zeitstempel, Bauzeiten der
-    Ressourcen). Fuers Release zaehlen Dateien und Bytes, nicht `cmp`.
+1. **Qt schreibt ohne Terminal ins Journal**, nicht nach stderr. Wer eine
+   Warnung nachstellen will, setzt `QT_FORCE_STDERR_LOGGING=1`; sonst sieht
+   ein Test "keine Warnung", die doch da ist.
+2. **QtCore `Settings` ist nur bei vollstaendiger Datei verlaesslich.**
+   Fehlt ein Schluessel, gehen beim Laden die Vorgaben der noch nicht
+   gelesenen Werte in den Schreibpuffer. Testdateien mit wenigen
+   Schluesseln zeigen das sofort; im Alltag trifft es nach Updates.
+3. **Eine Warnung aus dem Feld zuerst in der Laufzeit nachstellen, aus der
+   sie kam.** Die Vollbild-Warnung kam lokal (6.12) erst mit stderr zum
+   Vorschein, im Flatpak (6.9) sofort; die vermutete Stelle
+   (`onCompleted`) war nur die zweite.
+4. **`flatpak build <ordner> <befehl>`** ist der verlaessliche Weg, einen
+   Dev-Bau zu starten. `flatpak-builder --run` scheitert nach einem
+   abgebrochenen Lauf an rofiles-fuse, und ein State-Ordner auf einem
+   anderen Dateisystem als das Ziel bricht den Bau ab.
+5. **`timeout` beendet Flatpak-Instanzen nicht sicher.** Danach mit
+   `ps -eo pid,args | grep pruef` nach Resten suchen und die Kinder in der
+   Sandbox mit beenden.
 
 ### Was ich selbst falsch gemacht habe
 
-- `daemon/orangedeck-dashtab` mit `qmllint` "geprueft", obwohl es ein
-  Python-Skript mit QML-Text ist. Erst spaeter den QML-Teil herausgezogen
-  und richtig geprueft.
-- Zweimal `pkill -f` mit einem Muster aus der eigenen Befehlszeile (die Shell
-  starb mit); die Regel stand schon unter "Fuer den naechsten Lauf".
-- Dem Anwender einen Befehl mit relativem Pfad gegeben; sein Terminal steht
-  in `~` (jetzt in der Erinnerung: immer absolut oder `cd` davor).
-- Im Freigabetext einen unbelegten Halbsatz geschrieben ("until the next
-  click"), beim Gegenlesen gestrichen.
+- Einen Write auf eine ungelesene Datei abgesetzt und den Test im selben
+  Zug laufen lassen: der Test lief gegen die alte Fassung. Erst die
+  Ausgabe ("DIENST" ueberall) zeigte es.
+- Zwei Testinstanzen im Flatpak liefen nach `timeout` weiter, eine davon
+  hatte nebenbei einen Dienst im Sandkasten gestartet. Erst spaet
+  aufgeraeumt.
+- Die erste Vermutung zu Punkt 6 (nur `onCompleted`) ohne Gegenprobe
+  umgesetzt; der Lauf in 6.9 zeigte die Warnung weiter.
 
 ## 27.09.2026 -- Spenden live (f5d2e3d)
 
@@ -624,6 +523,7 @@ Ein Tag je Datei, das Neueste oben. Herausgeloest aus dieser Datei, unveraendert
 
 | Tag | Worum es ging |
 |---|---|
+| [27.10.2026](journal/2026-10-27.md) | DMS-Plugin 1.3.2 fuer DMS 2.0, sieben Punkte fuer 0.2.18, Settings verlor Werte nach Updates. |
 | [08.10.2026](journal/2026-10-08.md) | Arbeitsnotizen zu 0.2.17: Zahlen, CLS, VM-Laeufe, drei alte Fehler, zwei Signierrunden, Emulator-Fallen. |
 | [03.10.2026](journal/2026-10-03.md) | 0.2.16 veroeffentlicht: mehrere Miner, Pool-Seite, Pool als Ersatzquelle, Plugin 1.3.0. |
 | [02.10.2026](journal/2026-10-02.md) | Zwei Fixes am Dienst, bitfeed in echten Pixeln, AlternativeTo live, Issue #1 entworfen. |
