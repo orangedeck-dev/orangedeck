@@ -63,6 +63,10 @@ Column {
         root.busy = true;
         var wohin = root.von > 0 ? String(root.von) : "recent";
         root.feed.lookup("blocks", wohin, function (d, err) {
+            // the view can be gone by the time the answer comes (DMS builds
+            // its widgets more than once while starting)
+            if (!root)
+                return;
             root.busy = false;
             if (err) {
                 root.error = err;

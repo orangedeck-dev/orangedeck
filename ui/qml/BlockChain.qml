@@ -104,6 +104,10 @@ Item {
         if (!root.feed)
             return;
         root.feed.lookup("blocks", "recent", function (d, err) {
+            // the view can be gone by the time the answer comes (DMS builds
+            // its widgets more than once while starting)
+            if (!root)
+                return;
             if (err) {
                 root.error = err;
                 return;
@@ -115,7 +119,7 @@ Item {
         // duplicates data that is already there.
         if (!(root.feed.projected && root.feed.projected.length))
             root.feed.lookup("mempoolblocks", "now", function (d, err) {
-                if (!err)
+                if (root && !err)
                     root.projected = d || [];
             });
     }
