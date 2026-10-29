@@ -89,6 +89,9 @@ DashTabComponent {
     property string minerPanesRaw: SettingsData.getPluginSetting(pid, "minerPanesRaw", "")
     property string netPartsRaw: SettingsData.getPluginSetting(pid, "netPartsRaw", "")
     property bool minerSolo: SettingsData.getPluginSetting(pid, "minerSolo", true)
+    // The pool page of the miner tab (PoolView), as in the bar widget.
+    property string poolUrl: SettingsData.getPluginSetting(pid, "poolUrl", "")
+    property string poolAddress: SettingsData.getPluginSetting(pid, "poolAddress", "")
     property int tabRotate: SettingsData.getPluginSetting(pid, "tabRotate", 0)
     property string tabRotateViewsRaw: SettingsData.getPluginSetting(pid, "tabRotateViewsRaw", "")
     property string explorerPanelsRaw: SettingsData.getPluginSetting(pid, "explorerPanelsRaw", "")
@@ -162,6 +165,8 @@ DashTabComponent {
         "minerPanes": minerPanes,
         "netParts": netParts,
         "minerSolo": minerSolo,
+        "poolUrl": poolUrl,
+        "poolAddress": poolAddress,
         "tabRotate": tabRotate,
         "tabRotateViews": tabRotateViews,
         "explorerPanels": explorerPanels,
