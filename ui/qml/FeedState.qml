@@ -83,8 +83,8 @@ Item {
     // view to the feed on every start.
     readonly property bool canMarket: !root.direkt || markt.status !== Loader.Error
 
-    // Addresses from the settings. Unused in daemon mode, where the service
-    // reads `sources.json`.
+    // Addresses from the settings. In daemon mode the service reads
+    // `sources.json`; a change of the field goes there too (`dienstMiner`).
     //
     // Hosts pass the stored `minerHostsRaw` (several separated by `|`) and get
     // the list from it. The app binds `minerHosts` itself and leaves the raw
@@ -138,6 +138,21 @@ Item {
             x.open("POST", root.endpoint + "/config");
             x.setRequestHeader("Content-Type", "application/json");
             x.send(JSON.stringify({ "mempool": String(eingabe || "").trim() }));
+        } catch (e) {}
+    }
+
+    // The miner addresses from the field to the local service as well, which
+    // writes them to `sources.json` and asks them at once (29.10.2026: in
+    // daemon mode the field did nothing, after a DHCP change the service kept
+    // asking the old address). Same rules as `dienstMempool`.
+    function dienstMiner(roh) {
+        if (!/^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/|$)/.test(root.endpoint))
+            return;
+        var x = new XMLHttpRequest();
+        try {
+            x.open("POST", root.endpoint + "/config");
+            x.setRequestHeader("Content-Type", "application/json");
+            x.send(JSON.stringify({ "miners": String(roh || "").trim() }));
         } catch (e) {}
     }
 

@@ -259,6 +259,57 @@ def mempool_zerlegen(eingabe):
     return (teile.netloc + pfad, teile.scheme.lower())
 
 
+def miner_zerlegen(eingabe):
+    """Die Eingabe aus dem Feld "Miner" (mehrere mit `|` getrennt, wie
+    `minerHostsRaw`): je eine Adresse im eigenen Netz, ohne Schema http,
+    ohne Pfad. Gibt die Liste zurueck, None bei Unsinn. Hoechstens acht."""
+    out = []
+    for teil in str(eingabe or "").split("|"):
+        h = teil.strip()
+        if not h:
+            continue
+        if not re.match(r"^https?://", h, re.I):
+            h = "http://" + h
+        t = urlparse(h)
+        if t.scheme.lower() not in ("http", "https") or not t.netloc:
+            return None
+        if not re.match(r"^[A-Za-z0-9.\-:\[\]]+$", t.netloc) or t.path.strip("/") \
+                or t.query or t.fragment:
+            return None
+        url = "%s://%s" % (t.scheme.lower(), t.netloc)
+        if url not in out:
+            out.append(url)
+    return out if len(out) <= 8 else None
+
+
+def miner_umstellen(feed, eingabe):
+    """Die AxeOS-Miner aus dem Feld uebernehmen, in sources.json festhalten
+    und sofort abfragen (Mathias 29.10.2026: das Feld galt im Dienst-Betrieb
+    nicht, nach einem DHCP-Wechsel fragte der Dienst weiter die alte Adresse).
+
+    Kommt aus `POST /config`, wenn das Feld geaendert wurde. cgminer-Eintraege
+    (host/port) bleiben, wie sie sind; leer entfernt die AxeOS-Eintraege."""
+    global SOURCES
+    urls = miner_zerlegen(eingabe)
+    if urls is None:
+        return False
+    roh = {}
+    try:
+        with open(SOURCES_FILE) as f:
+            roh = json.load(f) or {}
+    except Exception:
+        roh = {}
+    andere = [m for m in (roh.get("miners") or []) if m.get("type") not in (None, "axeos")]
+    roh["miners"] = [{"type": "axeos", "url": u} for u in urls] + andere
+    # Die Kurzform "bitaxe" ginge sonst beim Einlesen wieder mit hinein.
+    roh.pop("bitaxe", None)
+    sources_schreiben(roh)
+    SOURCES = load_sources()
+    feed.miner_at = 0
+    sys.stderr.write("Miner: %s\n" % (", ".join(urls) or "keine"))
+    return True
+
+
 def mempool_umstellen(feed, eingabe):
     """Die Instanz wechseln, in sources.json festhalten und neu verbinden.
 
@@ -2216,7 +2267,8 @@ class _Handler(BaseHTTPRequestHandler):
         self.wfile.write(raw)
 
     def do_POST(self):
-        """Der einzige schreibende Weg: die Mempool-Instanz umstellen.
+        """Der einzige schreibende Weg: die Mempool-Instanz und die Miner-
+        Adressen umstellen (`{"mempool": ...}`, `{"miners": "a|b"}`).
 
         **Nur vom eigenen Rechner.** Lauscht der Dienst im Netz
         (ORANGEDECK_ADDR), darf trotzdem niemand dort die Quelle umbiegen:
@@ -2241,11 +2293,19 @@ class _Handler(BaseHTTPRequestHandler):
             if laenge <= 0 or laenge > 4096:
                 raise ValueError
             d = json.loads(self.rfile.read(laenge).decode("utf-8"))
-            eingabe = str(d.get("mempool", ""))
+            if not isinstance(d, dict) or not ("mempool" in d or "miners" in d):
+                raise ValueError
         except Exception:
             self._send(json.dumps({"error": "Anfrage nicht lesbar"}), 400)
             return
-        if not mempool_umstellen(self.feed, eingabe):
+        if "miners" in d:
+            if not miner_umstellen(self.feed, str(d.get("miners") or "")):
+                self._send(json.dumps({"error": "Adresse nicht gueltig"}), 400)
+                return
+            if "mempool" not in d:
+                self._send(json.dumps({"ok": True, "miners": [m.get("url") for m in SOURCES.get("miners") or []]}))
+                return
+        if not mempool_umstellen(self.feed, str(d.get("mempool", ""))):
             self._send(json.dumps({"error": "Adresse nicht gueltig"}), 400)
             return
         self._send(json.dumps({"ok": True, "instance": "%s://%s" % (SCHEME, HOST)}))

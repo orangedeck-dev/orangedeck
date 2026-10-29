@@ -578,6 +578,9 @@ Item {
             // mode (FeedState.dienstMempool).
             if (key === "mempoolHost" && root.feed)
                 root.feed.dienstMempool(value);
+            // The miners likewise (FeedState.dienstMiner).
+            if (key === "minerHostsRaw" && root.feed)
+                root.feed.dienstMiner(value);
         }
     }
 
