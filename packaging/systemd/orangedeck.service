@@ -60,6 +60,10 @@ RuntimeDirectoryPreserve=restart
 CacheDirectory=orangedeck
 # Faellt XDG_RUNTIME_DIR ganz aus, weicht orangedeck hierhin aus
 ReadWritePaths=%h/.local/state
+# sources.json: die Mempool-Instanz und die Miner aus den Einstellungen
+# (POST /config). Bis 29.10.2026 fehlte das, der Dienst konnte die Datei
+# nicht schreiben. "-": ein fehlender Ordner haelt den Start nicht auf.
+ReadWritePaths=-%h/.config/orangedeck
 # Der Kursverlauf soll den Neustart ueberleben -- er ist 1,5 MB und reicht bis
 # 2010 zurueck, ihn jedes Mal neu zu holen waere Unfug. Ins tmpfs gehoert er
 # damit nicht. `ProtectHome=read-only` sperrt aber auch ~/.cache; erst

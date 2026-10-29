@@ -2298,15 +2298,22 @@ class _Handler(BaseHTTPRequestHandler):
         except Exception:
             self._send(json.dumps({"error": "Anfrage nicht lesbar"}), 400)
             return
-        if "miners" in d:
-            if not miner_umstellen(self.feed, str(d.get("miners") or "")):
+        try:
+            if "miners" in d:
+                if not miner_umstellen(self.feed, str(d.get("miners") or "")):
+                    self._send(json.dumps({"error": "Adresse nicht gueltig"}), 400)
+                    return
+                if "mempool" not in d:
+                    self._send(json.dumps({"ok": True, "miners": [m.get("url") for m in SOURCES.get("miners") or []]}))
+                    return
+            if not mempool_umstellen(self.feed, str(d.get("mempool", ""))):
                 self._send(json.dumps({"error": "Adresse nicht gueltig"}), 400)
                 return
-            if "mempool" not in d:
-                self._send(json.dumps({"ok": True, "miners": [m.get("url") for m in SOURCES.get("miners") or []]}))
-                return
-        if not mempool_umstellen(self.feed, str(d.get("mempool", ""))):
-            self._send(json.dumps({"error": "Adresse nicht gueltig"}), 400)
+        except OSError as e:
+            # sources.json nicht schreibbar (Sandbox der Unit, volle Platte):
+            # gesagt statt die Verbindung abzubrechen.
+            sys.stderr.write("sources.json nicht geschrieben: %s\n" % e)
+            self._send(json.dumps({"error": "nicht gespeichert"}), 500)
             return
         self._send(json.dumps({"ok": True, "instance": "%s://%s" % (SCHEME, HOST)}))
 
