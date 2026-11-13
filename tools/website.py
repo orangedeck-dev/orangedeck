@@ -445,7 +445,10 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
            '<script src="../mondrian.js"></script>\n'
            '<script src="../colors.js"></script>\n'
            '<script src="../live.js" defer></script>\n'
-           '<script src="../lichtbox.js" defer></script>'
+           '<script src="../lichtbox.js" defer></script>\n'
+           '<script>document.addEventListener("click",function(ev){var k=ev.target.closest(".kopier");'
+           'if(!k||!navigator.clipboard)return;navigator.clipboard.writeText(k.dataset.kopie).then(function(){'
+           'var alt=k.textContent;k.textContent=k.dataset.kopiert;setTimeout(function(){k.textContent=alt;},1600);});});</script>'
            % json.dumps({"s": APP_TEXTE[d["code"]]}, ensure_ascii=False, separators=(",", ":"))
            )) + (
            '<script src="../../qr.js" defer></script>\n<script src="../../spenden.js" defer></script>'
@@ -502,13 +505,28 @@ def seite(d, alle):
     plattformen = [
         ("linux", wo[0][0], [wo[0][1], "<b>%s</b> %s" % (e(wo[1][0]), e(wo[1][1]))],
          [knopf("Flatpak", ho[1], True)], [ho[1][1]]),
-        ("dms", wo[2][0], [wo[2][1]], [knopf("GitHub", ho[2])], [ho[2][1]]),
+        ("dms", wo[2][0], [wo[2][1]], [knopf("GitHub", ho[2], True)], [ho[2][1]]),
         ("windows", wo[3][0], [wo[3][1]], [knopf("ZIP", ho[0], True)], [ho[0][1]]),
         ("android", wo[5][0], [wo[5][1]],
          [knopf("APK", ho[3], True), knopf("F-Droid", ho[4]), knopf("Obtainium", ho[5])],
          [ho[3][1], ho[4][1]]),
         ("apple", wo[4][0], [wo[4][1]], [knopf(ho[7][0], ho[7])], []),
     ]
+    # **Befehle zum Abtippen stehen als Codezeile mit Kopierknopf da**, nicht
+    # grau im Fliesstext. Die Befehle sind in allen Sprachen woertlich gleich;
+    # gesucht wird nach dem fertig eingesetzten Text (nach v()).
+    befehle = [e("flatpak install --user orangedeck-%s.flatpak" % FASSUNG),
+               e("dms plugins install orangedeck")]
+    def befehl(t):
+        for b in befehle:
+            if b in t:
+                # der Satzpunkt nach dem Befehl faellt weg; er stuende sonst
+                # allein am Anfang der Zeile unter der Codezeile
+                t = t.replace(b + ". ", b, 1).replace(b + "。", b, 1)
+                t = t.replace(b, '<span class="befehl"><code>%s</code><button type="button" class="kopier"'
+                              ' data-kopie="%s" data-kopiert="%s">%s</button></span>'
+                              % (b, b, e(d["spenden_kopiert"]), e(d["spenden_kopieren"])), 1)
+        return t
     zeilen = []
     for sym, titel, texte, knoepfe, hinweise in plattformen:
         texte_html = "".join("<p>%s</p>" % (t if t.startswith("<b>") else e(t)) for t in texte)
@@ -517,7 +535,7 @@ def seite(d, alle):
             '<div class="p-text"><h3>%s</h3>%s</div>'
             '<div class="p-laden"><div class="knopfreihe">%s</div>%s</div></div>'
             % (symbol(sym), e(titel), texte_html, "".join(knoepfe),
-               "".join('<p class="p-hinweis">%s</p>' % v(h) for h in hinweise)))
+               "".join('<p class="p-hinweis">%s</p>' % befehl(v(h)) for h in hinweise)))
     plattformen_html = "".join(zeilen)
     mehr_links = '<a href="%s">%s</a> · <a href="%s">%s</a>' % (
         v(ho[6][2]), e(ho[6][0]), v(ho[7][2]), e(ho[7][0]))

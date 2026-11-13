@@ -134,6 +134,11 @@ footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
 .live { position: relative; border: 1px solid var(--linie); border-radius: 12px; overflow: hidden; background: var(--grund-hell); }
 .live-standbild { width: 100%; height: auto; display: block; }
 .live.laeuft { aspect-ratio: 16 / 10; }
+.live.laeuft.eng { aspect-ratio: 800 / 800; }
+.live.eng .live-huelle {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}  /* Ausschnitt auf dem Telefon, siehe live.js skalieren() */
 .live.laeuft .live-standbild { display: none; }
 .live-huelle { display: none; position: relative; height: 100%; overflow: hidden; }
 .live.laeuft .live-huelle { display: block; }
@@ -283,6 +288,12 @@ footer .sprachen + p { margin-top: 1.4rem; }
 .p-laden .knopfreihe { gap: 0.5rem; margin-bottom: 0.6rem; }
 .p-laden .tat { padding: 0.5rem 1rem; font-size: 0.92rem; }
 .p-hinweis { color: var(--gedaempft); font-size: 0.82rem; margin: 0 0 0.35rem; overflow-wrap: anywhere; }
+/* Befehl zum Kopieren: eigene Zeile, Monospace, Knopf rechts daneben */
+.befehl { display: flex; align-items: stretch; gap: 0; margin: 0.45rem 0; border: 1px solid var(--linie); border-radius: 8px; background: #0b0a10; overflow: hidden; }
+.befehl code { flex: 1; min-width: 0; padding: 0.5rem 0.7rem; font: 0.86rem/1.4 ui-monospace, "JetBrains Mono", Menlo, monospace; color: var(--schrift); overflow-x: auto; white-space: nowrap; }
+.kopier { flex: none; border: 0; border-left: 1px solid var(--linie); background: var(--grund-hell); color: var(--orange); font: inherit; font-size: 0.8rem; padding: 0 0.8rem; cursor: pointer; min-height: 36px; }
+.kopier:hover { background: #241f2d; }
+.kopier:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
 .p-mehr { color: var(--gedaempft); font-size: 0.92rem; margin-top: 1.2rem; }
 @media (max-width: 46rem) {
   .plattform { grid-template-columns: 3rem minmax(0, 1fr); }

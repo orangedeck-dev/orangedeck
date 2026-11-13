@@ -173,7 +173,7 @@
     // Reiter oben links, wie ViewTabs.qml
     // z-index: die Flächen der Ansichten liegen im DOM danach und fingen
     // sonst jeden Klick auf die Reiter ab.
-    var reihe = an(this.fenster, el("div", "position:absolute;left:14px;top:6px;display:flex;gap:19px;font-size:14px;z-index:3;"));
+    var reihe = this.reihe = an(this.fenster, el("div", "position:absolute;left:14px;top:6px;display:flex;gap:19px;font-size:14px;z-index:3;"));
     var namen = [t("tab.feed"), t("tab.clock"), t("tab.miner"), t("tab.explorer"), t("tab.market")];
     this.knoepfe = namen.map(function (n, i) {
       var b = an(reihe, el("button", "all:unset;cursor:pointer;color:" + DIM + ";padding-bottom:5px;border-bottom:2px solid transparent;", n));
@@ -234,9 +234,18 @@
     });
   }
 
+  // **Auf dem Telefon ein Ausschnitt statt des ganzen Fensters.** Auf 390 px
+  // geschrumpft wurde die Schrift der Anwendung rund 3 px gross. Unter
+  // ENG px Breite zeigt der Kopf die mittleren SCHNITT px des Fensters im
+  // Hochformat, gut doppelt so gross; die Punkte darunter wechseln weiter.
+  var ENG = 600, SCHNITT = 800;
   Kopf.prototype.skalieren = function () {
-    this.k = (this.wirt.clientWidth || B) / B;
-    this.fenster.style.transform = "scale(" + this.k + ")";
+    var w = this.wirt.clientWidth || B, eng = w < ENG;
+    this.wirt.classList.toggle("eng", eng);
+    this.reihe.style.visibility = eng ? "hidden" : "";  // im Ausschnitt abgeschnitten; die Punkte darunter wechseln
+    this.k = w / (eng ? SCHNITT : B);
+    var dx = eng ? -((B - SCHNITT) / 2) * this.k : 0;
+    this.fenster.style.transform = "translateX(" + dx + "px) scale(" + this.k + ")";
     if (this.laeuft) this.auffrischen();
   };
 
