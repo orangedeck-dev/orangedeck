@@ -15,6 +15,30 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 13.11.2026 -- nur Website orangedeck.dev (Impeccable)
+
+Drei Runden live auf `origin/main`: d7ee8bc, 4e242de, bda8e0a, 21d1286.
+Geprueft und verbessert mit dem Design-Skill Impeccable. Kritik 22 -> 26/36,
+Audit 14 -> 16/20, Detektor rund 40 -> 2 Treffer (beide die Mini-Nachbildung
+am Desktop, hingenommen). Unter anderem: `<main>`, Sprungmarke, benannte
+Navigationen in 13 Sprachen; mobiler Live-Kopf mit Kennzahlen als Text;
+Wechsel stoppt bei Interaktion; Befehle brechen um, Flatpak-Befehl laedt
+selbst; Kopierknopf mit Ansage; `grund-klein.webp` fuer schmale Schirme.
+
+Deploy-Weg, solange lokale `main` fremde Commits vor `origin/main` hat:
+Worktree auf `origin/main`, Patch anwenden (unversionierte Dateien von Hand
+mitkopieren), `tools/website.py`, `git push origin HEAD:main`, danach lokal
+rebase und `tools/indexnow.py`.
+
+Offen (technisch): Gebuehren im Live-Kopf eindeutig beschriften (viermal
+"Fee"); curl-Befehl bei 320 px, Version im Dateinamen trotz `/latest/`;
+sichtbare Pause und benannte Punkte der Rotation; Spendenseite: Kopierknopf
+ohne aria-live (spenden.js), BOLT12-Box nicht per Tastatur scrollbar.
+Offen (Inhalt): neue Screenshots, Bitaxe-Seite mit Reiter Device,
+Hero-Unterzeile mit Plattformen, Flatpak-Voraussetzung, Hilfe bei
+gescheiterter Installation.
+Berichte: `~/Schreibtisch/claude-tools/berichte/2026-11-13-orangedeck-impeccable*.md`.
+
 ## TAGESABSCHLUSS 27.10.2026 -- DMS 2.0, Plugin 1.3.2, sieben von neun Punkten fuer 0.2.18
 
 ### Der Stand in einem Satz
