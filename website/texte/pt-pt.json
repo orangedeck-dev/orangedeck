@@ -203,6 +203,10 @@
   "fuss_herkunft": "Arrumação dos quadrados e modelo de cores adaptados do bitfeed (MIT, mononaut).",
   "fuss_lizenz": "O OrangeDeck tem licença MIT.",
   "sprache_waehlen": "Idioma",
+  "zum_inhalt": "Saltar para o conteúdo",
+  "nav_haupt": "Secções",
+  "nav_recht": "Informação legal",
+  "nav_profile": "Perfis",
   "seo_kurz": "O OrangeDeck é uma aplicação gratuita para computador e Android que desenha o mempool de Bitcoin como um mosaico vivo. Junta cinco vistas numa só janela: feed do mempool, relógio de altura de bloco, dados de mineração, explorador de blocos e dados de mercado. Funciona em Linux, Windows e Android e como plugin do DankMaterialShell, está disponível em treze línguas, tem licença MIT e não exige conta.",
   "bilder_titel": "Capturas de ecrã",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "Criar endereço",
   "spenden_kopieren": "Copiar",
   "spenden_kopiert": "Copiado",
+  "kopieren_markiert": "Texto selecionado, copie-o manualmente",
   "spenden_fehler": "De momento não há nenhum endereço disponível. Tente novamente mais tarde.",
   "spenden_zur_seite": "Ir para a página de donativos",
   "spenden_jede_wallet": "Endereço normal"

@@ -38,6 +38,7 @@
   var BINANCE_WS = "wss://data-stream.binance.vision/ws/btcusdt@aggTrade";
   var BYBIT_WS = "wss://stream.bybit.com/v5/public/spot";
   var B = 1280, H = 800;
+  // Wechsel alle WECHSEL_MS; der Feed steht zu Beginn doppelt so lange da.
   var WECHSEL_MS = 8000;
   // Der Strom läuft nur, solange jemand hinsieht. Das ist fremder Verkehr.
   var STILL_NACH_MS = 5 * 60 * 1000;
@@ -94,6 +95,7 @@
     var d = new Date(ts * 1000);
     return tag(ts) + "  " + z2(d.getHours()) + ":" + z2(d.getMinutes());
   }
+  var FEHLT = "–";
   function holen(url) {
     return fetch(url).then(function (a) { if (!a.ok) throw new Error(a.status); return a.json(); });
   }
@@ -163,6 +165,8 @@
     this.wirt = wirt;
     this.laeuft = false;
     this.k = 1;
+    this.eng = false;
+    this.vonHand = false;   // einmal von Hand gewechselt: kein Wechsel mehr von selbst
 
     this.huelle = an(wirt, el("div", ""));
     this.huelle.className = "live-huelle";
@@ -174,6 +178,7 @@
     // z-index: die Flächen der Ansichten liegen im DOM danach und fingen
     // sonst jeden Klick auf die Reiter ab.
     var reihe = this.reihe = an(this.fenster, el("div", "position:absolute;left:14px;top:6px;display:flex;gap:19px;font-size:14px;z-index:3;"));
+    reihe.className = "live-chrom";
     var namen = [t("tab.feed"), t("tab.clock"), t("tab.miner"), t("tab.explorer"), t("tab.market")];
     this.knoepfe = namen.map(function (n, i) {
       var b = an(reihe, el("button", "all:unset;cursor:pointer;color:" + DIM + ";padding-bottom:5px;border-bottom:2px solid transparent;", n));
@@ -184,6 +189,7 @@
     // Zahnrad und Vollbild der Anwendung, hier nur als Bild
     var symbole = an(this.fenster, el("div", "position:absolute;right:18px;top:8px;display:flex;gap:24px;pointer-events:none;z-index:3;"));
     symbole.setAttribute("aria-hidden", "true");
+    symbole.className = "live-chrom";
     symbole.innerHTML = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="' + TEXT + '" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'
       + '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="' + TEXT + '" stroke-width="2"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
 
@@ -191,6 +197,8 @@
     // Fensters, damit er auf dem Telefon groß genug zum Tippen bleibt.
     this.punkte = document.createElement("div");
     this.punkte.className = "live-punkte";
+    this.punkte.setAttribute("role", "group");
+    if (L.gruppe) this.punkte.setAttribute("aria-label", L.gruppe);
     wirt.parentNode.insertBefore(this.punkte, wirt.nextSibling);
     this.punktKnoepfe = namen.map(function (n, i) {
       var b = an(ich.punkte, el("button", ""));
@@ -206,6 +214,11 @@
         if (e.key === "ArrowLeft") { ich.zeigen((ich.seite + namen.length - 1) % namen.length, true); e.preventDefault(); }
       });
     });
+    // **Wer eingreift, bestimmt.** Ein Klick oder Tippen in den Kopf hält den
+    // Wechsel für immer an (WCAG 2.2.2), Pfeiltasten, Punkte und Wischen über
+    // zeigen(…, true) ebenso. Solange der Zeiger darüber liegt oder der Fokus
+    // darin steht, ruht er nur.
+    wirt.addEventListener("click", function () { ich.stoppen(); });
     var startX = null;
     wirt.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
     wirt.addEventListener("touchend", function (e) {
@@ -220,7 +233,27 @@
     this.seiten.forEach(function (s) {
       s.kopf = ich;
       s.wurzel = an(ich.fenster, el("div", "position:absolute;left:0;top:0;width:" + B + "px;height:" + H + "px;display:none;"));
+      s.wurzel.className = "live-ansicht";
       s.aufbauen(s.wurzel);
+    });
+
+    // Für die schmale Fassung (siehe skalieren): die Blockhöhe der Uhr groß
+    // auf der Bühne, und je Ansicht eine Tafel mit ihren Kennzahlen als
+    // echtem Text. Die Tafeln liegen übereinander in derselben Zelle; so ist
+    // der Kasten so hoch wie die längste und springt beim Wechsel nicht.
+    this.uhrGross = an(this.huelle, el("div", ""));
+    this.uhrGross.className = "live-eng-uhr";
+    an(this.uhrGross, el("div", "", t("blockHeight"))).className = "live-eng-uhr-name";
+    this.uhrZahl = an(this.uhrGross, el("div", "", "–"));
+    this.uhrZahl.className = "live-eng-uhr-zahl";
+    this.zahlen = an(wirt, el("div", ""));
+    this.zahlen.className = "live-zahlen";
+    this.tafeln = namen.map(function (n) {
+      var tf = an(ich.zahlen, el("div", ""));
+      tf.className = "live-tafel";
+      an(tf, el("div", "", n)).className = "live-tafel-name";
+      tf.liste = an(tf, el("dl", ""));
+      return tf;
     });
 
     this.verbinden();
@@ -234,19 +267,64 @@
     });
   }
 
-  // **Auf dem Telefon ein Ausschnitt statt des ganzen Fensters.** Auf 390 px
-  // geschrumpft wurde die Schrift der Anwendung rund 3 px gross. Unter
-  // ENG px Breite zeigt der Kopf die mittleren SCHNITT px des Fensters im
-  // Hochformat, gut doppelt so gross; die Punkte darunter wechseln weiter.
-  var ENG = 600, SCHNITT = 800;
+  // **Auf dem Telefon Bild und Zahlen getrennt.** Auf 390 px geschrumpft
+  // wird die Schrift der Anwendung rund 3 px groß. Bis zum 13.11.2026 zeigte
+  // der Kopf dort einen festen Ausschnitt von 800 px aus der Mitte; der schnitt
+  // Werte mitten im Wort ab ("hrate", "Next adju"). Jetzt zeigt die Bühne unter
+  // ENG px Breite nur den grafischen Teil der Ansicht (`ausschnitt`, ein Rechteck im
+  // 1280 x 800-Fenster: Halde, Kurve, Kacheln, Kerzen), ganz und auf die Bühne
+  // eingepasst, ohne den Text der Nachbildung. Die Werte stehen darunter als
+  // HTML in Lesegröße (Tafeln, siehe tafel()). Die Uhr hat keine Grafik; bei
+  // ihr steht die Blockhöhe groß auf der Bühne. Am Desktop bleibt alles beim
+  // ganzen Fenster.
+  var ENG = 600;
   Kopf.prototype.skalieren = function () {
-    var w = this.wirt.clientWidth || B, eng = w < ENG;
-    this.wirt.classList.toggle("eng", eng);
-    this.reihe.style.visibility = eng ? "hidden" : "";  // im Ausschnitt abgeschnitten; die Punkte darunter wechseln
-    this.k = w / (eng ? SCHNITT : B);
-    var dx = eng ? -((B - SCHNITT) / 2) * this.k : 0;
-    this.fenster.style.transform = "translateX(" + dx + "px) scale(" + this.k + ")";
+    var w = this.wirt.clientWidth || B;
+    this.eng = w < ENG;
+    this.wirt.classList.toggle("eng", this.eng);
+    this.zahlenHoch = 0;
+    this.zahlen.style.minHeight = "";
+    this.lage();
     if (this.laeuft) this.auffrischen();
+  };
+  Kopf.prototype.lage = function () {
+    var s = this.seiten[this.seite], r = s.ausschnitt;
+    this.wirt.classList.toggle("uhr", this.eng && !r);
+    if (!this.eng) {
+      this.k = (this.wirt.clientWidth || B) / B;
+      this.fenster.style.transform = "scale(" + this.k + ")";
+      return;
+    }
+    r = r || [0, 0, B, H];
+    var w = this.huelle.clientWidth || this.wirt.clientWidth, h = this.huelle.clientHeight || w * H / B;
+    var k = this.k = Math.min(w / r[2], h / r[3]);
+    var dx = (w - r[2] * k) / 2 - r[0] * k, dy = (h - r[3] * k) / 2 - r[1] * k;
+    this.fenster.style.transform = "translate(" + dx + "px," + dy + "px) scale(" + k + ")";
+  };
+
+  // Die Tafeln der schmalen Fassung. Gefüllt werden alle, nicht nur die
+  // sichtbare: die Höhe des Kastens folgt der längsten. Und sie wird nur
+  // größer, nie kleiner, solange die Breite bleibt; ein Wert, der eine Zeile
+  // weniger braucht, zieht den Inhalt darunter nicht nach oben.
+  // Lange Werte ("6,030 transactions · ~0.1 sat/vB") bekommen die ganze Zeile.
+  Kopf.prototype.tafel = function () {
+    if (!this.eng || !this.laeuft) return;
+    var st = this.stand, b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null;
+    this.uhrZahl.textContent = b ? zahl(b.height) : "–";
+    for (var i = 0; i < this.seiten.length; i++) {
+      var tf = this.tafeln[i], werte = this.seiten[i].zahlen(st), neu = JSON.stringify(werte);
+      if (tf.zuletzt === neu) continue;
+      tf.zuletzt = neu;
+      tf.liste.textContent = "";
+      werte.forEach(function (w) {
+        var z = an(tf.liste, el("div", ""));
+        if (w[1].length > 18) z.className = "breit";
+        an(z, el("dt", "", w[0]));
+        an(z, el("dd", "", w[1]));
+      });
+    }
+    var h = this.zahlen.offsetHeight;
+    if (h > this.zahlenHoch) { this.zahlenHoch = h; this.zahlen.style.minHeight = h + "px"; }
   };
 
   // Erst jetzt verschwindet das Standbild, und erst jetzt laufen die Uhren.
@@ -257,7 +335,7 @@
     this.skalieren();
     this.nachladen();
     this.zeigen(0, false);
-    this.uhrwerk = window.setInterval(function () { ich.weiter(); }, WECHSEL_MS);
+    this.planen(2 * WECHSEL_MS);
     this.takt = window.setInterval(function () { ich.auffrischen(); }, 1000);
     this.kurswerk = window.setInterval(function () { ich.kurs(); }, 60000);
   };
@@ -294,19 +372,15 @@
   };
 
   Kopf.prototype.zeigen = function (i, vonHand) {
-    var ich = this;
-    // **Von Hand geht zusätzlich.** Nach einem Klick, einem Punkt, einer
-    // Pfeiltaste oder einem Wischer läuft der Wechsel weiter, die Zeit bis zum
-    // nächsten Reiter fängt nur von vorn an. Sonst stünde die gewählte Ansicht
-    // vielleicht eine Sekunde da.
+    // **Von Hand heißt: ab jetzt nur noch von Hand.** Bis zum 13.11.2026 lief
+    // der Wechsel nach einem Klick, Punkt, Pfeil oder Wischer weiter, und die
+    // gewählte Ansicht verschwand nach acht Sekunden wieder.
     if (vonHand) {
       this.blick = Date.now();
-      if (this.uhrwerk) {
-        window.clearInterval(this.uhrwerk);
-        this.uhrwerk = window.setInterval(function () { ich.weiter(); }, WECHSEL_MS);
-      }
+      this.stoppen();
     }
     this.seite = i;
+    this.lage();
     for (var k = 0; k < this.seiten.length; k++) {
       var aktiv = k === i, s = this.seiten[k], b = this.knoepfe[k];
       s.wurzel.style.display = aktiv ? "block" : "none";
@@ -315,21 +389,42 @@
       b.style.borderBottomColor = aktiv ? ORANGE : "transparent";
       if (aktiv) this.punktKnoepfe[k].setAttribute("aria-current", "true");
       else this.punktKnoepfe[k].removeAttribute("aria-current");
+      this.tafeln[k].classList.toggle("an", aktiv);
       if (aktiv && s.sichtbar) s.sichtbar(this.stand);
       if (aktiv && s.auffrischen) s.auffrischen(this.stand);
       if (!aktiv && s.verdeckt) s.verdeckt();
     }
+    this.tafel();
   };
 
+  Kopf.prototype.planen = function (ms) {
+    var ich = this;
+    window.clearTimeout(this.uhrwerk);
+    if (!this.vonHand) this.uhrwerk = window.setTimeout(function () { ich.weiter(); }, ms);
+  };
+  Kopf.prototype.stoppen = function () {
+    this.vonHand = true;
+    window.clearTimeout(this.uhrwerk);
+  };
+  // Zeiger über dem Kopf oder den Punkten, oder der Fokus darin
+  Kopf.prototype.ruht = function () {
+    var a = document.activeElement;
+    return this.wirt.matches(":hover") || this.punkte.matches(":hover")
+      || this.wirt.contains(a) || this.punkte.contains(a);
+  };
   Kopf.prototype.weiter = function () {
-    if (document.hidden) return;
-    this.zeigen((this.seite + 1) % this.seiten.length, false);
+    if (this.vonHand) return;
+    // Verdeckt oder ruhend: später noch einmal fragen
+    if (!document.hidden && !this.ruht())
+      this.zeigen((this.seite + 1) % this.seiten.length, false);
+    this.planen(WECHSEL_MS);
   };
 
   Kopf.prototype.auffrischen = function () {
     if (!this.laeuft) return;
     var s = this.seiten[this.seite];
     if (s.auffrischen) s.auffrischen(this.stand);
+    this.tafel();
     if (Date.now() - this.blick > STILL_NACH_MS) this.anhalten();
   };
 
@@ -378,6 +473,7 @@
       if (ich.laeuft) {
         var s = ich.seiten[ich.seite];
         if (s.auffrischen) s.auffrischen(st);
+        ich.tafel();
       }
     };
     this.ws.onclose = function () {
@@ -466,6 +562,15 @@
     an(w, el("div", "position:absolute;left:14px;right:14px;top:673px;border-top:1px dashed #74707f;"));
     this.fLinks = an(w, el("div", "position:absolute;left:14px;top:764px;font-size:11px;color:" + DIM + ";white-space:pre;"));
     this.fRechts = an(w, el("div", "position:absolute;right:14px;top:764px;font-size:11px;color:" + DIM + ";"));
+  };
+  // Schmale Fassung: Blockkacheln und Halde, ohne die Kästen links und rechts
+  Feed.prototype.ausschnitt = [0, 150, B, 620];
+  Feed.prototype.zahlen = function (st) {
+    var b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null;
+    return [[t("lastBlock"), b ? zahl(b.height) : FEHLT],
+            [t("mempool"), st.info ? zahl(st.info.size) : FEHLT],
+            [t("fee"), st.fees ? gebuehr(st.fees.fastestFee) + " sat/vB" : FEHLT],
+            [t("price"), st.preis ? zahl(st.preis) + " $" : FEHLT]];
   };
   Feed.prototype.auffrischen = function (st) {
     var b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null;
@@ -632,6 +737,16 @@
     this.fuell = an(balken, el("div", "height:100%;width:0;background:" + ORANGE + ";border-radius:4px;"));
     this.halving = an(w, el("div", "position:absolute;left:102px;top:622px;font-size:28px;color:" + DIM + ";"));
   };
+  // Keine Grafik: schmal steht die Blockhöhe groß auf der Bühne (Kopf.lage)
+  Uhr.prototype.zahlen = function (st) {
+    var d = st.da;
+    return [[t("fee"), st.fees ? gebuehr(st.fees.halfHourFee) + " sat/vB" : FEHLT],
+            [t("price"), st.preis ? zahl(st.preis) + " $" : FEHLT],
+            [t("clock.moscow"), st.preis ? zahl(1e8 / st.preis) + " sat" : FEHLT],
+            [t("mempool"), st.info ? zahl(st.info.size) : FEHLT],
+            [t("hashrate"), st.netz ? gross(st.netz.currentHashrate, "H/s") : FEHLT],
+            [t("difficulty"), d ? (d.difficultyChange >= 0 ? "+" : "−") + zahl(Math.abs(d.difficultyChange), 2) + " %" : FEHLT]];
+  };
   Uhr.prototype.auffrischen = function (st) {
     var b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null;
     if (b) this.hoehe.textContent = zahl(b.height);
@@ -681,6 +796,18 @@
       an(wahl, el("span", "border:1px solid " + (n === "1y" ? "#b06a17" : "#29292f") + ";border-radius:16px;padding:2px 13px;" + (n === "1y" ? "background:#29292f;color:" + TEXT + ";" : ""), n));
     });
     this.c = leinwand(w, 70, 440, 1140, 330);
+  };
+  // Schmale Fassung: nur die Kurve, ohne ihre Beschriftung
+  Mining.prototype.ausschnitt = [70, 440, 1140, 330];
+  Mining.prototype.zahlen = function (st) {
+    var d = st.da, b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null, s = d ? Math.round(d.timeAvg / 1000) : 0;
+    var m = b ? Math.floor(Math.max(0, Date.now() / 1000 - b.timestamp) / 60) : 0;
+    return [[t("hashrate"), st.netz ? gross(st.netz.currentHashrate, "H/s") : FEHLT],
+            [t("difficulty"), st.netz ? gross(st.netz.currentDifficulty, "") : FEHLT],
+            [t("net.nextAdj"), d ? (d.difficultyChange >= 0 ? "+" : "−") + zahl(Math.abs(d.difficultyChange), 2) + " %" : FEHLT],
+            [t("net.blockTime"), d ? t("duration.min", Math.floor(s / 60) + ":" + z2(s % 60)) : FEHLT],
+            [t("net.lastBlock"), b ? (m < 1 ? t("net.justNow") : t("ago.min", m))
+                                     + (b.extras && b.extras.pool ? " · " + b.extras.pool.name : "") : FEHLT]];
   };
   Mining.prototype.auffrischen = function (st) {
     var d = st.da, b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null;
@@ -742,7 +869,7 @@
       var y = Math.round(yb(v)) + 0.5;
       if (y - padT < 30 || unten - y < 30) continue;
       c.beginPath(); c.moveTo(padL, y); c.lineTo(W - padR, y); c.stroke();
-      c.fillText(gross(v, "H/s"), 7, y + 6);
+      if (!this.kopf.eng) c.fillText(gross(v, "H/s"), 7, y + 6);
     }
     c.strokeStyle = "#2a2a38";
     c.beginPath(); c.moveTo(padL, padT + 0.5); c.lineTo(W - padR, padT + 0.5);
@@ -770,6 +897,8 @@
       }
       c.lineTo(W - padR, yb(treppe[treppe.length - 1][1])); c.stroke();
     }
+    // Schmal wäre die Beschriftung 6 px klein; die Werte stehen dann in der Tafel.
+    if (this.kopf.eng) return;
     c.font = "20px 'Noto Sans', sans-serif";
     c.fillStyle = ORANGE; c.textAlign = "left";
     c.fillText(gross(max, "H/s"), 7, padT + 14);
@@ -842,6 +971,15 @@
       an(kt, el("div", "", vor(b.timestamp)));
       an(kt, el("div", "color:#fff;", e.pool ? e.pool.name : ""));
     });
+  };
+  // Schmale Fassung: der nächste Block als Kacheln
+  Explorer.prototype.ausschnitt = [424, 527, 434, 273];
+  Explorer.prototype.zahlen = function (st) {
+    var b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null, n = st.mbloecke[0];
+    return [[t("blockHeight"), b ? zahl(b.height) : FEHLT],
+            [t("explorer.inMempool"), st.info ? zahl(st.info.size) : FEHLT],
+            [t("fee"), st.fees ? gebuehr(st.fees.halfHourFee) + " sat/vB" : FEHLT],
+            [t("nextBlock"), n ? t("txlist.count", zahl(n.nTx)) + " · ~" + gebuehr(n.medianFee) + " sat/vB" : FEHLT]];
   };
   Explorer.prototype.auffrischen = function (st) {
     var b = st.blocks.length ? st.blocks[st.blocks.length - 1] : null;
@@ -964,6 +1102,15 @@
     this.wsB = this.wsY = null;
     this.gestartet = false;
   };
+  // Schmale Fassung: Kerzen und Volumen, ohne Achsenbeschriftung
+  Markt.prototype.ausschnitt = [0, 80, B, 560];
+  Markt.prototype.zahlen = function () {
+    var K = this.kerzen, letzt = this.letzt || (K.length ? K[K.length - 1].c : 0);
+    var wandel = K.length && letzt ? (letzt - K[0].o) / K[0].o * 100 : null;
+    return [[t("market.sub.price"), letzt ? zahl(letzt) + " $" : FEHLT],
+            [t("market.24h"), wandel === null ? FEHLT : (wandel >= 0 ? "+" : "−") + zahl(Math.abs(wandel), 2) + " %"],
+            ["Binance · Bybit", this.anzahl ? t("market.trades", zahl(this.anzahl)) : FEHLT]];
+  };
   Markt.prototype.auffrischen = function () {
     if (!this.kerzen.length) return;
     this.warte.style.display = "none";
@@ -992,7 +1139,7 @@
     for (var i = 0; i < 5; i++) {
       var p = max - (max - min) * i / 4, yy = Math.round(y(p)) + 0.5;
       c.beginPath(); c.moveTo(links, yy); c.lineTo(rechts, yy); c.stroke();
-      c.fillText(zahl(p), rechts + 4, yy + 4);
+      if (!this.kopf.eng) c.fillText(zahl(p), rechts + 4, yy + 4);
     }
     K.forEach(function (k, j) {
       var x = links + j * breite, m = Math.round(x + breite / 2) + 0.5, auf = k.c >= k.o;
@@ -1006,9 +1153,11 @@
       c.fillStyle = GRUEN; c.fillRect(x + breite * 0.1, volUnten - hk, breite * 0.8, hk);
     });
     function hm(ms) { var d = new Date(ms); return z2(d.getHours()) + ":" + z2(d.getMinutes()); }
-    c.fillStyle = DIM; c.textAlign = "left"; c.fillText(hm(K[0].t), links, 540);
-    c.textAlign = "right"; c.fillText(hm(K[K.length - 1].t), rechts, 540);
-    c.textAlign = "left";
+    if (!this.kopf.eng) {
+      c.fillStyle = DIM; c.textAlign = "left"; c.fillText(hm(K[0].t), links, 540);
+      c.textAlign = "right"; c.fillText(hm(K[K.length - 1].t), rechts, 540);
+      c.textAlign = "left";
+    }
     c.fillStyle = "#3a3a44"; c.fillRect(links, 551, rechts - links, 3);
     c.fillStyle = "#c9c4cf"; c.beginPath(); c.arc(rechts - 6, 552.5, 5, 0, 7); c.fill();
   };

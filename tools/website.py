@@ -273,6 +273,42 @@ def datum(iso, code):
     return iso
 
 
+# **Kopieren mit Rueckmeldung und Rueckfall.** Der Knopf neben einem Befehl
+# meldet "Kopiert" sichtbar am Knopf und hoerbar ueber die Meldezeile
+# (aria-live). Fehlt navigator.clipboard (http, alte Browser) oder lehnt der
+# Browser ab, wird der Befehl markiert, damit man ihn selbst kopieren kann;
+# vorher noch ein Versuch mit execCommand, der dort oft noch geht.
+KOPIER_SKRIPT = """
+document.addEventListener("click", function (ev) {
+  var k = ev.target.closest(".befehl-kopier");
+  if (!k) return;
+  var code = k.parentNode.querySelector("code"), meldung = document.getElementById("kopier-meldung");
+  function sagen(text) {
+    if (!meldung) return;
+    meldung.textContent = "";
+    setTimeout(function () { meldung.textContent = text; }, 50);
+  }
+  function geschafft() {
+    var alt = k.dataset.alt || k.textContent;
+    k.dataset.alt = alt;
+    k.textContent = k.dataset.kopiert;
+    sagen(k.dataset.kopiert);
+    setTimeout(function () { k.textContent = alt; }, 1600);
+  }
+  function vonHand() {
+    var r = document.createRange(), a = window.getSelection();
+    r.selectNodeContents(code);
+    a.removeAllRanges(); a.addRange(r);
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) {}
+    if (ok) geschafft(); else sagen(k.dataset.vonhand);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(k.dataset.kopie).then(geschafft, vonHand);
+  else vonHand();
+});"""
+
+
 def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
     """Kopf, Leiste und Fuss, gleich fuer jede Seite.
 
@@ -355,30 +391,37 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
 <link rel="stylesheet" href="%(auf)sstil.css">
 %(alternativen)s
 <body>
-<div class="grundbild" aria-hidden="true" style="background-image:url('%(auf)sbilder/grund.webp')"></div>
+<!-- **Landmarken.** Die Sprungmarke ist der erste Tab-Halt und erst mit dem
+     Fokus sichtbar; <main> umfasst alles zwischen Kopfleiste und Fuss, und
+     jedes <nav> traegt einen Namen, sonst liest ein Screenreader fuenfmal
+     nur "Navigation" vor. -->
+<a class="sprung" href="#inhalt">%(zum_inhalt)s</a>
+<div class="grundbild" aria-hidden="true"></div>
 <div class="grundschleier" aria-hidden="true"></div>
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="%(start)s#"><img src="%(auf)sbilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
-  <nav class="nav">%(nav)s</nav>
-  <nav class="sprachen">%(wahl_kurz)s</nav>
+  <nav class="nav" aria-label="%(nav_haupt)s">%(nav)s</nav>
+  <nav class="sprachen" aria-label="%(sprache_waehlen)s">%(wahl_kurz)s</nav>
   <a class="tat kopf-tat" href="%(start)s#holen">%(kopf_cta)s</a>
 </div></div>
 
 <div class="mitte">
+<main id="inhalt" tabindex="-1">
 %(inhalt)s
+</main>
 
   <footer>
     <p class="fuss-tat"><a class="tat" href="%(start)s#holen">%(fuss_cta)s</a></p>
     <div class="fuss-spalten">
       <div>
         <p class="klein">%(mehr_titel)s</p>
-        <nav class="fuss-links">%(mehr)s</nav>
+        <nav class="fuss-links" aria-label="%(mehr_titel)s">%(mehr)s</nav>
       </div>
     </div>
     <p>%(fuss_lizenz)s %(fuss_herkunft)s</p>
     <div class="fuss-unten">
-      <nav class="fuss-recht">%(recht)s</nav>
-      <nav class="profile">%(profile)s</nav>
+      <nav class="fuss-recht" aria-label="%(nav_recht)s">%(recht)s</nav>
+      <nav class="profile" aria-label="%(nav_profile)s">%(profile)s</nav>
     </div>
   </footer>
 </div>
@@ -438,7 +481,9 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
            .replace("bitfeed", '<a href="https://github.com/bitfeed-project/bitfeed">bitfeed</a>', 1)
            .replace("mononaut", '<a href="https://github.com/mononaut">mononaut</a>', 1),
        "repo": e(d["repo"]),
-       "sprache_waehlen": e(d["sprache_waehlen"]),
+       "sprache_waehlen": e(d["sprache_waehlen"]), "zum_inhalt": e(d["zum_inhalt"]),
+       "nav_haupt": e(d["nav_haupt"]), "nav_recht": e(d["nav_recht"]),
+       "nav_profile": e(d["nav_profile"]),
        "ld": json.dumps(ld, ensure_ascii=False, separators=(",", ":")),
        "skripte": ("" if pfad else (
            '<script>window.ORANGEDECK_LIVE = %s;</script>\n'
@@ -446,10 +491,9 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
            '<script src="../colors.js"></script>\n'
            '<script src="../live.js" defer></script>\n'
            '<script src="../lichtbox.js" defer></script>\n'
-           '<script>document.addEventListener("click",function(ev){var k=ev.target.closest(".befehl-kopier");'
-           'if(!k||!navigator.clipboard)return;navigator.clipboard.writeText(k.dataset.kopie).then(function(){'
-           'var alt=k.textContent;k.textContent=k.dataset.kopiert;setTimeout(function(){k.textContent=alt;},1600);});});</script>'
-           % json.dumps({"s": APP_TEXTE[d["code"]]}, ensure_ascii=False, separators=(",", ":"))
+           '<script>%s</script>'
+           % (json.dumps({"s": APP_TEXTE[d["code"]], "gruppe": d["ansichten_titel"]},
+                         ensure_ascii=False, separators=(",", ":")), KOPIER_SKRIPT)
            )) + (
            '<script src="../../qr.js" defer></script>\n<script src="../../spenden.js" defer></script>'
            if pfad == SPENDEN_PFAD else "")}
@@ -472,7 +516,7 @@ def seite(d, alle):
     reihen = "".join(
         '<article class="reihe%s">'
         '<a class="reihe-bild lb" href="../bilder/%s.webp" data-i="%d" aria-label="%s">'
-        '<img src="../bilder/%s.webp" alt="%s" width="%d" height="%d" loading="lazy"></a>'
+        '<img src="../bilder/%s.webp" alt="%s" width="%d" height="%d" loading="lazy" decoding="async"></a>'
         '<div class="reihe-text"><h3>%s</h3><p>%s</p></div></article>'
         % (" umgekehrt" if i % 2 else "", b, i, e(n), b, e(t), BILD_B, BILD_H, e(n), e(t))
         for i, ((n, t), b) in enumerate(zip(d["ansichten"], ANSICHT_BILDER)))
@@ -505,7 +549,8 @@ def seite(d, alle):
     plattformen = [
         ("linux", wo[0][0], [wo[0][1], "<b>%s</b> %s" % (e(wo[1][0]), e(wo[1][1]))],
          [knopf("Flatpak", ho[1], True)], [ho[1][1]]),
-        ("dms", wo[2][0], [wo[2][1]], [knopf("GitHub", ho[2], True)], [ho[2][1]]),
+        # DMS: der Befehl ist der Hauptweg, GitHub nur der Blick in die Quelle
+        ("dms", wo[2][0], [wo[2][1]], [knopf("GitHub", ho[2])], [ho[2][1]]),
         ("windows", wo[3][0], [wo[3][1]], [knopf("ZIP", ho[0], True)], [ho[0][1]]),
         ("android", wo[5][0], [wo[5][1]],
          [knopf("APK", ho[3], True), knopf("F-Droid", ho[4]), knopf("Obtainium", ho[5])],
@@ -515,27 +560,36 @@ def seite(d, alle):
     # **Befehle zum Abtippen stehen als Codezeile mit Kopierknopf da**, nicht
     # grau im Fliesstext. Die Befehle sind in allen Sprachen woertlich gleich;
     # gesucht wird nach dem fertig eingesetzten Text (nach v()).
-    befehle = [e("flatpak install --user orangedeck-%s.flatpak" % FASSUNG),
-               e("dms plugins install orangedeck")]
+    # **Der Flatpak-Befehl geht von null aus.** Im Text steht nur
+    # `flatpak install --user orangedeck-<v>.flatpak`, der setzt die geladene
+    # Datei im aktuellen Ordner voraus. Angezeigt und kopiert wird deshalb ein
+    # Einzeiler, der sie vorher mit curl holt; beides ist derselbe Text.
+    flatpak = "flatpak install --user orangedeck-%s.flatpak" % FASSUNG
+    befehle = [(e(flatpak), e("curl -LO %s && %s" % (ho[1][2].replace("{v}", FASSUNG), flatpak))),
+               (e("dms plugins install orangedeck"), e("dms plugins install orangedeck"))]
     def befehl(t):
-        for b in befehle:
+        for b, ganz in befehle:
             if b in t:
                 # der Satzpunkt nach dem Befehl faellt weg; er stuende sonst
                 # allein am Anfang der Zeile unter der Codezeile
                 t = t.replace(b + ". ", b, 1).replace(b + "。", b, 1)
                 t = t.replace(b, '<span class="befehl"><code>%s</code><button type="button" class="befehl-kopier"'
-                              ' data-kopie="%s" data-kopiert="%s">%s</button></span>'
-                              % (b, b, e(d["spenden_kopiert"]), e(d["spenden_kopieren"])), 1)
+                              ' data-kopie="%s" data-kopiert="%s" data-vonhand="%s">%s</button></span>'
+                              % (ganz, ganz, e(d["spenden_kopiert"]), e(d["kopieren_markiert"]),
+                                 e(d["spenden_kopieren"])), 1)
         return t
     zeilen = []
     for sym, titel, texte, knoepfe, hinweise in plattformen:
         texte_html = "".join("<p>%s</p>" % (t if t.startswith("<b>") else e(t)) for t in texte)
+        reihe = '<div class="knopfreihe">%s</div>' % "".join(knoepfe)
+        hin = "".join('<p class="p-hinweis">%s</p>' % befehl(v(h)) for h in hinweise)
+        # Ohne Hauptknopf (DMS) steht der Befehl vorn, der Knopf danach.
+        laden = reihe + hin if any(' zweit"' not in k for k in knoepfe) else hin + reihe
         zeilen.append(
             '<div class="plattform"><div class="p-symbol">%s</div>'
             '<div class="p-text"><h3>%s</h3>%s</div>'
-            '<div class="p-laden"><div class="knopfreihe">%s</div>%s</div></div>'
-            % (symbol(sym), e(titel), texte_html, "".join(knoepfe),
-               "".join('<p class="p-hinweis">%s</p>' % befehl(v(h)) for h in hinweise)))
+            '<div class="p-laden">%s</div></div>'
+            % (symbol(sym), e(titel), texte_html, laden))
     plattformen_html = "".join(zeilen)
     mehr_links = '<a href="%s">%s</a> · <a href="%s">%s</a>' % (
         v(ho[6][2]), e(ho[6][0]), v(ho[7][2]), e(ho[7][0]))
@@ -588,6 +642,7 @@ def seite(d, alle):
     <span id="wo" class="anker"></span>
     <h2>%(holen_titel)s</h2>
     <div class="plattformen">%(plattformen)s</div>
+    <p id="kopier-meldung" class="nur-vorlesen" aria-live="polite"></p>
     <p class="p-mehr">%(mehr_links)s</p>
   </section>
 
@@ -689,7 +744,7 @@ def unterseite(d, alle, u):
 
   <section class="text">
     %(text)s
-    <figure class="einzelbild"><img src="../../bilder/%(bild)s.webp" alt="%(alt)s" width="1280" height="800" loading="lazy"></figure>
+    <figure class="einzelbild"><img src="../../bilder/%(bild)s.webp" alt="%(alt)s" width="1280" height="800" loading="lazy" decoding="async"></figure>
     <p><a class="tat" href="../#holen">%(cta)s</a></p>
   </section>
 
@@ -911,11 +966,11 @@ def seite404(alle):
 <link rel="icon" href="/bilder/symbol.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/stil.css">
 <body>
-<div class="mitte"><header>
+<main class="mitte"><header>
   <div class="marke"><img src="/bilder/symbol.svg" alt="" width="72" height="72"><h1>404</h1></div>
   <p class="unterzeile">Diese Seite gibt es nicht. / This page does not exist.</p>
   <p class="sprachen">%s</p>
-</header></div>
+</header></main>
 </body>
 </html>
 """ % liste
@@ -1032,10 +1087,10 @@ def weiche(alle):
   location.replace(ziel + "/");
 </script>
 <body>
-<div class="mitte"><header>
+<main class="mitte"><header>
   <div class="marke"><img src="bilder/symbol.svg" alt="" width="72" height="72"><h1>OrangeDeck</h1></div>
   <noscript><p class="unterzeile">%s</p></noscript>
-</header></div>
+</header></main>
 </body>
 </html>
 """ % (codes, liste)

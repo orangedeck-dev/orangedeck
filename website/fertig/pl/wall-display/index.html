@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-pl.png">
 <link rel="canonical" href="https://orangedeck.dev/pl/wall-display/">
 <link rel="icon" href="../../bilder/symbol.svg?v=25710465d0" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=75805149c7">
+<link rel="stylesheet" href="../../stil.css?v=98ab004bdc">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/">
@@ -48,16 +48,22 @@
 <link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/">
 <link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/">
 <body>
-<div class="grundbild" aria-hidden="true" style="background-image:url('../../bilder/grund.webp')"></div>
+<!-- **Landmarken.** Die Sprungmarke ist der erste Tab-Halt und erst mit dem
+     Fokus sichtbar; <main> umfasst alles zwischen Kopfleiste und Fuss, und
+     jedes <nav> traegt einen Namen, sonst liest ein Screenreader fuenfmal
+     nur "Navigation" vor. -->
+<a class="sprung" href="#inhalt">Przejdź do treści</a>
+<div class="grundbild" aria-hidden="true"></div>
 <div class="grundschleier" aria-hidden="true"></div>
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg?v=25710465d0" alt="" width="34" height="34"><span>OrangeDeck</span></a>
-  <nav class="nav"><a href="../#was">Co to jest</a><a href="../#ansichten">Widoki</a><a href="../#einstellbar">Ustawienia</a><a href="../#wo">Gdzie działa</a><a href="../#warum">Dlaczego</a><a href="../#faq">Pytania</a></nav>
-  <nav class="sprachen"><details class="sprachwahl"><summary aria-label="Język">PL</summary><ul><li><a href="../../de/wall-display/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/wall-display/" hreflang="en" lang="en">English</a></li><li><a href="../../es/wall-display/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/wall-display/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/wall-display/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/wall-display/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/wall-display/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/wall-display/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/wall-display/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/wall-display/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/wall-display/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/wall-display/" hreflang="pl" lang="pl" aria-current="true">Polski</a></li><li><a href="../../cs/wall-display/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
+  <nav class="nav" aria-label="Sekcje"><a href="../#was">Co to jest</a><a href="../#ansichten">Widoki</a><a href="../#einstellbar">Ustawienia</a><a href="../#wo">Gdzie działa</a><a href="../#warum">Dlaczego</a><a href="../#faq">Pytania</a></nav>
+  <nav class="sprachen" aria-label="Język"><details class="sprachwahl"><summary aria-label="Język">PL</summary><ul><li><a href="../../de/wall-display/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/wall-display/" hreflang="en" lang="en">English</a></li><li><a href="../../es/wall-display/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/wall-display/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/wall-display/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/wall-display/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/wall-display/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/wall-display/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/wall-display/" hreflang="ja" lang="ja">日本語</a></li><li><a href="../../zh/wall-display/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/wall-display/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/wall-display/" hreflang="pl" lang="pl" aria-current="true">Polski</a></li><li><a href="../../cs/wall-display/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
   <a class="tat kopf-tat" href="../#holen">Pobierz</a>
 </div></div>
 
 <div class="mitte">
+<main id="inhalt" tabindex="-1">
   <header class="hero unter">
     <p class="pfad"><a href="../">Przegląd</a> › Wyświetlacz ścienny</p>
     <h1>Wyświetlacz wysokości bloku na ścianę</h1>
@@ -65,7 +71,7 @@
 
   <section class="text">
     <p>Widok „Zegar” pokazuje aktualną wysokość bloku dużymi cyframi, a pod nią opłatę, kurs, Moscow Time, rozmiar mempoolu i hashrate. Pasek odlicza czas do najbliższej korekty trudności, linia do halvingu.</p><p>Na ekranie nie ma przycisków, więc wszystko dobrze widać z drugiego końca pokoju. To, co jest wyświetlane duże na środku, można zmienić w ustawieniach, a jeśli wybierzesz kilka wartości, pokazują się na zmianę.</p><p>Na Androidzie ekran nie gaśnie, dopóki OrangeDeck działa na pełnym ekranie. Nie trzeba do tego żadnych uprawnień, a w tle aplikacja niczego nie podtrzymuje. Wersja na Androida ma skrót na ekranie głównym, który od razu otwiera zegar.</p><p>Wystarczy dowolny telefon lub tablet z Androidem 9 lub nowszym i 64-bitowym procesorem ARM. Na komputerze ten sam widok działa jako widżet, na przykład w rogu drugiego monitora.</p><p>Kurs i Moscow Time są liczone w wybranej walucie: euro, dolar amerykański, funt, frank szwajcarski, dolar kanadyjski lub australijski albo jen.</p>
-    <figure class="einzelbild"><img src="../../bilder/uhr.webp?v=cabf938aff" alt="Widok „Zegar”: wysokość bloku, opłata, kurs, Moscow Time, mempool i hashrate." width="1280" height="800" loading="lazy"></figure>
+    <figure class="einzelbild"><img src="../../bilder/uhr.webp?v=cabf938aff" alt="Widok „Zegar”: wysokość bloku, opłata, kurs, Moscow Time, mempool i hashrate." width="1280" height="800" loading="lazy" decoding="async"></figure>
     <p><a class="tat" href="../#holen">Pobierz</a></p>
   </section>
 
@@ -73,19 +79,20 @@
     <h2>Pytania</h2>
     <div class="fragen"><details><summary>Czy ekran pozostaje włączony?</summary><p>Tak, na Androidzie, dopóki aplikacja jest na pełnym ekranie. Po wyjściu z pełnego ekranu lub przełączeniu na inną aplikację znów obowiązuje zwykły czas wygaszania ekranu.</p></details><details><summary>Jakie tablety się nadają?</summary><p>Z Androidem 9 lub nowszym i 64-bitowym procesorem ARM. To większość tabletów z ostatnich lat.</p></details><details><summary>Czy potrzebuję własnego węzła?</summary><p>Nie. Liczby pochodzą z mempool.space. Jeśli masz własną instancję mempool, wpisz jej adres w ustawieniach, a zegar będzie z niej korzystał.</p></details></div>
   </section>
+</main>
 
   <footer>
     <p class="fuss-tat"><a class="tat" href="../#holen">Wypróbuj</a></p>
     <div class="fuss-spalten">
       <div>
         <p class="klein">Więcej o OrangeDeck</p>
-        <nav class="fuss-links"><a href="../bitaxe/">Monitor Bitaxe</a><a href="../wall-display/">Wyświetlacz ścienny</a><a href="../dankmaterialshell/">DankMaterialShell</a><a href="../changelog/">Co nowego</a><a href="../donate/">Darowizny</a></nav>
+        <nav class="fuss-links" aria-label="Więcej o OrangeDeck"><a href="../bitaxe/">Monitor Bitaxe</a><a href="../wall-display/">Wyświetlacz ścienny</a><a href="../dankmaterialshell/">DankMaterialShell</a><a href="../changelog/">Co nowego</a><a href="../donate/">Darowizny</a></nav>
       </div>
     </div>
     <p>OrangeDeck jest udostępniany na licencji MIT. Układanie kafelków i model kolorów przeniesione z <a href="https://github.com/bitfeed-project/bitfeed">bitfeed</a> (MIT, <a href="https://github.com/mononaut">mononaut</a>).</p>
     <div class="fuss-unten">
-      <nav class="fuss-recht"><a href="../../en/privacy/">Prywatność</a><a href="../../en/imprint/">Nota prawna</a></nav>
-      <nav class="profile"><a href="https://github.com/orangedeck-dev/orangedeck" aria-label="GitHub" title="GitHub"><svg class="symbol" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></nav>
+      <nav class="fuss-recht" aria-label="Informacje prawne"><a href="../../en/privacy/">Prywatność</a><a href="../../en/imprint/">Nota prawna</a></nav>
+      <nav class="profile" aria-label="Profile"><a href="https://github.com/orangedeck-dev/orangedeck" aria-label="GitHub" title="GitHub"><svg class="symbol" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></nav>
     </div>
   </footer>
 </div>

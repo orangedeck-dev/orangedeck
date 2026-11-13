@@ -203,6 +203,10 @@
   "fuss_herkunft": "Skládání dlaždic a barevný model převzaty z bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck je pod licencí MIT.",
   "sprache_waehlen": "Jazyk",
+  "zum_inhalt": "Přejít na obsah",
+  "nav_haupt": "Sekce",
+  "nav_recht": "Právní informace",
+  "nav_profile": "Profily",
   "seo_kurz": "OrangeDeck je bezplatná aplikace pro počítač a Android, která kreslí mempool bitcoinu jako živou mozaiku dlaždic. V jednom okně spojuje pět zobrazení: kanál mempoolu, hodiny výšky bloku, těžební údaje, průzkumník bloků a tržní data. Běží na Linuxu, Windows a Androidu a také jako plugin DankMaterialShell, mluví třinácti jazyky, má licenci MIT a nevyžaduje účet.",
   "bilder_titel": "Snímky obrazovky",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "Vytvořit adresu",
   "spenden_kopieren": "Kopírovat",
   "spenden_kopiert": "Zkopírováno",
+  "kopieren_markiert": "Text je označen, zkopírujte ho ručně",
   "spenden_fehler": "Momentálně není k dispozici žádná adresa. Zkuste to prosím později.",
   "spenden_zur_seite": "Přejít na stránku darů",
   "spenden_jede_wallet": "Běžná adresa"

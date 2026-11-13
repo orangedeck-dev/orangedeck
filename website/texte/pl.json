@@ -203,6 +203,10 @@
   "fuss_herkunft": "Układanie kafelków i model kolorów przeniesione z bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck jest udostępniany na licencji MIT.",
   "sprache_waehlen": "Język",
+  "zum_inhalt": "Przejdź do treści",
+  "nav_haupt": "Sekcje",
+  "nav_recht": "Informacje prawne",
+  "nav_profile": "Profile",
   "seo_kurz": "OrangeDeck to darmowa aplikacja na komputer i Androida, która rysuje mempool Bitcoina jako żywą mozaikę kafelków. Łączy w jednym oknie pięć widoków: kanał mempoolu, zegar wysokości bloku, dane o kopaniu, eksplorator bloków i dane rynkowe. Działa w systemach Linux, Windows i Android oraz jako wtyczka DankMaterialShell, obsługuje trzynaście języków, jest na licencji MIT i nie wymaga konta.",
   "bilder_titel": "Zrzuty ekranu",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "Utwórz adres",
   "spenden_kopieren": "Kopiuj",
   "spenden_kopiert": "Skopiowano",
+  "kopieren_markiert": "Tekst zaznaczony, skopiuj go ręcznie",
   "spenden_fehler": "W tej chwili nie ma dostępnego adresu. Spróbuj ponownie później.",
   "spenden_zur_seite": "Przejdź do strony darowizn",
   "spenden_jede_wallet": "Zwykły adres"

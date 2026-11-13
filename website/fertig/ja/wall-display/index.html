@@ -32,7 +32,7 @@
 <meta name="twitter:image" content="https://orangedeck.dev/bilder/vorschau-ja.png">
 <link rel="canonical" href="https://orangedeck.dev/ja/wall-display/">
 <link rel="icon" href="../../bilder/symbol.svg?v=25710465d0" type="image/svg+xml">
-<link rel="stylesheet" href="../../stil.css?v=75805149c7">
+<link rel="stylesheet" href="../../stil.css?v=98ab004bdc">
 <link rel="alternate" hreflang="de" href="https://orangedeck.dev/de/wall-display/">
 <link rel="alternate" hreflang="en" href="https://orangedeck.dev/en/wall-display/">
 <link rel="alternate" hreflang="es" href="https://orangedeck.dev/es/wall-display/">
@@ -48,16 +48,22 @@
 <link rel="alternate" hreflang="cs" href="https://orangedeck.dev/cs/wall-display/">
 <link rel="alternate" hreflang="x-default" href="https://orangedeck.dev/en/wall-display/">
 <body>
-<div class="grundbild" aria-hidden="true" style="background-image:url('../../bilder/grund.webp')"></div>
+<!-- **Landmarken.** Die Sprungmarke ist der erste Tab-Halt und erst mit dem
+     Fokus sichtbar; <main> umfasst alles zwischen Kopfleiste und Fuss, und
+     jedes <nav> traegt einen Namen, sonst liest ein Screenreader fuenfmal
+     nur "Navigation" vor. -->
+<a class="sprung" href="#inhalt">本文へ移動</a>
+<div class="grundbild" aria-hidden="true"></div>
 <div class="grundschleier" aria-hidden="true"></div>
 <div class="kopfleiste"><div class="mitte kopf">
   <a class="marke" href="../#"><img src="../../bilder/symbol.svg?v=25710465d0" alt="" width="34" height="34"><span>OrangeDeck</span></a>
-  <nav class="nav"><a href="../#was">概要</a><a href="../#ansichten">画面</a><a href="../#einstellbar">設定</a><a href="../#wo">動作環境</a><a href="../#warum">特徴</a><a href="../#faq">よくある質問</a></nav>
-  <nav class="sprachen"><details class="sprachwahl"><summary aria-label="言語">JA</summary><ul><li><a href="../../de/wall-display/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/wall-display/" hreflang="en" lang="en">English</a></li><li><a href="../../es/wall-display/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/wall-display/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/wall-display/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/wall-display/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/wall-display/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/wall-display/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/wall-display/" hreflang="ja" lang="ja" aria-current="true">日本語</a></li><li><a href="../../zh/wall-display/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/wall-display/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/wall-display/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/wall-display/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
+  <nav class="nav" aria-label="セクション"><a href="../#was">概要</a><a href="../#ansichten">画面</a><a href="../#einstellbar">設定</a><a href="../#wo">動作環境</a><a href="../#warum">特徴</a><a href="../#faq">よくある質問</a></nav>
+  <nav class="sprachen" aria-label="言語"><details class="sprachwahl"><summary aria-label="言語">JA</summary><ul><li><a href="../../de/wall-display/" hreflang="de" lang="de">Deutsch</a></li><li><a href="../../en/wall-display/" hreflang="en" lang="en">English</a></li><li><a href="../../es/wall-display/" hreflang="es" lang="es">Español</a></li><li><a href="../../fr/wall-display/" hreflang="fr" lang="fr">Français</a></li><li><a href="../../it/wall-display/" hreflang="it" lang="it">Italiano</a></li><li><a href="../../pt-pt/wall-display/" hreflang="pt-pt" lang="pt-pt">Português (PT)</a></li><li><a href="../../nl/wall-display/" hreflang="nl" lang="nl">Nederlands</a></li><li><a href="../../ru/wall-display/" hreflang="ru" lang="ru">Русский</a></li><li><a href="../../ja/wall-display/" hreflang="ja" lang="ja" aria-current="true">日本語</a></li><li><a href="../../zh/wall-display/" hreflang="zh" lang="zh">中文</a></li><li><a href="../../pt-br/wall-display/" hreflang="pt-br" lang="pt-br">Português (BR)</a></li><li><a href="../../pl/wall-display/" hreflang="pl" lang="pl">Polski</a></li><li><a href="../../cs/wall-display/" hreflang="cs" lang="cs">Čeština</a></li></ul></details></nav>
   <a class="tat kopf-tat" href="../#holen">入手する</a>
 </div></div>
 
 <div class="mitte">
+<main id="inhalt" tabindex="-1">
   <header class="hero unter">
     <p class="pfad"><a href="../">トップへ</a> › 壁掛けディスプレイ</p>
     <h1>壁に掛けるブロック高ディスプレイ</h1>
@@ -65,7 +71,7 @@
 
   <section class="text">
     <p>時計画面は現在のブロック高を大きな数字で表示し、その下に手数料、価格、モスクワタイム、メンプールのサイズ、ハッシュレートを並べます。バーで次の難易度調整まで、線で半減期までの残りを示します。</p><p>画面上に操作ボタンがないので、部屋の反対側からでも読めます。中央に大きく出す値は設定で変えられ、複数選ぶと順番に切り替わります。</p><p>Android では、OrangeDeck を全画面で表示している間は画面が消えません。権限は不要で、バックグラウンドでは何もスリープを妨げません。Android 版には時計を直接開くホーム画面のショートカットがあります。</p><p>Android 9 以降で 64ビット ARM プロセッサを積んだスマートフォンかタブレットなら使えます。デスクトップでは同じ画面をウィジェットとして、たとえばサブモニターの隅に置けます。</p><p>価格とモスクワタイムは選んだ通貨に従います。ユーロ、米ドル、英ポンド、スイスフラン、カナダドル、オーストラリアドル、円から選べます。</p>
-    <figure class="einzelbild"><img src="../../bilder/uhr.webp?v=cabf938aff" alt="ブロック高、手数料、価格、モスクワタイム、メンプール、ハッシュレートを表示した時計画面。" width="1280" height="800" loading="lazy"></figure>
+    <figure class="einzelbild"><img src="../../bilder/uhr.webp?v=cabf938aff" alt="ブロック高、手数料、価格、モスクワタイム、メンプール、ハッシュレートを表示した時計画面。" width="1280" height="800" loading="lazy" decoding="async"></figure>
     <p><a class="tat" href="../#holen">入手する</a></p>
   </section>
 
@@ -73,19 +79,20 @@
     <h2>よくある質問</h2>
     <div class="fragen"><details><summary>画面はつけっぱなしになりますか？</summary><p>はい。Android でアプリを全画面表示している間はそうなります。全画面を解除したり別のアプリに切り替えたりすると、通常の画面消灯時間に戻ります。</p></details><details><summary>どのタブレットで使えますか？</summary><p>Android 9 以降で 64ビット ARM プロセッサを積んだものです。ここ数年のタブレットならほとんど当てはまります。</p></details><details><summary>自分のノードは必要ですか？</summary><p>いいえ。数値は mempool.space から取得します。自分の mempool インスタンスを運用している場合は、設定にそのアドレスを入力すれば時計がそれを使います。</p></details></div>
   </section>
+</main>
 
   <footer>
     <p class="fuss-tat"><a class="tat" href="../#holen">試してみる</a></p>
     <div class="fuss-spalten">
       <div>
         <p class="klein">OrangeDeck についてもっと見る</p>
-        <nav class="fuss-links"><a href="../bitaxe/">Bitaxe モニター</a><a href="../wall-display/">壁掛けディスプレイ</a><a href="../dankmaterialshell/">DankMaterialShell</a><a href="../changelog/">更新内容</a><a href="../donate/">寄付</a></nav>
+        <nav class="fuss-links" aria-label="OrangeDeck についてもっと見る"><a href="../bitaxe/">Bitaxe モニター</a><a href="../wall-display/">壁掛けディスプレイ</a><a href="../dankmaterialshell/">DankMaterialShell</a><a href="../changelog/">更新内容</a><a href="../donate/">寄付</a></nav>
       </div>
     </div>
     <p>OrangeDeck は MIT ライセンスです。 タイルの配置と配色モデルは <a href="https://github.com/bitfeed-project/bitfeed">bitfeed</a>（MIT、<a href="https://github.com/mononaut">mononaut</a>）から移植しています。</p>
     <div class="fuss-unten">
-      <nav class="fuss-recht"><a href="../../en/privacy/">プライバシー</a><a href="../../en/imprint/">運営者情報</a></nav>
-      <nav class="profile"><a href="https://github.com/orangedeck-dev/orangedeck" aria-label="GitHub" title="GitHub"><svg class="symbol" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></nav>
+      <nav class="fuss-recht" aria-label="法的情報"><a href="../../en/privacy/">プライバシー</a><a href="../../en/imprint/">運営者情報</a></nav>
+      <nav class="profile" aria-label="プロフィール"><a href="https://github.com/orangedeck-dev/orangedeck" aria-label="GitHub" title="GitHub"><svg class="symbol" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></nav>
     </div>
   </footer>
 </div>

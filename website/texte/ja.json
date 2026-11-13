@@ -203,6 +203,10 @@
   "fuss_herkunft": "タイルの配置と配色モデルは bitfeed（MIT、mononaut）から移植しています。",
   "fuss_lizenz": "OrangeDeck は MIT ライセンスです。",
   "sprache_waehlen": "言語",
+  "zum_inhalt": "本文へ移動",
+  "nav_haupt": "セクション",
+  "nav_recht": "法的情報",
+  "nav_profile": "プロフィール",
   "seo_kurz": "OrangeDeck は、ビットコインのメンプールを生きたタイルのモザイクとして描く、デスクトップと Android 向けの無料アプリです。メンプールのフィード、ブロック高の時計、マイニング数値、ブロックエクスプローラ、市場データという5つの画面を1つのウィンドウにまとめています。Linux、Windows、Android で動き、DankMaterialShell のプラグインとしても使えます。13言語に対応し、MIT ライセンスで、アカウントは不要です。",
   "bilder_titel": "スクリーンショット",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "アドレスを作成",
   "spenden_kopieren": "コピー",
   "spenden_kopiert": "コピーしました",
+  "kopieren_markiert": "選択しました。手動でコピーしてください",
   "spenden_fehler": "現在利用できるアドレスがありません。しばらくしてからもう一度お試しください。",
   "spenden_zur_seite": "寄付のページへ",
   "spenden_jede_wallet": "通常のアドレス"

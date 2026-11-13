@@ -203,6 +203,10 @@
   "fuss_herkunft": "Tegelindeling en kleurmodel overgenomen van bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck valt onder de MIT-licentie.",
   "sprache_waehlen": "Taal",
+  "zum_inhalt": "Naar de inhoud",
+  "nav_haupt": "Onderdelen",
+  "nav_recht": "Juridisch",
+  "nav_profile": "Profielen",
   "seo_kurz": "OrangeDeck is een gratis desktop- en Android-applicatie die de Bitcoin-mempool tekent als een levend tegelmozaïek. Het bundelt vijf weergaven in één venster: mempoolfeed, blokhoogteklok, miningcijfers, blockexplorer en marktgegevens. Het draait op Linux, Windows en Android en als DankMaterialShell-plugin, spreekt dertien talen, heeft een MIT-licentie en vraagt geen account.",
   "bilder_titel": "Schermafbeeldingen",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "Adres aanmaken",
   "spenden_kopieren": "Kopiëren",
   "spenden_kopiert": "Gekopieerd",
+  "kopieren_markiert": "Tekst geselecteerd, kopieer hem zelf",
   "spenden_fehler": "Er is op dit moment geen adres beschikbaar. Probeer het later nog eens.",
   "spenden_zur_seite": "Naar de donatiepagina",
   "spenden_jede_wallet": "Gewoon adres"

@@ -203,6 +203,10 @@
   "fuss_herkunft": "Kachelpackung und Farbmodell aus bitfeed portiert (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck steht unter der MIT-Lizenz.",
   "sprache_waehlen": "Sprache",
+  "zum_inhalt": "Zum Inhalt",
+  "nav_haupt": "Abschnitte",
+  "nav_recht": "Rechtliches",
+  "nav_profile": "Profile",
   "seo_kurz": "OrangeDeck ist eine freie Desktop- und Android-Anwendung, die den Bitcoin-Mempool als lebendige Kachelgrafik zeichnet. Sie vereint fünf Ansichten in einem Fenster: Mempool-Feed, Blockuhr, Mining-Zahlen, Blockforscher und Marktdaten. Sie läuft auf Linux, Windows und Android und als Plugin für DankMaterialShell, spricht dreizehn Sprachen, ist MIT-lizenziert und verlangt kein Konto.",
   "bilder_titel": "Bilder",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "Adresse erzeugen",
   "spenden_kopieren": "Kopieren",
   "spenden_kopiert": "Kopiert",
+  "kopieren_markiert": "Text markiert, bitte selbst kopieren",
   "spenden_fehler": "Gerade gibt es keine Adresse. Bitte später noch einmal versuchen.",
   "spenden_zur_seite": "Zur Spendenseite",
   "spenden_jede_wallet": "Normale Adresse"

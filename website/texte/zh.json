@@ -203,6 +203,10 @@
   "fuss_herkunft": "方块排布和配色模型移植自 bitfeed（MIT，mononaut）。",
   "fuss_lizenz": "OrangeDeck 采用 MIT 许可证。",
   "sprache_waehlen": "语言",
+  "zum_inhalt": "跳到正文",
+  "nav_haupt": "页面栏目",
+  "nav_recht": "法律信息",
+  "nav_profile": "主页链接",
   "seo_kurz": "OrangeDeck 是一款免费的桌面和 Android 应用，把比特币内存池绘制成动态的方块拼图。它在一个窗口里集合了五个视图：内存池动态、区块高度时钟、挖矿数据、区块浏览器和行情数据。它可在 Linux、Windows 和 Android 上运行，也可作为 DankMaterialShell 插件使用，支持十三种语言，采用 MIT 许可证，无需账户。",
   "bilder_titel": "截图",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "生成地址",
   "spenden_kopieren": "复制",
   "spenden_kopiert": "已复制",
+  "kopieren_markiert": "已选中，请手动复制",
   "spenden_fehler": "目前没有可用的地址，请稍后再试。",
   "spenden_zur_seite": "前往捐赠页面",
   "spenden_jede_wallet": "普通地址"

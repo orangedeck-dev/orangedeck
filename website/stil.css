@@ -7,9 +7,22 @@
   --schrift: #e6e0e9;
   --gedaempft: #9a94a6;
   --orange: #f7931a;
+  /* Grund der Codezeilen, Knopf darin beim Zeigen, Punkte unter dem Kopf.
+     --punkt-aus hat 3,75:1 auf --grund (Bedienelement, mindestens 3:1). */
+  --grund-tief: #0b0a10;
+  --grund-zeigen: #241f2d;
+  --punkt-aus: #726c82;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+/* Weiches Scrollen nur, wenn niemand weniger Bewegung wuenscht. */
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+/* **Sprungmarke zum Inhalt.** Erster Tab-Halt jeder Seite, unsichtbar bis
+   zum Fokus; dann steht sie ueber der Kopfleiste oben links. */
+.sprung { position: absolute; left: 12px; top: -100px; z-index: 50; background: var(--orange); color: #14100a; font-weight: 600; padding: 0.6rem 1rem; border-radius: 8px; }
+.sprung:focus { top: 12px; text-decoration: none; }
+main:focus { outline: none; }
+/* Nur fuer Screenreader, etwa die Meldezeile des Kopierknopfs */
+.nur-vorlesen { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 body {
   margin: 0;
   background: var(--grund);
@@ -53,7 +66,7 @@ li, dd { text-wrap: pretty; }
 #holen .knopfreihe { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); }
 #holen .knopf { min-width: 0; }
 
-ul.klar { list-style: none; padding: 0; margin: 0; max-width: 44rem; }
+ul.klar { list-style: none; padding: 0; margin: 0; max-width: min(44rem, 68ch); }
 ul.klar li { padding-left: 1.4rem; position: relative; margin-bottom: 0.7rem; color: var(--gedaempft); }
 ul.klar li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 8px; height: 8px; border-radius: 2px; background: var(--orange); }
 
@@ -125,6 +138,15 @@ footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
   .kopf { gap: 0.9rem; }
   .kopf-tat { display: inline-block; padding: 0.45rem 0.9rem; font-size: 0.9rem; white-space: nowrap; }
 }
+/* **Bei 320 px passt "Télécharger" sonst nicht in die Leiste.** Unter 360 px
+   steht nur das Logo; der Schriftzug bleibt fuer Screenreader der Name des
+   Verweises. Abstaende und Knopf werden etwas knapper. */
+@media (max-width: 22.49rem) {
+  .kopf .marke span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .kopf { gap: 0.6rem; }
+  body .kopfleiste .mitte.kopf { padding: 0 0.75rem; }
+  .kopf-tat { padding: 0.45rem 0.75rem; font-size: 0.86rem; }
+}
 
 /* ---- Der bewegte Kopf (live.js) ---------------------------------------- */
 /* **Das Standbild ist die Grundlage, nicht der Ersatz.** Es steht im Markup
@@ -134,14 +156,32 @@ footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
 .live { position: relative; border: 1px solid var(--linie); border-radius: 12px; overflow: hidden; background: var(--grund-hell); }
 .live-standbild { width: 100%; height: auto; display: block; }
 .live.laeuft { aspect-ratio: 16 / 10; }
-.live.laeuft.eng { aspect-ratio: 800 / 800; }
-.live.eng .live-huelle {
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-}  /* Ausschnitt auf dem Telefon, siehe live.js skalieren() */
 .live.laeuft .live-standbild { display: none; }
 .live-huelle { display: none; position: relative; height: 100%; overflow: hidden; }
 .live.laeuft .live-huelle { display: block; }
+
+/* **Schmal (live.js skalieren): Buehne plus Tafel.** Die Buehne behaelt das
+   Seitenverhaeltnis des Standbilds und zeigt nur den grafischen Teil der
+   Ansicht; den Text der Nachbildung blendet sie aus, statt ihn auf 4 px zu
+   schrumpfen oder mitten im Wort abzuschneiden. Die Werte stehen in der
+   Tafel darunter als Text in Lesegroesse. Bei der Uhr, die keine Grafik hat,
+   steht die Blockhoehe gross auf der Buehne. */
+.live.laeuft.eng { aspect-ratio: auto; }
+.live.eng .live-huelle { height: auto; aspect-ratio: 16 / 10; background: #0b0b12; }
+.live.eng .live-ansicht > :not(canvas), .live.eng .live-chrom { visibility: hidden; }
+.live-eng-uhr, .live-zahlen { display: none; }
+.live.eng.uhr .live-eng-uhr { display: flex; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; }
+.live-eng-uhr-name { color: var(--gedaempft); font-size: 0.875rem; letter-spacing: 0.14em; text-transform: uppercase; }
+.live-eng-uhr-zahl { color: var(--orange); font-size: clamp(2.6rem, 14vw, 4rem); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.live.eng .live-zahlen { display: grid; border-top: 1px solid var(--linie); padding: 0.8rem 1rem 1rem; }
+.live-tafel { grid-area: 1 / 1; visibility: hidden; }
+.live-tafel.an { visibility: visible; }
+.live-tafel-name { color: var(--orange); font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; }
+.live-tafel dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: 0.6rem 1rem; margin: 0; }
+@media (max-width: 22.49rem) { .live.eng .live-zahlen { padding: 0.8rem 0.75rem 1rem; } }
+.live-tafel dl > .breit { grid-column: 1 / -1; }
+.live-tafel dt { color: var(--gedaempft); font-size: 0.875rem; line-height: 1.3; }
+.live-tafel dd { margin: 0; font-size: 1.0625rem; line-height: 1.35; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 .live-reiter { display: flex; gap: 1.3rem; padding: 0.75rem 1rem 0; flex-wrap: wrap; }
 .live-reiter-knopf {
@@ -233,7 +273,7 @@ footer .sprachen + p { margin-top: 1.4rem; }
                position: absolute; left: 0; right: 0; bottom: 2.6rem; }
 .live.laeuft + .live-punkte { display: flex; }
 .live-punkte button { all: unset; cursor: pointer; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; }
-.live-punkte button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #4a4658; transition: background 0.2s, transform 0.2s; }
+.live-punkte button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--punkt-aus); transition: background 0.2s, transform 0.2s; }
 .live-punkte button:hover::before { background: var(--gedaempft); }
 .live-punkte button[aria-current="true"]::before { background: var(--orange); transform: scale(1.25); }
 .live-punkte button:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
@@ -256,8 +296,11 @@ footer .sprachen + p { margin-top: 1.4rem; }
 .reihe { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 2.2rem; align-items: center; }
 .reihe.umgekehrt .reihe-bild { order: 2; }
 .reihe-bild { display: block; border-radius: 12px; overflow: hidden; border: 1px solid var(--linie); cursor: zoom-in; }
-.reihe-bild img { width: 100%; height: auto; display: block; transition: transform 0.35s ease; }
-.reihe-bild:hover img { transform: scale(1.02); }
+.reihe-bild img { width: 100%; height: auto; display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .reihe-bild img { transition: transform 0.35s ease; }
+  .reihe-bild:hover img { transform: scale(1.02); }
+}
 .reihe-text .nr { color: var(--orange); font-size: 0.85rem; letter-spacing: 0.12em; font-variant-numeric: tabular-nums; }
 .reihe-text h3 { font-size: 1.45rem; margin: 0.3rem 0 0.6rem; }
 .reihe-text p { color: var(--gedaempft); margin: 0; }
@@ -288,11 +331,14 @@ footer .sprachen + p { margin-top: 1.4rem; }
 .p-laden .knopfreihe { gap: 0.5rem; margin-bottom: 0.6rem; }
 .p-laden .tat { padding: 0.5rem 1rem; font-size: 0.92rem; }
 .p-hinweis { color: var(--gedaempft); font-size: 0.82rem; margin: 0 0 0.35rem; overflow-wrap: anywhere; }
-/* Befehl zum Kopieren: eigene Zeile, Monospace, Knopf rechts daneben */
-.befehl { display: flex; align-items: stretch; gap: 0; margin: 0.45rem 0; border: 1px solid var(--linie); border-radius: 8px; background: #0b0a10; overflow: hidden; }
-.befehl code { flex: 1; min-width: 0; padding: 0.5rem 0.7rem; font: 0.86rem/1.4 ui-monospace, "JetBrains Mono", Menlo, monospace; color: var(--schrift); overflow-x: auto; white-space: nowrap; }
+/* Befehl zum Kopieren: eigene Zeile, Monospace, Knopf rechts daneben.
+   **Lange Befehle brechen um**, statt abgeschnitten hinter einem Rollbalken
+   zu stehen: wer einen Befehl liest, bevor er ihn ausfuehrt, soll ihn ganz
+   sehen. Umbrochen wird bevorzugt an Leerzeichen, in der Adresse ueberall. */
+.befehl { display: flex; align-items: stretch; gap: 0; margin: 0.45rem 0; border: 1px solid var(--linie); border-radius: 8px; background: var(--grund-tief); overflow: hidden; }
+.befehl code { flex: 1; min-width: 0; padding: 0.5rem 0.7rem; font: 0.86rem/1.4 ui-monospace, "JetBrains Mono", Menlo, monospace; color: var(--schrift); white-space: pre-wrap; overflow-wrap: anywhere; }
 .befehl-kopier { flex: none; border: 0; border-left: 1px solid var(--linie); background: var(--grund-hell); color: var(--orange); font: inherit; font-size: 0.8rem; padding: 0 0.8rem; cursor: pointer; min-height: 36px; }
-.befehl-kopier:hover { background: #241f2d; }
+.befehl-kopier:hover { background: var(--grund-zeigen); }
 .befehl-kopier:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
 .p-mehr { color: var(--gedaempft); font-size: 0.92rem; margin-top: 1.2rem; }
 @media (max-width: 46rem) {
@@ -358,7 +404,12 @@ footer .sprachen + p { margin-top: 1.4rem; }
    Die Maske macht den Schleier um den Zeiger durchsichtiger; ohne Zeiger
    liegt der Kreis ausserhalb des Bildes. */
 .grundbild, .grundschleier { position: fixed; inset: 0; pointer-events: none; }
-.grundbild { z-index: -2; background-size: cover; background-position: center; }
+/* Der Pfad gilt relativ zu dieser Datei, also fuer jede Seitentiefe gleich.
+   Auf dem Telefon gibt es keinen Roentgenblick, der Schleier deckt 96 %;
+   dort reicht die halb so grosse Fassung: 1280 px, dieselbe Palette, 91
+   statt 228 KB. */
+.grundbild { z-index: -2; background-size: cover; background-position: center; background-image: url(bilder/grund.webp); }
+@media (max-width: 46rem), (hover: none) { .grundbild { background-image: url(bilder/grund-klein.webp); } }
 .grundschleier {
   z-index: -1; background: var(--grund); opacity: 0.96;
   --mx: -999px; --my: -999px; --r: 90px;

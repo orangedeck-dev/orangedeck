@@ -203,6 +203,10 @@
   "fuss_herkunft": "Empilement des tuiles et modèle de couleurs repris de bitfeed (MIT, mononaut).",
   "fuss_lizenz": "OrangeDeck est sous licence MIT.",
   "sprache_waehlen": "Langue",
+  "zum_inhalt": "Aller au contenu",
+  "nav_haupt": "Sections",
+  "nav_recht": "Informations juridiques",
+  "nav_profile": "Profils",
   "seo_kurz": "OrangeDeck est une application gratuite pour ordinateur et Android qui dessine le mempool Bitcoin comme une mosaïque de tuiles vivante. Elle réunit cinq vues dans une seule fenêtre : flux du mempool, horloge de hauteur de bloc, chiffres de minage, explorateur de blocs et données de marché. Elle fonctionne sous Linux, Windows et Android ainsi qu’en plugin DankMaterialShell, parle treize langues, est sous licence MIT et ne demande aucun compte.",
   "bilder_titel": "Captures d’écran",
   "bilder": [
@@ -404,6 +408,7 @@
   "spenden_zeigen": "Créer une adresse",
   "spenden_kopieren": "Copier",
   "spenden_kopiert": "Copié",
+  "kopieren_markiert": "Texte sélectionné, copiez-le vous-même",
   "spenden_fehler": "Aucune adresse disponible pour le moment. Veuillez réessayer plus tard.",
   "spenden_zur_seite": "Vers la page des dons",
   "spenden_jede_wallet": "Adresse classique"
