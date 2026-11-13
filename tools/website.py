@@ -446,7 +446,7 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
            '<script src="../colors.js"></script>\n'
            '<script src="../live.js" defer></script>\n'
            '<script src="../lichtbox.js" defer></script>\n'
-           '<script>document.addEventListener("click",function(ev){var k=ev.target.closest(".kopier");'
+           '<script>document.addEventListener("click",function(ev){var k=ev.target.closest(".befehl-kopier");'
            'if(!k||!navigator.clipboard)return;navigator.clipboard.writeText(k.dataset.kopie).then(function(){'
            'var alt=k.textContent;k.textContent=k.dataset.kopiert;setTimeout(function(){k.textContent=alt;},1600);});});</script>'
            % json.dumps({"s": APP_TEXTE[d["code"]]}, ensure_ascii=False, separators=(",", ":"))
@@ -523,7 +523,7 @@ def seite(d, alle):
                 # der Satzpunkt nach dem Befehl faellt weg; er stuende sonst
                 # allein am Anfang der Zeile unter der Codezeile
                 t = t.replace(b + ". ", b, 1).replace(b + "。", b, 1)
-                t = t.replace(b, '<span class="befehl"><code>%s</code><button type="button" class="kopier"'
+                t = t.replace(b, '<span class="befehl"><code>%s</code><button type="button" class="befehl-kopier"'
                               ' data-kopie="%s" data-kopiert="%s">%s</button></span>'
                               % (b, b, e(d["spenden_kopiert"]), e(d["spenden_kopieren"])), 1)
         return t
