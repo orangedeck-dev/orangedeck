@@ -30,7 +30,9 @@ header { padding: 3.5rem 0 2.5rem; }
 
 section { padding: 2.6rem 0; border-top: 1px solid var(--linie); }
 h2 { font-size: 1.35rem; margin: 0 0 1.2rem; }
-p { max-width: 44rem; }
+p { max-width: min(44rem, 68ch); text-wrap: pretty; }
+h1, h2 { text-wrap: balance; }
+li, dd { text-wrap: pretty; }
 
 .bilder { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); }
 .bilder img { width: 100%; border: 1px solid var(--linie); border-radius: 10px; display: block; }
@@ -79,7 +81,7 @@ footer { border-top: 1px solid var(--linie); padding: 2rem 0 3rem; color: var(--
 
 .hero { padding: 4.5rem 0 3rem; border: 0; }
 .hero h1 { font-size: clamp(2.1rem, 6vw, 3.6rem); line-height: 1.08; margin: 0 0 1.1rem; letter-spacing: -0.02em; max-width: 20ch; }
-.fuehrend { color: var(--gedaempft); font-size: clamp(1.02rem, 2.3vw, 1.2rem); max-width: 44rem; margin: 0 0 1.8rem; }
+.fuehrend { color: var(--gedaempft); font-size: clamp(1.02rem, 2.3vw, 1.2rem); max-width: min(44rem, 68ch); margin: 0 0 1.8rem; }
 .tat { display: inline-block; background: var(--orange); color: #14100a; font-weight: 600; padding: 0.7rem 1.4rem; border-radius: 8px; }
 .tat:hover { text-decoration: none; filter: brightness(1.08); }
 .tat.zweit { background: transparent; color: var(--schrift); border: 1px solid var(--linie); }
@@ -114,9 +116,14 @@ footer { border-top: 1px solid var(--linie); padding: 2rem 0 3rem; color: var(--
 .fuss-tat { margin-bottom: 1.6rem; }
 footer .klein { margin-bottom: 0.3rem; font-size: 0.86rem; }
 
+/* Auf dem Telefon faellt die Navigation weg; der Weg zum Herunterladen
+   bleibt als Knopf in der Kopfleiste, statt erst nach ~6000 px. */
+.kopf-tat { display: none; }
 @media (max-width: 46rem) {
   .nav { display: none; }
   .kopf .sprachen { margin-left: auto; }
+  .kopf { gap: 0.9rem; }
+  .kopf-tat { display: inline-block; padding: 0.45rem 0.9rem; font-size: 0.9rem; white-space: nowrap; }
 }
 
 /* ---- Der bewegte Kopf (live.js) ---------------------------------------- */

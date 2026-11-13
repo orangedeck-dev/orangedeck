@@ -361,6 +361,7 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
   <a class="marke" href="%(start)s#"><img src="%(auf)sbilder/symbol.svg" alt="" width="34" height="34"><span>OrangeDeck</span></a>
   <nav class="nav">%(nav)s</nav>
   <nav class="sprachen">%(wahl_kurz)s</nav>
+  <a class="tat kopf-tat" href="%(start)s#holen">%(kopf_cta)s</a>
 </div></div>
 
 <div class="mitte">
@@ -432,7 +433,7 @@ def rahmen(d, alle, pfad, titel, beschreibung, inhalt, ld, tiefe):
        "alternativen": alternativen, "nav": nav, "wahl_kurz": wahl_kurz,
        "wahl_lang": wahl_lang, "mehr": mehr, "mehr_titel": e(d["mehr_titel"]),
        "profile": profile, "recht": recht, "wahl_fuss": wahl_fuss,
-       "inhalt": inhalt, "fuss_cta": e(d["fuss_cta"]), "fuss_lizenz": e(d["fuss_lizenz"]),
+       "inhalt": inhalt, "fuss_cta": e(d["fuss_cta"]), "kopf_cta": e(d["hero_cta1"]), "fuss_lizenz": e(d["fuss_lizenz"]),
        "fuss_herkunft": e(d["fuss_herkunft"])
            .replace("bitfeed", '<a href="https://github.com/bitfeed-project/bitfeed">bitfeed</a>', 1)
            .replace("mononaut", '<a href="https://github.com/mononaut">mononaut</a>', 1),
