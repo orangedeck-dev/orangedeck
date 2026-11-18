@@ -15,6 +15,50 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## TAGESABSCHLUSS 18.11.2026 -- 0.2.18 veroeffentlicht
+
+**0.2.18 ist draussen**: Tag `v0.2.18` auf `314fd98`, Pin `f1e75b0`,
+Release 18.11. "Latest", F-Droid-Repo mit 0.2.18 (21) und 0.2.17,
+Seite neu (`81579a3`), IndexNow 200. Fuenf Signierrunden; verworfen
+`0694d81`, `f296d59`, `0349153`, `1ce0b45` (Dateien umbenannt,
+Zeilen in PRUEFSUMMEN.txt auskommentiert).
+
+- **Anlass:** ein Kollege fand das Feld fuer die Auszahlungsadresse nicht.
+  Es erschien erst mit Pool, und der graue Platzhalter im Pool-Feld sah
+  wie ein Eintrag aus. Jetzt immer sichtbar, ohne Pool gesperrt.
+- **Am Galaxy dazu gefunden und behoben:** Kurvenbeschriftungen auf der
+  Kurve und ohne passende Einheit (`MinerChart`), Umschalter unter dem
+  Pfeil zur Weboberflaeche (Pfeil jetzt links), Reiter im Vollbild
+  unerreichbar (Leiste kommt beim Herunterziehen, Ansicht rueckt mit,
+  geht beim Weiterblaettern oder nach 30 s ohne Beruehrung).
+- **Android-Bau ging seit dem Systemupdate auf Qt 6.12 (12.10.) nicht.**
+  Host-Qt 6.11.2 unter `~/Qt/6.11.2/gcc_64`; `apk.sh` baut auch den
+  Arbeitsstand in einem Worktree, weil qmlimportscanner ueber
+  `build-flatpak/var/run -> /run` die DMS-Shell fand (APK 28 statt 23 MiB).
+- **Release-Linie ohne Kumiki.** `origin/main` = Zweig `release-0.2.18`.
+  Die lokale `main` traegt die vier Kumiki-Commits obendrauf, **ungepusht,
+  bis der Anwender sie freigibt**. Stand vor dem Umbau: `main-vor-0.2.18`.
+- Geprueft: Galaxy (Anwender), Windows-VM (ZIP aus dem Pin-Lauf),
+  Ubuntu und Fedora (CI-Buendel). Nicht gesehen: Explorer mit neuem Block,
+  Flatpak ohne Dienst, macOS, Tablets.
+- Rechner mit der Sitzung kalender-app geteilt: Emulator und win11 nach
+  Absprache; win11 danach aus, wieder 10 GB.
+- Der Force-Push ins F-Droid-Pages-Repo wird von der Rechtepruefung
+  abgelehnt: Befehl dem Anwender geben.
+
+### Offen fuer 0.2.19
+
+1. Punkt 3 (Taps ganz oben im Vollbild) nachmessen, jetzt mit der
+   einblendbaren Reiterleiste.
+2. Explorer im Vollbild: der Knopf zum Verlassen liegt nach einem Tipp
+   drei Sekunden ueber Suchfeld und dritter Blockkachel.
+3. Am Desktop zeigt nur Ziehen die Reiterleiste im Vollbild, das Mausrad
+   nicht.
+4. Metainfo 0.2.18 sagt zum Explorer "immediately"; genau ist es nur fuer
+   einen Block kurz nach der letzten Abfrage (Freigabetext ist genau).
+5. Emulator `orangedeck-api30`: Testpool steht als "ht://127.0.0.1:21059ht".
+6. Punkt 9: echter Cluster mehrerer physischer Miner.
+
 ## NACHTRAG 13.11.2026 -- nur Website orangedeck.dev (Impeccable)
 
 Drei Runden live auf `origin/main`: d7ee8bc, 4e242de, bda8e0a, 21d1286.
@@ -568,6 +612,7 @@ Ein Tag je Datei, das Neueste oben. Herausgeloest aus dieser Datei, unveraendert
 
 | Tag | Worum es ging |
 |---|---|
+| 18.11.2026 (oben) | 0.2.18 veroeffentlicht: Auszahlungsadresse, Vollbild-Reiter, Kurven, Android-Bau mit Host-Qt 6.11.2. |
 | [27.10.2026](journal/2026-10-27.md) | DMS-Plugin 1.3.2 fuer DMS 2.0, sieben Punkte fuer 0.2.18, Settings verlor Werte nach Updates. |
 | [08.10.2026](journal/2026-10-08.md) | Arbeitsnotizen zu 0.2.17: Zahlen, CLS, VM-Laeufe, drei alte Fehler, zwei Signierrunden, Emulator-Fallen. |
 | [03.10.2026](journal/2026-10-03.md) | 0.2.16 veroeffentlicht: mehrere Miner, Pool-Seite, Pool als Ersatzquelle, Plugin 1.3.0. |
