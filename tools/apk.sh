@@ -13,7 +13,7 @@
 #
 # Beides ist eine Umgebung, kein Wissen. Umgebungen gehoeren in eine Datei.
 #
-#     tools/apk.sh              aus dem Arbeitsbaum bauen
+#     tools/apk.sh              aus dem Arbeitsstand bauen (in einem Worktree)
 #     tools/apk.sh v0.2.0       aus einem Tag oder Commit bauen
 #
 # Das Ergebnis liegt unter ~/.local/share/orangedeck/auslieferung/ -- **nicht**
@@ -44,6 +44,23 @@ for p in "$QT/bin/qt-cmake" "$QT_HOST/libexec/qmlcachegen" "$ANDROID_SDK_ROOT" "
 done
 [ -e "$REPO/build-openssl-android" ] || {
     echo "fehlt: $REPO/build-openssl-android -- erst tools/openssl-android.sh"; exit 1; }
+
+# **Auch der Arbeitsstand wird in einem frischen Worktree gebaut.** Im Repo
+# liegt `build-flatpak/`, und darin legt `flatpak build-init` den Link
+# `var/run -> /run` an. qmlimportscanner durchsucht den ganzen Quellordner
+# (das schaltet Qt nicht ab) und folgt dem Link bis in die laufende
+# DMS-Shell unter /run/user. Am 18.11.2026 kamen so QtQuick.Controls mit
+# allen Stilen, Layouts, Shapes und folderlistmodel ins APK, 28 statt
+# 23 MiB, je nachdem, was gerade auf dem Desktop lief. Ein Worktree hat
+# kein build-flatpak. Nicht committete Aenderungen an versionierten Dateien
+# nimmt `git stash create` mit; neue, unversionierte Dateien nicht.
+if [ -z "$STAND" ]; then
+    neu=$(git -C "$REPO" ls-files --others --exclude-standard -- app ui android CMakeLists.txt)
+    [ -z "$neu" ] || { echo "unversioniert, waere nicht im Bau:"; echo "$neu"; exit 1; }
+    STAND=$(git -C "$REPO" stash create)
+    STAND="${STAND:-HEAD}"
+    ARBEITSSTAND=1
+fi
 
 if [ -n "$STAND" ]; then
     BAUM="$(mktemp -d)/orangedeck"
@@ -78,7 +95,7 @@ n=$(unzip -l "$APK" | grep -cE "libssl|libcrypto" || true)
 groesse=$(stat -c %s "$APK")
 if [ "$groesse" -gt $((25 * 1024 * 1024)) ]; then
     echo "APK ist $((groesse / 1048576)) MiB gross, erlaubt sind 25 -- sind die Bibliotheken gepackt?"
-    [ -n "$STAND" ] || exit 1
+    [ -z "${ARBEITSSTAND:-}" ] || exit 1
 fi
 fassung=$(unzip -p "$APK" AndroidManifest.xml | strings -el | grep -oE "^[0-9]+\.[0-9]+\.[0-9]+$" | head -1)
 
