@@ -1,5 +1,19 @@
 [
   {
+    "v": "0.2.18",
+    "datum": "2026-11-18",
+    "en": [
+      "In full screen the tabs can be reached again: pull the content down and the tab row slides in, with the view moving down below it.",
+      "The field for your payout address is always shown in the mining settings, greyed out until a pool is entered. The button to the miner's web page sits on the left, and the chart labels no longer sit on the curve.",
+      "Fixes: settings keep their values after an update, the combined hashrate chart appears after ten seconds, the pool page shows one error message, and on Linux a changed miner address takes effect right away."
+    ],
+    "de": [
+      "Im Vollbild sind die Reiter wieder erreichbar: Zieht man den Inhalt herunter, gleitet die Reiterleiste herein, und die Ansicht rückt darunter.",
+      "Das Feld für die eigene Auszahlungsadresse steht in den Mining-Einstellungen immer da, ausgegraut, bis ein Pool eingetragen ist. Der Knopf zur Weboberfläche des Miners sitzt links, und die Beschriftungen der Kurven liegen nicht mehr auf der Kurve.",
+      "Behoben: Die Einstellungen behalten ihre Werte nach einem Update, die gemeinsame Hashrate-Kurve erscheint nach zehn Sekunden, die Pool-Seite zeigt eine Fehlermeldung statt zwei, und unter Linux gilt eine geänderte Miner-Adresse sofort."
+    ]
+  },
+  {
     "v": "0.2.17",
     "datum": "2026-10-08",
     "en": [
