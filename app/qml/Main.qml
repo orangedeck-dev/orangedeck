@@ -677,7 +677,14 @@ Window {
             appVersion: Qt.application.version
             // Im nackten Widget bleibt die Reiterzeile weg -- und mit ihr der
             // Platz, den sie braucht.
-            tabsVisible: !win.bare && !win.vollbild
+            tabsVisible: !win.bare
+            // **Im Vollbild gleiten die Reiter herein und hinaus**, zusammen
+            // mit dem Knopf zum Verlassen: nach einem Tipp, und wenn man den
+            // Inhalt nach unten zieht (also zurueck nach oben blaettert).
+            // Vorher waren sie im Vollbild ganz weg, und am Telefon kam man
+            // nicht mehr in einen anderen Reiter (Galaxy, 18.11.2026).
+            tabsOverlay: win.vollbild
+            tabsShown: vollKnopf.gezeigt
             // Zahnrad statt Reiter, und rechts Platz fuer Zahnrad und
             // Vollbildknopf (je 44, der aeussere 6 vom Rand, abzueglich der
             // 14, die `FeedTabs` ohnehin einrueckt).
@@ -940,6 +947,29 @@ Window {
         }
     }
 
+    // **Die Wischrichtung, nur beobachtet.** Ein PointHandler nimmt keinen
+    // Druck an, die Ansicht darunter blaettert wie immer. Wer den Inhalt nach
+    // unten zieht, will nach oben, und bekommt die Reiter; wer nach oben
+    // zieht, liest weiter und bekommt die volle Hoehe zurueck.
+    Item {
+        anchors.fill: parent
+        z: 41
+        enabled: win.vollbild
+
+        PointHandler {
+            id: wisch
+
+            readonly property real dy: active ? point.position.y - point.pressPosition.y : 0
+
+            onDyChanged: {
+                if (dy > 30)
+                    vollKnopf.zeigen();
+                else if (dy < -30)
+                    vollKnopf.gezeigt = false;
+            }
+        }
+    }
+
     Item {
         id: vollKnopf
 
@@ -983,7 +1013,10 @@ Window {
         Timer {
             id: ausblenden
 
-            interval: 3000
+            // Vier statt drei Sekunden, seit die Reiter mit erscheinen: lang
+            // genug, um einen zu treffen. Jeder Tipp, auch auf einen Reiter,
+            // faengt die Zeit neu an.
+            interval: 4000
             onTriggered: vollKnopf.gezeigt = false
         }
 

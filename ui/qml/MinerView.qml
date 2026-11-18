@@ -683,9 +683,12 @@ Item {
     Rectangle {
         id: openBtn
 
+        // Left, mirroring the "i" on the right, so the page switcher between
+        // them stays centered. Next to the "i" it pushed the switcher off
+        // center or ran under it (Galaxy, 18.11.2026).
         anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.rightMargin: root.actionsRight + info.buttonWidth + root.scaleUnit * 0.4
+        anchors.left: parent.left
+        anchors.leftMargin: root.actionsRight
         visible: root.showActions && root.webUrl !== "" && root.paneNow === "device"
         width: info.buttonWidth
         height: width
@@ -740,21 +743,19 @@ Item {
     TileGoggles {
         id: umschalter
 
-        // Where the round buttons on the right begin: "i" always, the arrow to
-        // the miner's web page whenever there is one. Reserved on every page,
-        // not only on "Device" where the arrow shows, so the switcher does not
-        // jump when the page changes.
+        // The round buttons: "i" on the right, the arrow to the miner's web
+        // page on the left. Reserved on every page, not only on "Device"
+        // where the arrow shows, so the switcher does not jump.
+        readonly property real linksFrei: root.showActions && root.webUrl !== ""
+            ? root.actionsRight + info.buttonWidth + root.scaleUnit * 0.4 : 0
         readonly property real rechtsFrei: parent.width
             - (root.showActions ? root.actionsRight + info.buttonWidth + root.scaleUnit * 0.4 : 0)
-            - (root.showActions && root.webUrl !== "" ? info.buttonWidth + root.scaleUnit * 0.4 : 0)
 
         visible: root.zweiSeiten
         anchors.top: parent.top
-        // Centered, unless that runs into the buttons. With three pages the
-        // switcher is wider, and on a phone in portrait "Network" lay under
-        // the arrow (Galaxy, full screen, 18.11.2026). Then it moves left.
-        x: Math.max(root.scaleUnit * 0.3,
-                    Math.min((parent.width - width) / 2, rechtsFrei - width))
+        // Centered between the buttons. Only if it does not fit there (a
+        // narrow window with large type) it gives way, to the right first.
+        x: Math.max(linksFrei, Math.min((parent.width - width) / 2, rechtsFrei - width))
         width: umschalter.schalterBreite
         modes: root.seiten.map(function (k) {
             return { "k": k, "l": Tr.t(k === "device" ? "miner.paneDevice"

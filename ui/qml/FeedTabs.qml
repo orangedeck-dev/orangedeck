@@ -40,6 +40,11 @@ Item {
     // The desktop widget shows a single view without the tab row. It still uses
     // this component so the views are wired up in only one place.
     property bool tabsVisible: true
+    // Full screen: the tab row lies over the views instead of above them and
+    // slides in and out with `tabsShown`. Without it there was no way to
+    // change the tab in full screen on a phone (Galaxy, 18.11.2026).
+    property bool tabsOverlay: false
+    property bool tabsShown: true
     // Settings as a tab. The standalone app turns this off and shows a gear
     // instead; dashboard, popout and Quickshell have no gear and keep the tab.
     // View 5 stays valid without the tab.
@@ -141,7 +146,7 @@ Item {
     readonly property string currency: root.o("currency", "usd")
     // An invisible item keeps its height. Without this check the bare widget
     // would show an empty strip the height of the tab row at the top.
-    readonly property real tabSpace: root.tabsVisible ? tabs.height + root.gap : 0
+    readonly property real tabSpace: root.tabsVisible && !root.tabsOverlay ? tabs.height + root.gap : 0
 
     // A tab that can never show anything is worse than no tab. The market is
     // computed locally by `DirectMarket` in direct mode; only a missing
@@ -336,11 +341,24 @@ Item {
     // Swipeable when the tabs do not fit. The row has no width limit and on a
     // narrow phone (384 points) it ran under the fullscreen button with the
     // market tab. `tabsRechts` keeps the host's buttons clear.
+    // Behind the sliding row, so the view underneath does not show through
+    // the labels. Wider and higher than the row, out to the window edges the
+    // host keeps as margin.
+    Rectangle {
+        visible: root.tabsOverlay && root.tabsVisible
+        x: -root.width
+        width: root.width * 3
+        y: reiterFlaeche.y - 200
+        height: reiterFlaeche.height + 200 + root.gap
+        color: Qt.rgba(0.043, 0.043, 0.071, 0.94)
+        z: 29
+    }
+
     Flickable {
         id: reiterFlaeche
 
         anchors.left: parent.left
-        anchors.top: parent.top
+        y: !root.tabsOverlay || root.tabsShown ? 0 : -(height + root.gap + 60)
         width: Math.max(0, parent.width - root.tabsRechts)
         height: tabs.height
         contentWidth: tabs.width
@@ -351,6 +369,13 @@ Item {
         clip: true
         visible: root.tabsVisible
         z: 30
+
+        Behavior on y {
+            NumberAnimation {
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+        }
 
         ViewTabs {
             id: tabs
