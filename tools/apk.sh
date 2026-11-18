@@ -27,13 +27,19 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 QT="${ORANGEDECK_QT_ANDROID:-$HOME/Qt/6.11.2/android_arm64_v8a}"
+# Host-Werkzeuge (qmlcachegen, moc, rcc) in derselben Fassung wie das
+# Android-Qt. Bis zum 18.11.2026 kamen sie aus /usr; seit dem Systemupdate
+# auf Qt 6.12 (12.10.) erzeugte qmlcachegen Code, den das Android-Qt 6.11.2
+# nicht uebersetzt ("no member named 'AOTLookupValidation'").
+# Nachinstallieren: aqt install-qt linux desktop 6.11.2 linux_gcc_64 -O ~/Qt
+QT_HOST="${ORANGEDECK_QT_HOST:-$(dirname "$QT")/gcc_64}"
 export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Android/sdk}"
 export ANDROID_HOME="$ANDROID_SDK_ROOT"
 export ANDROID_NDK_ROOT="${ANDROID_NDK_ROOT:-$(ls -d "$ANDROID_SDK_ROOT"/ndk/* 2>/dev/null | sort -V | tail -1)}"
 ZIEL="${ORANGEDECK_APK_DIR:-$HOME/.local/share/orangedeck/auslieferung}"
 STAND="${1:-}"
 
-for p in "$QT/bin/qt-cmake" "$ANDROID_SDK_ROOT" "$ANDROID_NDK_ROOT"; do
+for p in "$QT/bin/qt-cmake" "$QT_HOST/libexec/qmlcachegen" "$ANDROID_SDK_ROOT" "$ANDROID_NDK_ROOT"; do
     [ -e "$p" ] || { echo "fehlt: $p"; exit 1; }
 done
 [ -e "$REPO/build-openssl-android" ] || {
@@ -53,7 +59,7 @@ echo "== Stand: $(git -C "$BAUM" log --oneline -1) =="
 
 "$QT/bin/qt-cmake" -S "$BAUM" -B "$BAUM/build-android" \
     -DCMAKE_BUILD_TYPE=Release -DQT_ANDROID_ABIS=arm64-v8a \
-    -DQT_HOST_PATH=/usr -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/cmake \
+    -DQT_HOST_PATH="$QT_HOST" -DQT_HOST_PATH_CMAKE_DIR="$QT_HOST/lib/cmake" \
     -DANDROID_SDK_ROOT="$ANDROID_SDK_ROOT" -DANDROID_NDK_ROOT="$ANDROID_NDK_ROOT"
 cmake --build "$BAUM/build-android" --target apk -j"$(nproc)"
 

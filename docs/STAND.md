@@ -73,8 +73,14 @@ vom 27.10.
     einen Pool eintragen." Vorher erschien das Feld erst mit Pool, und ein
     Kollege hielt den grauen Platzhalter "pool.solomining.de" fuer einen
     Eintrag (0.2.17 von Seite und F-Droid, kein alter Stand). Der
-    Platzhalter heisst jetzt "z. B. pool.solomining.de". Am Desktop
-    geprueft, am Telefon noch nicht.
+    Platzhalter heisst jetzt "z. B. pool.solomining.de". Am Desktop und im
+    Emulator (orangedeck-api30) geprueft, am Galaxy noch nicht. Im Emulator
+    steht der Testpool danach verstuemmelt ("ht://127.0.0.1:21059ht",
+    adb input text gegen die Tastatur): beim naechsten Lauf korrigieren.
+  - **18.11.: Android-Bau ging seit dem Systemupdate auf Qt 6.12 (12.10.)
+    nicht mehr.** qmlcachegen aus /usr passt nicht zum Android-Qt 6.11.2.
+    Host-Qt 6.11.2 liegt jetzt unter ~/Qt/6.11.2/gcc_64 (aqt), `apk.sh`
+    nimmt es; `build-android-x86_64` neu konfiguriert.
 - **Punkt 5 geschlossen:** die QSslSocket-Meldung kommt aus Qt
   (qtwebsockets), kein App-Fehler; in je 4 min unter 6.12 und 6.9 nicht
   aufgetreten.
@@ -513,6 +519,7 @@ darueber.
       env ORANGEDECK_APK_DIR=$HOME/.local/share/orangedeck/auslieferung/geraetetest-<v> tools/apk.sh
     Emulator statt Signierrunde (Android 11, eigener Debug-Schluessel):
       export ANDROID_NDK_ROOT=$(command ls -d $HOME/Android/sdk/ndk/* | sort -V | tail -1) ANDROID_SDK_ROOT=$HOME/Android/sdk
+      (einmalig seit 18.11.: rm -rf build-android-x86_64; ~/Qt/6.11.2/android_x86_64/bin/qt-cmake -S . -B build-android-x86_64 -DCMAKE_BUILD_TYPE=Release -DQT_ANDROID_ABIS=x86_64 -DQT_HOST_PATH=$HOME/Qt/6.11.2/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=$HOME/Qt/6.11.2/gcc_64/lib/cmake -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT)
       cmake --build build-android-x86_64 --target apk -j8
       apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android --key-pass pass:android --out <apk> <unsigniert>
       emulator -avd orangedeck-api30 -no-window -no-audio -no-snapshot -gpu swangle_indirect
