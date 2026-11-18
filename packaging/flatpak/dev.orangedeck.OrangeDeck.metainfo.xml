@@ -240,9 +240,10 @@
           centered and no longer runs under it on a phone.
         </p>
         <p>
-          In full screen the tabs can be reached again. They slide in after a
-          tap or when you pull the content down, and slide out again when you
-          scroll on or after a few seconds.
+          In full screen the tabs can be reached again. They slide in when you
+          pull the content down, and the view moves down with them. They slide
+          out again when you scroll on, or after half a minute without a
+          touch.
         </p>
         <p>
           On Linux a changed miner address takes effect right away, also when
@@ -274,9 +275,10 @@
           Telefon nicht mehr darunter.
         </p>
         <p xml:lang="de">
-          Im Vollbild sind die Reiter wieder erreichbar. Sie gleiten nach
-          einem Tipp oder beim Herunterziehen des Inhalts herein und beim
-          Weiterblättern oder nach ein paar Sekunden wieder hinaus.
+          Im Vollbild sind die Reiter wieder erreichbar. Sie gleiten herein,
+          wenn man den Inhalt herunterzieht, und die Ansicht rückt mit. Beim
+          Weiterblättern oder nach einer halben Minute ohne Berührung gleiten
+          sie wieder hinaus.
         </p>
         <p xml:lang="de">
           Unter Linux gilt eine geänderte Miner-Adresse sofort, auch wenn der

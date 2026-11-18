@@ -273,6 +273,8 @@ Window {
     // `view` darueber. Heraus geht es mit dem Knopf, der nach einem Tipp
     // erscheint, mit der Zurueck-Geste oder mit F11.
     property bool vollbild: false
+    // Die Reiterleiste im Vollbild, siehe `tabsOverlay` unten.
+    property bool leisteGezeigt: false
 
     // Vor dem ersten Zeigen nichts setzen: Settings laedt `vollbild` noch
     // waehrend des Aufbaus, `visible` ist dann false (main.cpp), und Qt
@@ -284,7 +286,10 @@ Window {
         win.visibility = win.vollbild ? Window.FullScreen : Window.Windowed;
     }
 
-    onVollbildChanged: vollbildAnwenden()
+    onVollbildChanged: {
+        win.leisteGezeigt = false;
+        vollbildAnwenden();
+    }
 
     // Bleibt auf dem Geraet: QSettings schreibt nach
     // ~/.config/orangedeck/orangedeck.conf (Linux) bzw. in den App-Speicher (Android).
@@ -678,13 +683,15 @@ Window {
             // Im nackten Widget bleibt die Reiterzeile weg -- und mit ihr der
             // Platz, den sie braucht.
             tabsVisible: !win.bare
-            // **Im Vollbild gleiten die Reiter herein und hinaus**, zusammen
-            // mit dem Knopf zum Verlassen: nach einem Tipp, und wenn man den
-            // Inhalt nach unten zieht (also zurueck nach oben blaettert).
-            // Vorher waren sie im Vollbild ganz weg, und am Telefon kam man
-            // nicht mehr in einen anderen Reiter (Galaxy, 18.11.2026).
+            // **Im Vollbild gleiten die Reiter herein und hinaus**, und die
+            // Ansicht rueckt mit: herein, wenn man den Inhalt nach unten
+            // zieht (also zurueck nach oben blaettert), hinaus beim
+            // Weiterblaettern. Vorher waren sie im Vollbild ganz weg, und am
+            // Telefon kam man nicht mehr in einen anderen Reiter (Galaxy,
+            // 18.11.2026). Ein Tipp allein bringt sie nicht: sonst kamen sie
+            // bei jedem Druck auf Geraet, Pool oder Netzwerk.
             tabsOverlay: win.vollbild
-            tabsShown: vollKnopf.gezeigt
+            tabsShown: win.leisteGezeigt
             // Zahnrad statt Reiter, und rechts Platz fuer Zahnrad und
             // Vollbildknopf (je 44, der aeussere 6 vom Rand, abzueglich der
             // 14, die `FeedTabs` ohnehin einrueckt).
@@ -943,14 +950,26 @@ Window {
         enabled: win.vollbild
         onPressed: mouse => {
             vollKnopf.zeigen();
+            if (win.leisteGezeigt)
+                leisteRuhe.restart();
             mouse.accepted = false;
         }
+    }
+
+    // An der Wand blaettert niemand weiter. Ohne Beruehrung geht die Leiste
+    // nach einer halben Minute von selbst und gibt die volle Hoehe zurueck.
+    Timer {
+        id: leisteRuhe
+
+        interval: 30000
+        onTriggered: win.leisteGezeigt = false
     }
 
     // **Die Wischrichtung, nur beobachtet.** Ein PointHandler nimmt keinen
     // Druck an, die Ansicht darunter blaettert wie immer. Wer den Inhalt nach
     // unten zieht, will nach oben, und bekommt die Reiter; wer nach oben
-    // zieht, liest weiter und bekommt die volle Hoehe zurueck.
+    // zieht, liest weiter und bekommt die volle Hoehe zurueck. Die Schwelle
+    // liegt ueber dem Zittern eines Tipps.
     Item {
         anchors.fill: parent
         z: 41
@@ -962,10 +981,12 @@ Window {
             readonly property real dy: active ? point.position.y - point.pressPosition.y : 0
 
             onDyChanged: {
-                if (dy > 30)
-                    vollKnopf.zeigen();
-                else if (dy < -30)
-                    vollKnopf.gezeigt = false;
+                if (dy > 40) {
+                    win.leisteGezeigt = true;
+                    leisteRuhe.restart();
+                } else if (dy < -40) {
+                    win.leisteGezeigt = false;
+                }
             }
         }
     }
@@ -1001,7 +1022,7 @@ Window {
         anchors.right: parent.right
         anchors.topMargin: (win.vollbild ? 6 : 8) + flaeche.SafeArea.margins.top
         anchors.rightMargin: 6 + flaeche.SafeArea.margins.right
-        opacity: win.vollbild ? (gezeigt ? 0.85 : 0) : 1
+        opacity: win.vollbild ? (gezeigt || win.leisteGezeigt ? 0.85 : 0) : 1
         enabled: opacity > 0
 
         Behavior on opacity {
@@ -1013,10 +1034,7 @@ Window {
         Timer {
             id: ausblenden
 
-            // Vier statt drei Sekunden, seit die Reiter mit erscheinen: lang
-            // genug, um einen zu treffen. Jeder Tipp, auch auf einen Reiter,
-            // faengt die Zeit neu an.
-            interval: 4000
+            interval: 3000
             onTriggered: vollKnopf.gezeigt = false
         }
 

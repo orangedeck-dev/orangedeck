@@ -40,9 +40,10 @@ Item {
     // The desktop widget shows a single view without the tab row. It still uses
     // this component so the views are wired up in only one place.
     property bool tabsVisible: true
-    // Full screen: the tab row lies over the views instead of above them and
-    // slides in and out with `tabsShown`. Without it there was no way to
-    // change the tab in full screen on a phone (Galaxy, 18.11.2026).
+    // Full screen: the tab row slides in and out with `tabsShown`, and the
+    // views move down and up with it. Without it there was no way to change
+    // the tab in full screen on a phone (Galaxy, 18.11.2026). Laid over the
+    // views, it covered Device, Pool and Network in the mining tab.
     property bool tabsOverlay: false
     property bool tabsShown: true
     // Settings as a tab. The standalone app turns this off and shows a gear
@@ -146,7 +147,16 @@ Item {
     readonly property string currency: root.o("currency", "usd")
     // An invisible item keeps its height. Without this check the bare widget
     // would show an empty strip the height of the tab row at the top.
-    readonly property real tabSpace: root.tabsVisible && !root.tabsOverlay ? tabs.height + root.gap : 0
+    property real tabSpace: !root.tabsVisible ? 0
+                          : !root.tabsOverlay || root.tabsShown ? tabs.height + root.gap : 0
+
+    Behavior on tabSpace {
+        enabled: root.tabsOverlay
+        NumberAnimation {
+            duration: 220
+            easing.type: Easing.OutCubic
+        }
+    }
 
     // A tab that can never show anything is worse than no tab. The market is
     // computed locally by `DirectMarket` in direct mode; only a missing
@@ -350,7 +360,7 @@ Item {
         width: root.width * 3
         y: reiterFlaeche.y - 200
         height: reiterFlaeche.height + 200 + root.gap
-        color: Qt.rgba(0.043, 0.043, 0.071, 0.94)
+        color: Qt.rgba(0.043, 0.043, 0.071, 1)
         z: 29
     }
 
