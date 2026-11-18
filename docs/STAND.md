@@ -17,47 +17,114 @@
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
 ## TAGESABSCHLUSS 18.11.2026 -- 0.2.18 veroeffentlicht
 
-**0.2.18 ist draussen**: Tag `v0.2.18` auf `314fd98`, Pin `f1e75b0`,
-Release 18.11. "Latest", F-Droid-Repo mit 0.2.18 (21) und 0.2.17,
-Seite neu (`81579a3`), IndexNow 200. Fuenf Signierrunden; verworfen
-`0694d81`, `f296d59`, `0349153`, `1ce0b45` (Dateien umbenannt,
-Zeilen in PRUEFSUMMEN.txt auskommentiert).
+### Der Stand in einem Satz
 
-- **Anlass:** ein Kollege fand das Feld fuer die Auszahlungsadresse nicht.
-  Es erschien erst mit Pool, und der graue Platzhalter im Pool-Feld sah
-  wie ein Eintrag aus. Jetzt immer sichtbar, ohne Pool gesperrt.
-- **Am Galaxy dazu gefunden und behoben:** Kurvenbeschriftungen auf der
-  Kurve und ohne passende Einheit (`MinerChart`), Umschalter unter dem
-  Pfeil zur Weboberflaeche (Pfeil jetzt links), Reiter im Vollbild
-  unerreichbar (Leiste kommt beim Herunterziehen, Ansicht rueckt mit,
-  geht beim Weiterblaettern oder nach 30 s ohne Beruehrung).
-- **Android-Bau ging seit dem Systemupdate auf Qt 6.12 (12.10.) nicht.**
-  Host-Qt 6.11.2 unter `~/Qt/6.11.2/gcc_64`; `apk.sh` baut auch den
-  Arbeitsstand in einem Worktree, weil qmlimportscanner ueber
-  `build-flatpak/var/run -> /run` die DMS-Shell fand (APK 28 statt 23 MiB).
-- **Release-Linie ohne Kumiki.** `origin/main` = Zweig `release-0.2.18`.
-  Die lokale `main` traegt die vier Kumiki-Commits obendrauf, **ungepusht,
-  bis der Anwender sie freigibt**. Stand vor dem Umbau: `main-vor-0.2.18`.
-- Geprueft: Galaxy (Anwender), Windows-VM (ZIP aus dem Pin-Lauf),
-  Ubuntu und Fedora (CI-Buendel). Nicht gesehen: Explorer mit neuem Block,
-  Flatpak ohne Dienst, macOS, Tablets.
-- Rechner mit der Sitzung kalender-app geteilt: Emulator und win11 nach
-  Absprache; win11 danach aus, wieder 10 GB.
-- Der Force-Push ins F-Droid-Pages-Repo wird von der Rechtepruefung
-  abgelehnt: Befehl dem Anwender geben.
+**0.2.18 ist draussen** (Tag `v0.2.18` auf `314fd98`, Pin `f1e75b0`,
+GitHub "Latest", F-Droid-Repo 0.2.18 (21) und 0.2.17, Seite `81579a3`,
+IndexNow 200). `origin/main` steht auf `1a037b7` (Zweig `release-0.2.18`);
+die lokale `main` hat vier Kumiki-Commits mehr, **ungepusht**. Alle
+Download-Links (GitHub `latest`, Seite, F-Droid) am Abend live geprueft.
+Arbeitsnotizen im Journal vom 18.11.
 
-### Offen fuer 0.2.19
+### Was heute dazukam
 
-1. Punkt 3 (Taps ganz oben im Vollbild) nachmessen, jetzt mit der
-   einblendbaren Reiterleiste.
-2. Explorer im Vollbild: der Knopf zum Verlassen liegt nach einem Tipp
-   drei Sekunden ueber Suchfeld und dritter Blockkachel.
-3. Am Desktop zeigt nur Ziehen die Reiterleiste im Vollbild, das Mausrad
-   nicht.
-4. Metainfo 0.2.18 sagt zum Explorer "immediately"; genau ist es nur fuer
-   einen Block kurz nach der letzten Abfrage (Freigabetext ist genau).
-5. Emulator `orangedeck-api30`: Testpool steht als "ht://127.0.0.1:21059ht".
-6. Punkt 9: echter Cluster mehrerer physischer Miner.
+- **Ausloeser:** ein Kollege (0.2.17 von Seite und F-Droid) fand das Feld
+  fuer die Auszahlungsadresse nicht. Kein alter Stand: das Feld erschien
+  erst mit Pool, und der graue Platzhalter "pool.solomining.de" sah wie
+  ein Eintrag aus. Jetzt immer sichtbar, ohne Pool gesperrt mit Hinweis,
+  Platzhalter "z. B. pool.solomining.de" (`SettingsView`, `strings.js`).
+- **Am Galaxy in vier weiteren Runden gefunden und behoben:**
+  - Kurvenbeschriftungen lagen auf der Kurve, der Tiefstwert ohne eigene
+    Einheit ("235" neben "1,76 TH/s", gemeint GH/s). Jetzt ueber und unter
+    der Kurve, Tiefstwert in der Einheit des Hoechstwerts (`MinerChart`).
+  - Mit drei Seiten lief "Netzwerk" unter den Pfeil zur Weboberflaeche.
+    Pfeil jetzt links gegenueber dem "i", Umschalter mittig (`MinerView`).
+  - Im Vollbild waren die Reiter weg. Jetzt kommt die Leiste beim
+    Herunterziehen (PointHandler, nur beobachtend), die Ansicht rueckt mit
+    (`tabsOverlay`/`tabsShown` in `FeedTabs`); weg beim Weiterblaettern
+    oder nach 30 s ohne Beruehrung. Ein Tipp allein bringt sie nicht.
+- **Android-Bau repariert.** Seit dem Systemupdate auf Qt 6.12 (12.10.)
+  scheiterte jeder Bau an qmlcachegen ("AOTLookupValidation"). Host-Qt
+  6.11.2 per aqt unter `~/Qt/6.11.2/gcc_64`, `apk.sh` nimmt es
+  (`ORANGEDECK_QT_HOST`). Und `apk.sh` baut auch den Arbeitsstand in einem
+  Worktree (`git stash create`): qmlimportscanner folgte
+  `build-flatpak/var/run -> /run` bis in die DMS-Shell, das APK wurde
+  28 statt 23 MiB gross.
+- **Release-Linie ohne Kumiki** auf Wunsch des Anwenders: Zweig
+  `release-0.2.18` aus `origin/main` plus Kirschen; `main` darauf
+  neu aufgesetzt, alter Stand als `main-vor-0.2.18`.
+- **Geprueft:** Galaxy (Anwender, signierte Runde 5). Windows-VM mit dem
+  ZIP aus dem Pin-Lauf (Feed, Markt, Pool-Seite, Einstellungen, Fassung,
+  Vollbild per Maus, Widget nach Win+D, Defender ohne Befund). Ubuntu
+  24.04 und Fedora 44 KDE mit dem CI-Buendel (Dienst-Betrieb, Miner-
+  Adresse sofort wirksam mit AxeOS-Nachbau ueber 10.0.2.2, leeres
+  Pool-Feld, Markt, Vollbild).
+- **Nicht gesehen:** Explorer mit neuem Block, Flatpak ohne Dienst,
+  macOS, Tablets, Skalierung ueber 100 % unter Windows. So im Freigabetext.
+
+### Offen
+
+1. **Kumiki-Commits** (`1fe186a`..`56e4096` auf der lokalen `main`) erst
+   nach Freigabe durch den Anwender pushen. Zweige `kumiki-paket`,
+   `miner-adresse`, `glas` und ihre Worktrees zeigen noch auf alte Commits.
+2. **DMS-Plugin 1.3.3** steht aus (eigene `dms-plugin.conf` fuer die
+   Pool-Zuordnung seit 27.10.); vorher in DMS gegenpruefen.
+3. Fuer 0.2.19:
+   - Punkt 3 (Taps ganz oben im Vollbild) nachmessen, jetzt mit Leiste.
+   - Explorer im Vollbild: der Knopf zum Verlassen liegt nach einem Tipp
+     drei Sekunden ueber Suchfeld und dritter Blockkachel.
+   - Am Desktop zeigt nur Ziehen die Leiste im Vollbild, das Mausrad nicht.
+   - Metainfo 0.2.18 sagt zum Explorer "immediately"; genau gilt es nur fuer
+     einen Block kurz nach der letzten Abfrage (der Freigabetext ist genau).
+   - Punkt 9: echter Cluster mehrerer physischer Miner.
+4. Emulator `orangedeck-api30`: Testpool steht als
+   "ht://127.0.0.1:21059ht" (adb input text gegen die Tastatur).
+5. Website-Punkte aus dem Nachtrag vom 13.11. (unten) unveraendert offen.
+6. Aufraeumen, wenn gewollt: `build/win-0.2.18`, `build/win-test`,
+   `build/flatpak-0.2.18`, `auslieferung/geraetetest-0.2.18`, die
+   verworfenen 0.2.18-Dateien.
+
+### Fuer den Anwender
+
+- Der Kollege bekommt das Adressfeld mit dem Update (F-Droid oder Seite).
+- Kumiki-Teile pushen, sobald freigegeben: `git -C
+  ~/Schreibtisch/orangedeck push origin main`.
+
+### Learnings 18.11.2026
+
+1. **Ein Platzhalter, der wie ein Wert aussieht, versteckt alles, was an
+   diesem Wert haengt.** Bedingt eingeblendete Felder lieber sperren und
+   erklaeren als verstecken.
+2. **Ein Systemupdate kann den Android-Bau still brechen.** Host-Werkzeuge
+   muessen dieselbe Qt-Fassung haben wie das Ziel-Qt; nach jedem
+   Qt-Update vor einer Auslieferung einmal `apk.sh` laufen lassen.
+3. **Werkzeuge, die Verzeichnisse durchsuchen, folgen Links.**
+   `build-flatpak/var/run` zeigt auf `/run`; was im APK landet, hing vom
+   laufenden Desktop ab. Saubere Baeume bauen, nicht den Arbeitsordner.
+4. **Am Telefon zeigt sich, was am Desktop nicht auffaellt**: groessere
+   Fingerziele machen den Umschalter breiter, das Vollbild nimmt die
+   Reiter. Vier Runden kamen allein aus dem Geraetelauf.
+5. **Ueberlagern ist nicht dasselbe wie einblenden.** Eine Leiste ueber
+   dem Inhalt verdeckt genau die Bedienelemente oben; sie muss Platz
+   nehmen, und sie darf nicht bei jedem Tipp kommen.
+6. **QEMU-User-Netz:** der Gast erreicht Dienste auf `127.0.0.1` des
+   Wirts ueber `10.0.2.2`, ohne ufw-Regel. Damit laesst sich ein
+   AxeOS-Nachbau in den Linux-VMs pruefen.
+7. **Rechner teilen klappt per Absprache:** vor schweren Laeufen (Emulator,
+   VMs) bei der anderen Sitzung nachfragen, danach freigeben.
+
+### Was ich selbst falsch gemacht habe
+
+- Zweimal eine Commit-Kennung genannt, ohne sie nachzusehen (`7e3d1c5`
+  statt `0349153`). Kennungen nur aus der Ausgabe abschreiben.
+- `Qt.rgb()` geschrieben, das es in QML nicht gibt: der Hintergrund der
+  Leiste war weiss. Erst das Bild zeigte es.
+- Die Leiste zuerst ueber den Inhalt gelegt und bei jedem Tipp
+  eingeblendet, ohne den Mining-Reiter am Telefon mitzudenken.
+- In der Ubuntu-VM die Befehlszeile in die Suche der Uebersicht getippt,
+  obwohl die Anleitung genau davor warnt.
+- Im Emulator den Testpool mit `adb input text` zurueckgeschrieben und
+  damit verstuemmelt.
 
 ## NACHTRAG 13.11.2026 -- nur Website orangedeck.dev (Impeccable)
 
@@ -112,19 +179,6 @@ vom 27.10.
     Einstellung die Vorgaben aller noch nicht geladenen Werte zurueck;
     Sprache, Reiterfolge, Vollbild waren beim zweiten Start weg. Behoben
     mit `prefs.nachLaden`.
-  - **18.11.:** "Eigene Adresse (freiwillig)" steht immer in den
-    Mining-Einstellungen, ohne Pool gesperrt mit dem Hinweis "Erst oben
-    einen Pool eintragen." Vorher erschien das Feld erst mit Pool, und ein
-    Kollege hielt den grauen Platzhalter "pool.solomining.de" fuer einen
-    Eintrag (0.2.17 von Seite und F-Droid, kein alter Stand). Der
-    Platzhalter heisst jetzt "z. B. pool.solomining.de". Am Desktop und im
-    Emulator (orangedeck-api30) geprueft, am Galaxy noch nicht. Im Emulator
-    steht der Testpool danach verstuemmelt ("ht://127.0.0.1:21059ht",
-    adb input text gegen die Tastatur): beim naechsten Lauf korrigieren.
-  - **18.11.: Android-Bau ging seit dem Systemupdate auf Qt 6.12 (12.10.)
-    nicht mehr.** qmlcachegen aus /usr passt nicht zum Android-Qt 6.11.2.
-    Host-Qt 6.11.2 liegt jetzt unter ~/Qt/6.11.2/gcc_64 (aqt), `apk.sh`
-    nimmt es; `build-android-x86_64` neu konfiguriert.
 - **Punkt 5 geschlossen:** die QSslSocket-Meldung kommt aus Qt
   (qtwebsockets), kein App-Fehler; in je 4 min unter 6.12 und 6.9 nicht
   aufgetreten.
@@ -136,7 +190,7 @@ vom 27.10.
   `~/.config/orangedeck/dms-plugin.conf`, die App bleibt bei ihrer. Gehoert in Plugin 1.3.3,
   wirkt in DMS nach dem naechsten Neustart.
 
-### Offen fuer 0.2.18 (fuer die naechsten Tage)
+### Offen fuer 0.2.18 (Stand 27.10.; am 18.11. erledigt oder nach 0.2.19 verschoben, siehe oben)
 
 3. **Android-Vollbild:** `adb input tap` ganz oben (y=77 px) wurde im
    Emulator teils verschluckt, bei y=110 zuverlaessig. Der Anwender hat mit
@@ -612,7 +666,7 @@ Ein Tag je Datei, das Neueste oben. Herausgeloest aus dieser Datei, unveraendert
 
 | Tag | Worum es ging |
 |---|---|
-| 18.11.2026 (oben) | 0.2.18 veroeffentlicht: Auszahlungsadresse, Vollbild-Reiter, Kurven, Android-Bau mit Host-Qt 6.11.2. |
+| [18.11.2026](journal/2026-11-18.md) | 0.2.18 veroeffentlicht: Auszahlungsadresse, Vollbild-Reiter, Kurven, Android-Bau mit Host-Qt 6.11.2, Release-Linie ohne Kumiki. |
 | [27.10.2026](journal/2026-10-27.md) | DMS-Plugin 1.3.2 fuer DMS 2.0, sieben Punkte fuer 0.2.18, Settings verlor Werte nach Updates. |
 | [08.10.2026](journal/2026-10-08.md) | Arbeitsnotizen zu 0.2.17: Zahlen, CLS, VM-Laeufe, drei alte Fehler, zwei Signierrunden, Emulator-Fallen. |
 | [03.10.2026](journal/2026-10-03.md) | 0.2.16 veroeffentlicht: mehrere Miner, Pool-Seite, Pool als Ersatzquelle, Plugin 1.3.0. |
