@@ -96,4 +96,4 @@ modules:
     sources:
       - type: git
         url: https://github.com/orangedeck-dev/orangedeck.git
-        commit: f296d59d5cb9f3db93fc42999ba75443eba699dd
+        commit: 03491537e015c45279ff378fbdaae04ea4de5b0c
