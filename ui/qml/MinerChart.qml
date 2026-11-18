@@ -39,6 +39,16 @@ Item {
         return Tr.fixed(gh, 0, root.lang) + (withUnit ? " GH/s" : "");
     }
 
+    // A value in the unit `ref` would get. The lower axis label has no unit
+    // of its own and is read in the unit of the upper one: at 1.76 TH/s above
+    // and 235 GH/s below it said "235" (Galaxy, 18.11.2026).
+    function fmtRateLike(gh, ref) {
+        var teiler = ref >= root.teraFrom * 1e6 ? 1e9
+                   : ref >= root.teraFrom * 1e3 ? 1e6
+                   : ref >= root.teraFrom ? 1000 : 1;
+        return Tr.fixed(gh / teiler, teiler === 1 ? 0 : 2, root.lang);
+    }
+
     readonly property var hr: (hist && hist.hr) || []
     readonly property var hrNow: (hist && hist.hrNow) || []
     readonly property var temp: (hist && hist.temp) || []
@@ -58,7 +68,12 @@ Item {
             if (s.length < 2)
                 return;
 
-            var padL = 4, padR = 4, padT = 6, padB = 14;
+            // The axis labels sit above and below the plot, not in it: inside
+            // they were drawn over by the curve (Pool page, Galaxy,
+            // 18.11.2026). The bottom row also holds the time span.
+            var padL = 4, padR = 4;
+            var padT = Math.ceil(root.labelSize * 1.3);
+            var padB = Math.ceil(root.labelSize * 1.4);
             var w = width - padL - padR, h = height - padT - padB;
             if (w <= 0 || h <= 0)
                 return;
@@ -189,14 +204,14 @@ Item {
             if (hRange) {
                 ctx.fillStyle = root.lineColor;
                 ctx.textAlign = "left";
-                ctx.fillText(root.fmtRate(hRange[1], true), padL, padT + root.labelSize);
-                ctx.fillText(root.fmtRate(hRange[0], false), padL, padT + h);
+                ctx.fillText(root.fmtRate(hRange[1], true), padL, padT - 3);
+                ctx.fillText(root.fmtRateLike(hRange[0], hRange[1]), padL, height - 2);
             }
             if (tRange) {
                 ctx.fillStyle = root.tempColor;
                 ctx.textAlign = "right";
-                ctx.fillText(tRange[1].toFixed(0) + " °C", padL + w, padT + root.labelSize);
-                ctx.fillText(tRange[0].toFixed(0), padL + w, padT + h);
+                ctx.fillText(tRange[1].toFixed(0) + " °C", padL + w, padT - 3);
+                ctx.fillText(tRange[0].toFixed(0), padL + w, height - 2);
             }
             ctx.fillStyle = root.dimColor;
             ctx.textAlign = "center";

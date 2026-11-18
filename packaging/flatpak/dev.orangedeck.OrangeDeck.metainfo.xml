@@ -233,6 +233,9 @@
           With several miners the combined hashrate curve appears after ten
           seconds instead of a minute. The Pool page shows one error message
           instead of two, and the General settings page shows the version.
+          In the hashrate charts the labels for the highest and lowest value
+          no longer sit on the curve, and the lower one uses the unit of the
+          upper one.
         </p>
         <p>
           On Linux a changed miner address takes effect right away, also when
@@ -256,7 +259,9 @@
           Bei mehreren Minern erscheint die gemeinsame Hashrate-Kurve nach
           zehn Sekunden statt nach einer Minute. Die Pool-Seite zeigt eine
           Fehlermeldung statt zwei, und die Seite Allgemein der Einstellungen
-          nennt die Fassung.
+          nennt die Fassung. In den Hashrate-Kurven liegen die Beschriftungen
+          für Höchst- und Tiefstwert nicht mehr auf der Kurve, und der
+          Tiefstwert steht in der Einheit des Höchstwerts.
         </p>
         <p xml:lang="de">
           Unter Linux gilt eine geänderte Miner-Adresse sofort, auch wenn der
