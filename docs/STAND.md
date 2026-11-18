@@ -68,6 +68,13 @@ vom 27.10.
     Einstellung die Vorgaben aller noch nicht geladenen Werte zurueck;
     Sprache, Reiterfolge, Vollbild waren beim zweiten Start weg. Behoben
     mit `prefs.nachLaden`.
+  - **18.11.:** "Eigene Adresse (freiwillig)" steht immer in den
+    Mining-Einstellungen, ohne Pool gesperrt mit dem Hinweis "Erst oben
+    einen Pool eintragen." Vorher erschien das Feld erst mit Pool, und ein
+    Kollege hielt den grauen Platzhalter "pool.solomining.de" fuer einen
+    Eintrag (0.2.17 von Seite und F-Droid, kein alter Stand). Der
+    Platzhalter heisst jetzt "z. B. pool.solomining.de". Am Desktop
+    geprueft, am Telefon noch nicht.
 - **Punkt 5 geschlossen:** die QSslSocket-Meldung kommt aus Qt
   (qtwebsockets), kein App-Fehler; in je 4 min unter 6.12 und 6.9 nicht
   aufgetreten.

@@ -1300,20 +1300,32 @@ Item {
 
                     Textzeile {
                         wert: root.val("poolUrl", "")
-                        platzhalter: "pool.solomining.de"
+                        // Marked as an example: the bare host name was taken
+                        // for an entry (18.11.2026).
+                        platzhalter: Tr.t("set.poolUrlPlaceholder", root.lang)
                         onUebernommen: function (neu) {
                             root.changed("poolUrl", neu.trim());
                         }
                     }
                 }
 
-                // Only with a pool: the address goes nowhere else.
+                // Usable only with a pool: the address goes nowhere else.
+                // Always shown, though. Hidden until a pool was entered, it
+                // was missed next to the pool field's placeholder, which reads
+                // like an entry (18.11.2026, a tester took the grey
+                // "pool.solomining.de" for a filled-in pool).
                 Zeile {
-                    visible: String(root.val("poolUrl", "")).trim() !== ""
+                    id: poolAdresseZeile
+
+                    readonly property bool mitPool: String(root.val("poolUrl", "")).trim() !== ""
+
                     label: Tr.t("set.poolAddress", root.lang)
                     help: Tr.t("set.poolAddressHelp", root.lang)
+                          + (mitPool ? "" : " " + Tr.t("set.poolAddressNeedsPool", root.lang))
 
                     Textzeile {
+                        enabled: poolAdresseZeile.mitPool
+                        opacity: enabled ? 1 : 0.4
                         wert: root.val("poolAddress", "")
                         platzhalter: "bc1q…"
                         onUebernommen: function (neu) {
