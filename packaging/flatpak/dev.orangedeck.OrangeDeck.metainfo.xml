@@ -216,6 +216,56 @@
        das Repo umgezogen ist, gehoert nicht hierher: es aendert nichts an der
        Anwendung. Das Datum ist vorlaeufig (19.09.2026). -->
   <releases>
+    <release version="0.2.18" date="2026-11-18">
+      <description>
+        <p>
+          Settings keep their values after an update. When a new version
+          added a setting, language, tab order and full screen were back at
+          their defaults on the second start.
+        </p>
+        <p>
+          The field for your payout address in the mining settings is always
+          visible now. Without a pool it is greyed out and says that a pool
+          has to be entered first. The empty pool field shows its example as
+          "e.g. pool.solomining.de", so it no longer looks like an entry.
+        </p>
+        <p>
+          With several miners the combined hashrate curve appears after ten
+          seconds instead of a minute. The Pool page shows one error message
+          instead of two, and the General settings page shows the version.
+        </p>
+        <p>
+          On Linux a changed miner address takes effect right away, also when
+          the background service is running. The explorer shows a new block
+          immediately instead of with the next one, and the Flatpak no longer
+          starts the service when the app gets its data directly.
+        </p>
+        <p xml:lang="de">
+          Die Einstellungen behalten ihre Werte nach einem Update. Brachte
+          eine neue Fassung eine neue Einstellung mit, standen Sprache,
+          Reiterfolge und Vollbild beim zweiten Start wieder auf der Vorgabe.
+        </p>
+        <p xml:lang="de">
+          Das Feld für die eigene Auszahlungsadresse steht in den
+          Mining-Einstellungen jetzt immer da. Ohne Pool ist es ausgegraut und
+          sagt, dass erst ein Pool einzutragen ist. Im leeren Pool-Feld steht
+          das Beispiel als „z. B. pool.solomining.de“ und sieht nicht mehr wie
+          ein Eintrag aus.
+        </p>
+        <p xml:lang="de">
+          Bei mehreren Minern erscheint die gemeinsame Hashrate-Kurve nach
+          zehn Sekunden statt nach einer Minute. Die Pool-Seite zeigt eine
+          Fehlermeldung statt zwei, und die Seite Allgemein der Einstellungen
+          nennt die Fassung.
+        </p>
+        <p xml:lang="de">
+          Unter Linux gilt eine geänderte Miner-Adresse sofort, auch wenn der
+          Dienst im Hintergrund läuft. Der Explorer zeigt einen neuen Block
+          sofort statt erst mit dem nächsten, und das Flatpak startet keinen
+          Dienst mehr, wenn die App ihre Daten direkt bezieht.
+        </p>
+      </description>
+    </release>
     <release version="0.2.17" date="2026-10-08">
       <description>
         <p>
