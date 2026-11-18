@@ -235,7 +235,8 @@
           instead of two, and the General settings page shows the version.
           In the hashrate charts the labels for the highest and lowest value
           no longer sit on the curve, and the lower one uses the unit of the
-          upper one.
+          upper one. On a phone the switch between Device, Pool and Network no
+          longer runs under the button that opens the miner's web page.
         </p>
         <p>
           On Linux a changed miner address takes effect right away, also when
@@ -261,7 +262,9 @@
           Fehlermeldung statt zwei, und die Seite Allgemein der Einstellungen
           nennt die Fassung. In den Hashrate-Kurven liegen die Beschriftungen
           für Höchst- und Tiefstwert nicht mehr auf der Kurve, und der
-          Tiefstwert steht in der Einheit des Höchstwerts.
+          Tiefstwert steht in der Einheit des Höchstwerts. Am Telefon läuft
+          der Umschalter zwischen Gerät, Pool und Netzwerk nicht mehr unter
+          den Knopf, der die Weboberfläche des Miners öffnet.
         </p>
         <p xml:lang="de">
           Unter Linux gilt eine geänderte Miner-Adresse sofort, auch wenn der

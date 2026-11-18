@@ -740,9 +740,21 @@ Item {
     TileGoggles {
         id: umschalter
 
+        // Where the round buttons on the right begin: "i" always, the arrow to
+        // the miner's web page whenever there is one. Reserved on every page,
+        // not only on "Device" where the arrow shows, so the switcher does not
+        // jump when the page changes.
+        readonly property real rechtsFrei: parent.width
+            - (root.showActions ? root.actionsRight + info.buttonWidth + root.scaleUnit * 0.4 : 0)
+            - (root.showActions && root.webUrl !== "" ? info.buttonWidth + root.scaleUnit * 0.4 : 0)
+
         visible: root.zweiSeiten
         anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+        // Centered, unless that runs into the buttons. With three pages the
+        // switcher is wider, and on a phone in portrait "Network" lay under
+        // the arrow (Galaxy, full screen, 18.11.2026). Then it moves left.
+        x: Math.max(root.scaleUnit * 0.3,
+                    Math.min((parent.width - width) / 2, rechtsFrei - width))
         width: umschalter.schalterBreite
         modes: root.seiten.map(function (k) {
             return { "k": k, "l": Tr.t(k === "device" ? "miner.paneDevice"
