@@ -1,5 +1,5 @@
-<!-- Der Text unten ist der Entwurf fuer 0.2.17 (08.10.2026). Die Texte von
-     0.2.8 bis 0.2.16 stehen in der Geschichte dieser Datei.
+<!-- Der Text unten ist der Entwurf fuer 0.2.18 (18.11.2026). Die Texte von
+     0.2.8 bis 0.2.17 stehen in der Geschichte dieser Datei.
 
      **Die Pruefliste gilt fuer jede Nummer, nicht nur fuer die, bei der sie
      entstand.** Am 14.09.2026 nannte sie fuer 0.2.9 nur Windows und das
@@ -42,23 +42,34 @@
 
 A Bitcoin dashboard with the mempool as a live tile mosaic, a block height clock, mining figures for the whole network and your own miners, a block explorer and the BTC market. MIT licensed, no account needed.
 
-A small release with fixes for the mining tab and for the desktop app.
+This release makes full screen usable on phones again, fixes a bug that reset settings after an update, and tidies up the mining tab.
 
-## What's new since 0.2.16
+## What's new since 0.2.17
+
+### Full screen
+
+- The tabs can be reached in full screen again. Until now they were hidden there, and on a phone there was no way to switch to another tab. Pull the content down and the tab row slides in, with the view moving down below it. Scroll on and it slides out again; after half a minute without a touch it goes by itself.
 
 ### Mining
 
-- With several miners, the combined hashrate chart no longer disappears when one device misses a few polls. Most of the time that is the Wi-Fi, and the miner keeps hashing. The device stays in the sum with its last value for up to two minutes; after that the chart shows the devices that are still running.
-- The pool page remembers whether device types are shown as bars or as a ring, and whether they are sorted by hashrate or by number of miners. Until now both were reset on every start.
+- The field for your own payout address is always shown in the mining settings. Until now it only appeared once a pool was entered, and the grey example in the empty pool field looked like an entry, so the field was easy to miss. Without a pool it is now greyed out and says that a pool has to be entered first, and the example reads "e.g. pool.solomining.de".
+- The button that opens the miner's web page sits on the left, opposite the "i". The switch between Device, Pool and Network stays centered and no longer runs under the button on a phone.
+- In the hashrate charts the labels for the highest and lowest value sit above and below the curve instead of on it. The lower value now uses the unit of the upper one; it showed "235" next to "1.76 TH/s" when it meant 235 GH/s.
+- With several miners, the combined hashrate chart appears after ten seconds instead of a minute.
+- The pool page shows one error message instead of two.
 
 ### Fixes
 
-- Negative numbers no longer get a thousands separator right after the minus sign. The explorer showed a UTXO change of "-,940".
-- In full screen, the button that leaves full screen sat on top of the "i" of the mining tab, so a click opened the legend instead. The buttons of the view now move aside in full screen.
-- Keyboard shortcuts work again after typing into a settings field and switching to another tab. Until now F11, "i" and "," did nothing after that.
-- Started with `--source`, the settings show the data source that is actually in use. Before, they showed the saved one, and the field for a service on another device was visible although nothing used it.
+- Settings keep their values after an update. When a new version added a setting, language, tab order and full screen were back at their defaults on the second start.
+- The General settings page shows the version.
 
-## Windows: `orangedeck-0.2.17-windows-x86_64.zip`
+### Linux
+
+- A changed miner address takes effect right away, also when the background service is running. Until now the service kept polling the old address, for example after the miner got a new one from the router.
+- A block that arrived shortly after the explorer's last update no longer stays missing there until the next block.
+- The Flatpak no longer starts the background service when the app gets its data directly from the mempool instance.
+
+## Windows: `orangedeck-0.2.18-windows-x86_64.zip`
 
 Unzip anywhere and run `orangedeck-app.exe`. Requires Windows 10 or 11, 64-bit.
 
@@ -70,13 +81,13 @@ To start a widget, for example the block clock in the top right corner:
 
 Click a widget and press Q to close it. Details are in `packaging/widgets/README.md`.
 
-## Android: `orangedeck-0.2.17-arm64-v8a.apk`
+## Android: `orangedeck-0.2.18-arm64-v8a.apk`
 
-For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.16.
+For phones and tablets with a 64-bit ARM processor (arm64-v8a) and Android 9 or newer. Installs over 0.2.17.
 
 Please check the signature before installing:
 
-    apksigner verify --print-certs orangedeck-0.2.17-arm64-v8a.apk
+    apksigner verify --print-certs orangedeck-0.2.18-arm64-v8a.apk
 
 The SHA-256 fingerprint of the signing certificate must be:
 
@@ -86,33 +97,35 @@ The same APK is also in the OrangeDeck F-Droid repository, which keeps it up to 
 
     https://fdroid.orangedeck.dev/repo?fingerprint=06E62F144A293077C333DE18FA6076364FE7FB0718F1F3D6E8897E7291DC4C59
 
-## Linux: `orangedeck-0.2.17.flatpak`
+## Linux: `orangedeck-0.2.18.flatpak`
 
-    flatpak install --user orangedeck-0.2.17.flatpak
+    flatpak install --user orangedeck-0.2.18.flatpak
 
 This pulls the KDE runtime 6.9 from Flathub.
 
 ## Tested on
 
-- Samsung Galaxy A55 with Android 16 in German, this signed APK installed over 0.2.16 with its settings kept: the mining tab, the pool page with ring and miners still selected after the app was closed and opened again, leaving full screen with a tap, and all tabs.
-- Windows 11 in a VM with a German system: two test miners, one of them dropping out for 25 seconds every minute, with the combined chart staying in place, the pool page keeping ring and miners after a restart, and leaving full screen with a click.
-- The Flatpak bundle of the build before the three fixes above in the live sessions of Ubuntu 24.04 and Fedora 44 KDE, in English: all tabs, the settings with `--source direct`, the combined chart with a test miner dropping out, and the pool page keeping its choice after a restart. The three fixes were tested on Linux in the app built from this release, not in the bundle.
-- Not tested in this release: macOS, real tablets, the Windows widgets, display scaling above 100% on Windows, and a real cluster of several physical miners; the multi-device views were tested with simulated AxeOS devices. If something looks wrong, please open an issue.
+- Samsung Galaxy A55 in German, this signed APK installed over test builds of this release, which had replaced 0.2.17 with its settings kept: the payout address field, the pool page and device page with a real Bitaxe and pool, the version in the settings, and full screen with the tab row pulled in and out.
+- Windows 11 in a VM with a German system, the ZIP from this release: feed, market, the pool page of pool.solomining.de with the new chart labels, the mining settings, the version in the settings, full screen with the tab row pulled in and out with the mouse, the clock widget staying on the desktop after Win+D, and no Microsoft Defender detection.
+- The Flatpak bundle of this release in the live sessions of Ubuntu 24.04 and Fedora 44 KDE, in English. Ubuntu with the background service: feed, the mining settings with an empty pool field, and a miner address entered in the settings that was used right away, tested with a simulated AxeOS device. Fedora: market, and full screen with the tab row pulled in and out.
+- Not tested in this release: macOS, real tablets, the explorer picking up a new block, the Flatpak without the service, display scaling above 100% on Windows, and a real cluster of several physical miners. If something looks wrong, please open an issue.
 
 ## Checksums (SHA-256)
 
-    6322d2ece54bec79d4c7f122d8a910c8859e50642fc85ee9a26138183918c09a  orangedeck-0.2.17-windows-x86_64.zip
-    4abf66f00052165d7cf0145d295c0640d09039bda3d68a6f46933652c5b7bf08  orangedeck-0.2.17-arm64-v8a.apk
-    25ee6e9b69eecfba323db61bf58b6c5a7c4eae407e5613a2b697299653aef69e  orangedeck-0.2.17.flatpak
+    5f5dd333c3d2652b32b17364bb960976e7a54815dffc18707f0ad64132ac7400  orangedeck-0.2.18-windows-x86_64.zip
+    5d91b56da1b0cc7f99c51ff61bddf03cc016237c503f626c3b1faf7ad8b94c51  orangedeck-0.2.18-arm64-v8a.apk
+    5759c039f743326c75ec62dabb7c34074a9a4a6007195d1a6ed995e04bd55fa1  orangedeck-0.2.18.flatpak
 
 ---
 
 ## Deutsch
 
-0.2.17 ist eine kleine Fassung mit Korrekturen für den Mining-Reiter und die Desktop-App.
+Mit 0.2.18 ist das Vollbild am Telefon wieder voll bedienbar, die Einstellungen überstehen Updates, und der Mining-Reiter ist aufgeräumt.
 
-Bei mehreren Minern verschwindet die gemeinsame Hashrate-Kurve nicht mehr, wenn ein Gerät ein paar Abfragen verpasst. Es bleibt bis zu zwei Minuten mit seinem letzten Wert in der Summe, danach zeigt die Kurve die Geräte, die noch laufen. Die Pool-Seite merkt sich, ob die Gerätetypen als Balken oder als Ring erscheinen und wonach sie sortiert sind.
+Im Vollbild sind die Reiter wieder erreichbar. Zieht man den Inhalt herunter, gleitet die Reiterleiste herein, und die Ansicht rückt darunter. Beim Weiterblättern oder nach einer halben Minute ohne Berührung gleitet sie wieder hinaus.
 
-Behoben: Negative Zahlen bekommen kein Trennzeichen mehr direkt hinter dem Minus. Der Knopf zum Verlassen des Vollbilds liegt nicht mehr auf dem i des Mining-Reiters. Die Tastenkürzel wirken wieder, nachdem man in ein Feld der Einstellungen getippt und den Reiter gewechselt hat. Mit `--source` gestartet, zeigen die Einstellungen die Datenquelle, die tatsächlich gilt.
+Das Feld für die eigene Auszahlungsadresse steht in den Mining-Einstellungen jetzt immer da. Ohne Pool ist es ausgegraut und sagt, dass erst ein Pool einzutragen ist. Im leeren Pool-Feld steht das Beispiel als „z. B. pool.solomining.de“ und sieht nicht mehr wie ein Eintrag aus. Der Knopf zur Weboberfläche des Miners sitzt links, damit der Umschalter zwischen Gerät, Pool und Netzwerk mittig bleibt. In den Hashrate-Kurven liegen die Beschriftungen nicht mehr auf der Kurve, und der Tiefstwert steht in der Einheit des Höchstwerts.
 
-Das APK installiert sich über 0.2.16 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
+Behoben: Brachte eine neue Fassung eine neue Einstellung mit, standen Sprache, Reiterfolge und Vollbild beim zweiten Start wieder auf der Vorgabe. Unter Linux gilt eine geänderte Miner-Adresse jetzt sofort, auch wenn der Dienst läuft.
+
+Das APK installiert sich über 0.2.17 und steht auch im F-Droid-Repo von OrangeDeck, Adresse oben im Abschnitt Android. Bitte vor dem Installieren Prüfsumme und Signatur prüfen.
