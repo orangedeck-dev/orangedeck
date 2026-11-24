@@ -2251,8 +2251,8 @@ _hits_lock = threading.Lock()
 
 
 class _Handler(BaseHTTPRequestHandler):
-    """Nur lesend, nur GET, nur die drei Pfade. Kein Zustand wird entgegen-
-    genommen -- der Dienst nimmt grundsaetzlich nichts an."""
+    """Lesend ueber GET (Pfade in do_GET). Einziger schreibender Weg ist
+    POST /config, nur vom eigenen Rechner und nur als JSON (siehe do_POST)."""
 
     protocol_version = "HTTP/1.1"
     feed = None
