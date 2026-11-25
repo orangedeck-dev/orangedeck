@@ -451,6 +451,8 @@ section[id], .anker { scroll-margin-top: 90px; }
 .spende-name { margin: 0 0 1.6rem; }
 .spende-name .bip353 { font-size: clamp(1.15rem, 3.4vw, 1.5rem); font-weight: 600; color: var(--orange); margin: 0 0 0.6rem; overflow-wrap: anywhere; }
 .spende-name > p:last-child { color: var(--gedaempft); margin: 0.7rem 0 0; }
+/* Warnung vor dem Umschalter: viele Wallets koennen BOLT12 noch nicht. */
+.spende-hinweis { margin: -0.4rem 0 1.6rem; padding: 0.75rem 1rem; border-left: 3px solid var(--orange); background: rgba(247, 147, 26, 0.08); border-radius: 0 8px 8px 0; }
 /* hidden muss gewinnen: .wert und .tat setzen display selbst, und ohne diese
    Zeile stand vor dem Klick ein leeres Feld und danach der Knopf weiter da. */
 #spenden [hidden] { display: none !important; }

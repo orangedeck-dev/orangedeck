@@ -397,6 +397,7 @@
     "Lightning (BOLT12)",
     "何度でも支払える固定のオファーです。Phoenix など、BOLT12 に対応したウォレットが必要です。"
   ],
+  "spenden_hinweis": "すべての Lightning ウォレットがまだ対応しているわけではありません。Wallet of Satoshi など多くのウォレットでは、アドレスでも QR コードでもエラーになります。その場合は On-chain を選んでください。こちらはどのウォレットでも使えます。",
   "spenden_sp": [
     "Silent Payments による on-chain",
     "固定のアドレスから、ウォレットが支払いごとに別のアドレスを作ります。Sparrow、Cake Wallet、Nunchuk など、BIP 352 に対応したウォレットが必要です。"

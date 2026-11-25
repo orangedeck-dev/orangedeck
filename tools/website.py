@@ -177,6 +177,16 @@ def spenden_name(d, w):
             '<p>%s</p></div>' % (e(adr), e(adr), e(d["spenden_kopieren"]), e(d["spenden_name"])))
 
 
+def spenden_hinweis(d, w):
+    """Warnung vor dem Umschalter: Name und Lightning-Code sind BOLT12, und
+    verbreitete Wallets (Wallet of Satoshi, 25.11.2026 geprueft) lehnen beides
+    mit einer Meldung ab, die nach "Empfaenger offline" oder "keine Rechnung"
+    klingt. Steht oberhalb, weil er fuer Adresse und QR-Code gilt."""
+    if not w.get("lno"):
+        return ""
+    return '\n    <p class="spende-hinweis">%s</p>' % e(d["spenden_hinweis"])
+
+
 def spenden(d):
     """Der kurze Spendenhinweis auf der Startseite, oder "" wenn nichts
     eingerichtet ist. Die Wege selbst stehen auf der eigenen Seite (donate/)."""
@@ -229,11 +239,12 @@ def spendenseite(d, alle):
   </header>
 
   <section id="spenden" class="spendenseite" data-kopiert="%(kopiert)s">
-    %(name)s
+    %(name)s%(hinweis)s
     <div class="spendenwahl">%(felder)s</div>
   </section>""" % {"zurueck": e(d["zurueck"]), "titel": e(d["spenden_titel"]),
                    "text": e(d["spenden_text"]), "kopiert": e(d["spenden_kopiert"]),
-                   "name": spenden_name(d, w), "felder": felder}
+                   "name": spenden_name(d, w), "felder": felder,
+                   "hinweis": spenden_hinweis(d, w)}
     ld = [webseite(d, {"h1": d["spenden_titel"], "beschreibung": d["spenden_text"]}, SPENDEN_PFAD),
           pfadleiste(d, d["spenden_titel"], SPENDEN_PFAD)]
     return rahmen(d, alle, SPENDEN_PFAD, "%s | OrangeDeck" % d["spenden_titel"],

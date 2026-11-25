@@ -397,6 +397,7 @@
     "Lightning (BOLT12)",
     "Een vast aanbod dat je zo vaak kunt betalen als je wilt. Daarvoor is een wallet met BOLT12 nodig, zoals Phoenix."
   ],
+  "spenden_hinweis": "Nog niet elke Lightning-wallet ondersteunt dit. Wallet of Satoshi en veel andere geven bij zowel het adres als de QR-code een foutmelding. Kies dan On-chain, dat werkt met elke wallet.",
   "spenden_sp": [
     "On-chain met Silent Payments",
     "Een vast adres waaruit de wallet voor elke betaling een eigen adres maakt. Daarvoor is een wallet met BIP 352 nodig, zoals Sparrow, Cake Wallet of Nunchuk."

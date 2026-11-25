@@ -397,6 +397,7 @@
     "Lightning (BOLT12)",
     "一个固定的 offer，可以支付任意多次。需要支持 BOLT12 的钱包，例如 Phoenix。"
   ],
+  "spenden_hinweis": "并非所有 Lightning 钱包都已支持。Wallet of Satoshi 和许多其他钱包在使用地址或二维码时都会报错。这种情况下请选择 On-chain，任何钱包都可以使用。",
   "spenden_sp": [
     "使用 Silent Payments 的 on-chain",
     "一个固定地址，钱包会据此为每笔付款生成一个单独的地址。需要支持 BIP 352 的钱包，例如 Sparrow、Cake Wallet 或 Nunchuk。"

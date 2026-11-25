@@ -397,6 +397,7 @@
     "Lightning (BOLT12)",
     "Un’offerta fissa che si può pagare tutte le volte che si vuole. Serve un wallet con BOLT12, per esempio Phoenix."
   ],
+  "spenden_hinweis": "Non tutti i wallet Lightning lo supportano ancora. Wallet of Satoshi e molti altri mostrano un errore sia con l’indirizzo sia con il codice QR. In quel caso scegli On-chain, che funziona con qualsiasi wallet.",
   "spenden_sp": [
     "On-chain con Silent Payments",
     "Un indirizzo fisso da cui il wallet ricava un indirizzo diverso per ogni pagamento. Serve un wallet con BIP 352, per esempio Sparrow, Cake Wallet o Nunchuk."

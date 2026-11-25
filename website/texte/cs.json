@@ -397,6 +397,7 @@
     "Lightning (BOLT12)",
     "Pevná nabídka, kterou lze zaplatit libovolněkrát. Je potřeba peněženka s podporou BOLT12, například Phoenix."
   ],
+  "spenden_hinweis": "Ne každá lightningová peněženka to zatím umí. Wallet of Satoshi a mnoho dalších u adresy i QR kódu ohlásí chybu. Pak prosím zvolte On-chain, to funguje s každou peněženkou.",
   "spenden_sp": [
     "On-chain se Silent Payments",
     "Pevná adresa, ze které peněženka pro každou platbu vytvoří samostatnou adresu. Je potřeba peněženka s podporou BIP 352, například Sparrow, Cake Wallet nebo Nunchuk."
