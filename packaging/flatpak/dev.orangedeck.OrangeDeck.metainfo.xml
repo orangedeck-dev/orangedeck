@@ -216,6 +216,15 @@
        das Repo umgezogen ist, gehoert nicht hierher: es aendert nichts an der
        Anwendung. Das Datum ist vorlaeufig (19.09.2026). -->
   <releases>
+    <release version="0.2.19" date="2026-11-25">
+      <description>
+        <p>
+          The miner widgets on Android now also work when the miner address
+          was entered with the http prefix. Until now they reported "not
+          reachable right now" in that case, while the app showed the miner.
+        </p>
+      </description>
+    </release>
     <release version="0.2.18" date="2026-11-18">
       <description>
         <p>
