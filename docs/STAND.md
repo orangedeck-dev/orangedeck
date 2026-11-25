@@ -15,6 +15,33 @@
      geschrieben wurde. Hier bleibt nur der neueste Tagesabschluss stehen.
      Wandert er morgen ins Journal, kommt der von morgen an seine Stelle;
      die Datei bleibt damit so lang, wie ein Einstieg sein darf. -->
+## NACHTRAG 25.11.2026 -- Spenden, Miner-Widget, Kumiki wieder runter
+
+Einzelheiten im Journal vom 25.11. **0.2.18 bleibt die aktuelle Fassung**,
+heute wurde keine App veroeffentlicht.
+
+- **Spende "offline":** Phoenix 2.8.4 laedt im Hintergrund die Wallet aus
+  der Push-Nachricht (`node_id_hash`), die aktive oder Default-Wallet
+  spielt keine Rolle. Galaxy eingestellt (Akku frei, "App verwalten" aus,
+  Benachrichtigungsverlauf an, Spenden als Default Wallet). Der
+  NordVPN-Ausschluss fuer Phoenix ist eingetragen, greift aber nicht.
+  Wallet of Satoshi kann Adresse und `lno`-QR nicht zahlen; Hinweis
+  darauf auf der Spendenseite, 13 Sprachen, live.
+- **Offen:** Der Kollege hat mit Phoenix gesendet (BOLT12 also da) und
+  schickt einen Testbetrag. Danach Nutzungsprotokoll und
+  Benachrichtigungsverlauf am Galaxy auslesen (Befehle im Journal) und
+  seine genaue Meldung erfragen.
+- **Miner-Widget:** setzte immer `http://` vor die Adresse; mit
+  `http://...` im Feld nie erreichbar. Behoben (`minerBasis()`,
+  `2d9a6ba`), im Emulator bestaetigt. Offen: was beim Kollegen im Feld
+  steht. Dann 0.2.19 nach dem gewohnten Ablauf.
+- **Git:** Die Kumiki-Commits waren versehentlich mit auf `origin/main`.
+  Der Anwender setzt GitHub per Force-Push auf die saubere Linie zurueck
+  (`git push --force-with-lease=main:a324cfe origin <Nachtrag-Commit>:refs/heads/main`). Lokale `main` = saubere Linie plus Kumiki obendrauf,
+  alter Stand als `kumiki-gesichert`. **Nie `git push origin main`**, nur
+  `git push origin <commit>:refs/heads/main` mit einem Commit der
+  sauberen Linie.
+
 ## TAGESABSCHLUSS 18.11.2026 -- 0.2.18 veroeffentlicht
 
 ### Der Stand in einem Satz
