@@ -51,7 +51,7 @@ public class WidgetMinerGross extends GraphWidget {
 
         JSONObject d;
         try {
-            d = new JSONObject(holeVon("http://" + adresse + "/api/system/info", 3500));
+            d = new JSONObject(holeVon(minerBasis(adresse) + "/api/system/info", 3500));
         } catch (Exception e) {
             // Im Netz nicht erreichbar: der Stand laut Pool, wie im Widget
             // WidgetMiner. Der Verlauf kommt dann vom Pool, wenn unter der
@@ -91,7 +91,7 @@ public class WidgetMinerGross extends GraphWidget {
 
     private static double[] ausGeraet(String adresse) {
         try {
-            JSONObject s = new JSONObject(holeVon("http://" + adresse
+            JSONObject s = new JSONObject(holeVon(minerBasis(adresse)
                 + "/api/system/statistics?columns=hashrate_10m", 4000));
             JSONArray lab = s.optJSONArray("labels"), z = s.optJSONArray("statistics");
             if (lab == null || z == null || z.length() < 3)

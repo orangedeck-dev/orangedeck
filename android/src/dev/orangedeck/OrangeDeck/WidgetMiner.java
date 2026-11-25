@@ -27,7 +27,7 @@ public class WidgetMiner extends DeckWidget {
         }
         JSONObject d;
         try {
-            d = new JSONObject(holeVon("http://" + adresse + "/api/system/info", 3500));
+            d = new JSONObject(holeVon(minerBasis(adresse) + "/api/system/info", 3500));
         } catch (Exception e) {
             // Im Netz nicht erreichbar (unterwegs, Gaeste-WLAN): was der Pool
             // ueber ihn weiss, mit dem Pool als Quelle. Ohne Pool bleibt es

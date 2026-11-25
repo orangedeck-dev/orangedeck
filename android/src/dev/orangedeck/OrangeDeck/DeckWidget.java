@@ -531,6 +531,22 @@ public abstract class DeckWidget extends AppWidgetProvider {
         return null;
     }
 
+    /**
+     * Die Adresse als Basis-URL, nach derselben Regel wie {@code basis()} in
+     * {@code ui/qml/DirectMiner.qml}: ohne Schema http, Schraegstriche am Ende
+     * weg.
+     *
+     * <p>Bis 25.11.2026 setzte das Widget immer "http://" davor. Wer
+     * "http://192.168.…" eingetragen hatte, sah in der Anwendung seinen Miner
+     * und im Widget nur "gerade nicht erreichbar" (beim Kollegen gemeldet).
+     */
+    protected static String minerBasis(String adresse) {
+        String u = adresse.trim();
+        if (!u.contains("://"))
+            u = "http://" + u;
+        return u.replaceAll("/+$", "");
+    }
+
     /** Was ein public-pool ueber den Miner weiss (siehe {@code PoolKlient.qml}). */
     protected static final class PoolStand {
         double gh;          // Hashrate in GH/s, wie der Pool sie schaetzt
